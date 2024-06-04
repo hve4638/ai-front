@@ -1,70 +1,27 @@
-# Getting Started with Create React App
+# AI Front
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![front](/img/01.png)
 
-## Available Scripts
+Genimi Pro 1.5 API를 호출하는 프론트엔드의 예제입니다j
 
-In the project directory, you can run:
+## 프롬프트 추가
 
-### `npm start`
+`public/prompts/list.json` 파일을 열고 다음 포맷에 맞게 추가하거나 수정합니다.
+1. 루트는 배열입니다.
+2. 각 객체는 키가 `{ name, value }` 또는 `{ name, sub }` 인 형태로 넣을 수 있습니다.
+    - `name`은 노출되는 이름이 저장됩니다.
+    - `value`는 `public/prompts/` 안에 위치하는 프롬프트가 저장된 파일명입니다.
+    - `value` 대신 `sub`를 넣을 수 있으며 하위 카테고리를 추가합니다.
+        - `sub` 는 배열이 들가며 배열 내에 `{ name, value }` 키를 객체가 들어갑니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 프롬프트의 예약어
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+프롬프트 내에서 다음 키워드는 api 요청시 다음과 같이 교체됩니다.
 
-### `npm test`
+- `{{lang}}` : 선택한 언어 단어로 교체됩니다. *(ex. korean, english)*
+- `{{contents}}` : 입력값을 교체됩니다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## TODO
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Gemini 계열 모델 선택 지원
+- OAI 등 타 LLM API 지원

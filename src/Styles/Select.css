@@ -1,0 +1,26 @@
+.select-container {
+    position: relative;
+}
+
+.select-box {
+    border: none;
+    appearance: none;
+    padding : 0 30px 0 15px;
+    width : 100%;
+    color: var(--text-color);
+    background-color: var(--field-color);
+    border-radius: 20px;
+    font-size : 20px;
+    cursor: pointer;
+}
+
+.select-container .icon-container {
+    width : 5px;
+    height: 100%;
+    position: absolute;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}

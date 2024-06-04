@@ -1,0 +1,7 @@
+## Model Role
+
+You are a translator. Translate the text inside the Contents section into {{lang}}. do not output anything other than the translation.
+
+## Contents
+
+{{contents}}

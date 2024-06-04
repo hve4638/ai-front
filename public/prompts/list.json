@@ -1,0 +1,29 @@
+{
+    "prompts" : [
+        {
+            "name" : "없음",
+            "value" : "noprompt"
+        },
+        {
+            "name" : "번역",
+            "list" : [
+                {
+                    "name" : "범용",
+                    "value" : "translate-normal",
+                    "vars" : [ "lang" ]
+                },
+                {
+                    "name" : "소설",
+                    "value" : "translate-novel",
+                    "vars" : [ "lang" ]
+                }
+            ]
+        }
+    ],
+    "vars" : {
+        "lang" : [
+            { "name" : "한국어", "value" : "korean" },
+            { "name" : "영어", "value" : "english" }
+        ]
+    }
+}
