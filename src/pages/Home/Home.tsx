@@ -21,8 +21,6 @@ import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
 import OutputField, {ResponseState} from './OutputField.tsx'
 
-import {setCookie, getCookie} from '../../libs/cookies.tsx'
-
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
     const [showModelConfigModal, setShowModelConfigModal] = useState(false);
@@ -76,9 +74,6 @@ export default function Home() {
                             }
                         }
                         if (!p2IsValid && item.list.key > 0) {
-                            console.log('p2 ?')
-                            console.log(p2IsValid)
-                            console.log(item.list)
                             setPrompt2Key(item.list[0].key);
                         }
                     }
@@ -86,7 +81,6 @@ export default function Home() {
                 }
             }
             if (!p1IsValid && prompts.length > 0) {
-                
                 setPrompt1Key(prompts[0].key);
             }
             

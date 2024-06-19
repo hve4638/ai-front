@@ -7,3 +7,12 @@
     word-wrap: break-word;
     resize: none;
 }
+
+
+.button-red {
+    color: var(--warn-color);
+}
+
+.button-red:hover {
+    background-color: var(--warn-background-color);
+}

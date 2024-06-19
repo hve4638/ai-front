@@ -14,6 +14,21 @@ export interface APIResponse {
     error : string|null;    // 정상 응답이 아닐시 에러텍스트
 }
 
+export interface MainPrompt {
+  name: string,
+  value: string,
+  path: string|undefined,
+  key: string,
+  list: SubPrompts[]|undefined,
+  vars: string[]|undefined,
+}
+export interface SubPrompt {
+  name: string,
+  value: string,
+  key: string,
+  vars: string[]|undefined,
+}
+
 
 export interface MainPrompts {
   name: string,

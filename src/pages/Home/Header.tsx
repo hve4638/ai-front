@@ -11,6 +11,7 @@ import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 
 import Dropdown from "../../components/Dropdown.tsx";
+import { findMainPromptAsKey, findPromptAsKey, findSubPromptAsKey } from "../../utils/findPrompt.tsx";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -42,12 +43,12 @@ export default function Header(props:HeaderProps) {
     } = stateContext;
 
     useEffect(()=>{
-      for (const item of prompts) {
-        if (prompt1Key == item.key) {
-          setSubPrompts(item.list ?? []);
-          break;
-        }
-      }
+      if (prompt1Key == null) return;
+
+      const prompt1 = findMainPromptAsKey(prompts, prompt1Key);
+      if (prompt1 == null) return;
+
+      setSubPrompts(prompt1.list ?? []);
     }, [prompts, prompt1Key])
 
     useEffect(()=>{
@@ -116,6 +117,15 @@ export default function Header(props:HeaderProps) {
               onChange={(item)=>{
                 setPrompt1Key(item.key);
                 onSelectPrompt1(item);
+                
+                if (item.list == null) {
+                  // nothing
+                }
+                else if (prompt2Key == null
+                      || findSubPromptAsKey(prompts, item.key, prompt2Key) == null
+                ) {
+                  setPrompt2Key(item.list[0].key);
+                }
               }}
               titleMapper={dropdownkeyFinder}
             />
@@ -211,3 +221,4 @@ const dropdownValueFinder = (value, items) => {
     }
   }
 }
+

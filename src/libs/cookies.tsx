@@ -10,3 +10,20 @@ export const setCookie:(name:string, value:string, options?:any)=>void = (name, 
 export const getCookie:(x:string)=>string|undefined = (name: string) => {
     return cookies.get(name);
 }
+
+export function removeCookie(name: string) {
+    cookies.remove(name);
+}
+
+export function getCookies() {
+    const cookieString = document.cookie;
+    const cookieArray = cookieString.split('; ');
+    const cookies:string[] = [];
+
+    cookieArray.forEach(cookie => {
+        const [name, _] = cookie.split('=');
+        cookies.push(name);
+    });
+
+    return cookies;
+}

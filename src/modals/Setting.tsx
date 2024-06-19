@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { APIContext } from '../context/APIContext.tsx'
 import ModalHeader from '../components/ModalHeader.tsx'
+import { getCookies, removeCookie } from '../libs/cookies.tsx'
 
 interface SettingModalProps {
     onClose:({ topp, temperature, apikey, maxtoken })=>void
@@ -50,6 +51,16 @@ function SettingModal({
                 value = {topp}
                 onChange={setTopp}
             />
+            <div style={{ height: '10px' }}/>
+            <ButtonFull
+                name="데이터 초기화"
+                onClick={()=>{
+                    for (const name of getCookies()) {
+                        removeCookie(name);
+                    }
+                    window.location.reload();
+                }}
+            />
         </div>
     )
 }
@@ -76,5 +87,16 @@ const InputSmall = ({name, value, onChange}) => (
         ></input>
     </div>
 )
-  
+
+const ButtonFull = ({name, onClick}) => (
+    <div className='row section'>
+        <button
+            className='button-red'
+            onClick={(e)=>onClick()}
+        >
+            {name}
+        </button>
+    </div>
+)
+
 export default SettingModal;

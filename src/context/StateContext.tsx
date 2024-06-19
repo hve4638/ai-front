@@ -41,7 +41,7 @@ interface StateContextType {
 export const StateContext = createContext<StateContextType|undefined>(undefined);
 
 export default function StateContextProvider({children}) {
-    const [promptSlots, setPromptSlots] = usePlainCookie('slots', []);
+    const [promptSlots, setPromptSlots] = usePlainCookie('slots');
     const [prompt1Key, setPrompt1Key] = usePlainCookie('prompt1');
     const [prompt2Key, setPrompt2Key] = usePlainCookie('prompt2');
     const [requireVars, setRequireVars] = useState<string[]>([]);
@@ -54,7 +54,7 @@ export default function StateContextProvider({children}) {
     return (
         <StateContext.Provider
             value={{
-                promptSlots,
+                promptSlots : promptSlots ?? [],
                 setPromptSlots: (value)=>setPromptSlots(value, COOKIE_OPTION_NOEXPIRE),
                 requireVars, setRequireVars,
                 promptContents, setPromptContents,

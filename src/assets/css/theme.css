@@ -24,4 +24,11 @@
     --slot-select-color: rgb(62, 65, 74);
 
     --icon-theme-color: rgb(180, 181, 184);
+
+    --warn-color: rgb(236, 57, 54);
+    --warn-background-color: rgb(73, 53, 53);
+
+    --button-border-color : rgb(104, 104, 104);
+    --button-color: rgb(52, 52, 53);
+    --button-hover-color: rgb(57, 57, 57);
 }

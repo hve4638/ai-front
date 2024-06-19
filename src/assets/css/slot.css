@@ -58,7 +58,7 @@
 }
 
 .menu-item.red {
-    color: rgb(236, 57, 54);
+    color: var(--warn-color);
 }
 
 .prompt-slot-tooltip {
