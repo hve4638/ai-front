@@ -23,10 +23,14 @@
   margin-bottom: 16px;
 }
 
+.markdown ul {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
 /* ** 생각 */
 .markdown em {
   color: var(--think);
-  margin-bottom: 16px;
   margin-left: 4px;
   margin-right: 4px;
 }

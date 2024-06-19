@@ -5,19 +5,17 @@ import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
 import { splitByQuotes } from '../utils/splitByQuotes.tsx';
 
-const Emphasize = ({ children }) => <strong>{children}</strong>;
-
 const customRenderers = {
   p({ children }) {
     let input: ReactNode[];
-    if (typeof children === 'object') {
+
+    if (typeof children[Symbol.iterator] === 'function') {
         input = children;
     }
     else if (typeof children === 'string') {
         input = [ children ];
     }
     else {
-        console.error('Markdown : parse failed');
         return children;
     }
     
