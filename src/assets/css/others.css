@@ -1,14 +1,3 @@
-
-.textarea-textstyle pre {
-    font-family: inherit;
-    font-size: 1em;
-    margin: 0px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    resize: none;
-}
-
-
 .button-red {
     color: var(--warn-color);
 }

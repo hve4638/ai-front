@@ -94,7 +94,7 @@ export default function Header(props:HeaderProps) {
     }
 
     return (
-        <header className='row'>
+        <header className='noflex row'>
           <div className='left-section row' style={{padding:'0px 32px 0px 0px'}}>
             <a
             className='undraggable'

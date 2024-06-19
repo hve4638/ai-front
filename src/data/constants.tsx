@@ -21,3 +21,5 @@ export const RunningModeEnum = {
 
 export const RUNNING_MODE = RunningModeEnum.CLINET_ONLY;
 export const ENCRYPT_KEY = 'bbbeb10b1c00b979207e63f94602d94c46b2483d25253291b018342d1404318b';
+
+export const DEBUG_MODE = true;

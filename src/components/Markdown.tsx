@@ -1,34 +1,52 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
+import { splitByQuotes } from '../utils/splitByQuotes.tsx';
 
 const Emphasize = ({ children }) => <strong>{children}</strong>;
 
 const customRenderers = {
   p({ children }) {
-    if (typeof children !== 'string') {
-        return <p>{children}</p>;
+    let input: ReactNode[];
+    if (typeof children === 'object') {
+        input = children;
     }
-    const items = []
+    else if (typeof children === 'string') {
+        input = [ children ];
+    }
+    else {
+        console.error('Markdown : parse failed');
+        return children;
+    }
     
-    //console.log('Input: ' + children)
-    const splited = splitString(children)
-    //console.log(splited)
+    const items:ReactNode[] = [];
+    for (const item of input) {
+        if (typeof item === 'string') {
+            const splited = splitByQuotes(item);
+            items.push(...splited);
+        }
+        else {
+            items.push(item);
+        }
+    }
     
     return (
         <p>
             {
-            splited.map((text:string, index)=>{
-                if (text.startsWith('"')) {
-                    return (<span key={index} className='say'>{text}</span>);
+            items.map((item:ReactNode, index)=>{
+                if (typeof item !== 'string') {
+                    return item;
                 }
-                else if (text.startsWith("'")) {
-                    return (<span key={index} className='think'>{text}</span>);
+                else if (item.startsWith('"')) {
+                    return (<span key={index} className='say'>{item}</span>);
+                }
+                else if (item.startsWith("'")) {
+                    return (<span key={index} className='accent'>{item}</span>);
                 }
                 else {
-                    return text
+                    return item;
                 }
             })
             }
@@ -36,39 +54,6 @@ const customRenderers = {
     );
   }
 };
-
-const splitString = (str:string) => {
-    const parts:string[] = [];
-    let text:string = str.trim();
-    const pattern_say = /^("[^"]*")(.*)$/
-    const pattern_think = /^('[^']*')(.*)$/
-    const pattern_plain = /^([^"'*]+)(["'*].*)$/
-    const match = (pattern) => pattern.exec(text);
-
-    let group = []
-    while (text.trim() != "") {
-        if (group = match(pattern_say)) {
-            parts.push(group[1]);
-            text = group[2];
-        }
-        else if (group = match(pattern_think)) {
-            parts.push(group[1]);
-            text = group[2];
-        }
-        else if (group = match(pattern_plain)) {
-            parts.push(group[1]);
-            text = group[2];
-        }
-        else {
-            parts.push(text);
-            text = ""
-        }
-    }
-    console.log('splitting');
-    console.log(text);
-
-    return parts;
-}
 
 function Markdown({content}) {
     return (

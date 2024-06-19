@@ -37,6 +37,11 @@
     overflow-y: auto;
     word-wrap: break-word;
     word-break: break-all;
+    
+    resize: none;
+    outline: none;
+    flex : 1;
+    
 }
 
 .textarea-output .copy-button-container {

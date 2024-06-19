@@ -5,12 +5,18 @@ import GithubIcon from '../../assets/icons/github.png'
 import { StateContext } from "../../context/StateContext.tsx";
 import { Checkbox } from "../../components/Checkbox.tsx";
 
-import { Slot, SlotAdder, SlotContextMenu } from './Slot.tsx';
+import { Slot, SlotAdder } from './Slot.tsx';
+
+import { DebugContext } from '../../context/DebugContext.tsx';
 
 export default function Footer() {
     const stateContext = useContext(StateContext);
+    const debugContext = useContext(DebugContext);
     if (stateContext == null) {
-        throw new Error('StateContext must be used in StateContextProvider');
+        throw new Error('Footer must be used in StateContextProvider');
+    }
+    if (debugContext == null) {
+        throw new Error('Footer must be used in DebugContextProvider');
     }
     const {
         promptSlots, setPromptSlots,
@@ -88,6 +94,15 @@ export default function Footer() {
                 onClick={()=>setMarkdownMode(!markdownMode)}
             />
             <div className='flex'></div>
+            {
+                debugContext.isDebugMode &&      
+                <IconButton
+                    value='screen_share'
+                    enabled={debugContext.mirror}
+                    size={30}
+                    onClick={()=>debugContext.setMirror(!debugContext.mirror)}
+                />
+            }
         </div>
     </footer>
     );

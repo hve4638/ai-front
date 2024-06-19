@@ -35,7 +35,10 @@ export default function OutputField(props:OutputFieldProps) {
 
   return (
       <div className={`${className} textarea-output-container`}>
-        <div className='textarea-output translate-output scrollbar wfill' style={{overflow:'auto'}}>
+        <div
+          className='textarea-output scrollbar'
+          style={{overflow:'auto'}}
+        >
           <div className='copy-button-container undraggable'>
             <img
               id='copy-button'
@@ -44,7 +47,6 @@ export default function OutputField(props:OutputFieldProps) {
               onClick={(e)=>{window.navigator.clipboard.writeText(response.output ?? '')}}
               />
           </div>
-
           <div className='token-display-container undraggable'>
             {
               (response.tokens ?? 0) != 0 &&
@@ -54,7 +56,8 @@ export default function OutputField(props:OutputFieldProps) {
           <div className='warning-display-container undraggable'>
             {response.warning}
           </div>
-          <div className='textarea-textstyle flex column fontstyle'>
+
+          <div className='textarea-textstyle fontstyle'>
             {
               response.normalresponse && stateContext.markdownMode &&
               (
@@ -66,9 +69,7 @@ export default function OutputField(props:OutputFieldProps) {
             {
               response.normalresponse && !stateContext.markdownMode &&
               (
-                <pre
-                  className=''
-                >
+                <pre className='fontstyle'>
                   {response.output}
                 </pre>
               )

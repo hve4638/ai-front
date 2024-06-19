@@ -8,6 +8,7 @@ import { requestAIGenimi } from "../../apis/genimi.tsx";
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 import { APIContext } from "../../context/APIContext.tsx";
+import { DebugContext } from "../../context/DebugContext.tsx";
 
 import ModelConfigModal from "../../modals/ModelConfig.tsx";
 import HistoryModal from '../../modals/HistoryModal.tsx'
@@ -20,6 +21,7 @@ import Header from './Header.tsx'
 import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
 import OutputField, {ResponseState} from './OutputField.tsx'
+import debug from "debug";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
@@ -41,9 +43,11 @@ export default function Home() {
     const apiContext = useContext(APIContext);
     const promptContext = useContext(PromptContext);
     const stateContext = useContext(StateContext);
+    const debugContext = useContext(DebugContext);
     if (promptContext == null) throw new Error('Home() required PromptContextProvider');
     if (apiContext == null) throw new Error('Home() required APIContextProvider');
     if (stateContext == null) throw new Error('Home() required StateContextProvider');
+    if (debugContext == null) throw new Error('Home() required DebugContextProvider');
 
     useEffect(()=>{
         requestPromptlist()
@@ -142,6 +146,26 @@ export default function Home() {
         setResponse(response);
     }
 
+    const onChanageInputField = (value) => {
+        if (debugContext.isDebugMode && debugContext.mirror) {
+            setResponse({
+                input : value,
+                output : value,
+                error : '',
+                finishreason : 'NORMAL',
+                normalresponse : true,
+                note : {},
+                prompt : '',
+                tokens : 0,
+                warning : ''
+            });
+        }
+        else {
+
+        }
+        setTextInput(value);
+    }
+
     return (
         <div className='fill column theme-dark' style={{position:'relative'}}>
             <Header
@@ -149,11 +173,11 @@ export default function Home() {
                 onOpenModelConfig={()=>setShowModelConfigModal(true)}
                 onOpenSetting={()=>setShowSettingModal(true)}
             />
-            <main className='flex row'>
+            <main className='flex row' style={{overflowY: 'auto'}}>
                 <InputField
                     className='left-section'
                     text={textInput}
-                    onChange={(value)=>setTextInput(value)}
+                    onChange={(value)=>onChanageInputField(value)}
                 />
                 <div className='seperate-section center undraggable'>
                     <SubmitButton
