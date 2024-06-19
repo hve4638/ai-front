@@ -1,0 +1,15 @@
+.left-section {
+    display: flex;
+    flex : 1;
+}
+
+.right-section {
+    display: flex;
+    flex : 1;
+}
+
+.seperate-section {
+    display: flex;
+    flex : none;
+    width: 48px;
+}

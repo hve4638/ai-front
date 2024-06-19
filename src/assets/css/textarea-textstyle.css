@@ -1,0 +1,28 @@
+
+.textarea-textstyle {
+    
+}
+
+.textarea-textstyle p {
+    margin-top: 0px;
+    margin-bottom: 16px;
+    color :rgb(146, 148, 152);
+}
+
+.textarea-textstyle em {
+    color: rgb(237, 163, 85);
+    margin-bottom: 16px;
+}
+
+.textarea-textstyle code {
+    color :rgb(177, 222, 232);
+    margin-bottom: 16px;
+}
+
+.textarea-textstyle .say {
+    color: white;
+}
+
+.textarea-textstyle .think {
+    color: rgb(240, 180, 108);
+}

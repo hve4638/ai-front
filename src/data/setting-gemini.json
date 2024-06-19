@@ -1,0 +1,19 @@
+{
+    "setting" : [
+        {
+            "name" : "TOP-P",
+            "type" : "number",
+            "input" : "small"
+        },
+        {
+            "name" : "Temperature",
+            "value" : "number",
+            "input" : "small"
+        },
+        {
+            "name" : "TOP-P",
+            "value" : "",
+            "type" : "small"
+        }
+    ]
+}

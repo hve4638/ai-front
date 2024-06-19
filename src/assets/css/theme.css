@@ -1,0 +1,27 @@
+
+.theme-light {
+    background-color: rgb(245, 247, 248);
+
+    --text-color: black;
+    --title-color: rgb(9, 26, 43);
+    
+    --field-color: rgb(208, 212, 214);
+    --field-color-hover: rgb(198, 223, 255);
+    
+    --icon-theme-color: black;
+}
+
+.theme-dark {
+    background-color: rgb(23, 23, 23);
+
+    --text-color: white;
+    --title-color: rgb(180, 180, 172);
+
+    --field-color: rgb(47, 47, 47);
+
+    --slot-color: rgb(47, 47, 47);
+    --slot-hover-color: rgb(83, 83, 83);
+    --slot-select-color: rgb(62, 65, 74);
+
+    --icon-theme-color: rgb(180, 181, 184);
+}
