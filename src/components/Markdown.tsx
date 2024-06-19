@@ -9,11 +9,11 @@ const customRenderers = {
   p({ children }) {
     let input: ReactNode[];
 
-    if (typeof children[Symbol.iterator] === 'function') {
-        input = children;
-    }
-    else if (typeof children === 'string') {
+    if (typeof children === 'string') {
         input = [ children ];
+    }
+    else if (typeof children[Symbol.iterator] === 'function') {
+        input = children;
     }
     else {
         return children;
