@@ -36,6 +36,8 @@ interface StateContextType {
     setPrompt2Key : (key:string)=>void,
     markdownMode: boolean,
     setMarkdownMode : (x:boolean)=>void,
+    lineByLineMode : boolean,
+    setLineByLineMode : (x:boolean)=>void
 }
 
 export const StateContext = createContext<StateContextType|undefined>(undefined);
@@ -48,6 +50,7 @@ export default function StateContextProvider({children}) {
     const [prompt, setPrompt] = useState(null);
     const [promptContents, setPromptContents] = useState('');
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
+    const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
     const [note, setNote] = usePlainCookie('note', {});
     const [history, setHistory] = useState<APIResponse[]>([]);
     
@@ -67,6 +70,8 @@ export default function StateContextProvider({children}) {
                 setPrompt2Key : (value)=>setPrompt2Key(value, COOKIE_OPTION_NOEXPIRE),
                 markdownMode,
                 setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),
+                lineByLineMode,
+                setLineByLineMode : (value)=>setLineByLineMode(value, COOKIE_OPTION_NOEXPIRE),
             }}
         >
             {children}

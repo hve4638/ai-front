@@ -5,3 +5,11 @@
 .button-red:hover {
     background-color: var(--warn-background-color);
 }
+
+.button-red:active {
+    transform: scale(0.95);
+}
+
+.shadow {
+    box-shadow: 0 0.5px 4px rgba(0, 0, 0, 0.2);
+}

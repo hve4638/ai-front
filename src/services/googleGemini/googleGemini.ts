@@ -3,6 +3,8 @@ import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant.ts'
+import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
+import { AIModel } from "../../data/aimodel/interfaces.tsx";
 
 interface Note {
     [key:string]:string
@@ -38,17 +40,17 @@ interface RequestReturns {
     controller:AbortController
 }
 
-export class GoogleAIAPI {
-    request(args:requestArgs):RequestReturns {
+export class GoogleGemini implements AIModel {
+    request(request:AIModelRequest, config:AIModelConfig, options:any) {
         const url = bracketFormat(GENIMIAPI_URL_FORMAT, {
-            apikey : args.apikey,
-            modelname : 'gemini-1.5-pro-latest'
+            apikey : options.apikey,
+            modelname : config.modelname
         });
-        const promptParser = new CurlyBraceFormatParser(args.prompt);
+        const promptParser = new CurlyBraceFormatParser(request.prompt);
         const result = promptParser.build({
             vars : { 
-                ...args.note,
-                contents :args.contents
+                ...request.note,
+                contents :request.contents
             },
             role(x:string) {
                 return GENIMI_ROLE[x] ?? GENIMI_ROLE_DEFAULT;
@@ -68,9 +70,9 @@ export class GoogleAIAPI {
         const body = {
             contents: result,
             "generation_config" : {
-                "maxOutputTokens": args.maxtoken,
-                "temperature": args.temperature,
-                "topP": args.topp
+                "maxOutputTokens": config.maxtoken,
+                "temperature": config.temperature,
+                "topP": config.topp
             },
             "safetySettings" : GENIMI_OPTION_SAFETY
         };
@@ -96,9 +98,9 @@ export class GoogleAIAPI {
                 console.log(JSON.stringify(data));
                 const apiresponse = {
                     ...this.#parseResponse(data),
-                    input : args.contents,
-                    note : args.note,
-                    prompt : args.prompt,
+                    input : request.contents,
+                    note : request.note,
+                    prompt : request.prompt,
                     error : null
                 }
 

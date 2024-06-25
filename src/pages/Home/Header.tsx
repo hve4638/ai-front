@@ -4,7 +4,7 @@ import HistoryIcon from '../../assets/icons/history.svg'
 import AdvancedIcon from '../../assets/icons/model.svg'
 import SettingIcon from '../../assets/icons/setting.svg'
 
-import {requestPrompt} from "../../apis/prompts.tsx";
+import { requestPrompt } from "../../services/local.ts";
 
 import { SubPromptsType } from "../../context/interface/promptInterface.tsx";
 import { PromptContext } from "../../context/PromptContext.tsx";
@@ -111,7 +111,7 @@ export default function Header(props:HeaderProps) {
             }
             <div className='flex'></div>
             <Dropdown
-              style={{marginLeft :'15px'}}
+              style={{marginLeft :'15px', minWidth:'100px'}}
               value={prompt1Key}
               items={[...prompts.map((item, index)=>{return {name:item.name, value:item, key:item.key}})]}
               onChange={(item)=>{

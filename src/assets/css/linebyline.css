@@ -1,0 +1,7 @@
+.linebyline-container p.translation {
+    color : white;
+    margin: 0px;
+}
+.linebyline-container p.original {
+    margin: 0px 0px 12px 0px;
+}

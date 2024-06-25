@@ -1,0 +1,38 @@
+.popup-menu {
+    position: absolute;
+    color: white;
+    z-index: 100;
+    background-color: var(--field-color);
+    border: 1px solid rgb(68, 68, 68);
+    border-radius: 8px;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
+    padding : 6px;
+    width: 150px;
+}
+
+.popup-menu p.title {
+    margin: 4px;
+    font-weight: 600;
+}
+
+.popup-menu hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    width: 95%;
+    margin: 8px auto;
+}
+
+.popup-menu-item  {
+    font-size: 0.9em;
+    font-weight: 500;
+    margin : 1px;
+    padding : 3px;
+    overflow: hidden;
+    text-wrap: nowrap;
+    border-radius: 6px;
+    cursor : pointer;
+}
+
+.popup-menu-item:hover {
+    background-color: #f1f1f124;
+}

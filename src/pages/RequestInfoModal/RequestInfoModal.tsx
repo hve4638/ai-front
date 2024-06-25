@@ -1,10 +1,10 @@
 import React, {useContext} from 'react'
 
-import ModalHeader from './ModalHeader.tsx'
+import ModalHeader from '../../components/ModalHeader.tsx'
 
 import { StateContext } from '../../context/StateContext.tsx';
 
-export default function ModelConfigModal({
+export default function RequestInfoModal({
     onClose
  }) {
     const stateContext = useContext(StateContext);
@@ -13,8 +13,6 @@ export default function ModelConfigModal({
     }
     
     const { note, promptContents } = stateContext;
-    console.log('note!');
-    console.log(note);
     
     return (
         <div className='modal config-modal column'>
@@ -25,7 +23,7 @@ export default function ModelConfigModal({
                 }}
             />
             <div className='column scrollbar' style={{ overflow:'auto'}}>
-                <p className='noflex config-name undraggable'>Prompt</p>
+                <SubTitle>프롬프트 템플릿</SubTitle>
                 <div className='noflex textplace column scrollbar' style={{position:'relative'}}>
                 {
                     promptContents.split('\n').map((value, index) => (
@@ -35,7 +33,7 @@ export default function ModelConfigModal({
                     ))
                 }
                 </div>
-                <p className='noflex config-name undraggable'>Note</p>
+                <SubTitle>Note</SubTitle>
                 <div className='noflex textplace column'>
                     {
                         Object.entries(note).map(([key, value]) => (
@@ -49,3 +47,7 @@ export default function ModelConfigModal({
         </div>
     )
 }
+
+const SubTitle = ({children}) => (
+    <p className='noflex config-name undraggable'>{children}</p>
+)

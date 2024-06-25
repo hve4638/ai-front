@@ -2,7 +2,13 @@ import React, { useState, createContext, useEffect } from "react";
 import { useEncryptedCookie } from '../hooks/useEncryptedCookie.tsx';
 import { ENCRYPT_KEY, COOKIE_OPTION_NOEXPIRE } from '../data/constants.tsx'
 
-interface APIContextType {
+export interface ModelInfo {
+    category:string;
+    model:string;
+    modelOptions:{[modelname:string]:{[key:string]:any}}
+}
+
+export interface APIContextType {
     apikey:string,
     setAPIKey:(x:string)=>void,
     topp:string,
@@ -11,11 +17,14 @@ interface APIContextType {
     setTemperature:(x:string)=>boolean,
     maxtoken:string
     setMaxtoken:(x:string)=>boolean
+    modelInfo:ModelInfo,
+    setModelInfo:(x:ModelInfo)=>void,
 }
 
 export const APIContext = createContext<APIContextType|null>(null);
 
 export default function APIContextProvider({children}) {
+    const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
     const [apikey, setAPIKey] = useEncryptedCookie('g-api', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
     const [temperature, setRawTemperature] = useEncryptedCookie('temperature', ENCRYPT_KEY);
@@ -61,6 +70,8 @@ export default function APIContextProvider({children}) {
     return (
         <APIContext.Provider
             value={{
+                modelInfo : modelInfo ?? {category:null,model:null,modelOptions:{}},
+                setModelInfo : (x:object)=>setModelInfo(x, COOKIE_OPTION_NOEXPIRE),
                 apikey : apikey ?? '',
                 topp : topp ?? '0.7',
                 temperature : temperature ?? '0.8',

@@ -3,18 +3,16 @@ import ArrowIcon from '../../assets/icons/arrow.svg'
 import LoadingIcon from '../../assets/icons/loading.svg'
 
 import { requestPromptlist, requestPrompt } from "../../services/local.ts";
-import { requestAIGenimi } from "../../apis/genimi.tsx";
-import { GoogleAIAPI } from "../../services/googleaiapi/index.ts";
 
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 import { APIContext } from "../../context/APIContext.tsx";
 import { DebugContext } from "../../context/DebugContext.tsx";
 
-import ModalBackground from '../../components/modals/Background.tsx'
-import ModelConfigModal from "../../components/modals/ModelConfigModal.tsx";
-import HistoryModal from '../../components/modals/HistoryModal.tsx'
-import SettingModal from '../../components/modals/SettingModal.tsx'
+import ModalBackground from '../../components/ModalBackground.tsx'
+import RequestInfoModal from "../RequestInfoModal/RequestInfoModal.tsx";
+import HistoryModal from '../HistoryModal/HistoryModal.tsx'
+import SettingModal from '../SettingModal/SettingModal.tsx'
 
 import { APIResponse } from "../../data/interface.tsx";
 
@@ -22,8 +20,9 @@ import Header from './Header.tsx'
 import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
 import OutputField from './OutputField.tsx'
-import debug from "debug";
+
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
+import { AIModels } from "../../features/chatAI/index.ts";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
@@ -97,17 +96,14 @@ export default function Home() {
     }, []);
 
     const onSubmit = () => {
-        const apiRequester = new GoogleAIAPI()
-        const { controller, promise } = apiRequester.request({
-            modelname : "gemini-1.5-pro-latest",
-            contents : textInput,
-            prompt : stateContext.promptContents,
-            note : stateContext.note,
-            apikey : apiContext.apikey,
-            maxtoken : apiContext.maxtoken,
-            topp : apiContext.topp,
-            temperature : apiContext.temperature
-        });
+        const { controller, promise } = AIModels.request(
+            apiContext,
+            {
+                contents: textInput,
+                note: stateContext.note,
+                prompt: stateContext.promptContents
+            }
+        )
         setSubmitLoading(true);
 
         promise
@@ -155,10 +151,13 @@ export default function Home() {
             try {
                 const tp = new CurlyBraceFormatParser(value);
                 
-                console.log('note')
-                console.log(stateContext.note)
-                const text = tp.build({ vars:stateContext.note });
-                console.log(text);
+                const text = tp.build(
+                    {
+                        vars: stateContext.note,
+                        reversedVars : { input: 'describe yourself' }
+                    }
+                );
+                console.log(text)
             }
             catch(e){
                 console.error(e);
@@ -214,19 +213,13 @@ export default function Home() {
                     showSettingModal &&
                     <SettingModal
                         onClose = {({apikey,maxtoken,temperature,topp})=>{
-                            apiContext.setMaxtoken(maxtoken);
-                            apiContext.setTemperature(temperature);
-                            apiContext.setTopp(topp);
-                            if (apikey?.length ?? 0 > 0) {
-                                apiContext.setAPIKey(apikey);
-                            }
                             setShowSettingModal(false);
                         }}
                     />
                 }
                 {
                     showModelConfigModal &&
-                    <ModelConfigModal
+                    <RequestInfoModal
                         onClose = {()=>setShowModelConfigModal(false)}
                     />
                 }

@@ -1,11 +1,12 @@
 import { CurlyBraceFormatItem, CurlyBraceFormatBuildArgs } from "./interface.ts";
 import { Var } from "./var.ts"
+import { ReversedVar } from "./reversedVar.ts"
 import { Expression } from "./expression.ts";
 import { Condition } from "./condition.ts"
 import { Role } from "./role.ts";
 import { Constant } from "./constant.ts";
 
-const RE_CURLY = /(\s*\{\{::[^\n{}]+?\}\}\s*|\{\{[^:\n{}]+?\}\})/ms
+const RE_CURLY = /(\s*\{\{::[^\n{}]+?\}\}\s*|\{\{:?[^:\n{}]+?\}\})/ms
 
 export class CurlyBraceFormatParser {
     parsed: (CurlyBraceFormatItem|Role)[];
@@ -23,9 +24,12 @@ export class CurlyBraceFormatParser {
             }
             else if (!this.#isValidCurlyFormat(item)) {
                 this.#addContents(new Constant(item));
-                continue;
             }
-            // {{::keyword [optional]}} 포맷인지 확인
+            // {{:keyword}} 포맷
+            else if (inCurly = this.#tryParseSingleCommaCurlyFormat(item)) {
+                this.#addContents(new ReversedVar(inCurly));
+            }
+            // {{::keyword [optional]}} 포맷
             else if (inCurly = this.#parseKeywordInCurlyFormat(item)) {
                 const wsLeft = item.split('{{')[0];
                 if (wsLeft.includes('\n')) {
@@ -65,6 +69,7 @@ export class CurlyBraceFormatParser {
                     this.#addContents(new Constant(' '))
                 }
             }
+            // {{keyword}} 포맷
             else {
                 const varname = this.#removeCurly(item)
                 this.#addContents(new Var(varname));
@@ -138,6 +143,17 @@ export class CurlyBraceFormatParser {
             else {
                 return [symbol, remained];
             }
+        }
+    }
+
+    #tryParseSingleCommaCurlyFormat(textInCurly:string):null|string {
+        const text = this.#removeCurly(textInCurly);
+        if (!text.startsWith(':') || text.startsWith('::')) {
+            return null;
+        }
+        else {
+            const part = text.split(/\s+/);
+            return part[0].slice(1);
         }
     }
 

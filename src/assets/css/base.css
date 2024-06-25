@@ -42,7 +42,3 @@ button:hover {
     transform: scale(1.0);
 }
 
-
-.button-red:active {
-    transform: scale(0.95);
-}

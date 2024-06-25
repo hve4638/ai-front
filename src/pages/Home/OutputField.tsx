@@ -5,8 +5,10 @@ import { APIResponse } from '../../data/interface.js'
 
 import { copyToClipboard } from '../../utils/clipboard.tsx'
 
+
 import Markdown from '../../components/Markdown.tsx'
 import { StateContext } from '../../context/StateContext.tsx'
+import { LineByLineRenderer } from '../../components/LineByLine.tsx'
 
 interface OutputFieldProps {
   className?:string,
@@ -46,27 +48,24 @@ export default function OutputField(props:OutputFieldProps) {
 
           <div className='textarea-textstyle fontstyle'>
             {
-              response.normalresponse && stateContext.markdownMode &&
-              (
-                <div className='markdown'>
-                  <Markdown content={response.output}></Markdown>
-                </div>
-              )
-            }
-            {
-              response.normalresponse && !stateContext.markdownMode &&
-              (
-                <pre className='fontstyle'>
-                  {response.output}
-                </pre>
-              )
-            }
-            {
-              !response.normalresponse &&
+              !response.normalresponse
+              ?
               <div className='flex column'>
                 <p style={{margin: '0px 0px 32px 0px'}}>Exception Occur!</p>
                 <p style={{color:'red'}}>{response.error}</p>
               </div>
+              : stateContext.markdownMode
+              ?
+              <div className='markdown'>
+                <Markdown content={response.output}></Markdown>
+              </div>
+              : stateContext.lineByLineMode
+              ?
+              <LineByLineRenderer content={response.output}/>
+              :
+              <pre className='fontstyle'>
+                {response.output}
+              </pre>
             }
             <div style={{height:'80px'}}></div>
           </div>

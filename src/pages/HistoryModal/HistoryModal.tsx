@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 
-import ModalHeader from './ModalHeader.tsx'
+import ModalHeader from '../../components/ModalHeader.tsx'
 
 import { StateContext } from "../../context/StateContext.tsx";
 

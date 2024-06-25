@@ -20,7 +20,8 @@ export default function Footer() {
     }
     const {
         promptSlots, setPromptSlots,
-        markdownMode, setMarkdownMode
+        markdownMode, setMarkdownMode,
+        lineByLineMode, setLineByLineMode
     } = stateContext;
 
     const createSlotData = () => {
@@ -93,6 +94,13 @@ export default function Footer() {
                 size={30}
                 onClick={()=>setMarkdownMode(!markdownMode)}
             />
+            <Pad/>
+            <IconButton
+                value='code'
+                enabled={lineByLineMode}
+                size={30}
+                onClick={()=>setLineByLineMode(!lineByLineMode)}
+            />
             <div className='flex'></div>
             {
                 debugContext.isDebugMode &&      
@@ -107,6 +115,8 @@ export default function Footer() {
     </footer>
     );
 }
+
+const Pad = () => (<div style={{width:'8px'}}/>)
 
 interface IconButtonProps {
     className?:string;
