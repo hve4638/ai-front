@@ -66,8 +66,6 @@ function SettingModal(props:SettingModalProps) {
     }
 
     useEffect(()=>{
-        console.log(apiContext.modelInfo)
-
         if (modalRef.current) {
             const width = modalRef.current.offsetWidth;
             const height = modalRef.current.offsetHeight;

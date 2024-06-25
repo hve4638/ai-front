@@ -49,7 +49,8 @@ export class AIModels {
     }
 
     static getModels(category:string):{name:string, value:string}[] {
-        return this.#models[category].models;
+        const models = this.#models[category]?.models ?? [];
+        return models;
     }
 
     static request(apiContext:APIContextType, request:AIModelRequest):AIModelReturns {
