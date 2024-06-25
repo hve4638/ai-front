@@ -2,26 +2,28 @@ import React, { useState, useEffect, useContext } from "react";
 import ArrowIcon from '../../assets/icons/arrow.svg'
 import LoadingIcon from '../../assets/icons/loading.svg'
 
-import { requestPromptlist, requestPrompt } from "../../apis/prompts.tsx";
+import { requestPromptlist, requestPrompt } from "../../services/local.ts";
 import { requestAIGenimi } from "../../apis/genimi.tsx";
+import { GoogleAIAPI } from "../../services/googleaiapi/index.ts";
 
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 import { APIContext } from "../../context/APIContext.tsx";
 import { DebugContext } from "../../context/DebugContext.tsx";
 
-import ModelConfigModal from "../../modals/ModelConfig.tsx";
-import HistoryModal from '../../modals/HistoryModal.tsx'
-import ModalBackground from '../../modals/Background.tsx'
-import SettingModal from '../../modals/Setting.tsx'
+import ModalBackground from '../../components/modals/Background.tsx'
+import ModelConfigModal from "../../components/modals/ModelConfigModal.tsx";
+import HistoryModal from '../../components/modals/HistoryModal.tsx'
+import SettingModal from '../../components/modals/SettingModal.tsx'
 
 import { APIResponse } from "../../data/interface.tsx";
 
 import Header from './Header.tsx'
 import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
-import OutputField, {ResponseState} from './OutputField.tsx'
+import OutputField from './OutputField.tsx'
 import debug from "debug";
+import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
@@ -95,7 +97,9 @@ export default function Home() {
     }, []);
 
     const onSubmit = () => {
-        const { controller, promise } = requestAIGenimi({
+        const apiRequester = new GoogleAIAPI()
+        const { controller, promise } = apiRequester.request({
+            modelname : "gemini-1.5-pro-latest",
             contents : textInput,
             prompt : stateContext.promptContents,
             note : stateContext.note,
@@ -148,6 +152,17 @@ export default function Home() {
 
     const onChanageInputField = (value) => {
         if (debugContext.isDebugMode && debugContext.mirror) {
+            try {
+                const tp = new CurlyBraceFormatParser(value);
+                
+                console.log('note')
+                console.log(stateContext.note)
+                const text = tp.build({ vars:stateContext.note });
+                console.log(text);
+            }
+            catch(e){
+                console.error(e);
+            }
             setResponse({
                 input : value,
                 output : value,

@@ -10,6 +10,7 @@ export const RESPONSE_STATE = {
     ERROR : 'ERROR'
 }
 
+// 1년간 쿠키 유효
 export const COOKIE_OPTION_NOEXPIRE = {
     expires: new Date(Date.now() + 31536000000)
 }

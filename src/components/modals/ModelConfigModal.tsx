@@ -1,6 +1,8 @@
 import React, {useContext} from 'react'
-import ModalHeader from '../components/ModalHeader.tsx'
-import { StateContext } from '../context/StateContext.tsx';
+
+import ModalHeader from './ModalHeader.tsx'
+
+import { StateContext } from '../../context/StateContext.tsx';
 
 export default function ModelConfigModal({
     onClose

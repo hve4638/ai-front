@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
-import { APIContext } from '../context/APIContext.tsx'
-import ModalHeader from '../components/ModalHeader.tsx'
-import { getCookies, removeCookie } from '../libs/cookies.tsx'
+import { getCookies, removeCookie } from '../../libs/cookies.tsx'
+import { APIContext } from '../../context/APIContext.tsx'
+import ModalHeader from './ModalHeader.tsx'
 
 interface SettingModalProps {
     onClose:({ topp, temperature, apikey, maxtoken })=>void

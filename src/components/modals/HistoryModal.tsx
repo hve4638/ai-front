@@ -1,7 +1,10 @@
 import React, { useState, useContext } from 'react'
-import { StateContext } from "../context/StateContext.tsx";
-import ModalHeader from '../components/ModalHeader.tsx'
-import { APIResponse } from '../data/interface.tsx';
+
+import ModalHeader from './ModalHeader.tsx'
+
+import { StateContext } from "../../context/StateContext.tsx";
+
+import { APIResponse } from '../../data/interface.tsx';
 
 interface HistoryModalProps {
     onClose:()=>void;

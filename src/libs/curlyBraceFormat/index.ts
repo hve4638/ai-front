@@ -1,0 +1,1 @@
+export { CurlyBraceFormatParser } from './templateParser.ts'

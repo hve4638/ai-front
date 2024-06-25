@@ -3,23 +3,10 @@ import CopyIcon from '../../assets/icons/copy.svg'
 
 import { APIResponse } from '../../data/interface.js'
 
+import { copyToClipboard } from '../../utils/clipboard.tsx'
+
 import Markdown from '../../components/Markdown.tsx'
 import { StateContext } from '../../context/StateContext.tsx'
-
-const ResponseState = {
-  NORMAL: 'NORMAL',
-  ERROR: 'ERROR'
-} as const
-export type ResponseState = typeof ResponseState[keyof typeof ResponseState]
-
-
-export interface Response {
-  text:string,
-  error:string
-  state:ResponseState,
-  tokens:number|null,
-  warning:string
-}
 
 interface OutputFieldProps {
   className?:string,
@@ -32,7 +19,7 @@ export default function OutputField(props:OutputFieldProps) {
   if (stateContext == null) {
     throw new Error('OutputField required StateContext');
   }
-
+  // window.navigator.clipboard.writeText()
   return (
       <div className={`${className} textarea-output-container`}>
         <div
@@ -44,7 +31,7 @@ export default function OutputField(props:OutputFieldProps) {
               id='copy-button'
               src={CopyIcon}
               draggable='false'
-              onClick={(e)=>{window.navigator.clipboard.writeText(response.output ?? '')}}
+              onClick={(e)=>{copyToClipboard(response.output ?? '')}}
               />
           </div>
           <div className='token-display-container undraggable'>
