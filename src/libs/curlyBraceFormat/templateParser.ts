@@ -1,6 +1,5 @@
 import { CurlyBraceFormatItem, CurlyBraceFormatBuildArgs } from "./interface.ts";
-import { Var } from "./var.ts"
-import { ReversedVar } from "./reversedVar.ts"
+import { Var, ReservedVar } from "./var.ts"
 import { Expression } from "./expression.ts";
 import { Condition } from "./condition.ts"
 import { Role } from "./role.ts";
@@ -27,7 +26,7 @@ export class CurlyBraceFormatParser {
             }
             // {{:keyword}} 포맷
             else if (inCurly = this.#tryParseSingleCommaCurlyFormat(item)) {
-                this.#addContents(new ReversedVar(inCurly));
+                this.#addContents(new ReservedVar(inCurly));
             }
             // {{::keyword [optional]}} 포맷
             else if (inCurly = this.#parseKeywordInCurlyFormat(item)) {
@@ -234,7 +233,7 @@ class InterruptableIterator {
         };
     }
 
-    interrupte(value:any) {
+    interrupt(value:any) {
         this.interrupted.push(value);
     }
 }

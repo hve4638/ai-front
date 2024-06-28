@@ -46,7 +46,10 @@ export default function OutputField(props:OutputFieldProps) {
             {response.warning}
           </div>
 
-          <div className='textarea-textstyle fontstyle'>
+          <div
+            className='textarea-textstyle fontstyle'
+            style={{marginBottom:"80px"}}  
+          >
             {
               !response.normalresponse
               ?
@@ -67,7 +70,6 @@ export default function OutputField(props:OutputFieldProps) {
                 {response.output}
               </pre>
             }
-            <div style={{height:'80px'}}></div>
           </div>
         </div>
       </div>

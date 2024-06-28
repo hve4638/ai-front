@@ -17,7 +17,9 @@ export class Claude implements AIModel {
         promptParser.build({
             vars : { 
                 ...request.note,
-                contents : request.contents
+            },
+            reservedVars : {
+                input : request.contents,
             },
             role(x:string) {
                 return ROLE[x] ?? ROLE_DEFAULT;

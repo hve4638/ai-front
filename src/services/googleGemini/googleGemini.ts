@@ -50,7 +50,9 @@ export class GoogleGemini implements AIModel {
         const result = promptParser.build({
             vars : { 
                 ...request.note,
-                contents :request.contents
+            },
+            reservedVars : {
+                input : request.contents,
             },
             role(x:string) {
                 return GENIMI_ROLE[x] ?? GENIMI_ROLE_DEFAULT;

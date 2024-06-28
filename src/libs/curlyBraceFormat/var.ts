@@ -16,3 +16,20 @@ export class Var implements CurlyBraceFormatItem {
         }
     }
 }
+
+export class ReservedVar implements CurlyBraceFormatItem {
+    name: string;
+    
+    constructor(variable_name:string) {
+        this.name = variable_name;
+    }
+
+    build(props:CurlyBraceFormatBuildArgs) {
+        if (this.name in props.reservedVars) {
+            return props.reservedVars[this.name];
+        }
+        else {
+            return '';
+        }
+    }
+}

@@ -12,7 +12,9 @@ export class OpenAIGPT implements AIModel {
         const messages = promptParser.build({
             vars : { 
                 ...request.note,
-                contents : request.contents
+            },
+            reservedVars : {
+                input : request.contents,
             },
             role(x:string) {
                 return ROLE[x] ?? ROLE_DEFAULT;

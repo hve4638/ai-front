@@ -8,7 +8,7 @@ export interface VarNote {
 
 export interface CurlyBraceFormatBuildArgs {
     vars: VarNote,
-    reversedVars : VarNote,
+    reservedVars : VarNote,
     role? : (rawrole:string)=>string,
     map? : (text:string, role:string)=>any
 }
