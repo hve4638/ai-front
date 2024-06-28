@@ -14,7 +14,7 @@ React.js 기반 챗봇 프론트엔드
 1. [python](https://www.python.org) 설치
 2. [release](https://github.com/hve4638/ai-front/releases)에서 최신 빌드를 다운로드
 3. 압축을 풀고 해당 폴더에서 터미널을 열기
-4. 터미널에 `python -m http.server` 입력시 웹서버를 열 수 있습니다.
+4. 터미널에 `python -m http.server` 입력해 웹서버 열기
 5. 포트 번호를 확인하고 (일반적으로 8000) `http://localhost:포트`로 접속해 사용할 수 있습니다.
 
 
