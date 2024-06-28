@@ -43,7 +43,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "/deploy/ai-front",
   "devDependencies": {
     "@types/crypto-js": "^4.2.2"
   }

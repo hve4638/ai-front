@@ -16,7 +16,7 @@ export function GPTOptions({option, setOption}) {
                     newOptions.apikey = value;
                     setOption(newOptions);
                 }}
-                placeholder={(option.apikey?.length ?? 0) > 0 ? 'no change' : 'api key'}
+                placeholder={(option.apikey?.length ?? 0) > 0 ? 'no change' : 'empty'}
             />
         </>
     )
