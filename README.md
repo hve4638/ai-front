@@ -6,6 +6,18 @@ React.js 기반 챗봇 프론트엔드
 
 별도의 백엔드 없이 단독으로 동작합니다.
 
+## 호스팅 방법
+
+[release](https://github.com/hve4638/ai-front/releases)에서 정적 웹 어플리케이션 파일을 받고 정적 웹호스팅 도구를 이용해 사용할 수 있습니다.
+
+
+1. [python](https://www.python.org) 설치
+2. [release](https://github.com/hve4638/ai-front/releases)에서 최신 빌드를 다운로드
+3. 압축을 풀고 해당 폴더에서 터미널을 열기
+4. 터미널에 `python -m http.server` 입력시 웹서버를 열 수 있습니다.
+5. 포트 번호를 확인하고 (일반적으로 8000) `http://localhost:포트`로 접속해 사용할 수 있습니다.
+
+
 ## 프롬프트 리스트 구조
 
 웹페이지가 열리면 `public/prompts/list.json` 에서 목록을 가져옵니다.
