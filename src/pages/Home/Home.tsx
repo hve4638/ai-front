@@ -212,9 +212,7 @@ export default function Home() {
                 {
                     showSettingModal &&
                     <SettingModal
-                        onClose = {({apikey,maxtoken,temperature,topp})=>{
-                            setShowSettingModal(false);
-                        }}
+                        onClose = {()=>setShowSettingModal(false)}
                     />
                 }
                 {

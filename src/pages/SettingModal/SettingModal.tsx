@@ -11,7 +11,7 @@ import { GPTOptions } from './options/GPTOptions.tsx'
 import { ClaudeOptions } from './options/ClaudeOptions.tsx'
 
 interface SettingModalProps {
-    onClose:({ topp, temperature, apikey, maxtoken })=>void
+    onClose:()=>void
 }
 
 function SettingModal(props:SettingModalProps) {
@@ -28,7 +28,6 @@ function SettingModal(props:SettingModalProps) {
 
     const [topp, setTopp] = useState(apiContext.topp);
     const [temperature, setTemperature] = useState(apiContext.temperature);
-    const [apikey, setAPIKey] = useState('');
     const [maxtoken, setMaxtoken] = useState(apiContext.maxtoken);
 
     const [modelOptions, setModelOptions] = useState(apiContext.modelInfo.modelOptions);
@@ -60,11 +59,9 @@ function SettingModal(props:SettingModalProps) {
         apiContext.setTemperature(temperature);
         apiContext.setTopp(topp);
 
-        props.onClose({
-            topp, temperature, apikey, maxtoken
-        });
+        props.onClose();
     }
-
+    
     useEffect(()=>{
         if (modalRef.current) {
             const width = modalRef.current.offsetWidth;
@@ -89,7 +86,6 @@ function SettingModal(props:SettingModalProps) {
 
                 setSelectedCategoryName(item.name);
                 setModels(newModels);
-                setSelectedModel(newModels[0].value);
                 break;
             }
         }
@@ -106,6 +102,11 @@ function SettingModal(props:SettingModalProps) {
                     found = true;
                     break;
                 }
+            }
+
+            if (!found) {
+                setSelectedModel(models[0].value);
+                setSelectedModelName(models[0].name);
             }
         }
     }, [ selectedModel, models ]);
