@@ -22,6 +22,11 @@
                     "vars" : [ "lang" ]
                 }
             ]
+        },
+        {
+            "name" : "템플릿",
+            "key" : "template",
+            "value" : "template"
         }
     ],
     "vars" : {
@@ -31,3 +36,5 @@
         ]
     }
 }
+
+
