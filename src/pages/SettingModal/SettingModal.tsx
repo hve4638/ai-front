@@ -91,7 +91,7 @@ function SettingModal(props:SettingModalProps) {
         }
     }, [ selectedCategory ]);
     useEffect(()=>{
-        if (models == null) {
+        if (models == null || models.length == 0) {
             setModels(AIModels.getModels(selectedCategory))
         }
         else {
