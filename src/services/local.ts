@@ -1,6 +1,11 @@
 import {HOMEPAGE} from '../data/constants.tsx'
 
-export function requestPromptlist(): Promise<any> {
+interface Promptlist {
+  prompts:object[],
+  vars:object[]
+}
+
+export function requestPromptlist(): Promise<Promptlist> {
     return fetch(`${HOMEPAGE}/prompts/list.json`, {
         method: 'GET',
         headers: {

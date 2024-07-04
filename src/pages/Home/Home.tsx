@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import ArrowIcon from '../../assets/icons/arrow.svg'
 import LoadingIcon from '../../assets/icons/loading.svg'
 
-import { requestPromptlist, requestPrompt } from "../../services/local.ts";
 
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
@@ -49,51 +48,6 @@ export default function Home() {
     if (apiContext == null) throw new Error('Home() required APIContextProvider');
     if (stateContext == null) throw new Error('Home() required StateContextProvider');
     if (debugContext == null) throw new Error('Home() required DebugContextProvider');
-
-    useEffect(()=>{
-        requestPromptlist()
-        .then(data => {
-            const prompts = data.prompts;
-            promptContext.setPrompts(prompts);
-            promptContext.setVars(data.vars);
-            const {
-                setPrompt,
-                prompt1Key, prompt2Key,
-                setPrompt1Key, setPrompt2Key
-            } = stateContext;
-            
-            let initprompt = prompts.length > 0 ? prompts[0] : null;
-            let p1IsValid = false;
-            let p2IsValid = false;
-            for (const item of prompts) {
-                if (prompt1Key == item.key) {
-                    p1IsValid = true;
-                    initprompt = item;
-        
-                    if (item.list) {
-                        for (const subitem of item.list) {
-                            if (prompt2Key == subitem.value) {
-                                p2IsValid = true;
-                                initprompt = subitem;
-                                break;
-                            }
-                        }
-                        if (!p2IsValid && item.list.key > 0) {
-                            setPrompt2Key(item.list[0].key);
-                        }
-                    }
-                    break;
-                }
-            }
-            if (!p1IsValid && prompts.length > 0) {
-                setPrompt1Key(prompts[0].key);
-            }
-            
-            if (initprompt != null) {
-                setPrompt(initprompt);
-            }
-        });
-    }, []);
 
     const onSubmit = () => {
         const { controller, promise } = AIModels.request(
@@ -154,7 +108,7 @@ export default function Home() {
                 const text = tp.build(
                     {
                         vars: stateContext.note,
-                        reversedVars : { input: 'describe yourself' }
+                        reservedVars : { input: 'describe yourself' }
                     }
                 );
                 console.log(text)

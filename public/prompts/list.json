@@ -13,7 +13,17 @@
                     "name" : "범용",
                     "value" : "translate-normal",
                     "key" : "translate-normal",
-                    "vars" : [ "lang" ]
+                    "vars" : [
+                        "lang",
+                        {
+                            "name": "prefill",
+                            "type": "input"
+                        },
+                        {
+                            "name": "postfill",
+                            "type": "input"
+                        }
+                    ]
                 },
                 {
                     "name" : "소설",

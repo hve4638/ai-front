@@ -9,7 +9,6 @@ interface DropdownProps {
   titleMapper?:(value:any, items:any)=>string
 }
 
-/** Dropdown */
 const Dropdown = ({
   className='',
   style={},

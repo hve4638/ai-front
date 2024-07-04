@@ -1,29 +1,43 @@
-import React,{ useEffect } from 'react';
-import { analytics } from './utils/analytics.tsx';
+import React, { useEffect, useContext} from 'react';
 import './style.js'
-import APIContextProvider from './context/APIContext.tsx'
-import PromptContextProvider from './context/PromptContext.tsx'
-import StateContextProvider from './context/StateContext.tsx'
-import DebugContextProvider from './context/DebugContext.tsx'
 
 import Home from './pages/Home/Home.tsx'
+import { PromptContext } from './context/PromptContext.tsx'
+import { StateContext } from './context/StateContext.tsx'
+import { requestPromptlist, requestPrompt } from "./services/local.ts";
+import { PromptList } from './features/promptList/index.ts';
 
 function App() {
-  useEffect(()=>{
-    //analytics();
-  }, []);
+    const promptContext = useContext(PromptContext);
+    const stateContext = useContext(StateContext);
+    if (promptContext == null) throw new Error('<App/> required PromptContextProvider');
+    if (stateContext == null) throw new Error('<App/> required StateContextProvider');
+
+    const {
+        setPrompt,
+        prompt1Key, prompt2Key,
+        setPrompt1Key, setPrompt2Key
+    } = stateContext;
+
+    useEffect(()=>{
+        requestPromptlist()
+        .then(data => {
+            const pl = new PromptList(data);
+            promptContext.setPromptList(pl);
+            promptContext.setPrompts(data.prompts);
+            promptContext.setVars(data.vars);
+
+            const [key1, key2] = pl.findValidPromptKey(prompt1Key, prompt2Key);
+            const item = pl.getPrompt(key1, key2);
+            setPrompt1Key(key1);
+            setPrompt2Key(key2);
+            setPrompt(item);
+        });
+    }, []);
   
-  return <div className='fill column'>
-    <APIContextProvider>
-    <PromptContextProvider>
-    <StateContextProvider>
-    <DebugContextProvider>
-      <Home></Home>
-    </DebugContextProvider>
-    </StateContextProvider>
-    </PromptContextProvider>
-    </APIContextProvider>
-  </div>
+    return <div className='fill column'>
+        <Home></Home>
+    </div>
 }
 
 export default App;

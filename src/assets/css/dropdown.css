@@ -9,7 +9,7 @@
 .dropdown {
     position: relative;
     display: inline-block;
-    min-width: 90px;
+    min-width: 80px;
     
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -51,7 +51,7 @@
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
+    min-width: 100%;
     border: 1px solid var(--dropdown-border-color);
     color: var(--dropdown-font-color);
     background-color: var(--dropdown-background-color);

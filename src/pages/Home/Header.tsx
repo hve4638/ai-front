@@ -23,15 +23,14 @@ export default function Header(props:HeaderProps) {
     const promptContext = useContext(PromptContext);
     const stateContext = useContext(StateContext);
     const [subPrompts, setSubPrompts] = useState<SubPromptsType[]>([]);
-    const [promptIndex, setPromptIndex] = useState(0);
-    const [subpromptIndex, setSubpromptIndex] = useState(0);
     
     if (!promptContext) throw new Error('Header must be used in PromptContextProvider');
     if (!stateContext) throw new Error('Header must be used in StateContextProvider');
 
     const {
       vars,
-      prompts
+      prompts,
+      promptList
     } = promptContext;
     const {
       setPromptContents,
@@ -45,10 +44,10 @@ export default function Header(props:HeaderProps) {
     useEffect(()=>{
       if (prompt1Key == null) return;
 
-      const prompt1 = findMainPromptAsKey(prompts, prompt1Key);
-      if (prompt1 == null) return;
+      const item = promptList.getPrompt(prompt1Key);
+      if (item == null) return;
 
-      setSubPrompts(prompt1.list ?? []);
+      setSubPrompts(item.list ?? []);
     }, [prompts, prompt1Key])
 
     useEffect(()=>{
@@ -119,11 +118,9 @@ export default function Header(props:HeaderProps) {
                 onSelectPrompt1(item);
                 
                 if (item.list == null) {
-                  // nothing
+                  // nothing to do
                 }
-                else if (prompt2Key == null
-                      || findSubPromptAsKey(prompts, item.key, prompt2Key) == null
-                ) {
+                else if (prompt2Key == null || promptList.getPrompt(item.key, prompt2Key) == null) {
                   setPrompt2Key(item.list[0].key);
                 }
               }}
