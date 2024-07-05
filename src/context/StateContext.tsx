@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createContext } from 'react';
 import { APIResponse, Note } from "../data/interface";
-import { useEncryptedCookie } from '../hooks/useEncryptedCookie.tsx';
 import { usePlainCookie } from '../hooks/usePlainCookie.tsx'
 import { ENCRYPT_KEY, COOKIE_OPTION_NOEXPIRE } from "../data/constants.tsx";
-import { useObjectCookie } from "../hooks/useObjectCookie.tsx";
 
 interface Slot {
     prompt1?:string,
@@ -16,8 +14,8 @@ interface Slot {
 interface StateContextType {
     promptSlots:Slot[],
     setPromptSlots:(slot:Slot[])=>void,
-    requireVars:any[],
-    setRequireVars: (X:any[]) => void,
+    requireVars:any[], // legacy
+    setRequireVars: (X:any[]) => void, // legacy
     prompt : any,
     setPrompt : (x:any)=>void,
     promptContents : string,

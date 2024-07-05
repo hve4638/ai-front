@@ -16,21 +16,20 @@ export interface APIResponse {
 
 export interface MainPrompt {
   name: string,
-  value: string,
-  path: string|undefined,
+  value?: string,
   key: string,
-  list: SubPrompts[]|undefined,
-  vars: string[]|undefined,
+  list?: SubPrompt[],
+  vars?: string|object[],
 }
 
 export interface SubPrompt {
   name: string,
   value: string,
   key: string,
-  vars: string[]|undefined,
+  vars?: string|object[],
 }
-
-export interface MainPrompts {
+/*
+interface MainPrompts {
   name: string,
   value: string,
   path: string|undefined,
@@ -39,13 +38,13 @@ export interface MainPrompts {
   vars: string[]|undefined,
 }
 
-export interface SubPrompts {
+interface SubPrompts {
   name: string,
   value: string,
   key: string,
   vars: string[]|undefined,
 }
-
+*/
 export interface Vars {
   [key:string] : VarItem[]
 }

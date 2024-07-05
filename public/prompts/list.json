@@ -16,6 +16,7 @@
                     "vars" : [
                         {
                             "name" : "lang",
+                            "display_name" : "언어",
                             "type" : "select",
                             "select_ref" : "lang"
                         },
@@ -29,8 +30,7 @@
                         },
                         {
                             "name": "args",
-                            "type": "text",
-                            "default" : "123"
+                            "type": "text[]"
                         }
                     ]
                 },

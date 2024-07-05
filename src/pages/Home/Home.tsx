@@ -22,11 +22,13 @@ import OutputField from './OutputField.tsx'
 
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 import { AIModels } from "../../features/chatAI/index.ts";
+import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
     const [showModelConfigModal, setShowModelConfigModal] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [showVarEditorModal, setShowVarEditorModal] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [response, setResponse] = useState<APIResponse>({
         input: '', output : '',
@@ -140,6 +142,7 @@ export default function Home() {
                 onOpenHistory={()=>setShowHistoryModal(true)}
                 onOpenModelConfig={()=>setShowModelConfigModal(true)}
                 onOpenSetting={()=>setShowSettingModal(true)}
+                onOpenVarEditor={()=>setShowVarEditorModal(true)}
             />
             <main className='flex row' style={{overflowY: 'auto'}}>
                 <InputField
@@ -161,7 +164,7 @@ export default function Home() {
             </main>
             <Footer/>
             {
-                (showSettingModal || showModelConfigModal || showHistoryModal) &&
+                (showSettingModal || showModelConfigModal || showHistoryModal || showVarEditorModal) &&
                 <ModalBackground>
                 {
                     showSettingModal &&
@@ -183,6 +186,12 @@ export default function Home() {
                             loadHistory(history);
                             setShowHistoryModal(false);
                         }}
+                    />
+                }
+                {
+                    showVarEditorModal &&
+                    <VarEditorModal
+                        onClose = {()=>setShowVarEditorModal(false)}
                     />
                 }
                 </ModalBackground>

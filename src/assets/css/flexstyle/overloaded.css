@@ -26,11 +26,20 @@ button:active {
     transform: scale(0.85);
 }
 
+
+textarea {
+    font-family: inherit;
+    cursor: auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+}
+
 input[type="text"] {
     cursor: auto;
     padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 7.5px;
+    border-radius: 7px;
 }
 
 input[type="checkbox"] {

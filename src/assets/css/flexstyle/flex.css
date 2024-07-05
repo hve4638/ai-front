@@ -63,6 +63,43 @@ div, header, footer, main, aside, nav {
   justify-content: flex-end;
 }
 
+.main-start {
+  justify-content: flex-start;
+}
+.main-center {
+  justify-content: center;
+}
+.main-end {
+  justify-content: flex-end;
+}
+.main-spacebetween {
+  justify-content: space-between;
+}
+.main-spaceevenly {
+  justify-content: space-evenly;
+}
+.main-spacearound {
+  justify-content: space-around;
+}
+.sub-start {
+  align-items: flex-start;
+}
+.sub-center {
+  align-items: center;
+}
+.sub-end {
+  align-items: flex-end;
+}
+.sub-spacebetween {
+  align-items: space-between;
+}
+.sub-spaceevenly {
+  align-items: space-evenly;
+}
+.sub-spacearound {
+  align-items: space-around;
+}
+
 .subaxis-start {
   align-items: flex-start;
 }

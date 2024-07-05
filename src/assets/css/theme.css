@@ -33,4 +33,9 @@
     --button-border-color : rgb(104, 104, 104);
     --button-color: rgb(52, 52, 53);
     --button-hover-color: rgb(57, 57, 57);
+
+    --dropdown-light-color : rgb(60, 60, 60);
+    --dropdown-light-hover-color : rgb(81, 81, 81);
+
+    --input-background-color : rgb(241, 241, 241);
 }

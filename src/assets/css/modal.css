@@ -125,3 +125,39 @@ p.history-input {
 p.history-output {
     color: rgb(187, 187, 187);
 }
+
+
+.vareditor-container {
+    position: relative;
+    width: 60%;
+    background-color: rgb(47, 47, 47);
+    border: 1px solid rgb(118, 118, 118);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 10;
+    color : white;
+}
+
+.vareditor {
+    margin: 0px 4px 8px 4px;
+}
+
+.vareditor input[type=text] {
+    border-radius: 6px;
+    background-color: var(--input-background-color);
+}
+
+.vareditor textarea {
+    resize: none;
+    padding: 6px;
+    background-color: var(--input-background-color);
+}
+
+.vareditor .dropdown-header {
+    background-color: var(--dropdown-light-color);
+    border-radius: 14px;
+}
+
+.vareditor .dropdown-header:hover {
+    background-color: var(--dropdown-light-hover-color);
+}

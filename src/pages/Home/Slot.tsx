@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { PromptContext } from '../../context/PromptContext.tsx';
-import { MainPrompts } from '../../data/interface.tsx'
 
 interface SlotAdderProps {
     onClick:()=>void,

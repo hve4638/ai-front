@@ -2,7 +2,7 @@ import { Vars } from "../../context/interface/promptInterface";
 import { MainPrompt, SubPrompt } from "../../data/interface";
 
 export class PromptInfomation {
-    #raw:SubPrompt;
+    #raw:MainPrompt|SubPrompt;
     #selects:Vars;
     #headerExposureVars;
     #allVars;
@@ -35,7 +35,7 @@ export class PromptInfomation {
     }
 
     #parseVars(data:MainPrompt|SubPrompt, selects) {
-        const vars = data.vars ?? [];
+        const vars:string|object[] = data.vars ?? [];
         
         for (const item of vars) {
             let target;
@@ -47,14 +47,11 @@ export class PromptInfomation {
                 };
             }
             else if (typeof item === "object") {
-                target = item;
-                if (!('type' in target)) {
-                    target = {
-                        ...target,
-                        type : "select"
-                    }
-                }
+                target = { ...item };
+                target.type ??= "select";
             }
+
+            target.display_name ??= target.name;
 
             switch(target.type) {
             case "select":
@@ -77,7 +74,7 @@ export class PromptInfomation {
 
                 if (options == null) throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : Logic Error`);
                 if (options.length == 0) throw this.#error('empty options');
-                
+
                 let default_value = target.default_value;
                 if (default_value == null) {
                     default_value = options[0].value;

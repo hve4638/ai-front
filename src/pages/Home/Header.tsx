@@ -19,6 +19,7 @@ interface HeaderProps {
   onOpenSetting : () => void,
   onOpenHistory : () => void,
   onOpenModelConfig : () => void,
+  onOpenVarEditor : () => void,
 }
 
 export default function Header(props:HeaderProps) {
@@ -34,7 +35,6 @@ export default function Header(props:HeaderProps) {
     } = promptContext;
     const {
       setPromptContents,
-      requireVars, setRequireVars,
       note, setNote,
       prompt, setPrompt,
       prompt1Key, prompt2Key,
@@ -49,11 +49,10 @@ export default function Header(props:HeaderProps) {
 
       setSubPrompts(item.list ?? []);
     }, [promptList, prompt1Key]);
-    
+
     useEffect(()=>{
       if (prompt == null) return;
 
-      setRequireVars(prompt.headerExposuredVars);
       setNewNotes(prompt);
       
       requestPrompt(prompt.value)
@@ -145,29 +144,33 @@ export default function Header(props:HeaderProps) {
           </div>
           <div className='right-section row'>
             {
-              requireVars.map((item, index) => {
-                return (
-                  <Dropdown
-                    key={index}
-                    items={item.options}
-                    value={note[item.name] ?? null}
-                    onChange={(value:string)=>{
-                      const newNote = {...note};
-                      newNote[item.name] = value;
-                      setNote(newNote);
-                    }}
-                    titleMapper={dropdownValueFinder}
-                  />
-                )
-              })
+                (prompt?.headerExposuredVars?.length ?? 0) !== 0 &&
+                prompt.headerExposuredVars.map((item, index) => {
+                  return (
+                    <Dropdown
+                      key={index}
+                      items={item.options}
+                      value={note[item.name] ?? null}
+                      onChange={(value:string)=>{
+                        const newNote = {...note};
+                        newNote[item.name] = value;
+                        setNote(newNote);
+                      }}
+                      titleMapper={dropdownValueFinder}
+                    />
+                  )
+                })
             }
             
             <div style={{width:'10px'}}></div>
             <div className='flex'></div>
-            <HeaderIcon
-              src={NoteIcon}
-              onClick={props.onOpenHistory}
-            />
+            {
+              (prompt?.allVars?.length ?? 0) !== 0 &&
+              <HeaderIcon
+                src={NoteIcon}
+                onClick={props.onOpenVarEditor}
+              />
+            }
             <div style={{width:'10px'}}></div>
             <HeaderIcon
               src={HistoryIcon}
