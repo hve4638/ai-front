@@ -126,16 +126,17 @@ p.history-output {
     color: rgb(187, 187, 187);
 }
 
-
 .vareditor-container {
-    position: relative;
     width: 60%;
     background-color: rgb(47, 47, 47);
     border: 1px solid rgb(118, 118, 118);
     border-radius: 8px;
     padding: 12px;
     z-index: 10;
+}
+.vareditor-content {
     color : white;
+    overflow-y: auto;
 }
 
 .vareditor {

@@ -98,7 +98,9 @@ export class PromptInfomation {
                     default_value : default_value
                 }
                 this.#allVars.push(data);
-                this.#headerExposureVars.push(data);
+                if (this.#headerExposureVars.length < 2) {
+                    this.#headerExposureVars.push(data);
+                }
                 break;
             }
             case "text":

@@ -151,6 +151,7 @@ export default function Header(props:HeaderProps) {
                       key={index}
                       items={item.options}
                       value={note[item.name] ?? null}
+                      style={{marginRight:"8px"}}
                       onChange={(value:string)=>{
                         const newNote = {...note};
                         newNote[item.name] = value;

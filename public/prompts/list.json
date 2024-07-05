@@ -26,11 +26,8 @@
                         },
                         {
                             "name": "postfill",
-                            "type": "text-multiline"
-                        },
-                        {
-                            "name": "args",
-                            "type": "text[]"
+                            "type": "text-multiline",
+                            "default_value" : "end"
                         }
                     ]
                 },

@@ -37,17 +37,21 @@ function VarEditorModal(props:VarEditorModalProps) {
                 onClose = {()=>onClose()}
             />
             <div style={{height:'24px'}}/>
-            {
-                prompt.allVars.map((item, index)=>(
-                    <VarEditor
-                        key={index}
-                        item={item}
-                        value={note[item.name]}
-                        onChange={(value)=>setNote({...note, [item.name]:value})}
-                    />
-                ))
-            }
-            <div style={{height:'12px'}}/>
+            <div
+                className='vareditor-content column scrollbar'
+            >
+                {
+                    prompt.allVars.map((item, index)=>(
+                        <VarEditor
+                            key={index}
+                            item={item}
+                            value={note[item.name]}
+                            onChange={(value)=>setNote({...note, [item.name]:value})}
+                        />
+                    ))
+                }
+                <div style={{height:'12px'}}/>
+            </div>
         </div>
     )
 }
