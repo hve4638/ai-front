@@ -26,3 +26,5 @@ apikey
 .prompts/
 
 .docs.md
+
+out/
