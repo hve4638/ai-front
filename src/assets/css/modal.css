@@ -93,7 +93,7 @@
     margin: 0px !important;
     padding: 8px;
     border-radius: 6px;
-    background-color: var(--field-color);
+    background-color: var(--text-field-color);
     color: var(--text-color);
     border: 1px solid rgb(118, 118, 118);
     overflow-y: auto;

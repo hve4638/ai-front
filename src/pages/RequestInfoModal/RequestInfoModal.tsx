@@ -37,8 +37,8 @@ export default function RequestInfoModal({
                 <div className='noflex textplace column'>
                     {
                         Object.entries(note).map(([key, value]) => (
-                            <div key={key}>
-                                {key} : {value}
+                            <div key={key} style={{marginBottom: '5px'}}>
+                                {key} : {noteformat(value)}
                             </div>
                         ))
                     }
@@ -51,3 +51,12 @@ export default function RequestInfoModal({
 const SubTitle = ({children}) => (
     <p className='noflex config-name undraggable'>{children}</p>
 )
+
+const noteformat = (value:any) => {
+    if (typeof value == "string") {
+        return value.replace(/\n/g, "\\n");
+    }
+    else {
+        return value;
+    }
+}
