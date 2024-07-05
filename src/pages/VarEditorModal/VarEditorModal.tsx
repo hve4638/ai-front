@@ -6,7 +6,7 @@ import { PopUpMenu } from '../../components/PopUpMenu.tsx'
 import { AIModels, MODELS } from '../../features/chatAI/index.ts'
 import { StateContext } from '../../context/StateContext.tsx'
 import Dropdown from '../../components/Dropdown.tsx'
-import useDebounce from '../../hooks/useDebounce.ts'
+import useDebouncing from '../../hooks/useDebouncing.ts'
 
 interface VarEditorModalProps {
     onClose:()=>void
@@ -57,7 +57,7 @@ function VarEditorModal(props:VarEditorModalProps) {
 }
 
 const VarEditor = ({item, value, onChange}) => {
-    const [input, setInput] = useDebounce(value, (value)=>onChange(value), 100);
+    const [input, setInput] = useDebouncing(value, (value)=>onChange(value), 100);
 
     if (item.type === "select") {
         return (

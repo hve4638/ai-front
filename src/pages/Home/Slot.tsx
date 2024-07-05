@@ -143,7 +143,6 @@ function SlotTooltip({x, y, value}) {
     });
 
     useEffect(()=>{
-        console.log(value);
         try {
             const arr:string[] = [];
             const p1 = value.prompt1;
