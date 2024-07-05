@@ -10,8 +10,6 @@ export interface NoteItem {
     value : string
 }
 
-export type Note = Map<string, NoteItem[]>
-
 export interface MainPromptsType {
     name: string,
     value: string,

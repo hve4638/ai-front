@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { createContext } from 'react';
-import { APIResponse } from "../data/interface";
+import { APIResponse, Note } from "../data/interface";
 import { useEncryptedCookie } from '../hooks/useEncryptedCookie.tsx';
 import { usePlainCookie } from '../hooks/usePlainCookie.tsx'
 import { ENCRYPT_KEY, COOKIE_OPTION_NOEXPIRE } from "../data/constants.tsx";
 import { useObjectCookie } from "../hooks/useObjectCookie.tsx";
 
 interface Slot {
-    prompt1:string|undefined,
-    prompt2:string|undefined,
+    prompt1?:string,
+    prompt2?:string,
     note: Note,
     extra: Object
-}
-
-interface Note {
-    [key: string]: string;
 }
 
 interface StateContextType {
     promptSlots:Slot[],
     setPromptSlots:(slot:Slot[])=>void,
-    requireVars:string[],
-    setRequireVars: (X:string[]) => void,
+    requireVars:any[],
+    setRequireVars: (X:any[]) => void,
     prompt : any,
     setPrompt : (x:any)=>void,
     promptContents : string,
@@ -46,7 +42,7 @@ export default function StateContextProvider({children}) {
     const [promptSlots, setPromptSlots] = usePlainCookie('slots');
     const [prompt1Key, setPrompt1Key] = usePlainCookie('prompt1');
     const [prompt2Key, setPrompt2Key] = usePlainCookie('prompt2');
-    const [requireVars, setRequireVars] = useState<string[]>([]);
+    const [requireVars, setRequireVars] = useState<any[]>([]);
     const [prompt, setPrompt] = useState(null);
     const [promptContents, setPromptContents] = useState('');
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);

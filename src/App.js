@@ -4,8 +4,8 @@ import './style.js'
 import Home from './pages/Home/Home.tsx'
 import { PromptContext } from './context/PromptContext.tsx'
 import { StateContext } from './context/StateContext.tsx'
-import { requestPromptlist, requestPrompt } from "./services/local.ts";
-import { PromptList } from './features/promptList/index.ts';
+import { requestPromptlist } from "./services/local.ts";
+import { PromptList } from './features/prompts/index.ts';
 
 function App() {
     const promptContext = useContext(PromptContext);

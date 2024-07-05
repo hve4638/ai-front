@@ -1,9 +1,20 @@
-import { IPromptList, MainPromptCache, SubPromptCache } from './interface'
+import { IPromptInfomation, IPromptList } from './interface'
 import { MainPrompt, SubPrompt, Vars } from '../../data/interface'
+import { PromptInfomation } from './promptInfomation.ts';
+
+export interface MainPromptCache {
+    [key:string]:PromptInfomation;
+}
+export interface SubPromptCache {
+    [key:string]:{
+        [key:string]:PromptInfomation
+    };
+}
 
 export class PromptList implements IPromptList {
-    #prompts:MainPrompt[];
+    #raw:MainPrompt[];
     #vars:Vars;
+    #prompts:PromptInfomation[];
     #prompt1Cache:MainPromptCache;
     #prompt2Cache:SubPromptCache;
 
@@ -15,10 +26,11 @@ export class PromptList implements IPromptList {
         else if (prompts.length == 0) {
             throw new Error('Empty promptlist');
         }
-        this.#prompts = prompts;
+        this.#raw = prompts;
         this.#vars = promptlist.vars ?? {};
         this.#prompt1Cache = {};
         this.#prompt2Cache = {};
+        this.#prompts = [];
         
         for (const item of prompts) {
             if (item.key === '') {
@@ -27,20 +39,20 @@ export class PromptList implements IPromptList {
             else if (item.key in this.#prompt1Cache) {
                 throw new Error(`Duplicate prompt key: ${item.key}`);
             }
-            this.#prompt1Cache[item.key] = item;
+            const pl = new PromptInfomation(item, {selects : this.#vars});
+            this.#prompts.push(pl);
+
+            this.#prompt1Cache[item.key] = pl;
             
             if (item.value && item.list) {
-                throw new Error(`Invalid prompt (key: ${item.key}) : The prompt must contain either 'list' or 'value', not both.`);
+                throw new Error(`Invalid prompt (key: ${item.key}) : Prompt must contain either 'list' or 'value', not both.`);
             }
-            else if (item.list) {
+            else if (pl.list) {
                 const cache = {};
-                this.#prompt2Cache[item.key] = cache;
+                this.#prompt2Cache[pl.key] = cache;
 
-                for (const subitem of item.list) {
-                    if (subitem.key in cache) {
-                        throw new Error(`Duplicate prompt2 key: ${item.key}`)
-                    }
-                    cache[subitem.key] = subitem;
+                for (const subpl of pl.list) {
+                    cache[subpl.key] = subpl;
                 }
             }
         }
@@ -64,17 +76,14 @@ export class PromptList implements IPromptList {
         return [ prompt1Key, prompt2Key ]
     }
 
-    getPrompt(key1:string):MainPrompt|null;
-    getPrompt(key1:string, key2:string):SubPrompt|null;
-    getPrompt(key1:string, key2?:string):MainPrompt|SubPrompt|null {
-        if (key1 in this.#prompt1Cache) {
+    getPrompt(key1:string, key2?:string):IPromptInfomation|null {
+        if (!(key1 in this.#prompt1Cache)) {
+            return null;
+        }
+        else {
             const prompt1 = this.#prompt1Cache[key1];
-
-            if (!prompt1.list) {
+            if (!prompt1.list || key2 == null) {
                 return prompt1;
-            }
-            else if (key2 == null) {
-                return null;
             }
             else if (key2 in this.#prompt2Cache[key1]) {
                 const prompt2 = this.#prompt2Cache[key1][key2]
@@ -84,8 +93,9 @@ export class PromptList implements IPromptList {
                 return null;
             }
         }
-        else {
-            return null;
-        }
+    }
+
+    get list() {
+        return this.#prompts;
     }
 }

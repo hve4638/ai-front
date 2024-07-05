@@ -1,5 +1,4 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import { getCookies, removeCookie } from '../../libs/cookies.tsx'
 import { APIContext } from '../../context/APIContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
 import { PopUpMenu } from '../../components/PopUpMenu.tsx'

@@ -22,13 +22,13 @@ export interface MainPrompt {
   list: SubPrompts[]|undefined,
   vars: string[]|undefined,
 }
+
 export interface SubPrompt {
   name: string,
   value: string,
   key: string,
   vars: string[]|undefined,
 }
-
 
 export interface MainPrompts {
   name: string,
@@ -46,7 +46,9 @@ export interface SubPrompts {
   vars: string[]|undefined,
 }
 
-export type Vars = Map<string, VarItem[]>
+export interface Vars {
+  [key:string] : VarItem[]
+}
 
 export interface VarItem {
   name:string,

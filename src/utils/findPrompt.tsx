@@ -8,8 +8,7 @@ export function findPromptAsKey(prompts:MainPrompt[], key1:string, key2:string) 
     if (mainPrompt?.list == undefined) {
         return mainPrompt;
     }
-    else
-    {
+    else {
         for (const item of mainPrompt.list) {
             if (item.key == key2) {
                 return item;
@@ -35,8 +34,7 @@ export function findSubPromptAsKey(prompts:MainPrompt[], key1:string, key2:strin
     if (mainPrompt?.list == undefined) {
         return undefined;
     }
-    else
-    {
+    else {
         for (const item of mainPrompt.list) {
             if (item.key == key2) {
                 return item;

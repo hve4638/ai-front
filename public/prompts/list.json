@@ -14,7 +14,24 @@
                     "value" : "translate-normal",
                     "key" : "translate-normal",
                     "vars" : [
-                        "lang"
+                        {
+                            "name" : "lang",
+                            "type" : "select",
+                            "select_ref" : "lang"
+                        },
+                        {
+                            "name": "prefill",
+                            "type": "text"
+                        },
+                        {
+                            "name": "postfill",
+                            "type": "text-multiline"
+                        },
+                        {
+                            "name": "args",
+                            "type": "text",
+                            "default" : "123"
+                        }
                     ]
                 },
                 {

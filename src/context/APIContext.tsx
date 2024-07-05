@@ -9,8 +9,6 @@ export interface ModelInfo {
 }
 
 export interface APIContextType {
-    apikey:string,
-    setAPIKey:(x:string)=>void,
     topp:string,
     setTopp:(x:string)=>boolean,
     temperature:string,
@@ -25,7 +23,6 @@ export const APIContext = createContext<APIContextType|null>(null);
 
 export default function APIContextProvider({children}) {
     const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
-    const [apikey, setAPIKey] = useEncryptedCookie('g-api', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
     const [temperature, setRawTemperature] = useEncryptedCookie('temperature', ENCRYPT_KEY);
     const [maxtoken, setRawMaxtoken] = useEncryptedCookie('maxtoken', ENCRYPT_KEY);
@@ -72,11 +69,9 @@ export default function APIContextProvider({children}) {
             value={{
                 modelInfo : modelInfo ?? {category:null,model:null,modelOptions:{}},
                 setModelInfo : (x:object)=>setModelInfo(x, COOKIE_OPTION_NOEXPIRE),
-                apikey : apikey ?? '',
                 topp : topp ?? '1.0',
                 temperature : temperature ?? '1.0',
                 maxtoken : maxtoken ?? '1000',
-                setAPIKey : (x:string)=>setAPIKey(x, COOKIE_OPTION_NOEXPIRE),
                 setTopp : (x:string)=>setTopp(x, COOKIE_OPTION_NOEXPIRE),
                 setTemperature : (x:string)=>setTemperature(x, COOKIE_OPTION_NOEXPIRE),
                 setMaxtoken : (x:string)=>setMaxtoken(x, COOKIE_OPTION_NOEXPIRE),

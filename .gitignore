@@ -24,3 +24,5 @@ yarn-error.log*
 
 apikey
 .prompts/
+
+.docs.md

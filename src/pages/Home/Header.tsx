@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useState} from "react";
 import HistoryIcon from '../../assets/icons/history.svg'
 import AdvancedIcon from '../../assets/icons/model.svg'
 import SettingIcon from '../../assets/icons/setting.svg'
+import NoteIcon from '../../assets/icons/note.svg'
 
 import { requestPrompt } from "../../services/local.ts";
 
@@ -11,7 +12,8 @@ import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 
 import Dropdown from "../../components/Dropdown.tsx";
-import { findMainPromptAsKey, findPromptAsKey, findSubPromptAsKey } from "../../utils/findPrompt.tsx";
+import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
+import { IPromptInfomation } from "../../features/prompts/interface.ts";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -22,14 +24,12 @@ interface HeaderProps {
 export default function Header(props:HeaderProps) {
     const promptContext = useContext(PromptContext);
     const stateContext = useContext(StateContext);
-    const [subPrompts, setSubPrompts] = useState<SubPromptsType[]>([]);
+    const [subPrompts, setSubPrompts] = useState<IPromptInfomation[]>([]);
     
     if (!promptContext) throw new Error('Header must be used in PromptContextProvider');
     if (!stateContext) throw new Error('Header must be used in StateContextProvider');
 
     const {
-      vars,
-      prompts,
       promptList
     } = promptContext;
     const {
@@ -48,19 +48,19 @@ export default function Header(props:HeaderProps) {
       if (item == null) return;
 
       setSubPrompts(item.list ?? []);
-    }, [prompts, prompt1Key])
-
+    }, [promptList, prompt1Key]);
+    
     useEffect(()=>{
-      if (stateContext.prompt == null) return;
-      
-      setRequireVars(prompt.vars ?? []);
-      setNewNotes(prompt.vars ?? []);
+      if (prompt == null) return;
+
+      setRequireVars(prompt.headerExposuredVars);
+      setNewNotes(prompt);
       
       requestPrompt(prompt.value)
       .then(data => setPromptContents(data));
     }, [prompt])
 
-    const onSelectPrompt1 = (item) => {
+    const onSelectPrompt1 = (item:PromptInfomation) => {
       let autoselected;
       if (item.value != null) {
         autoselected = item;
@@ -77,18 +77,19 @@ export default function Header(props:HeaderProps) {
       setPrompt(item);
     }
 
-    const setNewNotes = (varnames:string[]) => {
-      const newNotes = {}
-      for (const varname of varnames) {
-        let candidate;
-        if (note != null && varname in note) {
-          candidate = note[varname];
+    const setNewNotes = (promptinfo:PromptInfomation) => {
+      const newNotes = {};
+      for (const item of promptinfo.allVars) {
+        let value: string;
+        if (note != null && item.name in note) {
+          value = note[item.name];
         }
         else {
-          candidate = vars[varname][0].value;
+          value = item.default_value;
         }
-        newNotes[varname] = candidate;
+        newNotes[item.name] = value;
       }
+      
       setNote(newNotes);
     }
 
@@ -112,7 +113,7 @@ export default function Header(props:HeaderProps) {
             <Dropdown
               style={{marginLeft :'15px', minWidth:'100px'}}
               value={prompt1Key}
-              items={[...prompts.map((item, index)=>{return {name:item.name, value:item, key:item.key}})]}
+              items={[...promptList.list.map((item)=>{return {name:item.name, value:item, key:item.key}})]}
               onChange={(item)=>{
                 setPrompt1Key(item.key);
                 onSelectPrompt1(item);
@@ -144,15 +145,15 @@ export default function Header(props:HeaderProps) {
           </div>
           <div className='right-section row'>
             {
-              requireVars.map((varname, index) => {
+              requireVars.map((item, index) => {
                 return (
                   <Dropdown
                     key={index}
-                    items={vars[varname]}
-                    value={note[varname] ?? null}
+                    items={item.options}
+                    value={note[item.name] ?? null}
                     onChange={(value:string)=>{
                       const newNote = {...note};
-                      newNote[varname] = value;
+                      newNote[item.name] = value;
                       setNote(newNote);
                     }}
                     titleMapper={dropdownValueFinder}
@@ -163,6 +164,11 @@ export default function Header(props:HeaderProps) {
             
             <div style={{width:'10px'}}></div>
             <div className='flex'></div>
+            <HeaderIcon
+              src={NoteIcon}
+              onClick={props.onOpenHistory}
+            />
+            <div style={{width:'10px'}}></div>
             <HeaderIcon
               src={HistoryIcon}
               onClick={props.onOpenHistory}
@@ -180,7 +186,9 @@ export default function Header(props:HeaderProps) {
     )
 }
 
+
 const HeaderIcon = ({src, onClick}) => (
+    // HeaderIcon에 사용되는 src 크기는 40x40
     <div className='undraggable' style={{ marginLeft: '15px' }}>
       <img
         className='clickable-animation' src={src}
