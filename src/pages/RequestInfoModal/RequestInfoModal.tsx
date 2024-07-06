@@ -19,19 +19,18 @@ export default function RequestInfoModal({
 
     useEffect(()=>{
         const results = parsePromptContent({promptContents, note});
-        //console.log(previewContents);
         const newContents:React.JSX.Element[] = []
+        let count = 0;
         for (const item of results) {
             newContents.push(
-                <div style={{margin:'0px 4px 12px 4px', position:'relative'}}>
+                <div style={{margin:'0px 4px 12px 4px', position:'relative'}} key={count++}>
                     <hr style={{width: '100%'}}/>
                     <div className='role undraggable' style={{position:'absolute', right: 8, top: 10 }}>
                         {item.role}
                     </div>
                 </div>
             )
-            newContents.push()
-            newContents.push(<pre style={{marginBottom:"12px"}}>{item.content}</pre>)
+            newContents.push(<pre style={{marginBottom:"12px"}} key={count++}>{item.content}</pre>)
         }
         setPromptPreviewContents(newContents);
     }, [promptPreview])
