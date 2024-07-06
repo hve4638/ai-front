@@ -38,7 +38,9 @@ const Dropdown = ({
   useEffect(()=>{
     if (dropdownRef.current) {
       const newRect = dropdownRef.current.getBoundingClientRect();
-      setRect(newRect);
+      if (!isEqualObj(rect, newRect)) {
+        setRect(newRect);
+      }
     }
 });
 
@@ -79,5 +81,22 @@ const Dropdown = ({
     </div>
   );
 };
+
+const isEqualObj = (obj1, obj2) => {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  
+  for (let key of keys1) {
+    if (obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export default Dropdown;

@@ -89,8 +89,9 @@
     height: 70%;
 }
 
+
 .modal .textplace {
-    margin: 0px !important;
+    margin: 0px;
     padding: 8px;
     border-radius: 6px;
     background-color: var(--text-field-color);
@@ -99,6 +100,15 @@
     overflow-y: auto;
     min-height: 25px;
     resize: none;
+    overflow: none;
+}
+
+.modal .textplace.preview {
+    background-color: var(--text-field-preview-color);
+}
+
+.textplace hr {
+    border: 0.5px solid var(--text-field-hr-color);
 }
 
 p.config-name {
@@ -111,13 +121,17 @@ p.config-name {
     margin-top: 24px;
 }
 
-.textplace pre {
+.modal .textplace pre {
     font-size: 1em;
     margin: 0px;
     white-space: pre-wrap;
     word-wrap: break-word;
     resize: none;
     min-height: 1em;
+}
+
+.modal .textplace .role {
+    color : var(--text-field-hr-color);
 }
 
 p.history-input {

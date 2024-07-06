@@ -1,38 +1,80 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 
 import ModalHeader from '../../components/ModalHeader.tsx'
 
 import { StateContext } from '../../context/StateContext.tsx';
+import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat/index.ts';
 
 export default function RequestInfoModal({
     onClose
  }) {
+    const [promptPreview, setPromptPreview] = useState(false);
+    const [promptPreviewContents, setPromptPreviewContents] = useState<React.JSX.Element[]>([]);
     const stateContext = useContext(StateContext);
     if (stateContext == null) {
         throw new Error('ModelConfig requiered StateContextProvider');
     }
     
     const { note, promptContents } = stateContext;
+
+    useEffect(()=>{
+        const results = parsePromptContent({promptContents, note});
+        //console.log(previewContents);
+        const newContents:React.JSX.Element[] = []
+        for (const item of results) {
+            newContents.push(
+                <div style={{margin:'0px 4px 12px 4px', position:'relative'}}>
+                    <hr style={{width: '100%'}}/>
+                    <div className='role undraggable' style={{position:'absolute', right: 8, top: 10 }}>
+                        {item.role}
+                    </div>
+                </div>
+            )
+            newContents.push()
+            newContents.push(<pre style={{marginBottom:"12px"}}>{item.content}</pre>)
+        }
+        setPromptPreviewContents(newContents);
+    }, [promptPreview])
     
     return (
         <div className='modal config-modal column'>
             <ModalHeader
                 name='Request 정보'
                 onClose = {()=>{
-                    onClose({})
+                    onClose()
                 }}
             />
             <div className='column scrollbar' style={{ overflow:'auto'}}>
-                <SubTitle>프롬프트 템플릿</SubTitle>
-                <div className='noflex textplace column scrollbar' style={{position:'relative'}}>
+                <SubTitle className="row main-spacebetween">
+                    <span>프롬프트 템플릿</span>
+                    <span
+                        className="material-symbols-outlined clickable noflex undraggable"
+                        style={{fontSize:"1.5em", marginRight: "4px"}}
+                        onClick={()=>setPromptPreview(!promptPreview)}
+                    >
+                        {promptPreview ? 'preview_off' : 'preview'}
+                    </span>
+                </SubTitle>
                 {
-                    promptContents.split('\n').map((value, index) => (
-                        <pre key={index} className='fontstyle'>
-                            {value == '' ? ' ' : value}
-                        </pre>
-                    ))
+                    !promptPreview && 
+                    <div className='noflex textplace column scrollbar fontstyle' style={{position:'relative'}}>
+                    {
+                        promptContents.split('\n').map((value, index) => (
+                            <pre key={index}>
+                                {value == '' ? ' ' : value}
+                            </pre>
+                        ))
+                    }
+                    </div>
                 }
-                </div>
+                {
+                    promptPreview && 
+                    <div className='preview noflex textplace column scrollbar' style={{position:'relative'}}>
+                    {
+                        promptPreviewContents.map((value)=>(value))
+                    }
+                    </div>
+                }
                 <SubTitle>Note</SubTitle>
                 <div className='noflex textplace column'>
                     {
@@ -47,9 +89,8 @@ export default function RequestInfoModal({
         </div>
     )
 }
-
-const SubTitle = ({children}) => (
-    <p className='noflex config-name undraggable'>{children}</p>
+const SubTitle = ({children, className=''}) => (
+    <p className={`${className} noflex config-name undraggable`}>{children}</p>
 )
 
 const noteformat = (value:any) => {
@@ -59,4 +100,26 @@ const noteformat = (value:any) => {
     else {
         return value;
     }
+}
+
+const parsePromptContent = ({promptContents, note}) => {
+    const promptParser = new CurlyBraceFormatParser(promptContents);
+    const contents:{content:string, role:string}[] = []
+
+    promptParser.build({
+        vars : { 
+            ...note,
+        },
+        reservedVars : {
+            input : "<USER_INPUT_HERE>",
+        },
+        role : (x:string) => x,
+        map(text, role) {
+            contents.push({
+                role : role,
+                content : text
+            });
+        }
+    });
+    return contents;
 }

@@ -69,16 +69,6 @@ img.rotate {
     transform: scale(0.9);
 }
 
-.textplace {
-    margin: 16px;
-    border-radius: 6px;
-    background-color: var(--field-color);
-    color: var(--text-color);
-    resize: both;
-    border: 1px solid rgb(118, 118, 118);
-    overflow: none;
-}
-
 .warning {
     color: rgb(194, 111, 111) !important;
 }

@@ -77,6 +77,10 @@ a:hover {
     text-decoration: underline;
 }
 
+pre {
+    font-family: inherit;
+}
+
 .search {
     --padding: 15px;
     display: flex;

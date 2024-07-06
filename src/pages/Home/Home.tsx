@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import ArrowIcon from '../../assets/icons/arrow.svg'
 import LoadingIcon from '../../assets/icons/loading.svg'
 
-
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StateContext } from "../../context/StateContext.tsx";
 import { APIContext } from "../../context/APIContext.tsx";

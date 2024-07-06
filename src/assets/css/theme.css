@@ -39,4 +39,7 @@
 
     --input-background-color : rgb(241, 241, 241);
     --text-field-color : rgb(56, 56, 56);
+
+    --text-field-preview-color : rgb(51, 57, 62);
+    --text-field-hr-color : rgb(134, 134, 134);
 }
