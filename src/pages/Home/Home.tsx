@@ -137,7 +137,7 @@ export default function Home() {
     }
 
     return (
-        <div className='fill column theme-dark' style={{position:'relative'}}>
+        <div className='fill column' style={{position:'relative'}}>
             <Header
                 onOpenHistory={()=>setShowHistoryModal(true)}
                 onOpenModelConfig={()=>setShowModelConfigModal(true)}

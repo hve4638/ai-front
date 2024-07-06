@@ -9,6 +9,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "crypto-js": "^4.2.0",
+    "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",
     "marked": "^12.0.2",
     "react": "^18.3.1",

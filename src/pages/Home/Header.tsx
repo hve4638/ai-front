@@ -146,11 +146,12 @@ export default function Header(props:HeaderProps) {
             {
                 (prompt?.headerExposuredVars?.length ?? 0) !== 0 &&
                 prompt.headerExposuredVars.map((item, index) => {
+                  const value = (item.name in (note ?? {})) ? note[item.name] : null;
                   return (
                     <Dropdown
                       key={index}
                       items={item.options}
-                      value={note[item.name] ?? null}
+                      value={value}
                       style={{marginRight:"8px"}}
                       onChange={(value:string)=>{
                         const newNote = {...note};

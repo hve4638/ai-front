@@ -35,7 +35,7 @@ function App() {
         });
     }, []);
   
-    return <div className='fill column'>
+    return <div id="app" className='fill theme-dark'>
         <Home></Home>
     </div>
 }

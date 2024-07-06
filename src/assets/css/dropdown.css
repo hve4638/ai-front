@@ -49,15 +49,14 @@
 
     list-style-type: none;
     position: absolute;
-    top: 100%;
+    top: 0;
     left: 0;
-    min-width: 100%;
     border: 1px solid var(--dropdown-border-color);
     color: var(--dropdown-font-color);
     background-color: var(--dropdown-background-color);
     border-radius: 14px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    z-index: 1000;
 }
 
 .dropdown-item {

@@ -117,6 +117,7 @@ p.config-name {
     white-space: pre-wrap;
     word-wrap: break-word;
     resize: none;
+    min-height: 1em;
 }
 
 p.history-input {
@@ -137,6 +138,7 @@ p.history-output {
 .vareditor-content {
     color : white;
     overflow-y: auto;
+    flex-wrap: 0;
 }
 
 .vareditor {
@@ -161,4 +163,7 @@ p.history-output {
 
 .vareditor .dropdown-header:hover {
     background-color: var(--dropdown-light-hover-color);
+}
+
+.vareditor .dropdown-list {
 }

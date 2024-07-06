@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import ReactDOM from "react-dom";
 
 interface DropdownProps {
   value:any,
@@ -18,6 +19,7 @@ const Dropdown = ({
   titleMapper = (value, items)=>value
 }:DropdownProps) => {
   const dropdownRef = useRef(null);
+  const [rect, setRect] = useState({bottom:0,height:0,left:0,right:0,top:0,width:0,x:0,y:0});
   const [isOpen, setIsOpen] = useState(false);
   const onGlobalClick = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -33,6 +35,14 @@ const Dropdown = ({
     };
   },[])
 
+  useEffect(()=>{
+    if (dropdownRef.current) {
+      const newRect = dropdownRef.current.getBoundingClientRect();
+      setRect(newRect);
+      console.log(newRect);
+    }
+}, []);
+
   let selected = titleMapper(value, items);
 
   return (
@@ -42,25 +52,31 @@ const Dropdown = ({
         <span className='dropdown-arrow material-symbols-outlined'>arrow_drop_down</span>
       </div>
       {
-        isOpen && (
-        <ul
-          className="dropdown-list"
-        >
-        {
-          items.map((item, index) => (
-            <li
-              key={item.name}
-              className="dropdown-item center"
-              onClick={(e) => {
-                setIsOpen(false);
-                onChange(item.value);
-              }}>
-              {item.name}
-            </li>
-          ))
-        }
-        </ul>
-      )}
+        isOpen && ReactDOM.createPortal(
+          <ul
+            className="dropdown-list"
+            style={{
+              top: rect.bottom,
+              left: rect.left,
+              width: rect.width,
+            }}
+          >
+            {
+              items.map((item, index) => (
+                <li
+                  key={item.name}
+                  className="dropdown-item center"
+                  onClick={(e) => {
+                    setIsOpen(false);
+                    onChange(item.value);
+                  }}>
+                  {item.name}
+                </li>
+              ))
+            }
+          </ul>
+        ,document.getElementById('app'))
+      }
     </div>
   );
 };
