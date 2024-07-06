@@ -19,31 +19,28 @@ const Dropdown = ({
   titleMapper = (value, items)=>value
 }:DropdownProps) => {
   const dropdownRef:any = useRef(null);
-  const [rect, setRect] = useState({bottom:0,height:0,left:0,right:0,top:0,width:0,x:0,y:0});
+  //const [rect, setRect] = useState({bottom:0,height:0,left:0,right:0,top:0,width:0,x:0,y:0});
   const [isOpen, setIsOpen] = useState(false);
   const onGlobalClick = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsOpen(false);
     }
   }
+  
+  let rect;
+  if (dropdownRef.current) {
+    rect = dropdownRef.current.getBoundingClientRect();
+  }
 
-  // 전역마우스 클릭을 체크해 Dropdown의 외부를 클릭했다면 펼쳐진 Dropdown을 다시 접는 역할
+
+  // 전역마우스 클릭을 체크
+  // Dropdown의 외부를 클릭했다면 펼쳐진 Dropdown을 다시 접는 역할
   useEffect(()=>{ 
     document.addEventListener('click', onGlobalClick);
     return () => {
       document.removeEventListener('click', onGlobalClick);
     };
   },[])
-
-  useEffect(()=>{
-    if (dropdownRef.current) {
-      const newRect = dropdownRef.current.getBoundingClientRect();
-      if (!isEqualObj(rect, newRect)) {
-        setRect(newRect);
-      }
-    }
-});
-
   let selected = titleMapper(value, items);
 
   return (
