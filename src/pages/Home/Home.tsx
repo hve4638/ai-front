@@ -22,6 +22,7 @@ import OutputField from './OutputField.tsx'
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 import { AIModels } from "../../features/chatAI/index.ts";
 import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
+import { TARGET_ENV } from "../../data/constants.tsx";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);

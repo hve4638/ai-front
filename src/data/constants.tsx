@@ -7,7 +7,9 @@ export const COOKIE_OPTION_NOEXPIRE = {
 }
 
 export const ENCRYPT_KEY = 'bbbeb10b1c00b979207e63f94602d94c46b2483d25253291b018342d1404318b';
-export const DEBUG_MODE = true;
+export const DEBUG_MODE = false;
+
+export const TARGET_ENV = process.env.REACT_APP_TARGET_ENV ?? 'WEB';
 
 export const MODEL_CATEGORY = {
     GOOGLE_GEMINI:"GOOGLE_GEMINI",
