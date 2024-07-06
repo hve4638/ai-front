@@ -18,7 +18,7 @@ const Dropdown = ({
   onChange,
   titleMapper = (value, items)=>value
 }:DropdownProps) => {
-  const dropdownRef = useRef(null);
+  const dropdownRef:any = useRef(null);
   const [rect, setRect] = useState({bottom:0,height:0,left:0,right:0,top:0,width:0,x:0,y:0});
   const [isOpen, setIsOpen] = useState(false);
   const onGlobalClick = (event) => {
@@ -39,9 +39,8 @@ const Dropdown = ({
     if (dropdownRef.current) {
       const newRect = dropdownRef.current.getBoundingClientRect();
       setRect(newRect);
-      console.log(newRect);
     }
-}, []);
+});
 
   let selected = titleMapper(value, items);
 
@@ -75,7 +74,7 @@ const Dropdown = ({
               ))
             }
           </ul>
-        ,document.getElementById('app'))
+        ,document.getElementById('app') ?? document.body)
       }
     </div>
   );
