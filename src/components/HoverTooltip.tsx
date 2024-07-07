@@ -2,7 +2,13 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import ReactDOM from "react-dom";
 
-export function HoverTooltip({ children, text }) {
+interface HoverTooltipProps {
+    children: any,
+    text : string,
+    delay? : number
+}
+
+export function HoverTooltip({ children, text, delay=150 }:HoverTooltipProps) {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const handleMouseMove = (event) => {
       setPosition({ x: event.clientX, y: event.clientY });
@@ -15,7 +21,7 @@ export function HoverTooltip({ children, text }) {
         if (isHover) {
             timeout = setTimeout(()=>{
                 setShowTooltip(true);
-            }, 500);
+            }, delay);
         }
         else {
             setShowTooltip(false);

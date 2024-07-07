@@ -28,6 +28,7 @@ export const Slot = ({ index, value, onClick, onDelete, onEdit}:SlotProps) => {
     const [h, setH] = useState(0);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [showTooptip, setShowTooltip] = useState(false);
+    
 
     useEffect(()=>{
         if (targetRef.current) {
@@ -89,8 +90,6 @@ const SlotContextMenu = ({x, y, onClose, onEdit, onDelete}:SlotContextMenuProps)
     const menuRef = useRef<HTMLDivElement>(null);
     const onGlobalClick = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        console.log('onClose')
-        console.log(onClose)
         onClose();
       }
     }
@@ -106,21 +105,27 @@ const SlotContextMenu = ({x, y, onClose, onEdit, onDelete}:SlotContextMenuProps)
     const height = 65;
     return (
         <div
-            className='prompt-slots-context-menu column'
+            className='prompt-slots-context-menu column sub-center'
             style={{top: y - height, left:x - width/2}}
             ref={menuRef}
         >
             <div className='menu-item undraggable'
-                onClick={(e)=>onEdit()}
+                onClick={(event)=>{
+                    event.stopPropagation();
+                    onEdit();
+                }}
             >
-                <span className="material-symbols-outlined">edit</span>
+                <span className="material-symbols-outlined" style={{alignSelf:'center'}}>edit</span>
                 현재 상태 저장
             </div>
             <div
                 className='menu-item undraggable red'
-                onClick={(e)=>onDelete()}
+                onClick={(event)=>{
+                    event.stopPropagation();
+                    onDelete();
+                }}
             >
-                <span className="material-symbols-outlined">delete</span>
+                <span className="material-symbols-outlined" style={{alignSelf:'center'}}>delete</span>
                 삭제
             </div>
         </div>
@@ -174,7 +179,12 @@ function SlotTooltip({x, y, value}) {
         >
             {
                 texts.map((text, index)=>(
-                    <div key={index}>
+                    <div
+                        key={index}
+                        className='prompt-slot-tooltip-text'
+                        style={{
+                            width : '140px',
+                        }}>
                         {text}
                     </div>
                 ))

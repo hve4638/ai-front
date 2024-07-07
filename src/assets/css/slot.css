@@ -47,6 +47,7 @@
     border-radius: 8px;
     cursor : pointer;
     font-weight: 600;
+    font-size: 16px;
 }
 
 .menu-item:hover {
@@ -67,15 +68,25 @@
 
 .prompt-slot-tooltip {
     position: absolute;
-    color: white;
     z-index: 5;
-    background-color: var(--field-color);
-    border: 1px solid rgb(68, 68, 68);
-    border-radius: 8px;
-    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
-    padding: 8px;
-    font-size: 14px;
-    font-weight: 400;
     width: auto;
     white-space: nowrap;
+    padding: 6px;
+
+    border-radius: 4px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+
+    font-size: 14px;
+    font-weight: 400;
+
+    color: var(--tooltip-text-color);
+    background-color: var(--tooltip-background-color);
+    border: 1px solid var(--tooltip-border-color);
+}
+
+.prompt-slot-tooltip-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

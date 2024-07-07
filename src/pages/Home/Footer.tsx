@@ -9,14 +9,19 @@ import { Slot, SlotAdder } from './Slot.tsx';
 import { DebugContext } from '../../context/DebugContext.tsx';
 import { openBrowser, openPromptFolder } from '../../services/local/index.ts';
 import { HoverTooltip } from '../../components/HoverTooltip.tsx';
+import { PromptContext } from '../../context/PromptContext.tsx';
 
 interface FooterProps {
     onOpenDebug:()=>void
 }
 
 export default function Footer({ onOpenDebug }:FooterProps) {
+    const promptContext = useContext(PromptContext);
     const stateContext = useContext(StateContext);
     const debugContext = useContext(DebugContext);
+    if (promptContext == null) {
+        throw new Error('Footer must be used in StateContextProvider');
+    }
     if (stateContext == null) {
         throw new Error('Footer must be used in StateContextProvider');
     }
@@ -28,6 +33,9 @@ export default function Footer({ onOpenDebug }:FooterProps) {
         markdownMode, setMarkdownMode,
         lineByLineMode, setLineByLineMode
     } = stateContext;
+    const {
+        promptList
+    } = promptContext;
 
     const createSlotData = () => {
         return {
@@ -40,8 +48,10 @@ export default function Footer({ onOpenDebug }:FooterProps) {
         }
     }
     const applySlotData = (slot) => {
+        const newPrompt = promptList.getPrompt(slot.prompt1, slot.prompt2);
         stateContext.setPrompt1Key(slot.prompt1);
         stateContext.setPrompt2Key(slot.prompt2);
+        stateContext.setPrompt(newPrompt);
         stateContext.setNote(slot.note);
         stateContext.setMarkdownMode(slot.extra?.markdown ?? true);
     }
@@ -106,7 +116,7 @@ export default function Footer({ onOpenDebug }:FooterProps) {
             </HoverTooltip>
             <Pad/>
             <HoverTooltip
-                text="XML"
+                text="XML (실험적)"
             >
                 <IconButton
                     value='code'

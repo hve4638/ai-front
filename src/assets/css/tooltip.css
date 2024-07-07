@@ -8,4 +8,5 @@
     color: var(--tooltip-text-color);
     background-color: var(--tooltip-background-color);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
 }
