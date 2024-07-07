@@ -24,7 +24,7 @@
     "remark-gfm": "^4.0.0",
     "web-vitals": "^2.1.4"
   },
-  "main": "main.js",
+  "main": "electron/main.js",
   "homepage": "./",
   "scripts": {
     "electron": "wait-on http://localhost:3000 && electron .",
@@ -35,8 +35,8 @@
     "package": "electron-forge package",
     "web:start": "cross-env TARGET_ENV=WEB REACT_APP_TARGET_ENV=WEB yarn react-scripts start",
     "electron:start": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=TRUE BROWSER=none concurrently \"yarn react-scripts start\" \"yarn electron\"",
-    "electron:build": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=FALSE BROWSER=none yarn build && electron-builder -c.extraMetadata.main=./main.js",
-    "electron-builder:build": "cross-env TARGET_ENV=WINDOWS DEV=FALSE electron-builder -c.extraMetadata.main=./main.js"
+    "electron:build": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=FALSE BROWSER=none yarn build && electron-builder -c.extraMetadata.main=./electron/main.js",
+    "electron-builder:build": "cross-env TARGET_ENV=WINDOWS DEV=FALSE electron-builder -c.extraMetadata.main=./electron/main.js"
   },
   "eslintConfig": {
     "extends": [
@@ -81,9 +81,7 @@
       "build/**/**",
       "node_modules/**/*",
       "package.json",
-      "main.js",
-      "preload.js",
-      "src/data/ipc.js"
+      "electron/*"
     ],
     "directories": {
       "buildResources": "assets"

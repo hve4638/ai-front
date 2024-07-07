@@ -5,6 +5,7 @@ import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant.ts'
 import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
 import { AIModel } from "../../data/aimodel/interfaces.tsx";
+import { proxyFetch } from "../local/index.ts";
 
 interface Note {
     [key:string]:string
@@ -82,32 +83,27 @@ export class GoogleGemini implements AIModel {
         console.log(JSON.stringify(body));
         
         const controller = new AbortController();
-        const promise = fetch(url, {
-            signal : controller.signal,
+        // signal : controller.signal,
+        const promise = proxyFetch(url, {
             method : 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
         })
-        .then(async res => {
-            const data = await res.json();
-            if (!res.ok) {
-                throw data.error.message;
+        .then(data => {
+            console.log('RESPONSE');
+            console.log(JSON.stringify(data));
+            
+            const apiresponse = {
+                ...this.#parseResponse(data),
+                input : request.contents,
+                note : request.note,
+                prompt : request.prompt,
+                error : null
             }
-            else {
-                console.log('RESPONSE');
-                console.log(JSON.stringify(data));
-                const apiresponse = {
-                    ...this.#parseResponse(data),
-                    input : request.contents,
-                    note : request.note,
-                    prompt : request.prompt,
-                    error : null
-                }
 
-                return apiresponse;
-            }
+            return apiresponse;
         })
         
         return {controller, promise};
@@ -124,9 +120,11 @@ export class GoogleGemini implements AIModel {
       
         const reason = rawResponse.candidates[0]?.finishReason;
         const text = rawResponse.candidates[0]?.content?.parts[0].text ?? '';
-        if (reason == 'SAFETY') warning = 'blocked by SAFETY';
-        else if (reason == "MAX_TOKENS") warning = 'token limit';
-        else warning = null;
+        
+        if (reason == "STOP") warning = null;
+        else if (reason == 'SAFETY') warning = 'blocked by SAFETY';
+        else if (reason == "MAX_TOKENS") warning = 'max token limit';
+        else warning = `unhandle reason : ${reason}`;
       
         return {
           output : text,

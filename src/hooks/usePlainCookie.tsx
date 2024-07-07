@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
-import {setCookie, getCookie} from '../libs/cookies.tsx'
+import { storeValue, loadValue } from '../services/local/index.ts';
 
 export const usePlainCookie:(cookieName:string, defaultvalue?:any)=>[any, (value:any, options?:any)=>void]
  = (cookieName, defaultvalue=undefined) => {
   const encode = (value:any) => value
   const decode = (value:string|undefined) => value ?? defaultvalue;
-  const [cached, setCached] = useState<any>(decode(getCookie(cookieName)));
+  const [cached, setCached] = useState<any>(null);
+  //decode(getCookie(cookieName))
 
   useEffect(() => {
-    const decoded = getCookie(cookieName);
-    setCached(decoded);
+    loadValue(cookieName)
+    .then(data=>setCached(decode(data)));
   }, [ cookieName ]);
 
   const writeCookie = (value:any, options?:any) => {
-    setCookie(cookieName, encode(value), options);
+    storeValue(cookieName, encode(value));
     setCached(value);
   };
 

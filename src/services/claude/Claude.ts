@@ -5,6 +5,7 @@ import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import { CLAUDE_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
+import { proxyFetch } from "../local/index.ts";
 
 export class Claude implements AIModel {
     request(request:AIModelRequest, config:AIModelConfig, options:any) {
@@ -51,34 +52,28 @@ export class Claude implements AIModel {
         console.log(JSON.stringify(body));
         
         const controller = new AbortController();
-        const promise = fetch(CLAUDE_URL, {
-            signal : controller.signal,
+        const promise = proxyFetch(CLAUDE_URL, {
             method : 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': options.apikey
+                'x-api-key': options.apikey,
+                'anthropic-version': '2023-06-01'
             },
             body: JSON.stringify(body)
         })
-        .then(async res => {
-            const data = await res.json();
-            if (!res.ok) {
-                throw data.error.message;
+        .then(data => {
+            console.log('RESPONSE');
+            console.log(JSON.stringify(data));
+            
+            const apiresponse = {
+                ...this.#parseResponse(data),
+                input : request.contents,
+                note : request.note,
+                prompt : request.prompt,
+                error : null
             }
-            else {
-                console.log('RESPONSE');
-                console.log(JSON.stringify(data));
-                throw new Error("Stop")
-                const apiresponse = {
-                    ...this.#parseResponse(data),
-                    input : request.contents,
-                    note : request.note,
-                    prompt : request.prompt,
-                    error : null
-                }
 
-                return apiresponse;
-            }
+            return apiresponse;
         })
         
         return {controller, promise};
@@ -88,16 +83,18 @@ export class Claude implements AIModel {
         let tokens: number;
         let warning: string | null;
         try {
-            tokens = rawResponse.usage.completion_tokens;
+            tokens = rawResponse.usage.output_tokens;
         }
         catch (e) {
             tokens = 0;
         }
       
-        const reason = rawResponse.choices[0]?.finish_reason;
-        const text = rawResponse.choices[0]?.message?.content ?? "";
-        // @TODO: reason에 따른 warning 추가 필요
-        warning = null;
+        const reason = rawResponse.stop_reason;
+        const text = rawResponse.content[0]?.text ?? "";
+
+        if (reason == "end_turn") warning = null;
+        else if (reason == "max_tokens") warning = "max token limit";
+        else warning = `unhandle reason : ${reason}`;
       
         return {
           output : text,

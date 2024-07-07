@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-import {setCookie, getCookie} from '../libs/cookies.tsx'
+import { storeSecretValue, loadSecretValue } from '../services/local/index.ts';
 import CryptoJS from 'crypto-js';
 
 const makeSalt = () => Math.floor(Math.random() * 1000000);
@@ -22,23 +21,23 @@ export const useEncryptedCookie:(cookieName:string, encryptionKey:string)=>[any,
   }
 
   useEffect(() => {
-    const encrypted = getCookie(cookieName);
-
-    if (encrypted && !cached) {
-      try {
-        const decrypted = decrypt(encrypted);
-
-        setCached(decrypted);
-      } catch (error) {
-        console.error('Failed to decrypt cookie:', error);
+    loadSecretValue(cookieName)
+    .then(encrypted => {
+      if (encrypted && !cached) {
+        try {
+          const decrypted = decrypt(encrypted);
+          setCached(decrypted);
+        } catch (error) {
+          console.error('Failed to decrypt cookie:', error);
+        }
       }
-    }
+    })
   }, [ cookieName, cached ]);
 
   const setEncryptedCookie = (value, options) => {
     try {
       const encryptedValue = encrypt(value);
-      setCookie(cookieName, encryptedValue, options);
+      storeSecretValue(cookieName, encryptedValue);
       setCached(value);
     } catch (error) {
       console.error('Failed to encrypt cookie value:', error);

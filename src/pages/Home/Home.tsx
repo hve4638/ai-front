@@ -22,13 +22,15 @@ import OutputField from './OutputField.tsx'
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 import { AIModels } from "../../features/chatAI/index.ts";
 import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
-import { TARGET_ENV } from "../../data/constants.tsx";
+import DebugModal from "../DebugModal/DebugModal.tsx";
 
 export default function Home() {
     const [showSettingModal, setShowSettingModal] = useState(false);
     const [showModelConfigModal, setShowModelConfigModal] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [showVarEditorModal, setShowVarEditorModal] = useState(false);
+    const [showDebugModal, setShowDebugModal] = useState(false);
+
     const [submitLoading, setSubmitLoading] = useState(false);
     const [response, setResponse] = useState<APIResponse>({
         input: '', output : '',
@@ -162,9 +164,11 @@ export default function Home() {
                     response={response}
                 />
             </main>
-            <Footer/>
+            <Footer
+                onOpenDebug={()=>setShowDebugModal(true)}
+            />
             {
-                (showSettingModal || showModelConfigModal || showHistoryModal || showVarEditorModal) &&
+                (showSettingModal || showModelConfigModal || showHistoryModal || showVarEditorModal || showDebugModal) &&
                 <ModalBackground>
                 {
                     showSettingModal &&
@@ -192,6 +196,12 @@ export default function Home() {
                     showVarEditorModal &&
                     <VarEditorModal
                         onClose = {()=>setShowVarEditorModal(false)}
+                    />
+                }
+                {
+                    showDebugModal &&
+                    <DebugModal
+                        onClose = {()=>setShowDebugModal(false)}
                     />
                 }
                 </ModalBackground>

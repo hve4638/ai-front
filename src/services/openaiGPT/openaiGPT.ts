@@ -5,6 +5,7 @@ import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
+import { proxyFetch } from "../local/index.ts";
 
 export class OpenAIGPT implements AIModel {
     request(request:AIModelRequest, config:AIModelConfig, options:any) {
@@ -33,16 +34,13 @@ export class OpenAIGPT implements AIModel {
             temperature: Number(config.temperature),
             max_tokens: Number(config.maxtoken),
             top_p : Number(config.topp),
-            //presence_penalty : 0.2,
-            //frequency_penalty : 0,
         }
         
         console.log('REQUEST');
         console.log(JSON.stringify(body));
         
         const controller = new AbortController();
-        const promise = fetch(OPENAI_GPT_URL, {
-            signal : controller.signal,
+        const promise = proxyFetch(OPENAI_GPT_URL, {
             method : 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,24 +48,19 @@ export class OpenAIGPT implements AIModel {
             },
             body: JSON.stringify(body)
         })
-        .then(async res => {
-            const data = await res.json();
-            if (!res.ok) {
-                throw data.error.message;
-            }
-            else {
-                console.log('RESPONSE');
-                console.log(JSON.stringify(data));
-                const apiresponse = {
-                    ...this.#parseResponse(data),
-                    input : request.contents,
-                    note : request.note,
-                    prompt : request.prompt,
-                    error : null
-                }
+        .then(data => {
+            console.log('RESPONSE');
+            console.log(JSON.stringify(data));
 
-                return apiresponse;
+            const apiresponse = {
+                ...this.#parseResponse(data),
+                input : request.contents,
+                note : request.note,
+                prompt : request.prompt,
+                error : null
             }
+
+            return apiresponse;
         })
         
         return {controller, promise};
@@ -85,8 +78,10 @@ export class OpenAIGPT implements AIModel {
       
         const reason = rawResponse.choices[0]?.finish_reason;
         const text = rawResponse.choices[0]?.message?.content ?? "";
-        // @TODO: reason에 따른 warning 추가 필요
-        warning = null;
+
+        if (reason == "stop") warning = null;
+        else if (reason == "length") warning = "max token limit";
+        else warning = `unhandle reason : ${reason}`;
       
         return {
           output : text,

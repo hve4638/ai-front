@@ -8,8 +8,13 @@ import { Checkbox } from "../../components/Checkbox.tsx";
 import { Slot, SlotAdder } from './Slot.tsx';
 
 import { DebugContext } from '../../context/DebugContext.tsx';
+import { openPromptFolder } from '../../services/local/index.ts';
 
-export default function Footer() {
+interface FooterProps {
+    onOpenDebug:()=>void
+}
+
+export default function Footer({ onOpenDebug }:FooterProps) {
     const stateContext = useContext(StateContext);
     const debugContext = useContext(DebugContext);
     if (stateContext == null) {
@@ -111,6 +116,21 @@ export default function Footer() {
                     onClick={()=>debugContext.setMirror(!debugContext.mirror)}
                 />
             }
+            <Pad/>
+            {
+                debugContext.isDebugMode &&      
+                <IconButton
+                    value='labs'
+                    size={30}
+                    onClick={()=>onOpenDebug()}
+                />
+            }
+            <Pad/>
+            <IconButton
+                value='folder_open'
+                size={30}
+                onClick={()=>openPromptFolder()}
+            />
         </div>
     </footer>
     );
@@ -122,11 +142,11 @@ interface IconButtonProps {
     className?:string;
     value:string;
     size:number;
-    enabled:boolean;
+    enabled?:boolean;
     onClick:()=>void;
 }
 function IconButton({
-    className='', value, size, enabled, onClick
+    className='', value, size, enabled=false, onClick
 }:IconButtonProps) {
     const pxsize = `${size}px`;
     return (

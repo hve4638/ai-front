@@ -5,7 +5,6 @@ import AdvancedIcon from '../../assets/icons/model.svg'
 import SettingIcon from '../../assets/icons/setting.svg'
 import NoteIcon from '../../assets/icons/note.svg'
 
-import { requestPrompt } from "../../services/local.ts";
 
 import { SubPromptsType } from "../../context/interface/promptInterface.tsx";
 import { PromptContext } from "../../context/PromptContext.tsx";
@@ -14,6 +13,7 @@ import { StateContext } from "../../context/StateContext.tsx";
 import Dropdown from "../../components/Dropdown.tsx";
 import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
 import { IPromptInfomation } from "../../features/prompts/interface.ts";
+import { loadPrompt } from "../../services/local/index.ts";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -55,7 +55,7 @@ export default function Header(props:HeaderProps) {
 
       setNewNotes(prompt);
       
-      requestPrompt(prompt.value)
+      loadPrompt(prompt.value)
       .then(data => setPromptContents(data));
     }, [prompt])
 
@@ -100,7 +100,7 @@ export default function Header(props:HeaderProps) {
             href={window.location.href}
             >AI Front</a>
             {
-                // TODO: 밝은 테마 추가하기
+                // @TODO: 밝은 테마 추가하기
                 false &&
                 <IconButton
                 value='contrast'

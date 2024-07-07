@@ -4,7 +4,9 @@ import './style.js'
 import Home from './pages/Home/Home.tsx'
 import { PromptContext } from './context/PromptContext.tsx'
 import { StateContext } from './context/StateContext.tsx'
-import { requestPromptlist } from "./services/local.ts";
+
+import { loadPrompt, loadPromptList } from "./services/local/index.ts";
+
 import { PromptList } from './features/prompts/index.ts';
 
 function App() {
@@ -20,7 +22,7 @@ function App() {
     } = stateContext;
 
     useEffect(()=>{
-        requestPromptlist()
+        loadPromptList()
         .then(data => {
             const pl = new PromptList(data);
             promptContext.setPromptList(pl);
@@ -32,7 +34,10 @@ function App() {
             setPrompt1Key(key1);
             setPrompt2Key(key2);
             setPrompt(item);
-        });
+        })
+        .catch(err => {
+            console.error(err);
+        })
     }, []);
   
     return <div id="app" className='fill theme-dark'>
