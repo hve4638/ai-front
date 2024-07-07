@@ -85,7 +85,20 @@
       "build/**/**",
       "node_modules/**/*",
       "electron/**/*",
-      "package.json"
+      "package.json",
+      "!node_modules/@types/**",
+      "!node_modules/@electron-forge/cli/**",
+      "!node_modules/@electron-forge/maker-deb/**",
+      "!node_modules/@electron-forge/maker-rpm/**",
+      "!node_modules/@electron-forge/maker-squirrel/**",
+      "!node_modules/@electron-forge/maker-zip/**",
+      "!node_modules/@electron-forge/plugin-auto-unpack-natives/**",
+      "!node_modules/@electron-forge/plugin-fuses/**",
+      "!node_modules/@electron/fuses/**",
+      "!node_modules/concurrently/**",
+      "!node_modules/cross-env/**",
+      "!node_modules/typescript/**",
+      "!node_modules/wait-on/**"
     ],
     "directories": {
       "buildResources": "assets"
