@@ -13,7 +13,7 @@ export interface SubPromptCache {
 
 export class PromptList implements IPromptList {
     #raw:MainPrompt[];
-    #vars:Vars;
+    #selectref:Vars;
     #prompts:PromptInfomation[];
     #prompt1Cache:MainPromptCache;
     #prompt2Cache:SubPromptCache;
@@ -27,7 +27,7 @@ export class PromptList implements IPromptList {
             throw new Error('Empty promptlist');
         }
         this.#raw = prompts;
-        this.#vars = promptlist.vars ?? {};
+        this.#selectref = promptlist.selectref ?? promptlist.vars ?? {};
         this.#prompt1Cache = {};
         this.#prompt2Cache = {};
         this.#prompts = [];
@@ -39,7 +39,7 @@ export class PromptList implements IPromptList {
             else if (item.key in this.#prompt1Cache) {
                 throw new Error(`Duplicate prompt key: ${item.key}`);
             }
-            const pl = new PromptInfomation(item, {selects : this.#vars});
+            const pl = new PromptInfomation(item, {selects : this.#selectref});
             this.#prompts.push(pl);
 
             this.#prompt1Cache[item.key] = pl;

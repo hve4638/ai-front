@@ -43,7 +43,7 @@ export class PromptInfomation {
                 target = {
                     name : item,
                     type : "select",
-                    select_ref : item
+                    selectref : item
                 };
             }
             else if (typeof item === "object") {
@@ -60,16 +60,16 @@ export class PromptInfomation {
                 if (target.options) {
                     options = target.options;
                 }
-                else if (target.select_ref) {
-                    if (target.select_ref in selects) {
-                        options = selects[target.select_ref];
+                else if (target.selectref) {
+                    if (target.selectref in selects) {
+                        options = selects[target.selectref];
                     }
                     else {
-                        throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : invalid select_ref(${target.select_ref})`)
+                        throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : invalid selectref(${target.selectref})`)
                     }
                 }
                 else {
-                    throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : prompt[type=select] must contain 'options' or 'select_ref')`)
+                    throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : prompt[type=select] must contain 'options' or 'selectref')`)
                 }
 
                 if (options == null) throw new Error(`Invalid PromptInfomation (key=${this.#raw.key}) : Logic Error`);

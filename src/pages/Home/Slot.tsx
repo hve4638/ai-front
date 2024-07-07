@@ -183,7 +183,7 @@ function SlotTooltip({x, y, value}) {
                         key={index}
                         className='prompt-slot-tooltip-text'
                         style={{
-                            width : '140px',
+                            maxWidth : '140px',
                         }}>
                         {text}
                     </div>

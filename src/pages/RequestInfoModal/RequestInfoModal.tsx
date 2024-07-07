@@ -74,7 +74,7 @@ export default function RequestInfoModal({
                     }
                     </div>
                 }
-                <SubTitle>Note</SubTitle>
+                <SubTitle>변수</SubTitle>
                 <div className='noflex textplace column'>
                     {
                         Object.entries(note).map(([key, value]) => (

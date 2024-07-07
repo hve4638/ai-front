@@ -1,7 +1,7 @@
 {
   "name": "ai-front",
   "author": "Hve",
-  "description": "A brief description of your application",
+  "description": "Simple ChatAI Frontend",
   "version": "0.3.0",
   "private": true,
   "dependencies": {
@@ -13,6 +13,7 @@
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",
     "marked": "^12.0.2",
+    "node-fetch-cjs": "^3.3.2",
     "react": "^18.3.1",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
@@ -33,7 +34,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "package": "electron-forge package",
-    "web:start": "cross-env TARGET_ENV=WEB REACT_APP_TARGET_ENV=WEB yarn react-scripts start",
+    "web:debug": "cross-env REACT_APP_DEBUG=TRUE REACT_APP_TARGET_ENV=WEB yarn react-scripts start",
+    "web:start": "cross-env REACT_APP_TARGET_ENV=WEB yarn react-scripts start",
+    "web:build": "cross-env REACT_APP_TARGET_ENV=WEB yarn build",
     "electron:start": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=TRUE BROWSER=none concurrently \"yarn react-scripts start\" \"yarn electron\"",
     "electron:build": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=FALSE BROWSER=none yarn build && electron-builder -c.extraMetadata.main=./electron/main.js",
     "electron-builder:build": "cross-env TARGET_ENV=WINDOWS DEV=FALSE electron-builder -c.extraMetadata.main=./electron/main.js"
@@ -74,14 +77,16 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "extends": null,
+    "productName": "AI Front",
     "appId": "com.hve.aifront",
+    "extends": null,
+    "icon": "./build/favicon.ico",
     "files": [
       "dist/**/*",
       "build/**/**",
       "node_modules/**/*",
-      "package.json",
-      "electron/*"
+      "electron/**/*",
+      "package.json"
     ],
     "directories": {
       "buildResources": "assets"

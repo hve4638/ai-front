@@ -9480,6 +9480,11 @@ node-api-version@^0.2.0:
   dependencies:
     semver "^7.3.5"
 
+node-fetch-cjs@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/node-fetch-cjs/-/node-fetch-cjs-3.3.2.tgz#7fd07fac52e61959c1031540a767636b9b290b9e"
+  integrity sha512-JvvyTiDcLnHvPmbxj6uxj4LaamCfZLlzlRNBZp+H82ECMLz4OQjI9Jc6YjjjycipeMk1Aq4xo90ejEUMKJeTjw==
+
 node-fetch@^2.6.7:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"

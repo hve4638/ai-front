@@ -2,7 +2,7 @@ const { app, BrowserWindow, Menu, ipcMain, shell  } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const path = require('path');
 const fs = require('fs');
-const fetch = require('node-fetch');
+const { default: fetch, Headers } = require('node-fetch-cjs');
 const ipcping = require('./ipc');
 const utils = require('./utils');
 const prompttemplate = require('./prompt-template');
@@ -22,7 +22,7 @@ function createWindow() {
   const win = new BrowserWindow({ 
     width: 1280, 
     height: 900,
-    icon: path.join(__dirname, '../public/favicon.ico'),
+    icon: path.join(__dirname, '../build/favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration : true,
