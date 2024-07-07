@@ -61,4 +61,10 @@ export class IPCInteractive {
     static fetch(url, init) {
       return window.electron.fetch(url, init);
     }
+    
+    static openBrowser(url) {
+      window.electron.openBrowser(url);
+    }
+
+    
 }

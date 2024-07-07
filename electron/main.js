@@ -127,10 +127,6 @@ ipcMain.handle(ipcping.LOAD_SECRET_VALUE, (event, name) => {
 })
 
 ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
-  console.log("FETCH")
-  console.log(url)
-  console.log(init)
-
   const res = await fetch(url, init);
   if (!res.ok) {
     throw data.error.message;
@@ -139,4 +135,16 @@ ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
     const data = await res.json();
     return data;
   }
+})
+
+ipcMain.handle(ipcping.OPEN_BROWSER, async (event, url) => {
+  utils.openBrowser(url);
+})
+
+ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
+  fs.writeFileSync(secretFilePath, JSON.stringify(secretData), 'utf8');
+  fs.writeFileSync(configFilePath, JSON.stringify(plainData), 'utf8');
+
+  secretData = {}
+  plainData = {}
 })

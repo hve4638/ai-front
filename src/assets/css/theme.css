@@ -42,4 +42,8 @@
 
     --text-field-preview-color : rgb(51, 57, 62);
     --text-field-hr-color : rgb(134, 134, 134);
+
+    --tooltip-text-color : rgb(191, 191, 191);
+    --tooltip-background-color : rgb(47, 47, 47);
+    --tooltip-border-color : rgb(68, 68, 68);
 }

@@ -7,5 +7,7 @@ module.exports = {
     LOAD_VALUE : 'load-value',
     STORE_SECRET_VALUE : 'store-secret-value',
     LOAD_SECRET_VALUE : 'load-secret-value',
-    FETCH : 'fetch-proxy'
+    FETCH : 'fetch-proxy',
+    OPEN_BROWSER : 'open-browser',
+    RESET_ALL_VALUES : 'reset-all-values'
 }

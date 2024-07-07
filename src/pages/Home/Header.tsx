@@ -14,6 +14,7 @@ import Dropdown from "../../components/Dropdown.tsx";
 import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
 import { IPromptInfomation } from "../../features/prompts/interface.ts";
 import { loadPrompt } from "../../services/local/index.ts";
+import { TARGET_ENV } from "../../data/constants.tsx";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -91,14 +92,18 @@ export default function Header(props:HeaderProps) {
       
       setNote(newNotes);
     }
-
+    console.log(TARGET_ENV)
     return (
         <header className='noflex row'>
           <div className='left-section row' style={{padding:'0px 32px 0px 0px'}}>
-            <a
-            className='undraggable'
-            href={window.location.href}
-            >AI Front</a>
+            {
+              TARGET_ENV === "WEB" &&
+              <a className='undraggable' href={window.location.href}>AI Front</a>
+            }
+            {
+              TARGET_ENV !== "WEB" &&
+              <div className='undraggable'>AI Front</div>
+            }
             {
                 // @TODO: 밝은 테마 추가하기
                 false &&

@@ -90,3 +90,14 @@ export function proxyFetch(url:string, init:RequestInit) {
         throw errorNotAvailable();
     }
 }
+
+export function openBrowser(url:string) {
+    switch(TARGET_ENV) {
+    case "WEB":
+        return WebInteractive.openBrowser(url);
+    case "WINDOWS":
+        return IPCInteractive.openBrowser(url);
+    default:
+        throw errorNotAvailable();
+    }
+}

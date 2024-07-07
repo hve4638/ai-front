@@ -6,7 +6,6 @@ export const usePlainCookie:(cookieName:string, defaultvalue?:any)=>[any, (value
   const encode = (value:any) => value
   const decode = (value:string|undefined) => value ?? defaultvalue;
   const [cached, setCached] = useState<any>(null);
-  //decode(getCookie(cookieName))
 
   useEffect(() => {
     loadValue(cookieName)

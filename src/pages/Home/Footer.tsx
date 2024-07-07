@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { GITHUB_LINK } from '../../data/constants.tsx';
+import React, { useContext, useState } from 'react'
+import { GITHUB_LINK, TARGET_ENV } from '../../data/constants.tsx';
 import GithubIcon from '../../assets/icons/github.png'
 
 import { StateContext } from "../../context/StateContext.tsx";
-import { Checkbox } from "../../components/Checkbox.tsx";
 
 import { Slot, SlotAdder } from './Slot.tsx';
 
 import { DebugContext } from '../../context/DebugContext.tsx';
-import { openPromptFolder } from '../../services/local/index.ts';
+import { openBrowser, openPromptFolder } from '../../services/local/index.ts';
+import { HoverTooltip } from '../../components/HoverTooltip.tsx';
 
 interface FooterProps {
     onOpenDebug:()=>void
@@ -51,9 +51,10 @@ export default function Footer({ onOpenDebug }:FooterProps) {
         <div className='left-section'>
             <div className='noflex footer-icon undraggable' style={{ height: '35px' }}>
                 <img
+                    alt='github-icon'
                     className='clickable-animation'
                     src={GithubIcon}
-                    onClick={()=> window.open(GITHUB_LINK)}
+                    onClick={()=> openBrowser(GITHUB_LINK)}
                 />
             </div>
             <div className='flex prompt-slots-container row-reverse undraggable'>
@@ -93,19 +94,27 @@ export default function Footer({ onOpenDebug }:FooterProps) {
         </div>
         <div className='right-section'>
             <div style={{width:'16px'}}/>
-            <IconButton
-                value='markdown'
-                enabled={markdownMode}
-                size={30}
-                onClick={()=>setMarkdownMode(!markdownMode)}
-            />
+            <HoverTooltip
+                text="마크다운"
+            >
+                <IconButton
+                    value='markdown'
+                    enabled={markdownMode}
+                    size={30}
+                    onClick={()=>setMarkdownMode(!markdownMode)}
+                />
+            </HoverTooltip>
             <Pad/>
-            <IconButton
-                value='code'
-                enabled={lineByLineMode}
-                size={30}
-                onClick={()=>setLineByLineMode(!lineByLineMode)}
-            />
+            <HoverTooltip
+                text="XML"
+            >
+                <IconButton
+                    value='code'
+                    enabled={lineByLineMode}
+                    size={30}
+                    onClick={()=>setLineByLineMode(!lineByLineMode)}
+                />
+            </HoverTooltip>
             <div className='flex'></div>
             {
                 debugContext.isDebugMode &&      
@@ -118,19 +127,25 @@ export default function Footer({ onOpenDebug }:FooterProps) {
             }
             <Pad/>
             {
-                debugContext.isDebugMode &&      
+                debugContext.isDebugMode &&
                 <IconButton
                     value='labs'
                     size={30}
                     onClick={()=>onOpenDebug()}
                 />
             }
-            <Pad/>
-            <IconButton
-                value='folder_open'
-                size={30}
-                onClick={()=>openPromptFolder()}
-            />
+            {
+                TARGET_ENV !== "WEB" &&
+                <>
+                    <Pad/>
+                    <IconButton
+                        value='folder_open'
+                        size={30}
+                        onClick={()=>openPromptFolder()}
+                    />
+                </>
+            }
+            <div style={{width:'16px'}}/>
         </div>
     </footer>
     );

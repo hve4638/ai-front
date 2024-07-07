@@ -1,7 +1,6 @@
 import { AIModel } from "../../data/aimodel/interfaces.tsx";
 import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
 
-import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
@@ -79,8 +78,8 @@ export class OpenAIGPT implements AIModel {
         const reason = rawResponse.choices[0]?.finish_reason;
         const text = rawResponse.choices[0]?.message?.content ?? "";
 
-        if (reason == "stop") warning = null;
-        else if (reason == "length") warning = "max token limit";
+        if (reason === "stop") warning = null;
+        else if (reason === "length") warning = "max token limit";
         else warning = `unhandle reason : ${reason}`;
       
         return {

@@ -1,0 +1,11 @@
+.hover-tooltip {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 2px;
+    overflow: hidden;
+    text-wrap: nowrap;
+    padding : 4px;
+    color: var(--tooltip-text-color);
+    background-color: var(--tooltip-background-color);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}

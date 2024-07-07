@@ -13,6 +13,7 @@ import './assets/css/checkbox.css';
 import './assets/css/dropdown.css';
 import './assets/css/select.css';
 import './assets/css/popupmenu.css';
+import './assets/css/tooltip.css';
 
 import './assets/css/textarea.css';
 import './assets/css/textarea-textstyle.css';

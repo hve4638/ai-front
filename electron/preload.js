@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('electron', {
   storeSecretValue : (name, value) => ipcRenderer.invoke(ipcping.STORE_SECRET_VALUE, name, value),
   loadSecretValue : (name) => ipcRenderer.invoke(ipcping.LOAD_SECRET_VALUE, name),
   fetch : (url, init) => ipcRenderer.invoke(ipcping.FETCH, url, init),
+  openBrowser : (url) => ipcRenderer.invoke(ipcping.OPEN_BROWSER, url),
+  resetAllValues : () => ipcRenderer.invoke(ipcping.RESET_ALL_VALUES),
 });

@@ -19,12 +19,12 @@ const defaultPromptList = {
 
 const defaultNoPrompt = "{{:input}}";
 
-const defaultTemplate = "{{::role system}}\
-\
-As a translator, I translate the request into {{lang}} and I will not response to anything other than the translation.\
-\
-{{::role user}}\
-\
+const defaultTemplate = "{{::role system}}\n\
+\n\
+As a translator, I translate the request into {{lang}} and I will not response to anything other than the translation.\n\
+\n\
+{{::role user}}\n\
+\n\
 {{:input}}";
 
 function initializePromptsDirectory(targetDirectory) {

@@ -29,7 +29,9 @@ export class WebInteractive {
     }
 
     static loadValue(name:string):any|undefined {
-        return getCookie(name);
+        return new Promise<any>((resolve, reject)=>{
+          resolve(getCookie(name));
+        })
     }
 
     static fetch(url, init) {
@@ -41,6 +43,10 @@ export class WebInteractive {
         }
         return data;
       });
+    }
+    
+    static openBrowser(url) {
+      window.open(url);
     }
   }
   
