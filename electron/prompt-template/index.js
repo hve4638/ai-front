@@ -11,10 +11,23 @@ const defaultPromptList = {
         {
             "name" : "템플릿",
             "key" : "template",
-            "value" : "template"
+            "value" : "template",
+            "vars" : [
+                {
+                    "name" : "lang",
+                    "display_name" : "언어",
+                    "type" : "select",
+                    "selectref" : "lang"
+                }
+            ]
         }
     ],
-    "vars" : {}
+    "selectref" : {
+        "lang" : [
+            { "name" : "한국어", "value" : "korean" },
+            { "name" : "영어", "value" : "english" }
+        ]
+    }
 }
 
 const defaultNoPrompt = "{{:input}}";

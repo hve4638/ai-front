@@ -5288,13 +5288,6 @@ electron-publish@24.13.1:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron-squirrel-startup@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/electron-squirrel-startup/-/electron-squirrel-startup-1.0.1.tgz#c9171568d724884c7a2b03760bfeedcf921c63ab"
-  integrity sha512-sTfFIHGku+7PsHLJ7v0dRcZNkALrV+YEozINTW8X1nM//e5O3L+rfYuvSW00lmGHnYmUjARZulD8F2V8ISI9RA==
-  dependencies:
-    debug "^2.2.0"
-
 electron-to-chromium@^1.4.668:
   version "1.4.788"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.788.tgz"
