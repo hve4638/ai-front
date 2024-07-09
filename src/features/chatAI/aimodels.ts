@@ -3,12 +3,14 @@ import { AIModel, AIModelRequest, AIModelReturns } from "../../data/aimodel/inte
 import { TARGET_ENV } from "../../data/constants.tsx"
 import { Claude } from "../../services/claude/Claude.ts"
 import { GoogleGemini } from "../../services/googleGemini/index.ts"
+import { proxyFetch } from "../../services/local/index.ts"
 import { OpenAIGPT } from "../../services/openaiGPT/openaiGPT.ts"
 
 export const MODELS = {
     GOOGLE_GEMINI : "GOOGLE_GEMINI",
     OPENAI_GPT : "OPENAI_GPT",
-    CLAUDE : "CLAUDE"
+    CLAUDE : "CLAUDE",
+    GOOGLE_VERTEXAI : "GOOGLE_VERTEXAI"
 }
 
 const modelCategory = {
@@ -28,13 +30,19 @@ const modelCategory = {
             { name : "GPT 3.5 Turbo", value: "gpt-3.5-turbo" },
         ]
     },
+    [MODELS.GOOGLE_VERTEXAI] : {
+        name : "Google VertexAI",
+        models : [
+            { name : "Claude Sonnet 3.5", value: "claude-3-5-sonnet@20240620" }
+        ]
+    }
 }
 
 if (TARGET_ENV === "WINDOWS") {
-    // CORS 정책으로 WEB에서는 사용할 수 없는 모델 목록
+    // CORS 정책으로 WEB에서 사용할 수 없는 모델 목록
 
     modelCategory[MODELS.CLAUDE] = {
-        "name" : "Claude",
+        "name" : "Anthropic Claude",
         "models" : [
             { name : "Sonnet 3.5", value: "claude-3-5-sonnet-20240620" }
         ]
@@ -82,7 +90,29 @@ export class AIModels {
         else {
             throw new Error("Not implement");
         }
+
+        const requestdata = aimodel.makeRequestData(request, config, options);
         
-        return aimodel.request(request, config, options);
+        console.log("AIModel RequestData");
+        console.log(requestdata);
+        
+        const promise = proxyFetch(requestdata.url, requestdata.data);
+        const promisethen = promise.then((data)=>{
+            console.log("AIModel ResponseData");
+            console.log(data);
+            
+            return {
+                ...aimodel.handleResponse(data),
+                input : request.contents,
+                note : request.note,
+                prompt : request.prompt,
+                error : null
+            }
+        });
+
+        return {
+            controller : new AbortController(),
+            promise : promisethen
+        }
     }
 }

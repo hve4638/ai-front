@@ -3,7 +3,7 @@ import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant.ts'
-import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
+import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
 import { AIModel } from "../../data/aimodel/interfaces.tsx";
 import { proxyFetch } from "../local/index.ts";
 
@@ -42,7 +42,7 @@ interface RequestReturns {
 }
 
 export class GoogleGemini implements AIModel {
-    request(request:AIModelRequest, config:AIModelConfig, options:any) {
+    makeRequestData(request:AIModelRequest, config:AIModelConfig, options:any):AIModelRequestData {
         const url = bracketFormat(GENIMIAPI_URL_FORMAT, {
             apikey : options.apikey,
             modelname : config.modelname
@@ -79,36 +79,25 @@ export class GoogleGemini implements AIModel {
             },
             "safetySettings" : GENIMI_OPTION_SAFETY
         };
-        console.log('REQUEST');
-        console.log(JSON.stringify(body));
-        
-        const controller = new AbortController();
-        // signal : controller.signal,
-        const promise = proxyFetch(url, {
-            method : 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        })
-        .then(data => {
-            console.log('RESPONSE');
-            console.log(JSON.stringify(data));
-            
-            const apiresponse = {
-                ...this.#parseResponse(data),
-                input : request.contents,
-                note : request.note,
-                prompt : request.prompt,
-                error : null
-            }
 
-            return apiresponse;
-        })
-        
-        return {controller, promise};
+        return {
+            comment : "google gemini request",
+            url : url,
+            data : {
+                method : 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }
+        }
     }
-    #parseResponse(rawResponse:any) {
+
+    handleResponse(data: any): AIModelResponse {
+        return this.#parseResponse(data);
+    }
+
+    #parseResponse(rawResponse:any): AIModelResponse {
         let tokens: number;
         let warning: string | null;
         try {
@@ -127,11 +116,15 @@ export class GoogleGemini implements AIModel {
         else warning = `unhandle reason : ${reason}`;
       
         return {
-          output : text,
-          tokens : tokens,
-          finishreason : reason,
-          normalresponse : true,
-          warning : warning,
+            output : text,
+            tokens : tokens,
+            finishreason : reason,
+            normalresponse : true,
+            warning : warning,
+            error : null,
+            input : "",
+            note : {},
+            prompt : ""
         }
     }
 }

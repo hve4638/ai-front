@@ -1,4 +1,4 @@
-import { AIModel } from "../../data/aimodel/interfaces.tsx";
+import { AIModel, AIModelRequestData, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
 import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
 
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
@@ -7,7 +7,7 @@ import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
 import { proxyFetch } from "../local/index.ts";
 
 export class OpenAIGPT implements AIModel {
-    request(request:AIModelRequest, config:AIModelConfig, options:any) {
+    makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any): AIModelRequestData {
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         const messages = promptParser.build({
             vars : { 
@@ -34,38 +34,25 @@ export class OpenAIGPT implements AIModel {
             max_tokens: Number(config.maxtoken),
             top_p : Number(config.topp),
         }
-        
-        console.log('REQUEST');
-        console.log(JSON.stringify(body));
-        
-        const controller = new AbortController();
-        const promise = proxyFetch(OPENAI_GPT_URL, {
-            method : 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${options.apikey}`
-            },
-            body: JSON.stringify(body)
-        })
-        .then(data => {
-            console.log('RESPONSE');
-            console.log(JSON.stringify(data));
-
-            const apiresponse = {
-                ...this.#parseResponse(data),
-                input : request.contents,
-                note : request.note,
-                prompt : request.prompt,
-                error : null
+     
+        return {
+            url : OPENAI_GPT_URL,
+            data : {
+                method : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${options.apikey}`
+                },
+                body: JSON.stringify(body)
             }
-
-            return apiresponse;
-        })
-        
-        return {controller, promise};
+        }
     }
 
-    #parseResponse(rawResponse:any) {
+    handleResponse(data: any): AIModelResponse {
+        return this.#parseResponse(data);
+    }
+
+    #parseResponse(rawResponse:any): AIModelResponse {
         let tokens: number;
         let warning: string | null;
         try {
@@ -83,11 +70,15 @@ export class OpenAIGPT implements AIModel {
         else warning = `unhandle reason : ${reason}`;
       
         return {
-          output : text,
-          tokens : tokens,
-          finishreason : reason,
-          normalresponse : true,
-          warning : warning,
+            output : text,
+            tokens : tokens,
+            finishreason : reason,
+            normalresponse : true,
+            warning : warning,
+            error : "",
+            input : "",
+            note : {},
+            prompt : ""
         }
     }
 }

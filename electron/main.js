@@ -130,7 +130,14 @@ ipcMain.handle(ipcping.LOAD_SECRET_VALUE, (event, name) => {
 ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
   const res = await fetch(url, init);
   if (!res.ok) {
-    throw data.error.message;
+    if (res.status === 529) {
+      const error = new Error(`HTTP Error(${res.status}) : Server overloaded`);
+      throw error;
+    }
+    else {
+      const error = new Error(`HTTP Error(${res.status}) ${res.statusText}`);
+      throw error;
+    }
   }
   else {
     const data = await res.json();

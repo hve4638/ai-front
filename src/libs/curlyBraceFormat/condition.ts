@@ -39,7 +39,6 @@ export class Condition implements CurlyBraceFormatItem {
     }
 
     build(props) {
-        console.log()
         for (const index in this.conditions) {
             const expr = this.conditions[index];
             if (expr.build(props)) {

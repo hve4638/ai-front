@@ -43,8 +43,6 @@ function SettingModal(props:SettingModalProps) {
         const newOptions = {...modelOptions}
         newOptions[selectedCategory] = data;
         setModelOptions(newOptions);
-
-        console.log(newOptions);
     }
 
     const onClose = ()=>{

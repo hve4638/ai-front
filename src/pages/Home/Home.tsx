@@ -112,10 +112,9 @@ export default function Home() {
                 const text = tp.build(
                     {
                         vars: stateContext.note,
-                        reservedVars : { input: 'describe yourself' }
+                        reservedVars : { input: 'test message' }
                     }
                 );
-                console.log(text)
             }
             catch(e){
                 console.error(e);

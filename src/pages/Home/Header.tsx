@@ -92,7 +92,7 @@ export default function Header(props:HeaderProps) {
       
       setNote(newNotes);
     }
-    console.log(TARGET_ENV)
+
     return (
         <header className='noflex row'>
           <div className='left-section row' style={{padding:'0px 32px 0px 0px'}}>
