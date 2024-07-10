@@ -1,4 +1,4 @@
-import { TARGET_ENV } from '../../data/constants.tsx'
+import { TARGET_ENV, VERSION } from '../../data/constants.tsx'
 import { Promptlist } from './interface.ts';
 import { IPCInteractive } from './ipcInteractive.ts';
 import { WebInteractive } from './webInteractive.ts';
@@ -99,5 +99,63 @@ export function openBrowser(url:string) {
         return IPCInteractive.openBrowser(url);
     default:
         throw errorNotAvailable();
+    }
+}
+
+export async function isNewVersionAvailable() {
+    const isLastGreater = (currenVersion, newVersion) => {
+        const compare = (current:number, last:number) => {
+            const lastNum = Number(last);
+            const currentNum = Number(current);
+            if (lastNum > currentNum) return true;
+            else if (lastNum < currentNum) return false;
+            else return null;
+        }
+        const cv = currenVersion;
+        const nv = newVersion;
+        
+        return compare(cv[1], nv[1])
+            ?? compare(cv[2], nv[2])
+            ?? compare(cv[3], nv[3])
+            ?? false;
+    }
+    const patternVersion = /v(\d+)[.](\d+)[.](\d+)/;
+
+    switch(TARGET_ENV) {
+    case "WEB":
+        return false;
+    case "WINDOWS":
+    {
+        const lastVersion:string = await fetchLastVersion();
+        const currentVersionMatch = VERSION.match(patternVersion);
+        let lastVersionMatch: RegExpMatchArray | null;
+
+        if (!lastVersion || !currentVersionMatch) {
+            return false;
+        }
+        else if (lastVersionMatch = lastVersion.match(patternVersion)) {
+            return isLastGreater(currentVersionMatch, lastVersionMatch);
+        }
+        else {
+            return false;
+        }
+    }
+    default:
+        throw errorNotAvailable();
+    }
+}
+
+export async function fetchLastVersion() {
+    try {
+        const url = "https://api.github.com/repos/hve4638/ai-front/releases/latest";
+        const response = await fetch(url);
+        if (response.ok) {
+            const data = await response.json();
+
+            return data.tag_name;
+        }
+    }
+    catch(error) {
+        return null;
     }
 }

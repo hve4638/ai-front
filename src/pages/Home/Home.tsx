@@ -11,6 +11,7 @@ import ModalBackground from '../../components/ModalBackground.tsx'
 import RequestInfoModal from "../RequestInfoModal/RequestInfoModal.tsx";
 import HistoryModal from '../HistoryModal/HistoryModal.tsx'
 import SettingModal from '../SettingModal/SettingModal.tsx'
+import MessageModal from "../MessageModal/MessageModal.tsx";
 
 import { APIResponse } from "../../data/interface.tsx";
 
@@ -24,13 +25,18 @@ import { AIModels } from "../../features/chatAI/index.ts";
 import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
 import DebugModal from "../DebugModal/DebugModal.tsx";
 
-export default function Home() {
-    const [showSettingModal, setShowSettingModal] = useState(false);
-    const [showModelConfigModal, setShowModelConfigModal] = useState(false);
-    const [showHistoryModal, setShowHistoryModal] = useState(false);
-    const [showVarEditorModal, setShowVarEditorModal] = useState(false);
-    const [showDebugModal, setShowDebugModal] = useState(false);
+const MODALS = {
+    SettingModal : "SettingModal",
+    RequestInfoModal : "RequestInfoModal",
+    HistoryModal : "HistoryModal",
+    VarEditorModal : "VarEditorModal",
+    DebugModal : "DebugModal",
+    MessageModal : "MessageModal",
+} as const;
+type MODALS = typeof MODALS[keyof typeof MODALS];
 
+export default function Home() {
+    const [currentModal, setCurrentModal] = useState<MODALS|null>(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [response, setResponse] = useState<APIResponse>({
         input: '', output : '',
@@ -52,6 +58,7 @@ export default function Home() {
     if (apiContext == null) throw new Error('Home() required APIContextProvider');
     if (stateContext == null) throw new Error('Home() required StateContextProvider');
     if (debugContext == null) throw new Error('Home() required DebugContextProvider');
+    
 
     const onSubmit = () => {
         const promise = AIModels.request(
@@ -144,10 +151,10 @@ export default function Home() {
     return (
         <div className='fill column' style={{position:'relative'}}>
             <Header
-                onOpenHistory={()=>setShowHistoryModal(true)}
-                onOpenModelConfig={()=>setShowModelConfigModal(true)}
-                onOpenSetting={()=>setShowSettingModal(true)}
-                onOpenVarEditor={()=>setShowVarEditorModal(true)}
+                onOpenHistory={()=>setCurrentModal(MODALS.HistoryModal)}
+                onOpenModelConfig={()=>setCurrentModal(MODALS.RequestInfoModal)}
+                onOpenSetting={()=>setCurrentModal(MODALS.SettingModal)}
+                onOpenVarEditor={()=>setCurrentModal(MODALS.VarEditorModal)}
             />
             <main className='flex row' style={{overflowY: 'auto'}}>
                 <InputField
@@ -168,43 +175,50 @@ export default function Home() {
                 />
             </main>
             <Footer
-                onOpenDebug={()=>setShowDebugModal(true)}
+                onOpenDebug={()=>setCurrentModal(MODALS.DebugModal)}
             />
             {
-                (showSettingModal || showModelConfigModal || showHistoryModal || showVarEditorModal || showDebugModal) &&
+                (currentModal !== null) &&
                 <ModalBackground>
                 {
-                    showSettingModal &&
+                    (currentModal === MODALS.SettingModal) &&
                     <SettingModal
-                        onClose = {()=>setShowSettingModal(false)}
+                        onClose = {()=>setCurrentModal(null)}
                     />
                 }
                 {
-                    showModelConfigModal &&
+                    (currentModal === MODALS.RequestInfoModal) &&
                     <RequestInfoModal
-                        onClose = {()=>setShowModelConfigModal(false)}
+                        onClose = {()=>setCurrentModal(null)}
                     />
                 }
                 {
-                    showHistoryModal &&
+                    (currentModal === MODALS.HistoryModal) &&
                     <HistoryModal
-                        onClose = {()=>setShowHistoryModal(false)}
+                        onClose = {()=>setCurrentModal(null)}
                         onClick = {(history)=>{
                             loadHistory(history);
-                            setShowHistoryModal(false);
+                            setCurrentModal(null);
                         }}
                     />
                 }
                 {
-                    showVarEditorModal &&
+                    (currentModal === MODALS.VarEditorModal) &&
                     <VarEditorModal
-                        onClose = {()=>setShowVarEditorModal(false)}
+                        onClose = {()=>setCurrentModal(null)}
                     />
                 }
                 {
-                    showDebugModal &&
+                    (currentModal === MODALS.DebugModal) &&
                     <DebugModal
-                        onClose = {()=>setShowDebugModal(false)}
+                        onClose = {()=>setCurrentModal(null)}
+                    />
+                }
+                {
+                    (currentModal === MODALS.MessageModal) &&
+                    <MessageModal
+                        title="업데이트 알림"
+                        onClose = {()=>setCurrentModal(null)}
                     />
                 }
                 </ModalBackground>

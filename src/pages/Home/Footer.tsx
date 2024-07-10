@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { GITHUB_LINK, TARGET_ENV } from '../../data/constants.tsx';
+import React, { useContext, useEffect, useState } from 'react'
+import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from '../../data/constants.tsx';
 import GithubIcon from '../../assets/icons/github.png'
 
 import { StateContext } from "../../context/StateContext.tsx";
@@ -7,7 +7,7 @@ import { StateContext } from "../../context/StateContext.tsx";
 import { Slot, SlotAdder } from './Slot.tsx';
 
 import { DebugContext } from '../../context/DebugContext.tsx';
-import { openBrowser, openPromptFolder } from '../../services/local/index.ts';
+import { isNewVersionAvailable, openBrowser, openPromptFolder } from '../../services/local/index.ts';
 import { HoverTooltip } from '../../components/HoverTooltip.tsx';
 import { PromptContext } from '../../context/PromptContext.tsx';
 
@@ -16,6 +16,7 @@ interface FooterProps {
 }
 
 export default function Footer({ onOpenDebug }:FooterProps) {
+    const [existsNewVersion, setExistsNewVersion] = useState(false);
     const promptContext = useContext(PromptContext);
     const stateContext = useContext(StateContext);
     const debugContext = useContext(DebugContext);
@@ -56,6 +57,15 @@ export default function Footer({ onOpenDebug }:FooterProps) {
         stateContext.setMarkdownMode(slot.extra?.markdown ?? true);
     }
 
+    useEffect(()=>{
+        isNewVersionAvailable()
+        .then(data=>{
+            if (data) {
+                setExistsNewVersion(true);
+            }
+        })
+    }, []);
+    
     return (
     <footer className='noflex row'>
         <div className='left-section'>
@@ -66,6 +76,19 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                     src={GithubIcon}
                     onClick={()=> openBrowser(GITHUB_LINK)}
                 />
+                <div className='noflex hfill column footer-version-container'>
+                    {
+                        existsNewVersion &&
+                        <div
+                            className='noflex update-message clickable'
+                            onClick={()=>openBrowser(DOWNLOAD_LINK)}
+                        >
+                            New version available!
+                        </div>
+                    }
+                    <div className='flex'/>
+                    <div className='footer-version'>{VERSION}</div>
+                </div>
             </div>
             <div className='flex prompt-slots-container row-reverse undraggable'>
                 <SlotAdder

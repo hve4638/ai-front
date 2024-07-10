@@ -5,7 +5,8 @@ import Home from './pages/Home/Home.tsx'
 import { PromptContext } from './context/PromptContext.tsx'
 import { StateContext } from './context/StateContext.tsx'
 
-import { loadPrompt, loadPromptList } from "./services/local/index.ts";
+import { loadPromptList } from "./services/local/index.ts";
+
 
 import { PromptList } from './features/prompts/index.ts';
 
@@ -20,7 +21,7 @@ function App() {
         prompt1Key, prompt2Key,
         setPrompt1Key, setPrompt2Key
     } = stateContext;
-
+    
     useEffect(()=>{
         loadPromptList()
         .then(data => {

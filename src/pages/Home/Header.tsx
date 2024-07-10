@@ -102,7 +102,9 @@ export default function Header(props:HeaderProps) {
             }
             {
               TARGET_ENV !== "WEB" &&
-              <div className='undraggable'>AI Front</div>
+              <div className='undraggable' style={{position:"relative"}}>
+                AI Front
+              </div>
             }
             {
                 // @TODO: 밝은 테마 추가하기
