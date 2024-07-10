@@ -22,6 +22,8 @@ function createWindow() {
   const win = new BrowserWindow({ 
     width: 1280, 
     height: 900,
+    minWidth : 860,
+    minHeight : 500,
     icon: path.join(__dirname, '../build/favicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
