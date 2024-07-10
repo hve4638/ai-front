@@ -54,12 +54,15 @@ export default function Home() {
     if (debugContext == null) throw new Error('Home() required DebugContextProvider');
 
     const onSubmit = () => {
-        const { controller, promise } = AIModels.request(
-            apiContext,
+        const promise = AIModels.request(
             {
                 contents: textInput,
                 note: stateContext.note,
                 prompt: stateContext.promptContents
+            },
+            {
+                apiContext,
+                stateContext
             }
         )
         setSubmitLoading(true);
@@ -96,7 +99,8 @@ export default function Home() {
             setSubmitLoading(false);
         })
 
-        return controller;
+        // @TODO : 호환성을 위해 사용하지 않은 controller 리턴함. 구조 변경 필요
+        return new AbortController();
     }
 
     const loadHistory = (response:APIResponse) => {

@@ -131,3 +131,11 @@ img.rotate {
 .span-button:active {
     font-size: 0.8em;
 }
+
+.font-clickable {
+    transition: 0.1s font-size ease ;
+}
+
+.font-clickable:hover {
+    font-size: 1.1em;
+}

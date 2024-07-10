@@ -7,7 +7,23 @@ import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
 import { proxyFetch } from "../local/index.ts";
 
 export class OpenAIGPT implements AIModel {
-    makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any): AIModelRequestData {
+    async preprocess() {
+
+    }
+    async postprocess() {
+        
+    }
+    async request(requestdata:AIModelRequestData) {
+        const data = requestdata.data;
+        const res =  await proxyFetch(requestdata.url, data);
+        if (res.ok) {
+            return res.data;
+        }
+        else {
+            throw new Error(`${res.reaseon} (${res.status})`)
+        }
+    }
+    async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         const messages = promptParser.build({
             vars : { 
@@ -17,7 +33,7 @@ export class OpenAIGPT implements AIModel {
                 input : request.contents,
             },
             role(x:string) {
-                return ROLE[x] ?? ROLE_DEFAULT;
+                return ROLE[x];
             },
             map(text, role) {
                 return {

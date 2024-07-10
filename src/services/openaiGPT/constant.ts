@@ -6,4 +6,5 @@ export const ROLE = {
   "system" : "system",
   "model" : "assistant",
   "assistant" : "assistant",
+  "bot" : "assistant",
 }

@@ -25,4 +25,5 @@ export const GENIMI_ROLE = {
   "system" : "MODEL",
   "model" : "MODEL",
   "assistant" : "MODEL",
+  "bot" : "MODEL"
 }

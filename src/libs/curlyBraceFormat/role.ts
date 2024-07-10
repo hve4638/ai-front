@@ -5,20 +5,18 @@ export class Role implements CurlyBraceFormatItem {
 
     constructor(role:string) {
         this.#role = role;
-        switch(role) {
-            case 'user':
-            case 'bot':
-            case 'system':
-                break;
-            default:
-                throw new Error(`Role must be user, bot or system. not '${role}'`);
-        }
     }
 
     build(args:CurlyBraceFormatBuildArgs) {
         const {
             role = (x)=>x
-        } = args
-        return role(this.#role);
+        } = args;
+        const r = role(this.#role);
+        if (r) {
+            return r;
+        }
+        else {
+            throw new Error(`Parse Failed: Invalid Role (${this.#role})`);
+        }
     }
 }

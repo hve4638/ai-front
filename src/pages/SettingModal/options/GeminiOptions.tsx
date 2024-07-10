@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { InputFull } from "../Forms.tsx";
 
-
 export function GeminiOptions({option, setOption}) {
     const [apikey, setAPIKey] = useState("");
 

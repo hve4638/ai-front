@@ -26,7 +26,10 @@ export interface AIModelResponse {
 }
 
 export interface AIModel {
-    makeRequestData(request:AIModelRequest, config:AIModelConfig, options:any):AIModelRequestData;
+    preprocess();
+    postprocess()
+    request(requsetdata:AIModelRequestData):Promise<any>;
+    makeRequestData(request:AIModelRequest, config:AIModelConfig, options:any):Promise<AIModelRequestData>;
     handleResponse(data:any):AIModelResponse;
     //request(requestdata:AIModelRequestData):AIModelReturns;
     //request(requestdata:AIModelRequestDataargs:AIModelRequest, config:AIModelConfig, options:any):AIModelReturns;

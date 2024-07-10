@@ -8,6 +8,7 @@ import { CommonOptions } from './options/CommonOptions.tsx'
 import { GeminiOptions } from './options/GeminiOptions.tsx'
 import { GPTOptions } from './options/GPTOptions.tsx'
 import { ClaudeOptions } from './options/ClaudeOptions.tsx'
+import { GoogleVertexAIOptions } from './options/GoogleVertexAIOptions.tsx'
 
 interface SettingModalProps {
     onClose:()=>void
@@ -178,6 +179,13 @@ function SettingModal(props:SettingModalProps) {
             {
                 selectedCategory == MODELS.OPENAI_GPT &&
                 <GPTOptions
+                    option={modelOption}
+                    setOption={(data)=>setModelOption(data)}
+                />
+            }
+            {
+                selectedCategory == MODELS.GOOGLE_VERTEXAI &&
+                <GoogleVertexAIOptions
                     option={modelOption}
                     setOption={(data)=>setModelOption(data)}
                 />

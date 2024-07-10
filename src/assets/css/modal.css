@@ -37,7 +37,6 @@
     padding: 0px;
 }
 
-
 .setting-container .section {
     margin: 4px 0px 4px 0px;
 }
@@ -180,4 +179,18 @@ p.history-output {
 }
 
 .vareditor .dropdown-list {
+
+}
+
+
+.upload-container {
+    border: 3px dotted white;
+    padding: 4px;
+
+    transition: 0.2s color ease, 0.2s border ease;
+}
+
+.upload-container.inputform-on-mouse {
+    border: 3px dotted rgb(176, 116, 255);
+    color : rgb(176, 116, 255);
 }

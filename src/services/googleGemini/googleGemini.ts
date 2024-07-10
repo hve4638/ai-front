@@ -42,7 +42,24 @@ interface RequestReturns {
 }
 
 export class GoogleGemini implements AIModel {
-    makeRequestData(request:AIModelRequest, config:AIModelConfig, options:any):AIModelRequestData {
+    async preprocess() {
+
+    }
+    async postprocess() {
+        
+    }
+    async request(requestdata:AIModelRequestData) {
+        const data = requestdata.data;
+        const res =  await proxyFetch(requestdata.url, data);
+        if (res.ok) {
+            return res.data;
+        }
+        else {
+            throw new Error(`${res.reaseon} (${res.status})`)
+        }
+    }
+
+    async makeRequestData(request:AIModelRequest, config:AIModelConfig, options:any):Promise<AIModelRequestData> {
         const url = bracketFormat(GENIMIAPI_URL_FORMAT, {
             apikey : options.apikey,
             modelname : config.modelname
@@ -56,7 +73,7 @@ export class GoogleGemini implements AIModel {
                 input : request.contents,
             },
             role(x:string) {
-                return GENIMI_ROLE[x] ?? GENIMI_ROLE_DEFAULT;
+                return GENIMI_ROLE[x];
             },
             map(text, role) {
                 return {

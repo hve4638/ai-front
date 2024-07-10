@@ -1,8 +1,9 @@
 import { APIContextType, ModelInfo } from "../../context/APIContext.tsx"
-import { AIModel, AIModelRequest, AIModelReturns } from "../../data/aimodel/interfaces.ts"
+import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.ts"
 import { TARGET_ENV } from "../../data/constants.tsx"
 import { Claude } from "../../services/claude/Claude.ts"
 import { GoogleGemini } from "../../services/googleGemini/index.ts"
+import { GoogleVertexAI } from "../../services/googleVertexAI/googleVertexAI.ts"
 import { proxyFetch } from "../../services/local/index.ts"
 import { OpenAIGPT } from "../../services/openaiGPT/openaiGPT.ts"
 
@@ -65,18 +66,11 @@ export class AIModels {
         return models;
     }
 
-    static request(apiContext:APIContextType, request:AIModelRequest):AIModelReturns {
+    static async request(request:AIModelRequest, {apiContext, stateContext}):Promise<AIModelResponse> {
         const category = apiContext.modelInfo.category;
         const model = apiContext.modelInfo.model;
         const options = apiContext.modelInfo.modelOptions[category] ?? {};
         
-        const config = {
-            topp : apiContext.topp,
-            temperature : apiContext.temperature,
-            maxtoken : apiContext.maxtoken,
-            modelname : model
-        }
-
         let aimodel:AIModel|null;
         if (category == MODELS.GOOGLE_GEMINI) {
             aimodel = new GoogleGemini();
@@ -87,32 +81,40 @@ export class AIModels {
         else if (category == MODELS.CLAUDE) {
             aimodel = new Claude();
         }
+        else if (category == MODELS.GOOGLE_VERTEXAI) {
+            aimodel = new GoogleVertexAI({ apiContext, category });
+        }
         else {
             throw new Error("Not implement");
         }
 
-        const requestdata = aimodel.makeRequestData(request, config, options);
+        const config:AIModelConfig = {
+            topp : apiContext.topp,
+            temperature : apiContext.temperature,
+            maxtoken : apiContext.maxtoken,
+            modelname : model
+        }
+        
+        await aimodel.preprocess();
+        const requestdata = await aimodel.makeRequestData(request, config, options);
         
         console.log("AIModel RequestData");
         console.log(requestdata);
-        
-        const promise = proxyFetch(requestdata.url, requestdata.data);
-        const promisethen = promise.then((data)=>{
-            console.log("AIModel ResponseData");
-            console.log(data);
-            
-            return {
-                ...aimodel.handleResponse(data),
-                input : request.contents,
-                note : request.note,
-                prompt : request.prompt,
-                error : null
-            }
-        });
 
+        const response = await aimodel.request(requestdata);
+        //await proxyFetch(requestdata.url, requestdata.data);
+
+        console.log("AIModel ResponseData");
+        console.log(response);
+
+        await aimodel.postprocess();
+        
         return {
-            controller : new AbortController(),
-            promise : promisethen
+            ...aimodel.handleResponse(response),
+            input : request.contents,
+            note : request.note,
+            prompt : request.prompt,
+            error : null
         }
     }
 }

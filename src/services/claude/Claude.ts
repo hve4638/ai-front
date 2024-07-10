@@ -4,15 +4,30 @@ import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimod
 import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
-import { CLAUDE_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
+import { CLAUDE_URL, ROLE } from "./constant.ts"
 import { proxyFetch } from "../local/index.ts";
 
 export class Claude implements AIModel {
-    makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any): AIModelRequestData {
-        const promptParser = new CurlyBraceFormatParser(request.prompt);
+    async preprocess() {
+
+    }
+    async postprocess() {
+        
+    }
+    async request(requestdata:AIModelRequestData) {
+        const res =  await proxyFetch(requestdata.url, requestdata.data);
+        if (res.ok) {
+            return res.data;
+        }
+        else {
+            throw new Error(`${res.reaseon} (${res.status})`)
+        }
+    }
+    async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
         let systemPrompt = "";
         const messages:{role:string,content:string}[] = []
         
+        const promptParser = new CurlyBraceFormatParser(request.prompt);
         promptParser.build({
             vars : { 
                 ...request.note,
@@ -21,11 +36,19 @@ export class Claude implements AIModel {
                 input : request.contents,
             },
             role(x:string) {
-                return ROLE[x] ?? ROLE_DEFAULT;
+                return ROLE[x];
             },
             map(text, role) {
                 if (role === "system") {
-                    systemPrompt += text;
+                    if (messages.length === 0) {
+                        systemPrompt += text;
+                    }
+                    else {
+                        messages.push({
+                            role : "assistant",
+                            content : 'system: ' + text
+                        })
+                    }
                 }
                 else {
                     messages.push({
