@@ -21,21 +21,66 @@
 }
 
 .prompt-slot.selected {
-    background-color: var(--slot-select-color);
+    color: rgb(116, 161, 233);
+    /*background-color: var(--slot-select-color);*/
 }
 
 .prompt-slot:hover {
     background-color: var(--slot-hover-color);
 }
 
-.prompt-slots-context-menu {
+.session-contextmenu-container {
     position: absolute;
-    color: white;
-    z-index: 100;
     background-color: var(--field-color);
-    border: 1px solid rgb(68, 68, 68);
+    z-index: 100;
     border-radius: 8px;
+    border: 1px solid rgb(68, 68, 68);
     box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
+}
+.session-contextmenu {
+    color: white;
+    border-radius: 8px;
+    padding: 4px 10px;
+    min-width: 140px;
+    font-size: 14px;
+    transition: 0.3s ease background-color;
+}
+
+.session-contextmenu.red {
+    background-color : var(--background-red);
+}
+.session-contextmenu.orange {
+    background-color : var(--background-orange);
+}
+.session-contextmenu.yellow {
+    background-color : var(--background-yellow);
+}
+.session-contextmenu.green {
+    background-color : var(--background-green);
+}
+.session-contextmenu.lime {
+    background-color : var(--background-lime);
+}
+.session-contextmenu.aqua {
+    background-color : var(--background-aqua);
+}
+.session-contextmenu.blue {
+    background-color : var(--background-blue);
+}
+.session-contextmenu.purple {
+    background-color : var(--background-purple);
+}
+
+.slot-list-item {
+    margin: 1px 0px;
+}
+
+.slot-colorbox {
+    border-radius: 4px;
+    border: 1px solid rgb(130, 130, 130);
+    width: 14px;
+    height: 14px;
+    margin: 2px;
 }
 
 .menu-item {

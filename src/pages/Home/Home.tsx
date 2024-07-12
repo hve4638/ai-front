@@ -3,7 +3,7 @@ import ArrowIcon from '../../assets/icons/arrow.svg'
 import LoadingIcon from '../../assets/icons/loading.svg'
 
 import { PromptContext } from "../../context/PromptContext.tsx";
-import { StateContext } from "../../context/StateContext.tsx";
+import { StoreContext } from "../../context/StoreContext.tsx";
 import { APIContext } from "../../context/APIContext.tsx";
 import { DebugContext } from "../../context/DebugContext.tsx";
 
@@ -20,10 +20,10 @@ import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
 import OutputField from './OutputField.tsx'
 
-import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 import { AIModels } from "../../features/chatAI/index.ts";
 import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
 import DebugModal from "../DebugModal/DebugModal.tsx";
+import { MemoryContext } from "../../context/MemoryContext.tsx";
 
 const MODALS = {
     SettingModal : "SettingModal",
@@ -36,70 +36,66 @@ const MODALS = {
 type MODALS = typeof MODALS[keyof typeof MODALS];
 
 export default function Home() {
-    const [currentModal, setCurrentModal] = useState<MODALS|null>(null);
-    const [submitLoading, setSubmitLoading] = useState(false);
-    const [response, setResponse] = useState<APIResponse>({
-        input: '', output : '',
-        prompt: '',
-        note : {},
-        tokens: 0,
-        warning: null,
-        error : null,
-        finishreason : '',
-        normalresponse : true,
-    });
-    const [textInput, setTextInput] = useState('');
-
     const apiContext = useContext(APIContext);
     const promptContext = useContext(PromptContext);
-    const stateContext = useContext(StateContext);
+    const memoryContext = useContext(MemoryContext);
+    const storeContext = useContext(StoreContext);
     const debugContext = useContext(DebugContext);
     if (promptContext == null) throw new Error('Home() required PromptContextProvider');
     if (apiContext == null) throw new Error('Home() required APIContextProvider');
-    if (stateContext == null) throw new Error('Home() required StateContextProvider');
+    if (storeContext == null) throw new Error('Home() required StoreContextProvider');
+    if (memoryContext == null) throw new Error('Home() required MemoryContextProvider');
     if (debugContext == null) throw new Error('Home() required DebugContextProvider');
-    
+
+    const [currentModal, setCurrentModal] = useState<MODALS|null>(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const {
+        currentSession,
+        currentHistory, setCurrentHistory,
+        currentResponse, setCurrentResponse,
+        apiSubmitPing,
+    } = memoryContext;
+
+    useEffect(()=>{
+        if (!apiSubmitPing) return;
+
+        onSubmit();
+    }, [apiSubmitPing])
 
     const onSubmit = () => {
         const promise = AIModels.request(
             {
-                contents: textInput,
-                note: stateContext.note,
-                prompt: stateContext.promptContents
+                contents: currentResponse.input ?? "",
+                note: storeContext.note,
+                prompt: memoryContext.promptText
             },
             {
                 apiContext,
-                stateContext
+                storeContext
             }
         )
         setSubmitLoading(true);
 
         promise
         .then(response=>{
-            const newhistory = [...stateContext.history]
+            const newhistory = [...currentHistory]
             newhistory.push(response);
-            stateContext.setHistory(newhistory);
-            setResponse(response);
+            setCurrentHistory(newhistory);
+            setCurrentResponse(response);
         })
         .catch(err=>{
             const errorResponse = {
-                input : textInput,
+                input : currentResponse.input ?? "",
                 output : '',
-                prompt : stateContext.promptContents,
-                note : stateContext.note,
+                prompt : memoryContext.promptText,
+                note : memoryContext.currentSession.note,
                 tokens: 0,
                 finishreason : 'EXCEPTION',
                 normalresponse : false,
                 warning : null,
-                error: ''
+                error: `${err}`
             };
-            if (typeof(err) == 'string') {
-                errorResponse.error = err;
-            }
-            else {
-                errorResponse.error = `${err}`;
-            }
-            setResponse(errorResponse);
+            setCurrentResponse(errorResponse);
             console.error(err);
         })
         .finally(()=>{
@@ -111,45 +107,24 @@ export default function Home() {
     }
 
     const loadHistory = (response:APIResponse) => {
-        setTextInput(response.input ?? '');
-        setResponse(response);
+        setCurrentResponse(response);
     }
-
+    
     const onChanageInputField = (value) => {
+        const newResponse = {...currentResponse};
+        newResponse.input = value;
         if (debugContext.isDebugMode && debugContext.mirror) {
-            try {
-                const tp = new CurlyBraceFormatParser(value);
-                
-                const text = tp.build(
-                    {
-                        vars: stateContext.note,
-                        reservedVars : { input: 'test message' }
-                    }
-                );
-            }
-            catch(e){
-                console.error(e);
-            }
-            setResponse({
-                input : value,
-                output : value,
-                error : '',
-                finishreason : 'NORMAL',
-                normalresponse : true,
-                note : {},
-                prompt : '',
-                tokens : 0,
-                warning : ''
-            });
+            newResponse.output = value;
         }
-        else {
-
-        }
-        setTextInput(value);
+        setCurrentResponse(newResponse);
     }
 
     return (
-        <div className='fill column' style={{position:'relative'}}>
+        <div
+            id='home'
+            className={`fill column ${currentSession.color ?? ''}`}
+            style={{ position:'relative'}} 
+        >
             <Header
                 onOpenHistory={()=>setCurrentModal(MODALS.HistoryModal)}
                 onOpenModelConfig={()=>setCurrentModal(MODALS.RequestInfoModal)}
@@ -159,7 +134,7 @@ export default function Home() {
             <main className='flex row' style={{overflowY: 'auto'}}>
                 <InputField
                     className='left-section'
-                    text={textInput}
+                    text={currentResponse.input ?? ""}
                     onChange={(value)=>onChanageInputField(value)}
                 />
                 <div className='seperate-section center undraggable'>
@@ -171,7 +146,7 @@ export default function Home() {
                 </div>
                 <OutputField
                     className='right-section'
-                    response={response}
+                    response={currentResponse}
                 />
             </main>
             <Footer
@@ -241,26 +216,26 @@ function SubmitButton({loading, onSubmit, onAbort}:SubmitButtonProps) {
         {
             !loading && 
             <img 
-            id='submit-button'
-            src={ArrowIcon}
-            draggable='false'
-            onClick={(e)=>{
-                const newController = onSubmit()
-                setController(newController);
-            }}
+                id='submit-button'
+                src={ArrowIcon}
+                draggable='false'
+                onClick={(e)=>{
+                    const newController = onSubmit()
+                    setController(newController);
+                }}
             />
         }
         {
             loading && 
             <img 
-            className='rotate'
-            src={LoadingIcon}
-            draggable='false'
-            onClick={(e)=>{
-                if (controller != null) {
-                    onAbort(controller);
-                }
-            }}
+                className='rotate'
+                src={LoadingIcon}
+                draggable='false'
+                onClick={(e)=>{
+                    if (controller != null) {
+                        onAbort(controller);
+                    }
+                }}
             />
         }
         </>

@@ -1,14 +1,14 @@
 import { Vars } from "../../context/interface/promptInterface";
-import { MainPrompt, SubPrompt } from "../../data/interface";
+import { RawPrompt } from "../../data/interface";
+import { IPromptInfomation } from "./interface";
 
-export class PromptInfomation {
-    #raw:MainPrompt|SubPrompt;
+export class PromptInfomation implements IPromptInfomation {
+    #raw:RawPrompt;
     #selects:Vars;
     #headerExposureVars;
     #allVars;
-    #list:PromptInfomation[]|null;
 
-    constructor(data:MainPrompt|SubPrompt, {selects}) {
+    constructor(data:RawPrompt, {selects}) {
         this.#raw = data;
         this.#selects = selects;
         this.#allVars = [];
@@ -16,14 +16,12 @@ export class PromptInfomation {
 
         this.#validate(this.#raw);
         this.#parseVars(this.#raw, this.#selects);
-        this.#parseList(this.#raw, this.#selects);
     }
 
-    #validate(data:MainPrompt|SubPrompt) {
+    #validate(data:RawPrompt) {
         if (!('key' in data)) throw this.#errorMissingField('key');
         if (!('name' in data)) throw this.#errorMissingField('name');
-        if ('value' in data && 'list' in data) throw this.#error("Prompt must contain either 'value' or 'list', but both.");
-        if (!('value' in data || 'list' in data)) throw this.#error("Prompt requires either 'value' or 'list'.")
+        if (!('value' in data)) throw this.#errorMissingField('value');
     }
 
     #error(message:string) {
@@ -34,7 +32,7 @@ export class PromptInfomation {
         return this.#error(`Missing field '${keyword}'`)
     }
 
-    #parseVars(data:MainPrompt|SubPrompt, selects) {
+    #parseVars(data:RawPrompt, selects) {
         const vars:string|object[] = data.vars ?? [];
         
         for (const item of vars) {
@@ -119,19 +117,6 @@ export class PromptInfomation {
             }
         }
     }
-
-    #parseList(data:MainPrompt|SubPrompt, selects) {
-        if ('list' in data && data.list) {
-            this.#list = [];
-            
-            for (const item of data.list) {
-                this.#list.push(new PromptInfomation(item, {selects}));
-            }
-        }
-        else {
-            this.#list = null;
-        }
-    }
     
     get name() {
         return this.#raw.name;
@@ -141,9 +126,6 @@ export class PromptInfomation {
     }
     get key() {
         return this.#raw.key;
-    }
-    get list() {
-        return this.#list;
     }
     get allVars() {
         return this.#allVars;

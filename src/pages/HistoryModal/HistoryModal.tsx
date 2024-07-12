@@ -2,9 +2,10 @@ import React, { useState, useContext } from 'react'
 
 import ModalHeader from '../../components/ModalHeader.tsx'
 
-import { StateContext } from "../../context/StateContext.tsx";
+import { StoreContext } from "../../context/StoreContext.tsx";
 
 import { APIResponse } from '../../data/interface.tsx';
+import { MemoryContext } from '../../context/MemoryContext.tsx';
 
 interface HistoryModalProps {
     onClose:()=>void;
@@ -15,10 +16,16 @@ function HistoryModal({
     onClose,
     onClick
  }:HistoryModalProps) {
-    const stateContext = useContext(StateContext);
-    if (stateContext == null) throw new Error('HistoryModal() required StateCntextProvider');
+    const memoryContext = useContext(MemoryContext);
+    const storeContext = useContext(StoreContext);
+    if (storeContext == null) throw new Error('HistoryModal() required StateContextProvider');
+    if (memoryContext == null) throw new Error('MemoryModal() required StateContextProvider');
 
-    const reverseHistory = [...stateContext.history].reverse();
+    const {
+        currentHistory
+    } = memoryContext;
+
+    const reverseHistory = [...currentHistory].reverse();
     
     return (
         <div className='modal history-modal undraggable column'>

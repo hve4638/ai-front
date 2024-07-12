@@ -2,23 +2,28 @@ import React, {useContext, useEffect, useState} from 'react'
 
 import ModalHeader from '../../components/ModalHeader.tsx'
 
-import { StateContext } from '../../context/StateContext.tsx';
+import { StoreContext } from '../../context/StoreContext.tsx';
 import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat/index.ts';
+import { MemoryContext } from '../../context/MemoryContext.tsx';
 
 export default function RequestInfoModal({
     onClose
  }) {
+    const storeContext = useContext(StoreContext);
+    const memoryContext = useContext(MemoryContext);
+    if (!storeContext) throw new Error('<ModelConfig/> requiered StoreContextProvider');
+    if (!memoryContext) throw new Error('<ModelConfig/> requiered MemoryContextProvider');
+    
     const [promptPreview, setPromptPreview] = useState(false);
     const [promptPreviewContents, setPromptPreviewContents] = useState<React.JSX.Element[]>([]);
-    const stateContext = useContext(StateContext);
-    if (stateContext == null) {
-        throw new Error('ModelConfig requiered StateContextProvider');
-    }
     
-    const { note, promptContents } = stateContext;
+    const { note, } = storeContext;
+    const {
+        promptText
+    } = memoryContext;
 
     useEffect(()=>{
-        const results = parsePromptContent({promptContents, note});
+        const results = parsePromptContent({promptContents:promptText, note});
         const newContents:React.JSX.Element[] = []
         let count = 0;
         for (const item of results) {
@@ -58,7 +63,7 @@ export default function RequestInfoModal({
                     !promptPreview && 
                     <div className='noflex textplace column scrollbar fontstyle' style={{position:'relative'}}>
                     {
-                        promptContents.split('\n').map((value, index) => (
+                        promptText.split('\n').map((value, index) => (
                             <pre key={index}>
                                 {value == '' ? ' ' : value}
                             </pre>

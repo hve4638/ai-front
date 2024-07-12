@@ -4,23 +4,26 @@ import { APIContext } from '../../context/APIContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
 import { PopUpMenu } from '../../components/PopUpMenu.tsx'
 import { AIModels, MODELS } from '../../features/chatAI/index.ts'
-import { StateContext } from '../../context/StateContext.tsx'
+import { StoreContext } from '../../context/StoreContext.tsx'
 import Dropdown from '../../components/Dropdown.tsx'
 import useDebouncing from '../../hooks/useDebouncing.ts'
+import { MemoryContext } from '../../context/MemoryContext.tsx'
 
 interface VarEditorModalProps {
     onClose:()=>void
 }
 
 function VarEditorModal(props:VarEditorModalProps) {
-    const stateContext = useContext(StateContext);
-    if (stateContext == null) {
-        throw new Error('VarEditorModal required StateContextProvider')
-    }
+    const storeContext = useContext(StoreContext);
+    const memoryContext = useContext(MemoryContext);
+    if (!storeContext) throw new Error('VarEditorModal required StoreContextProvider');
+    if (!memoryContext) throw new Error('VarEditorModal required StoreContextProvider');
     const {
         note, setNote,
-        prompt
-    } = stateContext;
+    } = storeContext;
+    const {
+        promptInfomation,
+    } = memoryContext;
 
     const modalRef:any = useRef(null);
 
@@ -41,7 +44,7 @@ function VarEditorModal(props:VarEditorModalProps) {
                 className='vareditor-content column scrollbar'
             >
                 {
-                    prompt.allVars.map((item, index)=>(
+                    promptInfomation.allVars.map((item, index)=>(
                         <VarEditor
                             key={index}
                             item={item}

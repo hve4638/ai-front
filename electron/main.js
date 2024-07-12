@@ -66,8 +66,8 @@ app.whenReady().then(() => {
 }) 
 
 app.on('window-all-closed', function () { 
-  fs.writeFileSync(configFilePath, JSON.stringify(plainData), 'utf8');
-  fs.writeFileSync(secretFilePath, JSON.stringify(secretData), 'utf8');
+  fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
+  fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
   app.quit() 
 })
 
@@ -99,7 +99,7 @@ ipcMain.handle(ipcping.LOAD_PROMPT, (event, args) => {
 
 ipcMain.handle(ipcping.STORE_VALUE, (event, name, value) => {
   plainDataThrottle(()=>{
-    fs.writeFileSync(configFilePath, JSON.stringify(plainData), 'utf8');
+    fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
   });
   plainData[name] = value;
 })
@@ -115,7 +115,7 @@ ipcMain.handle(ipcping.LOAD_VALUE, (event, name) => {
 
 ipcMain.handle(ipcping.STORE_SECRET_VALUE, (event, name, value) => {
   secretDataThrottle(()=>{
-    fs.writeFileSync(secretFilePath, JSON.stringify(secretData), 'utf8');
+    fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
   });
   secretData[name] = value;
 })
@@ -162,8 +162,8 @@ ipcMain.handle(ipcping.OPEN_BROWSER, async (event, url) => {
 })
 
 ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
-  fs.writeFileSync(secretFilePath, JSON.stringify(secretData), 'utf8');
-  fs.writeFileSync(configFilePath, JSON.stringify(plainData), 'utf8');
+  fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
+  fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
 
   secretData = {}
   plainData = {}

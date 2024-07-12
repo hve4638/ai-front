@@ -1,25 +1,23 @@
-import { IPromptInfomation, IPromptList } from './interface'
-import { MainPrompt, SubPrompt, Vars } from '../../data/interface'
+import { IPromptInfomation, IPromptList, IPromptSubList } from './interface'
+import { MainPrompt, RawPrompt, RawPromptSublist, SubPrompt, Vars } from '../../data/interface'
 import { PromptInfomation } from './promptInfomation.ts';
+import { PromptSublist } from './promptSublist.ts';
 
-export interface MainPromptCache {
-    [key:string]:PromptInfomation;
-}
-export interface SubPromptCache {
+export interface PromptCache {
     [key:string]:{
-        [key:string]:PromptInfomation
+        data:IPromptInfomation,
+        index:number[]
     };
 }
 
 export class PromptList implements IPromptList {
     #raw:MainPrompt[];
     #selectref:Vars;
-    #prompts:PromptInfomation[];
-    #prompt1Cache:MainPromptCache;
-    #prompt2Cache:SubPromptCache;
+    #prompts:(PromptInfomation|PromptSublist)[];
+    #promptCache:PromptCache;
 
     constructor(promptlist) {
-        const prompts = promptlist.prompts;
+        const prompts:(RawPrompt|RawPromptSublist)[] = promptlist.prompts;
         if (prompts == null) {
             throw new Error('Invalid promptlist');
         }
@@ -28,74 +26,87 @@ export class PromptList implements IPromptList {
         }
         this.#raw = prompts;
         this.#selectref = promptlist.selectref ?? promptlist.vars ?? {};
-        this.#prompt1Cache = {};
-        this.#prompt2Cache = {};
+        this.#promptCache = {};
+        //this.#promptSublistCache = {};
         this.#prompts = [];
         
-        for (const item of prompts) {
+        for (const index in prompts) {
+            const item = prompts[index];
             if (item.key === '') {
-                throw new Error(`Invalid prompt : Prompt key can't be an empty string.`);
+                throw new Error(`Invalid prompt : key can't be an empty string.`);
             }
-            else if (item.key in this.#prompt1Cache) {
-                throw new Error(`Duplicate prompt key: ${item.key}`);
+            else if (this.#isPrompt(item)) {
+                const pi = new PromptInfomation(item, {selects : this.#selectref});
+                this.#prompts.push(pi);
+                this.#addPromptCache(pi, [Number(index)]);
             }
-            const pl = new PromptInfomation(item, {selects : this.#selectref});
-            this.#prompts.push(pl);
-
-            this.#prompt1Cache[item.key] = pl;
-            
-            if (item.value && item.list) {
-                throw new Error(`Invalid prompt (key: ${item.key}) : Prompt must contain either 'list' or 'value', not both.`);
-            }
-            else if (pl.list) {
-                const cache = {};
-                this.#prompt2Cache[pl.key] = cache;
-
-                for (const subpl of pl.list) {
-                    cache[subpl.key] = subpl;
+            else if (this.#isPromptSublist(item)) {
+                const sublist = new PromptSublist(item, {selects : this.#selectref});
+                for (const subindex in sublist.list) {
+                    const pi = sublist.list[subindex];
+                    this.#addPromptCache(pi, [Number(index), Number(subindex)]);
                 }
-            }
-        }
-    }
-
-    findValidPromptKey(expectedKey1, expectedKey2) {
-        let prompt1Key = expectedKey1;
-        let prompt2Key = expectedKey2;
-        if (!(prompt1Key in this.#prompt1Cache)) {
-            prompt1Key = this.#prompts[0].key;
-        }
-        const prompt1 = this.#prompt1Cache[prompt1Key];
-
-        if (!prompt1.list) {
-            prompt2Key = null;
-        }
-        else if (!(prompt2Key ?? '' in this.#prompt2Cache[prompt1Key])) {
-            prompt2Key = prompt1.list[0].key;
-        }
-
-        return [ prompt1Key, prompt2Key ]
-    }
-
-    getPrompt(key1:string, key2?:string):IPromptInfomation|null {
-        if (!(key1 in this.#prompt1Cache)) {
-            return null;
-        }
-        else {
-            const prompt1 = this.#prompt1Cache[key1];
-            if (!prompt1.list || key2 == null) {
-                return prompt1;
-            }
-            else if (key2 in this.#prompt2Cache[key1]) {
-                const prompt2 = this.#prompt2Cache[key1][key2]
-                return prompt2;
+                this.#prompts.push(sublist);
             }
             else {
-                return null;
+                throw new Error(`Invalid prompt : invalid format`);
             }
+        }
+
+        if (this.#prompts.length == 0) {
+            throw new Error("Empty Promptlist is not permitted")
+        }
+    }
+
+    #addPromptCache(pi:PromptInfomation, index:number[]) {
+        if (pi.key in this.#promptCache) {
+            throw new Error(`Duplicate prompt key: ${pi.key}`);
+        }
+        else {
+            this.#promptCache[pi.key] = {
+                data : pi,
+                index : index
+            };
+        }
+    }
+
+    #isPrompt(item:RawPrompt|RawPromptSublist) {
+        return ('value' in item && 'key' in item);
+    }
+
+    #isPromptSublist(item:RawPrompt|RawPromptSublist) {
+        return ('list' in item);
+    }
+
+    getPrompt(key:string):IPromptInfomation|null {
+        if (key in this.#promptCache) {
+            return this.#promptCache[key].data;
+        }
+        else {
+            return null;
+        }
+    }
+    
+    getPromptIndex(key:string):number[]|null {
+        if (key in this.#promptCache) {
+            return this.#promptCache[key].index;
+        }
+        else {
+            return null;
         }
     }
 
     get list() {
         return this.#prompts;
+    }
+
+    firstPrompt() {
+        const item = this.#prompts[0];
+        if (item instanceof PromptInfomation) {
+            return item;
+        }
+        else {
+            return item.firstPrompt();
+        }
     }
 }

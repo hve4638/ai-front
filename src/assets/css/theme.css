@@ -46,4 +46,13 @@
     --tooltip-text-color : rgb(191, 191, 191);
     --tooltip-background-color : rgb(47, 47, 47);
     --tooltip-border-color : rgb(68, 68, 68);
+
+    --background-red : rgba(255, 0, 0, 0.03);
+    --background-orange : rgba(255, 128, 0, 0.04);
+    --background-yellow : rgba(255, 255, 0, 0.04);
+    --background-green : rgba(132, 255, 0, 0.04);
+    --background-lime : rgba(0, 255, 81, 0.04);
+    --background-aqua : rgba(0, 247, 255, 0.04);
+    --background-blue : rgba(0, 72, 255, 0.04);
+    --background-purple  : rgba(157, 0, 255, 0.04);
 }

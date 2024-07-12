@@ -9,8 +9,10 @@ import reportWebVitals from './reportWebVitals';
 import { CookiesProvider } from 'react-cookie';
 import APIContextProvider from './context/APIContext.tsx'
 import PromptContextProvider from './context/PromptContext.tsx'
-import StateContextProvider from './context/StateContext.tsx'
+import StoreContextProvider from './context/StoreContext.tsx'
 import DebugContextProvider from './context/DebugContext.tsx'
+import MemoryContextProvider from './context/MemoryContext.tsx'
+import {EventContextProvider} from './context/EventContext.tsx'
 import {TARGET_ENV} from './data/constants.tsx'
 
 
@@ -18,15 +20,19 @@ if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
     <CookiesProvider>
-    <APIContextProvider>
-    <PromptContextProvider>
-    <StateContextProvider>
-    <DebugContextProvider>
-      <App/>
-    </DebugContextProvider>
-    </StateContextProvider>
-    </PromptContextProvider>
-    </APIContextProvider>
+      <APIContextProvider>
+        <PromptContextProvider>
+          <StoreContextProvider>
+            <MemoryContextProvider>
+              <EventContextProvider>
+                <DebugContextProvider>
+                  <App/>
+                </DebugContextProvider>
+              </EventContextProvider>
+            </MemoryContextProvider>
+          </StoreContextProvider>
+        </PromptContextProvider>
+      </APIContextProvider>
     </CookiesProvider>
   );
 }

@@ -7,7 +7,7 @@ import { copyToClipboard } from '../../utils/clipboard.tsx'
 
 
 import Markdown from '../../components/Markdown.tsx'
-import { StateContext } from '../../context/StateContext.tsx'
+import { StoreContext } from '../../context/StoreContext.tsx'
 import { LineByLineRenderer } from '../../components/LineByLine.tsx'
 
 interface OutputFieldProps {
@@ -17,9 +17,9 @@ interface OutputFieldProps {
 
 export default function OutputField(props:OutputFieldProps) {
   const { className='', response } = props;
-  const stateContext = useContext(StateContext);
-  if (stateContext == null) {
-    throw new Error('OutputField required StateContext');
+  const storeContext = useContext(StoreContext);
+  if (storeContext == null) {
+    throw new Error('OutputField required StoreContext');
   }
   // window.navigator.clipboard.writeText()
   return (
@@ -57,12 +57,12 @@ export default function OutputField(props:OutputFieldProps) {
                 <p style={{margin: '0px 0px 32px 0px'}}>Exception Occur!</p>
                 <p style={{color:'red'}}>{response.error}</p>
               </div>
-              : stateContext.markdownMode
+              : storeContext.markdownMode
               ?
               <div className='markdown'>
                 <Markdown content={response.output}></Markdown>
               </div>
-              : stateContext.lineByLineMode
+              : storeContext.lineByLineMode
               ?
               <LineByLineRenderer content={response.output}/>
               :

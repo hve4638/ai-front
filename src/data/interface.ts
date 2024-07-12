@@ -14,19 +14,31 @@ export interface APIResponse {
   error : string|null;    // 정상 응답이 아닐시 에러텍스트
 }
 
+export interface RawPromptSublist {
+  name: string;
+  key: string;
+  list: RawPrompt[];
+}
+export interface RawPrompt {
+  name: string;
+  value: string;
+  key: string;
+  vars?: string|object[];
+}
+
+
 export interface MainPrompt {
-  name: string,
-  value?: string,
-  key: string,
-  list?: SubPrompt[],
-  vars?: string|object[],
+  name: string;
+  value?: string;
+  key: string;
+  vars?: string|object[];
 }
 
 export interface SubPrompt {
-  name: string,
-  value: string,
-  key: string,
-  vars?: string|object[],
+  name: string;
+  value: string;
+  key: string;
+  vars?: string|object[];
 }
 /*
 interface MainPrompts {

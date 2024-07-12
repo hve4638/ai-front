@@ -2,14 +2,15 @@ import React, { useContext, useEffect, useState } from 'react'
 import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from '../../data/constants.tsx';
 import GithubIcon from '../../assets/icons/github.png'
 
-import { StateContext } from "../../context/StateContext.tsx";
-
-import { Slot, SlotAdder } from './Slot.tsx';
-
+import { StoreContext } from "../../context/StoreContext.tsx";
 import { DebugContext } from '../../context/DebugContext.tsx';
 import { isNewVersionAvailable, openBrowser, openPromptFolder } from '../../services/local/index.ts';
+
 import { HoverTooltip } from '../../components/HoverTooltip.tsx';
 import { PromptContext } from '../../context/PromptContext.tsx';
+import { SessionSlot, SessionSlotAdder } from '../../features/chatSession/index.ts';
+import { MemoryContext } from '../../context/MemoryContext.tsx';
+import { EventContext } from '../../context/EventContext.tsx';
 
 interface FooterProps {
     onOpenDebug:()=>void
@@ -18,43 +19,51 @@ interface FooterProps {
 export default function Footer({ onOpenDebug }:FooterProps) {
     const [existsNewVersion, setExistsNewVersion] = useState(false);
     const promptContext = useContext(PromptContext);
-    const stateContext = useContext(StateContext);
+    const storeContext = useContext(StoreContext);
+    const memoryContext = useContext(MemoryContext);
     const debugContext = useContext(DebugContext);
-    if (promptContext == null) {
-        throw new Error('Footer must be used in StateContextProvider');
-    }
-    if (stateContext == null) {
-        throw new Error('Footer must be used in StateContextProvider');
-    }
-    if (debugContext == null) {
-        throw new Error('Footer must be used in DebugContextProvider');
-    }
+    const eventContext = useContext(EventContext);
+    if (!promptContext) throw new Error('Footer must be used in StoreContextProvider');
+    if (!storeContext) throw new Error('Footer must be used in StoreContextProvider');
+    if (!debugContext) throw new Error('Footer must be used in DebugContextProvider');
+    if (!memoryContext) throw new Error('Footer must be used in MemoryContextProvider');
+    if (!eventContext) throw new Error('Footer must be used in EventContextProvider');
     const {
-        promptSlots, setPromptSlots,
+        sessions, setSessions,
+        currentSessionId, setCurrentSessionId,
         markdownMode, setMarkdownMode,
         lineByLineMode, setLineByLineMode
-    } = stateContext;
+    } = storeContext;
     const {
         promptList
     } = promptContext;
-
-    const createSlotData = () => {
-        return {
-            prompt1 : stateContext.prompt1Key,
-            prompt2 : stateContext.prompt2Key,
-            note: stateContext.note,
-            extra: {
-                markdown : markdownMode
+    const {
+        currentSession,
+        nextSessionID,
+        setNextSessionID,
+        setCurrentSession,
+    } = memoryContext;
+    const {
+        createSession,
+        deleteSession,
+        changeCurrentSession,
+        commitCurrentSession,
+    } = eventContext;
+    
+    const onSessionChange = (session) => {
+        if (currentSession.id === session.id) {
+            setCurrentSession(session);
+        }
+        else {
+            for (const i in sessions) {
+                if (sessions[i].id === session.id) {
+                    const newSessions = [...sessions];
+                    newSessions[i] = session;
+                    setSessions(newSessions);
+                    break;
+                }
             }
         }
-    }
-    const applySlotData = (slot) => {
-        const newPrompt = promptList.getPrompt(slot.prompt1, slot.prompt2);
-        stateContext.setPrompt1Key(slot.prompt1);
-        stateContext.setPrompt2Key(slot.prompt2);
-        stateContext.setPrompt(newPrompt);
-        stateContext.setNote(slot.note);
-        stateContext.setMarkdownMode(slot.extra?.markdown ?? true);
     }
 
     useEffect(()=>{
@@ -91,33 +100,20 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                 </div>
             </div>
             <div className='flex prompt-slots-container row-reverse undraggable'>
-                <SlotAdder
-                    onClick={()=>{
-                        const data = createSlotData();
-                        const newSlots = [...promptSlots, data];
-                        setPromptSlots(newSlots);
-                    }}
+                <SessionSlotAdder
+                    onClick={()=>createSession()}
                 />
                 {
-                    promptSlots != null &&
-                    [...promptSlots].reverse().map((value, index) => (
-                        <Slot
+                    sessions != null &&
+                    [...sessions].reverse().map((session, index) => (
+                        <SessionSlot
                             key={index}
-                            value={value}
-                            index={promptSlots.length - index}
-                            onClick={()=>{
-                                applySlotData(value);
-                            }}
-                            onEdit={()=>{
-                                const newSlot = [...promptSlots].reverse();
-                                newSlot[index] = createSlotData();
-                                setPromptSlots(newSlot.reverse());
-                            }}
-                            onDelete={()=>{
-                                const newSlot = [...promptSlots].reverse();
-                                newSlot.splice(index, 1);
-                                setPromptSlots(newSlot.reverse());
-                            }}
+                            session={session}
+                            index={sessions.length - index}
+                            selected={session.id===currentSession.id}
+                            onClick={()=>changeCurrentSession(session)}
+                            onSessionChange={(data)=>onSessionChange(data)}
+                            onDelete={()=>deleteSession(session)}
                         />
                     ))
                 }

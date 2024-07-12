@@ -31,11 +31,11 @@ export function GoogleFontIconButton({
     const pxsize = `${size}px`;
     return (
         <label
-            className={`${className} undraggable center`}
+            className={`undraggable center`}
             style={{ color: 'white', fontSize: pxsize, width: pxsize, height: pxsize }}
             onClick={(e)=>onClick()}
         >
-            <span className={`${enabled ? 'selected' : ''} material-symbols-outlined`}>
+            <span className={`${enabled ? 'selected' : ''} ${className} material-symbols-outlined`}>
                 {value}
             </span>
         </label>

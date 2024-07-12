@@ -1,20 +1,20 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {memo, useContext, useEffect, useState} from "react";
 
 import HistoryIcon from '../../assets/icons/history.svg'
 import AdvancedIcon from '../../assets/icons/model.svg'
 import SettingIcon from '../../assets/icons/setting.svg'
 import NoteIcon from '../../assets/icons/note.svg'
 
-
-import { SubPromptsType } from "../../context/interface/promptInterface.tsx";
 import { PromptContext } from "../../context/PromptContext.tsx";
-import { StateContext } from "../../context/StateContext.tsx";
+import { StoreContext } from "../../context/StoreContext.tsx";
 
 import Dropdown from "../../components/Dropdown.tsx";
 import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
-import { IPromptInfomation } from "../../features/prompts/interface.ts";
-import { loadPrompt } from "../../services/local/index.ts";
 import { TARGET_ENV } from "../../data/constants.tsx";
+import { PromptSublist } from "../../features/prompts/promptSublist.ts";
+import { Note } from "../../data/interface.ts";
+import { MemoryContext } from "../../context/MemoryContext.tsx";
+import { ChatSession } from "../../context/interface.ts";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -25,60 +25,42 @@ interface HeaderProps {
 
 export default function Header(props:HeaderProps) {
     const promptContext = useContext(PromptContext);
-    const stateContext = useContext(StateContext);
-    const [subPrompts, setSubPrompts] = useState<IPromptInfomation[]>([]);
-    
+    const storeContext = useContext(StoreContext);
+    const memoryContext = useContext(MemoryContext);
     if (!promptContext) throw new Error('Header must be used in PromptContextProvider');
-    if (!stateContext) throw new Error('Header must be used in StateContextProvider');
-
+    if (!storeContext) throw new Error('Header must be used in StoreContextProvider');
+    if (!memoryContext) throw new Error('Header must be used in StoreContextProvider');
+    
     const {
       promptList
     } = promptContext;
     const {
-      setPromptContents,
-      note, setNote,
-      prompt, setPrompt,
-      prompt1Key, prompt2Key,
-      setPrompt1Key, setPrompt2Key
-    } = stateContext;
+      promptSubList,
+      promptIndex,
+      promptInfomation,
+      currentSession,
+      setCurrentSession
+    } = memoryContext;
 
-    useEffect(()=>{
-      if (prompt1Key == null) return;
-
-      const item = promptList.getPrompt(prompt1Key);
-      if (item == null) return;
-
-      setSubPrompts(item.list ?? []);
-    }, [promptList, prompt1Key]);
-
-    useEffect(()=>{
-      if (prompt == null) return;
-
-      setNewNotes(prompt);
-      
-      loadPrompt(prompt.value)
-      .then(data => setPromptContents(data));
-    }, [prompt])
-
-    const onSelectPrompt1 = (item:PromptInfomation) => {
-      let autoselected;
-      if (item.value != null) {
-        autoselected = item;
-      }
-      else if (item.list != null) {
-        autoselected = item.list[0];
+    const onChangePromptKey = (target:PromptInfomation|PromptSublist) => {
+      let pl:PromptInfomation;
+      if (target instanceof PromptSublist) {
+        pl = target.firstPrompt();
       }
       else {
-        throw new Error(`Invalid prompts Format : ${item.name}`)
+        pl = target;
       }
-      setPrompt(autoselected);
-    }
-    const onSelectPrompt2 = (item: SubPromptsType) => {
-      setPrompt(item);
+
+      const newSession:ChatSession = {
+        ...currentSession,
+        promptKey: pl.key,
+        note: getNewNote(pl, currentSession.note)
+      }
+      setCurrentSession(newSession);
     }
 
-    const setNewNotes = (promptinfo:PromptInfomation) => {
-      const newNotes = {};
+    const getNewNote = (promptinfo:PromptInfomation, note:Note) => {
+      const newNote = {};
       for (const item of promptinfo.allVars) {
         let value: string;
         if (note != null && item.name in note) {
@@ -87,10 +69,10 @@ export default function Header(props:HeaderProps) {
         else {
           value = item.default_value;
         }
-        newNotes[item.name] = value;
+        newNote[item.name] = value;
       }
       
-      setNote(newNotes);
+      return newNote;
     }
 
     return (
@@ -118,32 +100,19 @@ export default function Header(props:HeaderProps) {
             <div className='flex'></div>
             <Dropdown
               style={{marginLeft :'15px', minWidth:'100px'}}
-              value={prompt1Key}
-              items={[...promptList.list.map((item)=>{return {name:item.name, value:item, key:item.key}})]}
-              onChange={(item)=>{
-                setPrompt1Key(item.key);
-                onSelectPrompt1(item);
-                
-                if (item.list == null) {
-                  // nothing to do
-                }
-                else if (prompt2Key == null || promptList.getPrompt(item.key, prompt2Key) == null) {
-                  setPrompt2Key(item.list[0].key);
-                }
-              }}
-              titleMapper={dropdownkeyFinder}
+              value={ promptIndex[0] }
+              items={[...promptList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+              onChange={(item)=>onChangePromptKey((item))}
+              titleMapper={dropdownIndexFinder}
             />
             {
-              subPrompts.length != 0 &&
+              promptSubList != null &&
               <Dropdown
-                style={{marginLeft :'15px'}}
-                value={prompt2Key}
-                items={[...subPrompts.map((item, index)=>{return {name:item.name, value:item, key:item.key}})]}
-                onChange={(item)=>{
-                  setPrompt2Key(item.key);
-                  onSelectPrompt2(item);
-                }}
-                titleMapper={dropdownkeyFinder}
+                style={{ marginLeft :'15px' }}
+                value={ promptIndex[1] }
+                items={[...promptSubList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+                onChange={(item)=>onChangePromptKey((item))}
+                titleMapper={dropdownIndexFinder}
               />
             }
           </div>
@@ -151,9 +120,9 @@ export default function Header(props:HeaderProps) {
           </div>
           <div className='right-section row'>
             {
-                (prompt?.headerExposuredVars?.length ?? 0) !== 0 &&
-                prompt.headerExposuredVars.map((item, index) => {
-                  const value = (item.name in (note ?? {})) ? note[item.name] : null;
+                (promptInfomation.headerExposuredVars?.length ?? 0) !== 0 &&
+                promptInfomation.headerExposuredVars.map((item, index) => {
+                  const value = (item.name in currentSession.note) ? currentSession.note[item.name] : null;
                   return (
                     <Dropdown
                       key={index}
@@ -161,9 +130,12 @@ export default function Header(props:HeaderProps) {
                       value={value}
                       style={{marginRight:"8px"}}
                       onChange={(value:string)=>{
-                        const newNote = {...note};
+                        const newSession = {...currentSession};
+                        const newNote = {...currentSession.note};
                         newNote[item.name] = value;
-                        setNote(newNote);
+                        newSession.note = newNote;
+
+                        setCurrentSession(newSession);
                       }}
                       titleMapper={dropdownValueFinder}
                     />
@@ -174,7 +146,7 @@ export default function Header(props:HeaderProps) {
             <div style={{width:'10px'}}></div>
             <div className='flex'></div>
             {
-              (prompt?.allVars?.length ?? 0) !== 0 &&
+              (promptInfomation?.allVars?.length ?? 0) !== 0 &&
               <HeaderIcon
                 src={NoteIcon}
                 onClick={props.onOpenVarEditor}
@@ -223,6 +195,13 @@ const IconButton = ({value, style, onClick}) => {
     );
 }
 
+const dropdownIndexFinder = (value, items) => {
+  for (const item of items) {
+    if (value == item.index) {
+      return item.name;
+    }
+  }
+}
 const dropdownkeyFinder = (value, items) => {
   for (const item of items) {
     if (value == item.key) {

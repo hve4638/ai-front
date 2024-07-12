@@ -1,0 +1,56 @@
+import React, { useEffect, useState } from "react";
+import { createContext } from 'react';
+import { Note } from "../data/interface.ts";
+import { usePlainCookie } from '../hooks/usePlainCookie.tsx'
+import { COOKIE_OPTION_NOEXPIRE } from "../data/constants.tsx";
+import { ChatSession, SessionHistory, SessionResponse } from "./interface.ts";
+
+interface StoreContextType {
+    sessions:ChatSession[];
+    setSessions:(slot:ChatSession[])=>void;
+    currentSessionId:number;
+    setCurrentSessionId:(x:number)=>void;
+    history: SessionHistory;
+    setHistory: (x:SessionHistory)=>void;
+    responses : SessionResponse;
+    setResponses : (x:SessionResponse)=>void;
+
+    // @TODO : 리팩토링 필요
+    markdownMode: boolean;
+    setMarkdownMode : (x:boolean)=>void;
+    lineByLineMode : boolean;
+    setLineByLineMode : (x:boolean)=>void;
+    note: Note;
+    setNote: (X:Note) => void;
+}
+
+export const StoreContext = createContext<StoreContextType|undefined>(undefined);
+
+export default function StoreContextProvider({children}) {
+    const [currentSessionId, setCurrentSessionId] = usePlainCookie('currentSessionId', null);
+    const [sessions, setSessions] = usePlainCookie('sessions', []);
+    const [history, setHistory] = usePlainCookie('history', {});
+    const [responses, setResponses] = usePlainCookie('responses', {});
+
+    const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
+    const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
+    const [note, setNote] = usePlainCookie('note', {});
+    
+    return (
+        <StoreContext.Provider
+            value={{
+                sessions, setSessions,
+                currentSessionId, setCurrentSessionId,
+                note, setNote,
+                history, setHistory,
+                responses, setResponses,
+                markdownMode,
+                setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),
+                lineByLineMode,
+                setLineByLineMode : (value)=>setLineByLineMode(value, COOKIE_OPTION_NOEXPIRE),
+            }}
+        >
+            {children}
+        </StoreContext.Provider>
+    )
+}

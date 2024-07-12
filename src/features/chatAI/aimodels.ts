@@ -66,7 +66,7 @@ export class AIModels {
         return models;
     }
 
-    static async request(request:AIModelRequest, {apiContext, stateContext}):Promise<AIModelResponse> {
+    static async request(request:AIModelRequest, {apiContext, storeContext}):Promise<AIModelResponse> {
         const category = apiContext.modelInfo.category;
         const model = apiContext.modelInfo.model;
         const options = apiContext.modelInfo.modelOptions[category] ?? {};

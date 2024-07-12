@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { storeValue, loadValue } from '../services/local/index.ts';
 
-export const usePlainCookie:(cookieName:string, defaultvalue?:any)=>[any, (value:any, options?:any)=>void]
- = (cookieName, defaultvalue=undefined) => {
+export function usePlainCookie(cookieName:string, defaultvalue:any=undefined):[any, (value:any, options?:any)=>void] {
   const encode = (value:any) => value
   const decode = (value:string|undefined) => value ?? defaultvalue;
-  const [cached, setCached] = useState<any>(null);
+  const [cached, setCached] = useState<any>(undefined);
 
   useEffect(() => {
     loadValue(cookieName)

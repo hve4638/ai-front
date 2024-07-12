@@ -21,6 +21,7 @@ export interface APIContextType {
 
 export const APIContext = createContext<APIContextType|null>(null);
 
+/// @TODO : StoreContext에 통합하기
 export default function APIContextProvider({children}) {
     const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
