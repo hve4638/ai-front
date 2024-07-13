@@ -71,6 +71,37 @@
     background-color : var(--background-purple);
 }
 
+.slot-alert-success {
+    animation: animation-alert-success 3s infinite;
+}
+@keyframes animation-alert-success {
+    0% {
+        background-color: var(--slot-alert-green-color);
+    }
+    50% {
+        background-color: var(--slot-alert-green-accent-color);
+    }
+    100% {
+        background-color: var(--slot-alert-green-color);
+    }
+}
+
+.slot-alert-fail {
+    border: 1px solid rgb(110, 65, 65);
+    animation: animation-alert-fail 4s infinite;
+}
+@keyframes animation-alert-fail {
+    0% {
+        border-color: rgb(110, 65, 65);
+    }
+    50% {
+        border-color: rgb(141, 85, 85);
+    }
+    100% {
+        border-color: rgb(110, 65, 65);
+    }
+}
+
 .slot-list-item {
     margin: 1px 0px;
 }

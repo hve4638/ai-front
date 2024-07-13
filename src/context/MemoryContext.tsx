@@ -4,7 +4,6 @@ import { APIResponse } from '../data/interface.ts'
 
 import { IPromptInfomation, IPromptSubList } from "../features/prompts/interface.ts";
 import { ChatSession } from "./interface.ts";
-import { Chat } from "./interface.ts";
 
 interface MemoryContextType {
     nextSessionID:number;
@@ -22,19 +21,40 @@ interface MemoryContextType {
     currentInput:string;
     setCurrentInput:(x:string)=>void;
     currentHistory:APIResponse[];
-    setCurrentHistory:(x:APIResponse[])=>void;
-    currentResponse:APIResponse;
-    setCurrentResponse:(x:APIResponse)=>void;
-    currentChat:Chat;
-    setCurrentChat:(x:Chat)=>void;
+    setCurrentHistory:useStateCallback<APIResponse[]>;
+    currentChat:APIResponse;
+    setCurrentChat:(x:APIResponse)=>void;
     apiSubmitPing:boolean;
     setApiSubmitPing:(x:boolean)=>void;
+    
+    apiFetchQueue:any[];
+    setApiFetchQueue:(x:any[]|((x:any)=>void))=>void;
+    apiFetchBlock:boolean;
+    setApiFetchBlock:(x:boolean)=>void;
+    apiFetchWaiting:ApiFetchWaiting;
+    setApiFetchWaiting:useStateCallback<ApiFetchWaiting>;
+    apiFetchResponse:ApiFetchResponse;
+    setApiFetchResponse:useStateCallback<ApiFetchResponse>;
 }
 const ANY:any = null;
 
+interface ApiFetchResponse {
+    [key:string]:{
+        success : boolean;
+        sessionid : any;
+        data : APIResponse;
+    };
+}
+
+interface ApiFetchWaiting {
+    [key:string]:any;
+}
+
+type useStateCallback<T> = (x:T|((x:T)=>T))=>void;
+
 export const MemoryContext = createContext<MemoryContextType|null>(null);
 
-export default function PromptContextProvider({children}) {
+export default function MemoryContextProvider({children}) {
     const [promptInfomation, setPromptInfomation] = useState<IPromptInfomation>(ANY);
     const [promptIndex, setPromptIndex] = useState([0, 0]);
     const [promptText, setPromptText] = useState('');
@@ -43,10 +63,14 @@ export default function PromptContextProvider({children}) {
     const [nextSessionID, setNextSessionID] = useState<number>(0);
 
     const [currentInput, setCurrentInput] = useState<string>("");
+    const [apiFetchQueue, setApiFetchQueue] = useState<any>([]);
+    const [apiFetchResponse, setApiFetchResponse] = useState<any>([]);
+    const [apiFetchBlock, setApiFetchBlock] = useState(false);
     
-    const [currentResponse, setCurrentResponse] = useState(ANY);
-    const [currentChat, setCurrentChat] = useState({input:'', output:''});
+    const [currentChat, setCurrentChat] = useState(ANY);
     const [currentHistory, setCurrentHistory] = useState<APIResponse[]>([]);
+    const [apiFetchWaiting, setApiFetchWaiting] = useState<ApiFetchWaiting>({});
+
     const [apiSubmitPing, setApiSubmitPing] = useState(false);
     
     return (
@@ -60,9 +84,13 @@ export default function PromptContextProvider({children}) {
                 nextSessionID, setNextSessionID,
                 currentInput, setCurrentInput,
                 currentHistory, setCurrentHistory,
-                currentResponse, setCurrentResponse,
                 currentChat, setCurrentChat,
                 apiSubmitPing, setApiSubmitPing,
+                
+                apiFetchQueue, setApiFetchQueue,
+                apiFetchBlock, setApiFetchBlock,
+                apiFetchResponse, setApiFetchResponse,
+                apiFetchWaiting, setApiFetchWaiting
             }}
         >
             {children}

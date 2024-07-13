@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
 import { getCookies, removeCookie } from '../../libs/cookies.tsx'
-import { APIContext } from '../../context/APIContext.tsx'
+import { SecretContext } from '../../context/SecretContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
 import { PopUpMenu } from '../../components/PopUpMenu.tsx'
 import { AIModels, MODELS } from '../../features/chatAI/index.ts'
@@ -19,9 +19,8 @@ function VarEditorModal(props:VarEditorModalProps) {
     if (!storeContext) throw new Error('VarEditorModal required StoreContextProvider');
     if (!memoryContext) throw new Error('VarEditorModal required StoreContextProvider');
     const {
-        note, setNote,
-    } = storeContext;
-    const {
+        currentSession,
+        setCurrentSession,
         promptInfomation,
     } = memoryContext;
 
@@ -48,8 +47,14 @@ function VarEditorModal(props:VarEditorModalProps) {
                         <VarEditor
                             key={index}
                             item={item}
-                            value={note[item.name]}
-                            onChange={(value)=>setNote({...note, [item.name]:value})}
+                            value={item.name in currentSession.note ? currentSession.note[item.name] : null}
+                            onChange={(value)=>{
+                                const newCurrentSession = {...currentSession};
+                                const newNote = {...currentSession.note};
+                                newNote[item.name] = value;
+                                newCurrentSession.note = newNote;
+                                setCurrentSession(newCurrentSession);
+                            }}
                         />
                     ))
                 }

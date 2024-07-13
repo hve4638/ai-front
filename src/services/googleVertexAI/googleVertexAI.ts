@@ -9,26 +9,26 @@ import { proxyFetch } from "../local/index.ts";
 import { Claude } from "../claude/Claude.ts";
 
 import { TokenGenerator } from "./tokenGenerator.ts";
-import { APIContextType } from "../../context/APIContext.tsx";
+import { SecretContextType } from "../../context/SecretContext.tsx";
 
 export class GoogleVertexAI implements AIModel {
     static #claude = new Claude();
     #lasttoken:string;
-    #apiContext:APIContextType;
+    #secretContext:SecretContextType;
     #category:string;
     #options;
 
-    constructor({ apiContext, category }:{ apiContext:APIContextType, category:string }) {
-        this.#apiContext = apiContext;
+    constructor({ secretContext, category }:{ secretContext:SecretContextType, category:string }) {
+        this.#secretContext = secretContext;
         this.#category = category;
     }
 
     async preprocess() {
-        const { modelInfo } = this.#apiContext;
+        const { modelInfo } = this.#secretContext;
         this.#lasttoken = modelInfo.modelOptions[this.#category].token;
     }
     async postprocess() {
-        const { setModelInfo, modelInfo } = this.#apiContext;
+        const { setModelInfo, modelInfo } = this.#secretContext;
         const newModelInfo = {...modelInfo};
         newModelInfo.modelOptions[this.#category].token = this.#lasttoken;
 

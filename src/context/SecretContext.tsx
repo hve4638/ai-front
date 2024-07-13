@@ -8,7 +8,7 @@ export interface ModelInfo {
     modelOptions:{[modelname:string]:{[key:string]:any}}
 }
 
-export interface APIContextType {
+export interface SecretContextType {
     topp:string,
     setTopp:(x:string)=>boolean,
     temperature:string,
@@ -19,10 +19,10 @@ export interface APIContextType {
     setModelInfo:(x:ModelInfo)=>void,
 }
 
-export const APIContext = createContext<APIContextType|null>(null);
+export const SecretContext = createContext<SecretContextType|null>(null);
 
 /// @TODO : StoreContext에 통합하기
-export default function APIContextProvider({children}) {
+export default function SecretContextProvider({children}) {
     const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
     const [temperature, setRawTemperature] = useEncryptedCookie('temperature', ENCRYPT_KEY);
@@ -66,7 +66,7 @@ export default function APIContextProvider({children}) {
     }
 
     return (
-        <APIContext.Provider
+        <SecretContext.Provider
             value={{
                 modelInfo : modelInfo ?? {category:null,model:null,modelOptions:{}},
                 setModelInfo : (x:object)=>setModelInfo(x, COOKIE_OPTION_NOEXPIRE),
@@ -79,7 +79,7 @@ export default function APIContextProvider({children}) {
             }}
         >
             {children}
-        </APIContext.Provider>
+        </SecretContext.Provider>
     )
 }
 

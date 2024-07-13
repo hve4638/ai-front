@@ -11,8 +11,15 @@ interface EventContextType {
     deleteSession:(session:ChatSession)=>void;
     changeCurrentSession:(session:ChatSession)=>void;
     commitCurrentSession:()=>void;
+    enqueueApiRequest:({session, input, promptText}:enqueueApiRequestArgs)=>void;
 }
 const ANY:any = null;
+
+interface enqueueApiRequestArgs {
+    session:ChatSession;
+    input:string;
+    promptText:string;
+}
 
 const getDefaultAPIResponse = () => {
     return {
@@ -45,9 +52,10 @@ export function EventContextProvider({children}) {
     } = storeContext;
     const {
         currentHistory, setCurrentHistory,
-        currentResponse, setCurrentResponse,
+        currentChat, setCurrentChat,
         currentSession, setCurrentSession,
         nextSessionID, setNextSessionID,
+        apiFetchQueue, setApiFetchQueue
     } = memoryContext;
 
     const createSession = () => {
@@ -67,6 +75,8 @@ export function EventContextProvider({children}) {
         if (currentSessionId == session.id) {
             const newSession = {...currentSession};
             newSession.id = -1;
+            newSession.chatIsolation = false;
+            newSession.historyIsolation = false;
             setCurrentSession(newSession);
             setCurrentSessionId(-1);
         }
@@ -75,10 +85,10 @@ export function EventContextProvider({children}) {
         commitCurrentSession();
         
         if (session.chatIsolation) {
-            setCurrentResponse(responses[session.id] ?? getDefaultAPIResponse());
+            setCurrentChat(responses[session.id] ?? getDefaultAPIResponse());
         }
         else if (currentSession.chatIsolation) {
-            setCurrentResponse(responses[GLOBALTAG] ?? getDefaultAPIResponse());
+            setCurrentChat(responses[GLOBALTAG] ?? getDefaultAPIResponse());
         }
         if (session.historyIsolation) {
             setCurrentHistory(history[session.id] ?? []);
@@ -105,12 +115,25 @@ export function EventContextProvider({children}) {
 
         const newResponses = {...responses};
         if (currentSession.chatIsolation) {
-            newResponses[currentSession.id] = currentResponse;
+            newResponses[currentSession.id] = currentChat;
         }
         else {
-            newResponses[GLOBALTAG] = currentResponse;
+            newResponses[GLOBALTAG] = currentChat;
         }
         setResponses(newResponses);
+    }
+    const enqueueApiRequest = ({session, input, promptText}:enqueueApiRequestArgs) => {
+        setApiFetchQueue((queue)=>{
+            const newQueue = [...queue];
+            newQueue.push({
+                sessionid : session.id,
+                input: input,
+                note : session.note,
+                promptText : promptText,
+            });
+
+            return newQueue;
+        })
     }
     
     return (
@@ -119,7 +142,8 @@ export function EventContextProvider({children}) {
                 createSession,
                 deleteSession,
                 changeCurrentSession,
-                commitCurrentSession
+                commitCurrentSession,
+                enqueueApiRequest,
             }}
         >
             {children}

@@ -78,11 +78,11 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                             onChange(newSession);
                         }}
                     />
-                    <span className='center'>채팅 기억</span>
+                    <span className='center'>독립된 채팅</span>
                 </div>
                 <div className='wfill slot-list-item row main-start'>
                     <input type='checkbox'
-                        checked={session.historyIsolation}
+                        checked={!session.historyIsolation}
                         onChange={()=>{
                             const newSession = {...session};
                             newSession.historyIsolation = !session.historyIsolation;

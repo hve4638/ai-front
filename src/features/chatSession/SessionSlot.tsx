@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, memo, useContext, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom';
 import { PromptContext } from '../../context/PromptContext.tsx';
 import { GoogleFontIconButton } from '../../components/GoogleFontIcon.tsx';
@@ -31,20 +31,51 @@ interface SlotProps {
 }
 
 export const SessionSlot = ({ index, session, selected=false, onClick, onDelete, onSessionChange}:SlotProps) => {
+    const memoryContext = useContext(MemoryContext);
+    if (!memoryContext) throw new Error("<SessionSlot/> required memoryContextProvider");
+
     const targetRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [showTooptip, setShowTooltip] = useState(false);
+    const [responseSuccessAlert, setResponseSuccessAlert] = useState(false);
+    const [responseFailAlert, setResponseFailAlert] = useState(false);
+
+    const {
+        apiFetchResponse,
+    } = memoryContext;
 
     let rect;
     if (targetRef.current) {
         rect = targetRef.current.getBoundingClientRect();
     }
+
+    useEffect(()=>{
+        if (session.id in apiFetchResponse) {
+            const { success } = apiFetchResponse[session.id];
+            if (success) {
+                setResponseSuccessAlert(true);
+                setResponseFailAlert(false);
+            }
+            else {
+                setResponseSuccessAlert(false);
+                setResponseFailAlert(true);
+            }
+        }
+        else {
+            setResponseSuccessAlert(false);
+            setResponseFailAlert(false);
+        }
+    }, [apiFetchResponse])
     
     return (
         <>
             <div
-                className={`noflex prompt-slot center ${selected ? 'selected' : ''}`}
+                className={
+                    `noflex prompt-slot center ${selected ? 'selected' : ''} \
+${responseSuccessAlert ? 'slot-alert-success' : ''} \
+${responseFailAlert ? 'slot-alert-fail' : ''}`
+                }
                 ref={targetRef}
                 onClick={()=>onClick()}
                 onContextMenu={(e)=>{
@@ -91,7 +122,6 @@ export const SessionSlot = ({ index, session, selected=false, onClick, onDelete,
 
 function SlotTooltip({x, y, session}) {
     const targetRef = useRef<HTMLDivElement>(null);
-    const conetextMenuRef = useRef<HTMLDivElement>(null);
     const [h, setH] = useState(0);
     const [texts, setTexts] = useState<string[]>([]);
     const promptContext = useContext(PromptContext);
@@ -113,10 +143,19 @@ function SlotTooltip({x, y, session}) {
     useEffect(()=>{
         try {
             const arr:string[] = [];
-            const pl = promptList.getPrompt(session.promptKey)
+            const index = promptList.getPromptIndex(session.promptKey);
+            const pl = promptList.getPrompt(session.promptKey);
             
-            if (pl) {
-                arr.push(pl.name);
+            if (pl && index) {
+                if (index.length == 1) {
+                    arr.push(pl.name);
+                }
+                else if (index.length == 2) {
+                    const sublist = promptList.list[index[0]]
+                    
+                    arr.push(`${sublist.name} (${pl.name})`);
+                }
+                
                 for (const key in session.note)  {
                     const value = session.note[key];
                     arr.push(`- ${key} : ${value}`);

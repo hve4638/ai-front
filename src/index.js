@@ -7,7 +7,7 @@ import analytics from './analytics.ts';
 import reportWebVitals from './reportWebVitals';
 
 import { CookiesProvider } from 'react-cookie';
-import APIContextProvider from './context/APIContext.tsx'
+import SecretContextProvider from './context/SecretContext.tsx'
 import PromptContextProvider from './context/PromptContext.tsx'
 import StoreContextProvider from './context/StoreContext.tsx'
 import DebugContextProvider from './context/DebugContext.tsx'
@@ -20,7 +20,7 @@ if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
     <CookiesProvider>
-      <APIContextProvider>
+      <SecretContextProvider>
         <PromptContextProvider>
           <StoreContextProvider>
             <MemoryContextProvider>
@@ -32,7 +32,7 @@ if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
             </MemoryContextProvider>
           </StoreContextProvider>
         </PromptContextProvider>
-      </APIContextProvider>
+      </SecretContextProvider>
     </CookiesProvider>
   );
 }

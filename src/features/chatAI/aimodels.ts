@@ -1,4 +1,4 @@
-import { APIContextType, ModelInfo } from "../../context/APIContext.tsx"
+import { SecretContextType, ModelInfo } from "../../context/SecretContext.tsx"
 import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.ts"
 import { TARGET_ENV } from "../../data/constants.tsx"
 import { Claude } from "../../services/claude/Claude.ts"
@@ -66,10 +66,10 @@ export class AIModels {
         return models;
     }
 
-    static async request(request:AIModelRequest, {apiContext, storeContext}):Promise<AIModelResponse> {
-        const category = apiContext.modelInfo.category;
-        const model = apiContext.modelInfo.model;
-        const options = apiContext.modelInfo.modelOptions[category] ?? {};
+    static async request(request:AIModelRequest, {secretContext, storeContext}):Promise<AIModelResponse> {
+        const category = secretContext.modelInfo.category;
+        const model = secretContext.modelInfo.model;
+        const options = secretContext.modelInfo.modelOptions[category] ?? {};
         
         let aimodel:AIModel|null;
         if (category == MODELS.GOOGLE_GEMINI) {
@@ -82,16 +82,16 @@ export class AIModels {
             aimodel = new Claude();
         }
         else if (category == MODELS.GOOGLE_VERTEXAI) {
-            aimodel = new GoogleVertexAI({ apiContext, category });
+            aimodel = new GoogleVertexAI({ secretContext, category });
         }
         else {
             throw new Error("Not implement");
         }
 
         const config:AIModelConfig = {
-            topp : apiContext.topp,
-            temperature : apiContext.temperature,
-            maxtoken : apiContext.maxtoken,
+            topp : secretContext.topp,
+            temperature : secretContext.temperature,
+            maxtoken : secretContext.maxtoken,
             modelname : model
         }
         

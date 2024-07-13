@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import { APIContext } from '../../context/APIContext.tsx'
+import { SecretContext } from '../../context/SecretContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
 import { PopUpMenu } from '../../components/PopUpMenu.tsx'
 import { AIModels, MODELS } from '../../features/chatAI/index.ts'
@@ -15,9 +15,9 @@ interface SettingModalProps {
 }
 
 function SettingModal(props:SettingModalProps) {
-    const apiContext = useContext(APIContext);
-    if (apiContext == null) {
-        throw new Error('SettingModel required APIContextProvider')
+    const secretContext = useContext(SecretContext);
+    if (secretContext == null) {
+        throw new Error('SettingModel required SecretContextProvider')
     }
     
     const modalRef:any = useRef(null);
@@ -26,14 +26,14 @@ function SettingModal(props:SettingModalProps) {
     const [categories, setCategories] = useState(AIModels.getCategories());
     const [models, setModels] = useState<{name:string,value:string}[]|null>(null);
 
-    const [topp, setTopp] = useState(apiContext.topp);
-    const [temperature, setTemperature] = useState(apiContext.temperature);
-    const [maxtoken, setMaxtoken] = useState(apiContext.maxtoken);
+    const [topp, setTopp] = useState(secretContext.topp);
+    const [temperature, setTemperature] = useState(secretContext.temperature);
+    const [maxtoken, setMaxtoken] = useState(secretContext.maxtoken);
 
-    const [modelOptions, setModelOptions] = useState(apiContext.modelInfo.modelOptions);
-    const [selectedCategory, setSelectedCategory] = useState(apiContext.modelInfo.category);
+    const [modelOptions, setModelOptions] = useState(secretContext.modelInfo.modelOptions);
+    const [selectedCategory, setSelectedCategory] = useState(secretContext.modelInfo.category);
     const [selectedCategoryName, setSelectedCategoryName] = useState('');
-    const [selectedModel, setSelectedModel] = useState(apiContext.modelInfo.model);
+    const [selectedModel, setSelectedModel] = useState(secretContext.modelInfo.model);
     const [selectedModelName, setSelectedModelName] = useState('');
 
     const [isPopupCategories, setIsPopupCategories] = useState(false);
@@ -52,10 +52,10 @@ function SettingModal(props:SettingModalProps) {
             model : selectedModel,
             modelOptions : modelOptions
         }
-        apiContext.setModelInfo(newModelInfo);
-        apiContext.setMaxtoken(maxtoken);
-        apiContext.setTemperature(temperature);
-        apiContext.setTopp(topp);
+        secretContext.setModelInfo(newModelInfo);
+        secretContext.setMaxtoken(maxtoken);
+        secretContext.setTemperature(temperature);
+        secretContext.setTopp(topp);
 
         props.onClose();
     }

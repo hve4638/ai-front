@@ -33,7 +33,7 @@ export function Initializer({ onLoad }) {
         setCurrentSession,
         setPromptInfomation,
         setNextSessionID,
-        setCurrentResponse
+        setCurrentChat
     } = memoryContext;
     
     useEffect(()=>{
@@ -48,7 +48,7 @@ export function Initializer({ onLoad }) {
             setPromptsLoaded(true);
         })
 
-        setCurrentResponse({
+        setCurrentChat({
             input: '',
             output : '',
             prompt: '',
@@ -62,10 +62,18 @@ export function Initializer({ onLoad }) {
     }, []);
 
     useEffect(()=>{
-        if (sessions === undefined) {
-            // nothing to do
+        if (currentSessionId !== undefined
+            && sessions !== undefined
+            && history !== undefined
+        ) {
+            setStoredValueLoaded(true);
         }
-        else if (sessions.length > 0) {
+    }, [currentSessionId, sessions, history]);
+
+    useEffect(()=>{
+        if (!storedValueLoaded) return;
+        
+        if (sessions.length > 0) {
             let maxid:number = 0;
             for (const session of sessions) {
                 const id = session.id;
@@ -78,9 +86,11 @@ export function Initializer({ onLoad }) {
             setNextSessionID(0);
             setNextSessionIDLoaded(true);
         }
-    },[sessions])
+    },[storedValueLoaded])
 
     useEffect(()=>{
+        if (!storedValueLoaded) return;
+
         const defaultSession = {
             id : -1,
             historyIsolation : false,
@@ -93,10 +103,7 @@ export function Initializer({ onLoad }) {
             historyKey : "",
         };
 
-        if (currentSessionId === undefined || sessions === undefined) {
-            // nothing to do
-        }
-        else if (currentSessionId === null) {
+        if (currentSessionId === null) {
             setCurrentSession(defaultSession);
             setSessionLoaded(true);
         }
@@ -113,7 +120,7 @@ export function Initializer({ onLoad }) {
             if (notfound) setCurrentSession(defaultSession);
             setSessionLoaded(true);
         }
-    }, [currentSessionId, sessions]);
+    }, [storedValueLoaded]);
 
     useEffect(()=>{
         if (promptsLoaded && sessionLoaded) {
@@ -132,15 +139,6 @@ export function Initializer({ onLoad }) {
             setPromptLoaded(true);
         }
     }, [promptsLoaded, sessionLoaded]);
-
-    useEffect(()=>{
-        if (currentSessionId !== undefined
-            && sessions !== undefined
-            && history !== undefined
-        ) {
-            setStoredValueLoaded(true);
-        }
-    }, [currentSessionId, sessions, history]);
 
     useEffect(()=>{
         if (promptsLoaded

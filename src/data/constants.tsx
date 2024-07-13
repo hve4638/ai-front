@@ -17,3 +17,5 @@ export const MODEL_CATEGORY = {
     GOOGLE_GEMINI:"GOOGLE_GEMINI",
     OPENAI_GPT:"OPENAI_GPT"
 } as const;
+
+export const NOSESSION_KEY = "#GLOBAL";

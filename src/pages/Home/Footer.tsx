@@ -30,24 +30,17 @@ export default function Footer({ onOpenDebug }:FooterProps) {
     if (!eventContext) throw new Error('Footer must be used in EventContextProvider');
     const {
         sessions, setSessions,
-        currentSessionId, setCurrentSessionId,
         markdownMode, setMarkdownMode,
         lineByLineMode, setLineByLineMode
     } = storeContext;
     const {
-        promptList
-    } = promptContext;
-    const {
         currentSession,
-        nextSessionID,
-        setNextSessionID,
         setCurrentSession,
     } = memoryContext;
     const {
         createSession,
         deleteSession,
         changeCurrentSession,
-        commitCurrentSession,
     } = eventContext;
     
     const onSessionChange = (session) => {

@@ -4,14 +4,13 @@ import LoadingIcon from '../../assets/icons/loading.svg'
 
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StoreContext } from "../../context/StoreContext.tsx";
-import { APIContext } from "../../context/APIContext.tsx";
+import { SecretContext } from "../../context/SecretContext.tsx";
 import { DebugContext } from "../../context/DebugContext.tsx";
 
 import ModalBackground from '../../components/ModalBackground.tsx'
 import RequestInfoModal from "../RequestInfoModal/RequestInfoModal.tsx";
 import HistoryModal from '../HistoryModal/HistoryModal.tsx'
 import SettingModal from '../SettingModal/SettingModal.tsx'
-import MessageModal from "../MessageModal/MessageModal.tsx";
 
 import { APIResponse } from "../../data/interface.tsx";
 
@@ -20,10 +19,11 @@ import Footer from './Footer.tsx'
 import InputField from './InputField.tsx'
 import OutputField from './OutputField.tsx'
 
-import { AIModels } from "../../features/chatAI/index.ts";
 import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
 import DebugModal from "../DebugModal/DebugModal.tsx";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
+import { EventContext } from "../../context/EventContext.tsx";
+import { NOSESSION_KEY } from "../../data/constants.tsx";
 
 const MODALS = {
     SettingModal : "SettingModal",
@@ -36,87 +36,75 @@ const MODALS = {
 type MODALS = typeof MODALS[keyof typeof MODALS];
 
 export default function Home() {
-    const apiContext = useContext(APIContext);
+    const secretContext = useContext(SecretContext);
     const promptContext = useContext(PromptContext);
     const memoryContext = useContext(MemoryContext);
     const storeContext = useContext(StoreContext);
+    const eventContext = useContext(EventContext);
     const debugContext = useContext(DebugContext);
-    if (promptContext == null) throw new Error('Home() required PromptContextProvider');
-    if (apiContext == null) throw new Error('Home() required APIContextProvider');
-    if (storeContext == null) throw new Error('Home() required StoreContextProvider');
-    if (memoryContext == null) throw new Error('Home() required MemoryContextProvider');
-    if (debugContext == null) throw new Error('Home() required DebugContextProvider');
+    if (!promptContext) throw new Error('Home required PromptContextProvider');
+    if (!secretContext) throw new Error('Home required SecretContextProvider');
+    if (!storeContext) throw new Error('Home required StoreContextProvider');
+    if (!memoryContext) throw new Error('Home required MemoryContextProvider');
+    if (!eventContext) throw new Error('Home required EventContextProvider');
+    if (!debugContext) throw new Error('Home required DebugContextProvider');
 
     const [currentModal, setCurrentModal] = useState<MODALS|null>(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const {
         currentSession,
-        currentHistory, setCurrentHistory,
-        currentResponse, setCurrentResponse,
-        apiSubmitPing,
+        currentChat, setCurrentChat,
+        apiSubmitPing, setApiSubmitPing,
+        apiFetchWaiting,
+        setApiFetchWaiting,
     } = memoryContext;
+    const {
+        enqueueApiRequest,
+    } = eventContext;
+
+    // Ctrl+Enter 핑
+    useEffect(()=>{
+        if (apiSubmitPing) {
+            onSubmit();
+            setApiSubmitPing(false);
+        }
+    }, [apiSubmitPing]);
 
     useEffect(()=>{
-        if (!apiSubmitPing) return;
-
-        onSubmit();
-    }, [apiSubmitPing])
+        let key = currentSession.chatIsolation ? currentSession.id : NOSESSION_KEY;
+        
+        setSubmitLoading(key in apiFetchWaiting);
+    }, [currentSession, apiFetchWaiting])
 
     const onSubmit = () => {
-        const promise = AIModels.request(
-            {
-                contents: currentResponse.input ?? "",
-                note: storeContext.note,
-                prompt: memoryContext.promptText
-            },
-            {
-                apiContext,
-                storeContext
-            }
-        )
-        setSubmitLoading(true);
-
-        promise
-        .then(response=>{
-            const newhistory = [...currentHistory]
-            newhistory.push(response);
-            setCurrentHistory(newhistory);
-            setCurrentResponse(response);
-        })
-        .catch(err=>{
-            const errorResponse = {
-                input : currentResponse.input ?? "",
-                output : '',
-                prompt : memoryContext.promptText,
-                note : memoryContext.currentSession.note,
-                tokens: 0,
-                finishreason : 'EXCEPTION',
-                normalresponse : false,
-                warning : null,
-                error: `${err}`
-            };
-            setCurrentResponse(errorResponse);
-            console.error(err);
-        })
-        .finally(()=>{
-            setSubmitLoading(false);
-        })
-
-        // @TODO : 호환성을 위해 사용하지 않은 controller 리턴함. 구조 변경 필요
+        if (currentChat.input) {
+            enqueueApiRequest({
+                session:currentSession,
+                input:currentChat.input,
+                promptText:memoryContext.promptText
+            })
+            
+            setApiFetchWaiting((waiting)=>{
+                const newWaiting = {...waiting};
+                const key = currentSession.chatIsolation ? currentSession.id : NOSESSION_KEY;
+                newWaiting[key] = 1;
+                return newWaiting;
+            });
+        }
         return new AbortController();
     }
 
     const loadHistory = (response:APIResponse) => {
-        setCurrentResponse(response);
+        setCurrentChat(response);
     }
     
     const onChanageInputField = (value) => {
-        const newResponse = {...currentResponse};
+        const newResponse = {...currentChat};
         newResponse.input = value;
         if (debugContext.isDebugMode && debugContext.mirror) {
             newResponse.output = value;
         }
-        setCurrentResponse(newResponse);
+        setCurrentChat(newResponse);
     }
 
     return (
@@ -134,19 +122,19 @@ export default function Home() {
             <main className='flex row' style={{overflowY: 'auto'}}>
                 <InputField
                     className='left-section'
-                    text={currentResponse.input ?? ""}
+                    text={currentChat.input ?? ""}
                     onChange={(value)=>onChanageInputField(value)}
                 />
                 <div className='seperate-section center undraggable'>
                     <SubmitButton
                         loading={submitLoading}
                         onSubmit={()=>onSubmit()}
-                        onAbort={(controller)=>controller.abort()}
+                        onAbort={()=>{}}
                     />
                 </div>
                 <OutputField
                     className='right-section'
-                    response={currentResponse}
+                    response={currentChat}
                 />
             </main>
             <Footer
@@ -189,13 +177,6 @@ export default function Home() {
                         onClose = {()=>setCurrentModal(null)}
                     />
                 }
-                {
-                    (currentModal === MODALS.MessageModal) &&
-                    <MessageModal
-                        title="업데이트 알림"
-                        onClose = {()=>setCurrentModal(null)}
-                    />
-                }
                 </ModalBackground>
             }
         </div>
@@ -204,12 +185,11 @@ export default function Home() {
 
 interface SubmitButtonProps {
     loading:boolean,
-    onSubmit:()=>AbortController,
-    onAbort:(controller:AbortController)=>void
+    onSubmit:()=>void,
+    onAbort:()=>void
 }
 
 function SubmitButton({loading, onSubmit, onAbort}:SubmitButtonProps) {
-    const [controller, setController] = useState<AbortController|null>(null);
 
     return (
         <>
@@ -219,10 +199,7 @@ function SubmitButton({loading, onSubmit, onAbort}:SubmitButtonProps) {
                 id='submit-button'
                 src={ArrowIcon}
                 draggable='false'
-                onClick={(e)=>{
-                    const newController = onSubmit()
-                    setController(newController);
-                }}
+                onClick={(e)=>onSubmit()}
             />
         }
         {
@@ -231,11 +208,7 @@ function SubmitButton({loading, onSubmit, onAbort}:SubmitButtonProps) {
                 className='rotate'
                 src={LoadingIcon}
                 draggable='false'
-                onClick={(e)=>{
-                    if (controller != null) {
-                        onAbort(controller);
-                    }
-                }}
+                onClick={(e)=>onAbort()}
             />
         }
         </>

@@ -17,13 +17,13 @@ export default function RequestInfoModal({
     const [promptPreview, setPromptPreview] = useState(false);
     const [promptPreviewContents, setPromptPreviewContents] = useState<React.JSX.Element[]>([]);
     
-    const { note, } = storeContext;
     const {
-        promptText
+        promptText,
+        currentSession
     } = memoryContext;
 
     useEffect(()=>{
-        const results = parsePromptContent({promptContents:promptText, note});
+        const results = parsePromptContent({promptContents:promptText, note:currentSession.note});
         const newContents:React.JSX.Element[] = []
         let count = 0;
         for (const item of results) {
@@ -82,7 +82,7 @@ export default function RequestInfoModal({
                 <SubTitle>변수</SubTitle>
                 <div className='noflex textplace column'>
                     {
-                        Object.entries(note).map(([key, value]) => (
+                        Object.entries(currentSession.note).map(([key, value]) => (
                             <div key={key} style={{marginBottom: '5px'}}>
                                 {key} : {noteformat(value)}
                             </div>

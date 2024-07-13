@@ -20,8 +20,6 @@ interface StoreContextType {
     setMarkdownMode : (x:boolean)=>void;
     lineByLineMode : boolean;
     setLineByLineMode : (x:boolean)=>void;
-    note: Note;
-    setNote: (X:Note) => void;
 }
 
 export const StoreContext = createContext<StoreContextType|undefined>(undefined);
@@ -29,19 +27,18 @@ export const StoreContext = createContext<StoreContextType|undefined>(undefined)
 export default function StoreContextProvider({children}) {
     const [currentSessionId, setCurrentSessionId] = usePlainCookie('currentSessionId', null);
     const [sessions, setSessions] = usePlainCookie('sessions', []);
-    const [history, setHistory] = usePlainCookie('history', {});
+    //const [history, setHistory] = usePlainCookie('history', {});
+    const [history, setHistory] = useState({});
     const [responses, setResponses] = usePlainCookie('responses', {});
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
-    const [note, setNote] = usePlainCookie('note', {});
     
     return (
         <StoreContext.Provider
             value={{
                 sessions, setSessions,
                 currentSessionId, setCurrentSessionId,
-                note, setNote,
                 history, setHistory,
                 responses, setResponses,
                 markdownMode,
