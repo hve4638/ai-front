@@ -24,10 +24,10 @@
     --slot-color: rgb(47, 47, 47);
     --slot-hover-color: rgb(83, 83, 83);
     --slot-select-color: rgb(62, 65, 74);
-    --slot-alert-green-color: rgb(59, 65, 52);
-    --slot-alert-green-accent-color: rgb(67, 77, 53);
-    --slot-alert-red-color: rgb(65, 52, 52);
-    --slot-alert-red-accent-color: rgb(77, 53, 53);
+    --slot-alert-green-color: rgb(68, 103, 26);
+    --slot-alert-green-accent-color: rgb(81, 125, 20);
+    --slot-alert-red-color: rgb(103, 26, 26);
+    --slot-alert-red-accent-color: rgb(125, 20, 20);
 
     --icon-theme-color: rgb(180, 181, 184);
 

@@ -53,7 +53,8 @@ export function Initializer({ onLoad }) {
     }, []);
 
     useEffect(()=>{
-        if (currentSessionId !== undefined
+        if (
+            currentSessionId !== undefined
             && sessions !== undefined
             && history !== undefined
             && responses !== undefined
@@ -81,7 +82,7 @@ export function Initializer({ onLoad }) {
     }, [storedValueLoaded])
 
     useEffect(()=>{
-        if (!storedValueLoaded) return;
+        if (!storedValueLoaded || !promptsLoaded) return;
 
         const defaultSession = {
             id : -1,
@@ -91,7 +92,7 @@ export function Initializer({ onLoad }) {
             modelCategory : "",
             model : "",
             note : {},
-            promptKey : "",
+            promptKey : promptList.firstPrompt().key,
             historyKey : "",
         };
 
@@ -112,7 +113,7 @@ export function Initializer({ onLoad }) {
             if (notfound) setCurrentSession(defaultSession);
             setSessionLoaded(true);
         }
-    }, [storedValueLoaded]);
+    }, [storedValueLoaded, promptsLoaded]);
 
     useEffect(()=>{
         if (!storedValueLoaded || !sessionLoaded) return;
