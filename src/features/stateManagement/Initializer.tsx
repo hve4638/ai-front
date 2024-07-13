@@ -4,6 +4,7 @@ import { PromptContext } from "../../context/PromptContext.tsx";
 import { loadPromptList } from "../../services/local/index.ts";
 import { PromptList } from "../prompts/index.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
+import { NOSESSION_KEY } from "../../data/constants.tsx";
 
 export function Initializer({ onLoad }) {
     const [promptsLoaded, setPromptsLoaded] = useState(false);
@@ -11,6 +12,7 @@ export function Initializer({ onLoad }) {
     const [promptLoaded, setPromptLoaded] = useState(false);
     const [storedValueLoaded, setStoredValueLoaded] = useState(false);
     const [nextSessionIDLoaded, setNextSessionIDLoaded] = useState(false);
+    const [chatLoaded, setChatLoaded] = useState(false);
     const promptContext = useContext(PromptContext);
     const storeContext = useContext(StoreContext);
     const memoryContext = useContext(MemoryContext);
@@ -22,7 +24,8 @@ export function Initializer({ onLoad }) {
     const {
         sessions,
         currentSessionId,
-        history
+        history,
+        responses,
     } = storeContext;
     const {
         promptList
@@ -33,7 +36,7 @@ export function Initializer({ onLoad }) {
         setCurrentSession,
         setPromptInfomation,
         setNextSessionID,
-        setCurrentChat
+        currentChat, setCurrentChat
     } = memoryContext;
     
     useEffect(()=>{
@@ -46,18 +49,6 @@ export function Initializer({ onLoad }) {
         .catch(err => {
             console.error(err);
             setPromptsLoaded(true);
-        })
-
-        setCurrentChat({
-            input: '',
-            output : '',
-            prompt: '',
-            note : {},
-            tokens: 0,
-            warning: null,
-            error : null,
-            finishreason : '',
-            normalresponse : true,
         });
     }, []);
 
@@ -65,10 +56,11 @@ export function Initializer({ onLoad }) {
         if (currentSessionId !== undefined
             && sessions !== undefined
             && history !== undefined
+            && responses !== undefined
         ) {
             setStoredValueLoaded(true);
         }
-    }, [currentSessionId, sessions, history]);
+    }, [currentSessionId, sessions, history, responses]);
 
     useEffect(()=>{
         if (!storedValueLoaded) return;
@@ -86,7 +78,7 @@ export function Initializer({ onLoad }) {
             setNextSessionID(0);
             setNextSessionIDLoaded(true);
         }
-    },[storedValueLoaded])
+    }, [storedValueLoaded])
 
     useEffect(()=>{
         if (!storedValueLoaded) return;
@@ -123,6 +115,37 @@ export function Initializer({ onLoad }) {
     }, [storedValueLoaded]);
 
     useEffect(()=>{
+        if (!storedValueLoaded || !sessionLoaded) return;
+
+        let key;
+        if (currentSession.chatIsolation) {
+            key = currentSession.id;
+        }
+        else {
+            key = NOSESSION_KEY;
+        }
+        
+        if (key in responses) {
+            setCurrentChat(responses[key]);
+            setChatLoaded(true);
+        }
+        else {
+            setCurrentChat({
+                input: '',
+                output : '',
+                prompt: '',
+                note : {},
+                tokens: 0,
+                warning: null,
+                error : null,
+                finishreason : '',
+                normalresponse : true,
+            });
+            setChatLoaded(true);
+        }
+    }, [storedValueLoaded, sessionLoaded]);
+
+    useEffect(()=>{
         if (promptsLoaded && sessionLoaded) {
             const prompt = promptList.getPrompt(currentSession.promptKey);
             if (prompt) {
@@ -146,8 +169,9 @@ export function Initializer({ onLoad }) {
             && promptLoaded
             && nextSessionIDLoaded
             && storedValueLoaded
+            && chatLoaded
         ) {
             onLoad();
         }
-    }, [promptsLoaded, sessionLoaded, promptLoaded, nextSessionIDLoaded, storedValueLoaded]);
+    }, [promptsLoaded, sessionLoaded, promptLoaded, nextSessionIDLoaded, storedValueLoaded, chatLoaded]);
 }

@@ -50,6 +50,7 @@
 
 #home {
     transition: 0.3s ease background-color;
+    background: linear-gradient(var(--background-color), transparent);
 }
 
 #home.red {

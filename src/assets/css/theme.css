@@ -13,7 +13,7 @@
 
 .theme-dark {
     background-color: rgb(23, 23, 23);
-
+    --background-color: rgb(23, 23, 23);
     --border-color: rgb(118, 118, 118);
     
     --text-color: white;
@@ -51,12 +51,13 @@
     --tooltip-background-color : rgb(47, 47, 47);
     --tooltip-border-color : rgb(68, 68, 68);
 
-    --background-red : rgba(255, 0, 0, 0.03);
-    --background-orange : rgba(255, 128, 0, 0.04);
-    --background-yellow : rgba(255, 255, 0, 0.04);
-    --background-green : rgba(132, 255, 0, 0.04);
-    --background-lime : rgba(0, 255, 81, 0.04);
-    --background-aqua : rgba(0, 247, 255, 0.04);
-    --background-blue : rgba(0, 72, 255, 0.04);
-    --background-purple  : rgba(157, 0, 255, 0.04);
+    --background-red : rgba(255, 0, 0, 0.1);
+    --background-orange : rgba(255, 128, 0, 0.1);
+    --background-yellow : rgba(255, 255, 0, 0.1);
+    --background-green : rgba(132, 255, 0, 0.1);
+    --background-lime : rgba(0, 255, 47, 0.1);
+    --background-aqua : rgba(0, 247, 255, 0.1);
+    --background-blue : rgba(0, 72, 255, 0.1);
+    --background-purple  : rgba(157, 0, 255, 0.1);
+    --background-reset  : rgb(23, 23, 23);
 }

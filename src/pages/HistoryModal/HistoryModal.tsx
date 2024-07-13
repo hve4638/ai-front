@@ -12,10 +12,7 @@ interface HistoryModalProps {
     onClick:(x:APIResponse)=>void;
 } 
 
-function HistoryModal({
-    onClose,
-    onClick
- }:HistoryModalProps) {
+function HistoryModal({ onClose, onClick }:HistoryModalProps) {
     const memoryContext = useContext(MemoryContext);
     const storeContext = useContext(StoreContext);
     if (storeContext == null) throw new Error('HistoryModal() required StateContextProvider');
@@ -24,8 +21,6 @@ function HistoryModal({
     const {
         currentHistory
     } = memoryContext;
-
-    const reverseHistory = [...currentHistory].reverse();
     
     return (
         <div className='modal history-modal undraggable column'>
@@ -35,7 +30,7 @@ function HistoryModal({
             />
             <div className='column scrollbar' style={{overflow:'auto'}}>
                 {
-                    reverseHistory.map((value, index) => (
+                    [...currentHistory].reverse().map((value, index) => (
                         <div
                             key={index}
                             className='history column'

@@ -7,6 +7,7 @@ export const COLORBOX_COLORS = {
     "aqua" : "rgb(83, 200, 213)",
     "blue" : "rgb(83, 122, 213)",
     "purple" : "rgb(124, 83, 213)",
+    "reset" : "rgb(45, 45, 45)"
 }
 export const BACKGROUND_COLORS = {
     "red" : "rgba(255, 0, 0, 0.04)",

@@ -5,6 +5,7 @@ import { IPromptInfomation, IPromptList, IPromptSubList } from "../features/prom
 import { ChatSession } from "./interface.ts";
 import { StoreContext } from "./StoreContext.tsx";
 import { MemoryContext } from "./MemoryContext.tsx";
+import { NOSESSION_KEY } from "../data/constants.tsx";
 
 interface EventContextType {
     createSession:()=>void;
@@ -37,7 +38,6 @@ const getDefaultAPIResponse = () => {
 
 export const EventContext = createContext<EventContextType|null>(null);
 
-const GLOBALTAG = "#GLOBAL";
 export function EventContextProvider({children}) {
     const memoryContext = useContext(MemoryContext);
     const storeContext = useContext(StoreContext);
@@ -88,13 +88,15 @@ export function EventContextProvider({children}) {
             setCurrentChat(responses[session.id] ?? getDefaultAPIResponse());
         }
         else if (currentSession.chatIsolation) {
-            setCurrentChat(responses[GLOBALTAG] ?? getDefaultAPIResponse());
+            setCurrentChat(responses[NOSESSION_KEY] ?? getDefaultAPIResponse());
         }
         if (session.historyIsolation) {
+            console.log("SESSION")
             setCurrentHistory(history[session.id] ?? []);
         }
         else if (currentSession.historyIsolation) {
-            setCurrentHistory(history[GLOBALTAG] ?? []);
+            console.log("GLOBAL")
+            setCurrentHistory(history[NOSESSION_KEY] ?? []);
         }
         
         setCurrentSessionId(session.id);
@@ -109,7 +111,7 @@ export function EventContextProvider({children}) {
             newHistory[currentSession.id] = currentHistory;
         }
         else {
-            newHistory[GLOBALTAG] = currentHistory;
+            newHistory[NOSESSION_KEY] = currentHistory;
         }
         setHistory(newHistory);
 
@@ -118,7 +120,7 @@ export function EventContextProvider({children}) {
             newResponses[currentSession.id] = currentChat;
         }
         else {
-            newResponses[GLOBALTAG] = currentChat;
+            newResponses[NOSESSION_KEY] = currentChat;
         }
         setResponses(newResponses);
     }
