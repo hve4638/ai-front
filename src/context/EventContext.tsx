@@ -98,7 +98,7 @@ export function EventContextProvider({children}) {
             console.log("GLOBAL")
             setCurrentHistory(history[NOSESSION_KEY] ?? []);
         }
-        
+
         setCurrentSessionId(session.id);
         setCurrentSession(session);
 

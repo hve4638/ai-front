@@ -25,10 +25,11 @@ export function EffectHandler() {
     if (!eventContext) throw new Error('<EffectHandler/> required EventContextProvider');
     const [previousSession, setPreviousSession] = useState<ChatSession>(ANY);
     const [changeSessionTabPing, setChangeSessionTabPing] = useState(0);
+    const [wheelPing, setWheelPing] = useState(0);
 
     const {
-        sessions,
-        setSessions
+        sessions, setSessions,
+        fontSize, setFontSize,
     } = storeContext;
     const {
         promptList
@@ -76,6 +77,20 @@ export function EffectHandler() {
         }
     }, [changeSessionTabPing])
 
+    // Ctrl+Wheel 핑
+    useEffect(()=>{
+        if (wheelPing === 0) return;
+
+        const rootElement = document.querySelector('html');
+        if (rootElement != null) {
+            let num;
+            num = fontSize+wheelPing;
+            rootElement.style.fontSize = `${num}px`;
+            setFontSize(num);
+            setWheelPing(0);
+        }
+    }, [wheelPing])
+
     // 단축키 핸들링
     useEffect(()=>{
         const handleKeyDown = (event) => {
@@ -97,6 +112,21 @@ export function EffectHandler() {
     
         return () => {
           window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    // 휠 핸들링
+    useEffect(()=>{
+        const handleWheel = (event)=>{
+            if (event.ctrlKey) {
+                setWheelPing(ping=>ping-Math.sign(event.deltaY))
+                event.preventDefault();
+            }
+        }
+
+        document.addEventListener('wheel', handleWheel, {passive:false});
+        return () => {
+          window.removeEventListener('wheel', handleWheel);
         };
     }, []);
 
@@ -179,7 +209,7 @@ export function EffectHandler() {
             targetSession ??= currentSession;
         }
         
-        const sessionkey = (sessionid >= 0) ? sessionid : NOSESSION_KEY;
+        const sessionkey = (sessionid >= 0 && targetSession.chatIsolation) ? sessionid : NOSESSION_KEY;
         const chatkey = targetSession.chatIsolation ? targetSession.id : NOSESSION_KEY;
         try {
             setApiFetchBlock(true);

@@ -3,8 +3,7 @@ import React from "react";
 interface GoogleFontIconProps {
     className?:string;
     value:string;
-    size:number;
-    enabled?:boolean;
+    selected?:boolean;
     onClick?:()=>void;
 }
 
@@ -26,16 +25,14 @@ export function GoogleFontIcon({
 }
 
 export function GoogleFontIconButton({
-    className='', value, size, enabled=false, onClick = ()=>{}
+    className='', value, selected=false, onClick = ()=>{}
 }:GoogleFontIconProps) {
-    const pxsize = `${size}px`;
     return (
         <label
-            className={`undraggable center`}
-            style={{ color: 'white', fontSize: pxsize, width: pxsize, height: pxsize }}
+            className={`font-button-container undraggable center ${className}`}
             onClick={(e)=>onClick()}
         >
-            <span className={`${enabled ? 'selected' : ''} ${className} material-symbols-outlined`}>
+            <span className={`material-symbols-outlined font-button${selected ? ' selected' : ''}`}>
                 {value}
             </span>
         </label>

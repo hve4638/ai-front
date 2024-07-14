@@ -19,3 +19,15 @@ export const MODEL_CATEGORY = {
 } as const;
 
 export const NOSESSION_KEY = "#GLOBAL";
+
+export const SESSION_TEMPLATE = {
+    id : -1,
+    historyIsolation : false,
+    chatIsolation : false,
+    color : null,
+    modelCategory : "",
+    modelName : "",
+    note : {},
+    promptKey : undefined,
+    historyKey : "",
+} as const;

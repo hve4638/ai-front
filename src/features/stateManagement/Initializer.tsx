@@ -4,7 +4,8 @@ import { PromptContext } from "../../context/PromptContext.tsx";
 import { loadPromptList } from "../../services/local/index.ts";
 import { PromptList } from "../prompts/index.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
-import { NOSESSION_KEY } from "../../data/constants.tsx";
+import { NOSESSION_KEY, SESSION_TEMPLATE } from "../../data/constants.tsx";
+import { AIModels } from "../chatAI/aimodels.ts";
 
 export function Initializer({ onLoad }) {
     const [promptsLoaded, setPromptsLoaded] = useState(false);
@@ -22,10 +23,11 @@ export function Initializer({ onLoad }) {
     if (memoryContext == null) throw new Error('<StoreContext/> required StoreContextProvider');
 
     const {
-        sessions,
+        sessions, setSessions,
         currentSessionId,
         history,
         responses,
+        fontSize
     } = storeContext;
     const {
         promptList
@@ -52,13 +54,18 @@ export function Initializer({ onLoad }) {
         });
     }, []);
 
+    // 값 초기화 대기
     useEffect(()=>{
         if (
             currentSessionId !== undefined
             && sessions !== undefined
             && history !== undefined
             && responses !== undefined
+            && fontSize !== undefined
         ) {
+            const rootElement = document.querySelector("html") ?? document.body;
+            rootElement.style.fontSize = `${fontSize}px`;
+
             setStoredValueLoaded(true);
         }
     }, [currentSessionId, sessions, history, responses]);
@@ -83,18 +90,16 @@ export function Initializer({ onLoad }) {
 
     useEffect(()=>{
         if (!storedValueLoaded || !promptsLoaded) return;
+        
 
+        const category = AIModels.getCategories()[0]
+        const model = AIModels.getModels(category.value);
         const defaultSession = {
-            id : -1,
-            historyIsolation : false,
-            chatIsolation : false,
-            color : null,
-            modelCategory : "",
-            model : "",
-            note : {},
+            ...SESSION_TEMPLATE,
+            modelCategory : category.value,
+            modelName : category.value,
             promptKey : promptList.firstPrompt().key,
-            historyKey : "",
-        };
+        } as const;
 
         if (currentSessionId === null) {
             setCurrentSession(defaultSession);
@@ -102,15 +107,24 @@ export function Initializer({ onLoad }) {
         }
         else {
             let notfound = true;
+            const newSessions:any[] = [];
+
+            // 업데이트 후 session 포맷이 변경되었을 경우 재지정
             for (const session of sessions) {
+                const newSession = {
+                    ...defaultSession,
+                    ...session,
+                }
+                newSessions.push(newSession);
+
                 if (session.id === currentSessionId) {
-                    setCurrentSession(session);
+                    setCurrentSession(newSession);
                     notfound = false;
-                    break;
                 }
             }
-            
+
             if (notfound) setCurrentSession(defaultSession);
+            setSessions(newSessions);
             setSessionLoaded(true);
         }
     }, [storedValueLoaded, promptsLoaded]);
@@ -174,5 +188,9 @@ export function Initializer({ onLoad }) {
         ) {
             onLoad();
         }
-    }, [promptsLoaded, sessionLoaded, promptLoaded, nextSessionIDLoaded, storedValueLoaded, chatLoaded]);
+    }, [
+        promptsLoaded, sessionLoaded, promptLoaded,
+        nextSessionIDLoaded, storedValueLoaded, chatLoaded,
+        
+    ]);
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { GoogleFontIconButton } from './GoogleFontIcon.tsx'
 
 interface ModalHeaderProps {
     className?:string
@@ -8,16 +9,13 @@ interface ModalHeaderProps {
 
 export default function ModalHeader({className='', name, onClose}:ModalHeaderProps) {
     return (
-        <div className={`${className} row undraggable`}>
-            <h2 className='noflex'>{name}</h2>
-            <div className='flex'/>
-            <span
-                className="material-symbols-outlined clickable modal-close-button"
-                onClick={(e)=>onClose()}
-                style={{fontSize:'34px'}}
-            >
-                close
-            </span>
+        <div className={`modal-header undraggable ${className}`}>
+            <h2>{name}</h2>
+            <GoogleFontIconButton
+                className='close-button'
+                onClick={()=>onClose()}
+                value='close'
+            />
         </div>
     )
 }

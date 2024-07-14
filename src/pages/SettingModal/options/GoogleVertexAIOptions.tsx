@@ -32,8 +32,6 @@ export function GoogleVertexAIOptions({option, setOption}) {
                                 clientemail
                             };
                             setOption(newOption);
-                            console.log("OPTION")
-                            console.log(newOption);
                         }
                         catch(e) {
                             setMessage("잘못된 파일입니다.")

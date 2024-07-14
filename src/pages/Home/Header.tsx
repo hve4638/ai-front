@@ -1,20 +1,17 @@
 import React, {memo, useContext, useEffect, useState} from "react";
 
-import HistoryIcon from '../../assets/icons/history.svg'
-import AdvancedIcon from '../../assets/icons/model.svg'
-import SettingIcon from '../../assets/icons/setting.svg'
-import NoteIcon from '../../assets/icons/note.svg'
-
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StoreContext } from "../../context/StoreContext.tsx";
 
 import Dropdown from "../../components/Dropdown.tsx";
 import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
-import { TARGET_ENV } from "../../data/constants.tsx";
 import { PromptSublist } from "../../features/prompts/promptSublist.ts";
 import { Note } from "../../data/interface.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
 import { ChatSession } from "../../context/interface.ts";
+import { GoogleFontIcon, GoogleFontIconButton } from "../../components/GoogleFontIcon.tsx";
+import { LayerDropdown } from "../../components/LayerDropdown.tsx";
+import { AIModels } from "../../features/chatAI/aimodels.ts";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -31,6 +28,8 @@ export default function Header(props:HeaderProps) {
     if (!storeContext) throw new Error('Header must be used in StoreContextProvider');
     if (!memoryContext) throw new Error('Header must be used in StoreContextProvider');
     
+    const [dropdownItem, setDropdownItem] = useState<any>([]);
+
     const {
       promptList
     } = promptContext;
@@ -41,6 +40,30 @@ export default function Header(props:HeaderProps) {
       currentSession,
       setCurrentSession
     } = memoryContext;
+
+    useEffect(()=>{
+        const dropdownItems:any[] = [];
+        for (const category of AIModels.getCategories()) {
+            const categorylist:any[] = [];
+            const categorydata = {
+                name : category.name,
+                list : categorylist
+            }
+            dropdownItems.push(categorydata);
+
+            for (const model of AIModels.getModels(category.value)) {
+                const modeldata = {
+                    name : model.name,
+                    value : {
+                        modelCategory : category.value,
+                        modelName : model.value,
+                    }
+                }
+                categorylist.push(modeldata);
+            }
+        }
+        setDropdownItem(dropdownItems);
+    }, []);
 
     const onChangePromptKey = (target:PromptInfomation|PromptSublist) => {
       let pl:PromptInfomation;
@@ -75,50 +98,56 @@ export default function Header(props:HeaderProps) {
       return newNote;
     }
 
+    const onModelChange = (item:{ modelCategory:string, modelName:string })=>{
+      const newSession = {
+        ...currentSession,
+        modelCategory : item.modelCategory,
+        modelName : item.modelName,
+      }
+      setCurrentSession(newSession);
+    }
+
     return (
-        <header className='noflex row'>
-          <div className='left-section row' style={{padding:'0px 32px 0px 0px'}}>
-            {
-              TARGET_ENV === "WEB" &&
-              <a className='undraggable' href={window.location.href}>AI Front</a>
-            }
-            {
-              TARGET_ENV !== "WEB" &&
-              <div className='undraggable' style={{position:"relative"}}>
-                AI Front
-              </div>
-            }
-            {
-                // @TODO: 밝은 테마 추가하기
-                false &&
-                <IconButton
-                value='contrast'
-                style={{fontSize:'32px', margin: '0px 8px 0px 8px'}}
-                onClick={()=>{}}
-                />
-            }
-            <div className='flex'></div>
-            <Dropdown
-              style={{marginLeft :'15px', minWidth:'100px'}}
-              value={ promptIndex[0] }
-              items={[...promptList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
-              onChange={(item)=>onChangePromptKey((item))}
-              titleMapper={dropdownIndexFinder}
+        <header id="app-header">
+          <div className='expanded row'>
+            <LayerDropdown
+              className='responsive model-provider'
+              itemClassName='responsive model-provider'
+              value={currentSession}
+              items={dropdownItem}
+              onChange={(item)=>onModelChange(item)}
+              onCompare={(a, b)=>a.modelCategory===b.modelCategory && a.modelName===b.modelName}
             />
-            {
-              promptSubList != null &&
+            <div className='flex'></div>
+            <>
+              <div className="dropdown-pad"/>
               <Dropdown
-                style={{ marginLeft :'15px' }}
-                value={ promptIndex[1] }
-                items={[...promptSubList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+                className='responsive'
+                itemClassName='responsive'
+                value={ promptIndex[0] }
+                items={[...promptList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
                 onChange={(item)=>onChangePromptKey((item))}
                 titleMapper={dropdownIndexFinder}
               />
+            </>
+            {
+              promptSubList != null &&
+              <>
+                <div className="dropdown-pad"/>
+                <Dropdown
+                  className='responsive'
+                  itemClassName='responsive'
+                  value={ promptIndex[1] }
+                  items={[...promptSubList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+                  onChange={(item)=>onChangePromptKey((item))}
+                  titleMapper={dropdownIndexFinder}
+                />
+              </>
             }
           </div>
-          <div className='seprate-section'>
-          </div>
-          <div className='right-section row'>
+          <div className='seperate-section'/>
+          <div className='expanded row'>
+            <div className='largewidth-only'>
             {
                 (promptInfomation.headerExposuredVars?.length ?? 0) !== 0 &&
                 promptInfomation.headerExposuredVars.map((item, index) => {
@@ -142,27 +171,33 @@ export default function Header(props:HeaderProps) {
                   )
                 })
             }
+            </div>
             
             <div style={{width:'10px'}}></div>
             <div className='flex'></div>
             {
               (promptInfomation?.allVars?.length ?? 0) !== 0 &&
-              <HeaderIcon
-                src={NoteIcon}
-                onClick={props.onOpenVarEditor}
-              />
+              <>
+                <GoogleFontIconButton
+                  value="edit_note"
+                  onClick={props.onOpenVarEditor}
+                />
+                <div className='pad'/>
+              </>
             }
-            <div style={{width:'10px'}}></div>
-            <HeaderIcon
-              src={HistoryIcon}
+            <div className='small-pad'/>
+            <GoogleFontIconButton
+              value="history"
               onClick={props.onOpenHistory}
             />
-            <HeaderIcon
-              src={AdvancedIcon}
+            <div className='small-pad'/>
+            <GoogleFontIconButton
+              value="dns"
               onClick={props.onOpenModelConfig}
             />
-            <HeaderIcon
-              src={SettingIcon}
+            <div className='small-pad'/>
+            <GoogleFontIconButton
+              value="settings"
               onClick={props.onOpenSetting}
             />
           </div>

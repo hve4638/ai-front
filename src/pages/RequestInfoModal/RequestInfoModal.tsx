@@ -5,6 +5,7 @@ import ModalHeader from '../../components/ModalHeader.tsx'
 import { StoreContext } from '../../context/StoreContext.tsx';
 import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat/index.ts';
 import { MemoryContext } from '../../context/MemoryContext.tsx';
+import { GoogleFontIconButton } from '../../components/GoogleFontIcon.tsx';
 
 export default function RequestInfoModal({
     onClose
@@ -38,30 +39,43 @@ export default function RequestInfoModal({
             newContents.push(<pre style={{marginBottom:"12px"}} key={count++}>{item.content}</pre>)
         }
         setPromptPreviewContents(newContents);
-    }, [promptPreview])
+    }, [promptPreview]);
+
+    useEffect(()=>{
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+                event.preventDefault();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+    
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [onClose]);
     
     return (
-        <div className='modal config-modal column'>
+        <div id='requestinfo-modal' className='modal'>
             <ModalHeader
                 name='Request 정보'
                 onClose = {()=>{
                     onClose()
                 }}
             />
-            <div className='column scrollbar' style={{ overflow:'auto'}}>
-                <SubTitle className="row main-spacebetween">
+            <div className='contents scrollbar'>
+                <SubTitle className='row main-spacebetween'>
                     <span>프롬프트 템플릿</span>
-                    <span
-                        className="material-symbols-outlined clickable noflex undraggable"
-                        style={{fontSize:"1.5em", marginRight: "4px"}}
+                    <GoogleFontIconButton
+                        className='preview-button'
+                        value={promptPreview ? 'preview_off' : 'preview'}
                         onClick={()=>setPromptPreview(!promptPreview)}
-                    >
-                        {promptPreview ? 'preview_off' : 'preview'}
-                    </span>
+                        selected={promptPreview}
+                    />
                 </SubTitle>
                 {
                     !promptPreview && 
-                    <div className='noflex textplace column scrollbar fontstyle' style={{position:'relative'}}>
+                    <div className='textbox fontstyle scrollbar'>
                     {
                         promptText.split('\n').map((value, index) => (
                             <pre key={index}>
@@ -73,28 +87,28 @@ export default function RequestInfoModal({
                 }
                 {
                     promptPreview && 
-                    <div className='preview noflex textplace column scrollbar' style={{position:'relative'}}>
+                    <div className='textbox preview scrollbar' style={{position:'relative'}}>
                     {
                         promptPreviewContents.map((value)=>(value))
                     }
                     </div>
                 }
                 <SubTitle>변수</SubTitle>
-                <div className='noflex textplace column'>
-                    {
-                        Object.entries(currentSession.note).map(([key, value]) => (
-                            <div key={key} style={{marginBottom: '5px'}}>
-                                {key} : {noteformat(value)}
-                            </div>
-                        ))
-                    }
+                <div className='textbox'>
+                {
+                    Object.entries(currentSession.note).map(([key, value]) => (
+                        <div key={key} style={{marginBottom: '5px'}}>
+                            {key} : {noteformat(value)}
+                        </div>
+                    ))
+                }
                 </div>
             </div>
         </div>
     )
 }
 const SubTitle = ({children, className=''}) => (
-    <p className={`${className} noflex config-name undraggable`}>{children}</p>
+    <p className={`subtitle undraggable ${className}`}>{children}</p>
 )
 
 const noteformat = (value:any) => {

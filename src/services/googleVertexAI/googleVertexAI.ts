@@ -99,7 +99,6 @@ export class GoogleVertexAI implements AIModel {
             top_p : Number(config.topp),
             top_k: 0,
         }
-        console.log(JSON.stringify(body, null, 4));
         
         return {
             url : url,

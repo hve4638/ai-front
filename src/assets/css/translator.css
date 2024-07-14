@@ -8,32 +8,6 @@
     cursor: pointer;
 }
 
-img.rotate {
-    animation: rotateImage 1.2s ease infinite;
-}
-
-#copy-button {
-    transition: 0.3s transform ease;
-    transform: scale(0.9);
-    cursor: pointer;
-}
-#copy-button:hover {
-    transform: scale(1.0);
-    cursor: pointer;
-}
-#copy-button:active {
-    transform: scale(0.8);
-    cursor: pointer;
-}
-
-@keyframes rotateImage {
-    from {
-        transform: rotate(0deg) scale(1.1);
-    }
-    to {
-        transform: rotate(360deg) scale(1.1);
-    }
-}
 .button-theme-change {
     color : white;
     font-size: 30px;
@@ -56,19 +30,6 @@ img.rotate {
 .icon-clickable-animation:active {
     font-size: 0.9em;
 }
-
-.clickable-animation {
-    cursor: pointer;
-    transform: scale(1.0);
-    transition: transform 0.3s ease;
-}
-.clickable-animation:hover {
-    transform: scale(1.1);
-}
-.clickable-animation:active {
-    transform: scale(0.9);
-}
-
 .warning {
     color: rgb(194, 111, 111) !important;
 }
@@ -80,25 +41,8 @@ img.rotate {
     font-size: 16px;
     color: rgb(194, 111, 111) !important;
 }
-.seprate-section {
-    width: 48px;
-}
 .seperate-section-width {
     width: 48px;
-}
-
-#submit-button {
-    transition: 0.3s transform ease;
-    transform: scale(1.2);
-    cursor: pointer;
-}
-#submit-button:hover {
-    transform: scale(1.3);
-    cursor: pointer;
-}
-#submit-button:active {
-    transform: scale(1.1);
-    cursor: pointer;
 }
 
 .span-button-container {
@@ -111,10 +55,6 @@ img.rotate {
 
 .span-button {
     color: white;
-}
-
-.span-button.selected {
-    color:rgb(91, 126, 169);
 }
 
 .span-button {

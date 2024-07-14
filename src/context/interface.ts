@@ -1,4 +1,4 @@
-import { APIResponse } from "../data/interface";
+import { APIResponse, Note } from "../data/interface";
 
 
 export interface SessionHistory {
@@ -20,9 +20,11 @@ export interface ChatSession {
     promptKey:string;
     note:Note;
     modelCategory:string;
-    model:string;
+    modelName:string;
     color:string|null;
     historyKey:string;
     historyIsolation:boolean;
     chatIsolation:boolean;
 }
+
+export type useStateCallback<T> = (x:T|((x:T)=>T))=>void;

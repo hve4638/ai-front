@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import { APIResponse } from '../data/interface.ts'
 
 import { IPromptInfomation, IPromptSubList } from "../features/prompts/interface.ts";
-import { ChatSession } from "./interface.ts";
+import { ChatSession, useStateCallback } from "./interface.ts";
 
 interface MemoryContextType {
     nextSessionID:number;
@@ -49,8 +49,6 @@ interface ApiFetchResponse {
 interface ApiFetchWaiting {
     [key:string]:any;
 }
-
-type useStateCallback<T> = (x:T|((x:T)=>T))=>void;
 
 export const MemoryContext = createContext<MemoryContextType|null>(null);
 

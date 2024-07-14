@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import { Note } from "../data/interface.ts";
 import { usePlainCookie } from '../hooks/usePlainCookie.tsx'
 import { COOKIE_OPTION_NOEXPIRE } from "../data/constants.tsx";
-import { ChatSession, SessionHistory, SessionResponse } from "./interface.ts";
+import { ChatSession, SessionHistory, SessionResponse, useStateCallback } from "./interface.ts";
 
 interface StoreContextType {
     sessions:ChatSession[];
@@ -12,8 +12,10 @@ interface StoreContextType {
     setCurrentSessionId:(x:number)=>void;
     history: SessionHistory;
     setHistory: (x:SessionHistory)=>void;
-    responses : SessionResponse;
-    setResponses : (x:SessionResponse)=>void;
+    responses: SessionResponse;
+    setResponses: (x:SessionResponse)=>void;
+    fontSize: number;
+    setFontSize: (x:number)=>void;
 
     // @TODO : 리팩토링 필요
     markdownMode: boolean;
@@ -30,6 +32,7 @@ export default function StoreContextProvider({children}) {
     //const [history, setHistory] = usePlainCookie('history', {});
     const [history, setHistory] = useState({});
     const [responses, setResponses] = usePlainCookie('responses', {});
+    const [fontSize, setFontSize] = usePlainCookie('fontsize', 18);
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
@@ -41,6 +44,8 @@ export default function StoreContextProvider({children}) {
                 currentSessionId, setCurrentSessionId,
                 history, setHistory,
                 responses, setResponses,
+                fontSize, setFontSize,
+                
                 markdownMode,
                 setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),
                 lineByLineMode,

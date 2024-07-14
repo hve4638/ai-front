@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
 
 export const SelectFull = ({name, value, onClick}) => (
-    <div className='column section'>
+    <div className='column item'>
         {
             (name != null && name.length > 0) &&
             <p style={{marginBottom:'6px'}}>{name}</p>
@@ -17,7 +17,7 @@ export const SelectFull = ({name, value, onClick}) => (
 )
 
 export const InputFull = ({name, value, onChange, placeholder}) => (
-    <div className='column section'>
+    <div className='item column'>
         <p style={{marginBottom:'6px'}}>{name}</p>
         <input 
             className='full'
@@ -29,18 +29,18 @@ export const InputFull = ({name, value, onChange, placeholder}) => (
 )  
 
 export const InputSmall = ({name, value, onChange}) => (
-    <div className='row section'>
-    <p className='flex'>{name}</p>
-    <input
-        className='small'
-        value={value}
-        onChange={(e)=>onChange(e.target.value)}
+    <div className='item row'>
+        <p className='flex'>{name}</p>
+        <input
+            className='small'
+            value={value}
+            onChange={(e)=>onChange(e.target.value)}
         ></input>
     </div>
 )
 
 export const ButtonFull = ({name, onClick}) => (
-    <div className='row section'>
+    <div className='item row'>
         <button
             className='button-red shadow'
             onClick={(e)=>onClick()}
@@ -54,23 +54,22 @@ export const FileUploadForm = ( {name, onUpload} ) => {
     const [onHover, setOnHover] = useState(false);
 
     return (
-        <div className='column section'>
+        <div className='column item'>
             <p style={{marginBottom:'6px'}}>{name}</p>
             <div>
                 <label
-                    className={`${onHover ? 'inputform-on-mouse' : ''} wfill center upload-container clickable`}
+                    className={`${onHover ? 'ondraghover' : ''} wfill center upload-container clickable`}
                     
                     onDragEnter={()=>setOnHover(true)}
                     onDragLeave={()=>setOnHover(false)}
                     onDragOver={(event)=>event.preventDefault()}
                     onDrop={(event)=>{
-                        event.preventDefault();
                         
                         const files = event.dataTransfer.files;
-                        console.log(files);
                         if (files.length > 0) {
                             onUpload(files);
                         }
+                        event.preventDefault();
                     }}
                 >
                     <span style={{marginRight: "6px"}}>파일 선택</span>

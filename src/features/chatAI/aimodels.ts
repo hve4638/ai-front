@@ -1,17 +1,19 @@
 import { SecretContextType, ModelInfo } from "../../context/SecretContext.tsx"
 import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.ts"
-import { TARGET_ENV } from "../../data/constants.tsx"
+import { DEBUG_MODE, TARGET_ENV } from "../../data/constants.tsx"
 import { Claude } from "../../services/claude/Claude.ts"
 import { GoogleGemini } from "../../services/googleGemini/index.ts"
 import { GoogleVertexAI } from "../../services/googleVertexAI/googleVertexAI.ts"
 import { proxyFetch } from "../../services/local/index.ts"
 import { OpenAIGPT } from "../../services/openaiGPT/openaiGPT.ts"
+import { MockAIModel } from "./services/mockAIModel/index.ts"
 
 export const MODELS = {
     GOOGLE_GEMINI : "GOOGLE_GEMINI",
     OPENAI_GPT : "OPENAI_GPT",
     CLAUDE : "CLAUDE",
-    GOOGLE_VERTEXAI : "GOOGLE_VERTEXAI"
+    GOOGLE_VERTEXAI : "GOOGLE_VERTEXAI",
+    DEBUG_MODE : "DEBUG"
 }
 
 const modelCategory = {
@@ -50,6 +52,15 @@ if (TARGET_ENV === "WINDOWS") {
     };
 }
 
+if (DEBUG_MODE) {
+    modelCategory[MODELS.DEBUG_MODE] = {
+        "name" : "Debug Mode",
+        "models" : [
+            { name : "DEBUG : ECHO", value: "debug-mode" }
+        ]
+    };
+}
+
 export class AIModels {
     static #models = modelCategory;
     
@@ -84,6 +95,9 @@ export class AIModels {
         else if (category == MODELS.GOOGLE_VERTEXAI) {
             aimodel = new GoogleVertexAI({ secretContext, category });
         }
+        else if (category == MODELS.DEBUG_MODE) {
+            aimodel = new MockAIModel();
+        }
         else {
             throw new Error("Not implement");
         }
@@ -102,7 +116,6 @@ export class AIModels {
         console.log(requestdata);
 
         const response = await aimodel.request(requestdata);
-        //await proxyFetch(requestdata.url, requestdata.data);
 
         console.log("AIModel ResponseData");
         console.log(response);

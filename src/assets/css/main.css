@@ -1,0 +1,79 @@
+:root {
+    --textarea-font-size: 1rem;
+}
+.theme-dark {
+    --textarea-font-color : white;
+    --textarea-alert-font-size : 14px;
+}
+
+#app-main {
+    display: flex;
+    flex: 1;
+    margin: 0px 0px;
+    overflow: hidden;
+}
+
+.input-section-textarea {
+    margin: 4px;
+    font-family: 'NanumGothic', sans-serif;
+    border-color: transparent;
+    background-color: transparent;
+    font-size: var(--textarea-font-size);
+    color: var(--textarea-font-color);
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    flex: 1;
+    padding-bottom: 60px;
+    
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.output-section {
+    display: flex;
+    flex-direction: column;
+    flex : 1;
+    
+    margin: 4px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-color);
+    flex-wrap: wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    padding-bottom: 60px;
+    
+    resize: none;
+    outline: none;
+}
+
+.output-section-textarea {
+    margin: 4px;
+    font-size: var(--textarea-font-size);
+}
+
+.output-section-textarea pre {
+    font-family: inherit;
+    font-size: inherit;
+    margin: 0px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    resize: none;
+}
+
+.output-section-textarea p {
+    font-family: inherit;
+    font-size: inherit;
+    margin-top: 0px;
+    margin-bottom: 16px;
+    color :rgb(146, 148, 152);
+}
+
+.token-display-container {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    font-size: var(--textarea-alert-font-size);
+    color: grey;
+}

@@ -8,7 +8,6 @@ export class IPCInteractive {
           resolve(JSON.parse(data))
         })
         .catch((err)=>{
-          console.log('err')
           reject(err);
         });
       });
@@ -32,7 +31,7 @@ export class IPCInteractive {
 
     static storeValue(name:string, value:any) {
         return new Promise((resolve, reject)=>{
-            window.electron.storeValue(name, value)
+          window.electron.storeValue(name, value)
         });
     }
 

@@ -60,4 +60,25 @@
     --background-blue : rgba(0, 72, 255, 0.1);
     --background-purple  : rgba(157, 0, 255, 0.1);
     --background-reset  : rgb(23, 23, 23);
+
+    --default-border-color: rgb(118, 118, 118);
+
+    --inputfield-border-color : var(--default-border-color);
+    --inputfield-background-color: rgb(47, 47, 47);
+    --inputfield-transparent-color: rgba(47, 47, 47, 0.8);
+
+    --modal-outside-color: rgb(0, 0, 0, 0.4);
+    --modal-background-color: rgb(47, 47, 47);
+    --modal-border-color: var(--default-border-color);
+    --modal-default-font-size: 16px;
+    --modal-default-color: white;
+
+    --textbox-background-color: rgb(56, 56, 56);
+    --textbox-border-color: var(--default-border-color);
+    --textbox-color: white;
+
+    --hr-color: rgb(134, 134, 134);
+
+    --history-input-color: white;
+    --history-output-color: rgb(187, 187, 187);
 }

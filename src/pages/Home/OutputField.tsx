@@ -1,14 +1,10 @@
 import React, { useContext } from 'react'
-import CopyIcon from '../../assets/icons/copy.svg'
-
 import { APIResponse } from '../../data/interface.js'
-
-import { copyToClipboard } from '../../utils/clipboard.tsx'
-
 
 import Markdown from '../../components/Markdown.tsx'
 import { StoreContext } from '../../context/StoreContext.tsx'
 import { LineByLineRenderer } from '../../components/LineByLine.tsx'
+import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
 
 interface OutputFieldProps {
   className?:string,
@@ -18,24 +14,18 @@ interface OutputFieldProps {
 export default function OutputField(props:OutputFieldProps) {
   const { className='', response } = props;
   const storeContext = useContext(StoreContext);
-  if (storeContext == null) {
-    throw new Error('OutputField required StoreContext');
-  }
-  // window.navigator.clipboard.writeText()
+  if (!storeContext) throw new Error('OutputField required StoreContext');
+  
   return (
-      <div className={`${className} textarea-output-container`}>
+      <div className={`${className} textfield output-section-container`}>
         <div
-          className='textarea-output scrollbar'
+          className='output-section scrollbar'
           style={{overflow:'auto'}}
         >
-          <div className='copy-button-container undraggable'>
-            <img
-              id='copy-button'
-              src={CopyIcon}
-              draggable='false'
-              onClick={(e)=>{copyToClipboard(response.output ?? '')}}
-              />
-          </div>
+          <GoogleFontIcon
+            className='floating-button'
+            value='content_paste'
+          />
           <div className='token-display-container undraggable'>
             {
               (response.tokens ?? 0) != 0 &&
@@ -47,8 +37,7 @@ export default function OutputField(props:OutputFieldProps) {
           </div>
 
           <div
-            className='textarea-textstyle fontstyle'
-            style={{marginBottom:"80px"}}  
+            className='output-section-textarea fontstyle scrollbar'
           >
             {
               !response.normalresponse

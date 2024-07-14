@@ -7,11 +7,13 @@ interface DropdownProps {
   onChange:(x:any)=>void,
   style?:Object,
   className?:string,
+  itemClassName?:string,
   titleMapper?:(value:any, items:any)=>string
 }
 
 const Dropdown = ({
   className='',
+  itemClassName='',
   style={},
   value,
   items,
@@ -40,7 +42,8 @@ const Dropdown = ({
     return () => {
       document.removeEventListener('click', onGlobalClick);
     };
-  },[])
+  },[]);
+  
   let selected = titleMapper(value, items);
 
   return (
@@ -52,7 +55,7 @@ const Dropdown = ({
       {
         isOpen && ReactDOM.createPortal(
           <ul
-            className="dropdown-list"
+            className={`${itemClassName} dropdown-list`}
             style={{
               top: rect.bottom,
               left: rect.left,

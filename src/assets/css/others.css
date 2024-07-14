@@ -14,38 +14,8 @@
     box-shadow: 0 0.5px 4px rgba(0, 0, 0, 0.2);
 }
 
-.update-message {
-    color: rgb(0, 123, 0);
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.update-message:hover {
-    color: rgb(0, 168, 0);
-}
-
-.footer-version-container {
-    font-size: 15px;
-    padding-left: 10px;
-    height: 100%;
-}
-
-.footer-version {
-    color: rgb(61, 60, 68);
-}
-
 .background-test {
     background-color: rgba(157, 0, 255, 0.04);
-}
-
-
-.font-button-animation {
-    transition: 0.3s ease font-size;
-    cursor: pointer;
-}
-
-.font-button-animation:hover {
-    font-size: 1.1em;
 }
 
 #home {

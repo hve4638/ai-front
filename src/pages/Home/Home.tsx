@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import ArrowIcon from '../../assets/icons/arrow.svg'
-import LoadingIcon from '../../assets/icons/loading.svg'
 
 import { PromptContext } from "../../context/PromptContext.tsx";
 import { StoreContext } from "../../context/StoreContext.tsx";
@@ -24,6 +22,7 @@ import DebugModal from "../DebugModal/DebugModal.tsx";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
 import { EventContext } from "../../context/EventContext.tsx";
 import { NOSESSION_KEY } from "../../data/constants.tsx";
+import { SubmitButton } from "./component/SubmitButton.tsx";
 
 const MODALS = {
     SettingModal : "SettingModal",
@@ -110,8 +109,7 @@ export default function Home() {
     return (
         <div
             id='home'
-            className={`fill column ${currentSession.color ?? ''}`}
-            style={{ position:'relative'}} 
+            className={currentSession.color ?? ''}
         >
             <Header
                 onOpenHistory={()=>setCurrentModal(MODALS.HistoryModal)}
@@ -119,21 +117,22 @@ export default function Home() {
                 onOpenSetting={()=>setCurrentModal(MODALS.SettingModal)}
                 onOpenVarEditor={()=>setCurrentModal(MODALS.VarEditorModal)}
             />
-            <main className='flex row' style={{overflowY: 'auto'}}>
+            <main id='app-main'>
                 <InputField
-                    className='left-section'
                     text={currentChat.input ?? ""}
                     onChange={(value)=>onChanageInputField(value)}
+                    onSubmit={()=>onSubmit()}
+                    loading={submitLoading}
                 />
                 <div className='seperate-section center undraggable'>
                     <SubmitButton
+                        className='submit-button seperate-section-item'
                         loading={submitLoading}
                         onSubmit={()=>onSubmit()}
                         onAbort={()=>{}}
                     />
                 </div>
                 <OutputField
-                    className='right-section'
                     response={currentChat}
                 />
             </main>
@@ -181,36 +180,4 @@ export default function Home() {
             }
         </div>
     )
-}
-
-interface SubmitButtonProps {
-    loading:boolean,
-    onSubmit:()=>void,
-    onAbort:()=>void
-}
-
-function SubmitButton({loading, onSubmit, onAbort}:SubmitButtonProps) {
-
-    return (
-        <>
-        {
-            !loading && 
-            <img 
-                id='submit-button'
-                src={ArrowIcon}
-                draggable='false'
-                onClick={(e)=>onSubmit()}
-            />
-        }
-        {
-            loading && 
-            <img 
-                className='rotate'
-                src={LoadingIcon}
-                draggable='false'
-                onClick={(e)=>onAbort()}
-            />
-        }
-        </>
-    );
 }

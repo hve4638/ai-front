@@ -11,6 +11,7 @@ import { PromptContext } from '../../context/PromptContext.tsx';
 import { SessionSlot, SessionSlotAdder } from '../../features/chatSession/index.ts';
 import { MemoryContext } from '../../context/MemoryContext.tsx';
 import { EventContext } from '../../context/EventContext.tsx';
+import { GoogleFontIconButton } from '../../components/GoogleFontIcon.tsx';
 
 interface FooterProps {
     onOpenDebug:()=>void
@@ -69,40 +70,40 @@ export default function Footer({ onOpenDebug }:FooterProps) {
     }, []);
     
     return (
-    <footer className='noflex row'>
-        <div className='left-section'>
-            <div className='noflex footer-icon undraggable' style={{ height: '35px' }}>
+    <footer id='app-footer' className='noflex row'>
+        <div className='expand-section row main-spacebetween undraggable'>
+            <div className='noflex'>
                 <img
-                    alt='github-icon'
-                    className='clickable-animation'
+                    className='browse-button'
                     src={GithubIcon}
+                    alt='github-icon'
                     onClick={()=> openBrowser(GITHUB_LINK)}
                 />
-                <div className='noflex hfill column footer-version-container'>
-                    {
-                        existsNewVersion &&
-                        <div
-                            className='noflex update-message clickable'
-                            onClick={()=>openBrowser(DOWNLOAD_LINK)}
-                        >
-                            New version available!
-                        </div>
-                    }
-                    <div className='flex'/>
-                    <div className='footer-version'>{VERSION}</div>
+                <div className='noflex'>
+                    <div className='footer-version-container column'>
+                        {
+                            existsNewVersion &&
+                            <div
+                                className='noflex footer-newversion-text clickable'
+                                onClick={()=>openBrowser(DOWNLOAD_LINK)}
+                            >
+                                New version available!
+                            </div>
+                        }
+                        <div className='flex'/>
+                        <div className='footer-version'>{VERSION}</div>
+                    </div>
                 </div>
             </div>
-            <div className='flex prompt-slots-container row-reverse undraggable'>
-                <SessionSlotAdder
-                    onClick={()=>createSession()}
-                />
+            <div className='flex row main-end'>
                 {
                     sessions != null &&
-                    [...sessions].reverse().map((session, index) => (
+                    [...sessions].map((session, index) => (
                         <SessionSlot
+                            className="noflex"
                             key={index}
                             session={session}
-                            index={sessions.length - index}
+                            index={index+1}
                             selected={session.id===currentSession.id}
                             onClick={()=>changeCurrentSession(session)}
                             onSessionChange={(data)=>onSessionChange(data)}
@@ -110,70 +111,66 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                         />
                     ))
                 }
+                <SessionSlotAdder
+                    onClick={()=>createSession()}
+                />
             </div>
         </div>
-        <div className='seprate-section'>
-        </div>
-        <div className='right-section'>
-            <div style={{width:'16px'}}/>
+        <div className='seperate-section'/>
+        <div className='expand-section'>
             <HoverTooltip
                 text="마크다운"
             >
-                <IconButton
+                <GoogleFontIconButton
                     value='markdown'
-                    enabled={markdownMode}
-                    size={30}
+                    selected={markdownMode}
                     onClick={()=>setMarkdownMode(!markdownMode)}
                 />
             </HoverTooltip>
-            <Pad/>
+            <FooterPad/>
             <HoverTooltip
                 text="XML (실험적)"
             >
-                <IconButton
+                <GoogleFontIconButton
                     value='code'
-                    enabled={lineByLineMode}
-                    size={30}
+                    selected={lineByLineMode}
                     onClick={()=>setLineByLineMode(!lineByLineMode)}
                 />
             </HoverTooltip>
             <div className='flex'></div>
             {
                 debugContext.isDebugMode &&      
-                <IconButton
+                <GoogleFontIconButton
                     value='screen_share'
-                    enabled={debugContext.mirror}
-                    size={30}
+                    selected={debugContext.mirror}
                     onClick={()=>debugContext.setMirror(!debugContext.mirror)}
                 />
             }
-            <Pad/>
+            <FooterPad/>
             {
                 debugContext.isDebugMode &&
-                <IconButton
+                <GoogleFontIconButton
                     value='labs'
-                    size={30}
                     onClick={()=>onOpenDebug()}
                 />
             }
             {
                 TARGET_ENV !== "WEB" &&
                 <>
-                    <Pad/>
-                    <IconButton
+                    <FooterPad/>
+                    <GoogleFontIconButton
+                        className='font-icon'
                         value='folder_open'
-                        size={30}
                         onClick={()=>openPromptFolder()}
                     />
                 </>
             }
-            <div style={{width:'16px'}}/>
         </div>
     </footer>
     );
 }
 
-const Pad = () => (<div style={{width:'8px'}}/>)
+const FooterPad = () => (<div className='footer-pad'/>)
 
 interface IconButtonProps {
     className?:string;

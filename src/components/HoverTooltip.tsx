@@ -3,12 +3,13 @@ import { useState } from "react";
 import ReactDOM from "react-dom";
 
 interface HoverTooltipProps {
+    className?: string,
     children: any,
     text : string,
     delay? : number
 }
 
-export function HoverTooltip({ children, text, delay=150 }:HoverTooltipProps) {
+export function HoverTooltip({ className='', children, text, delay=150 }:HoverTooltipProps) {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const handleMouseMove = (event) => {
       setPosition({ x: event.clientX, y: event.clientY });
@@ -35,6 +36,7 @@ export function HoverTooltip({ children, text, delay=150 }:HoverTooltipProps) {
     return (
         <>
             <div
+                className={className}
                 onMouseEnter={()=>setIsHover(true)}
                 onMouseLeave={()=>setIsHover(false)}
                 onMouseMove={handleMouseMove}

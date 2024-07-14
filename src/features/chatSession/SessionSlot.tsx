@@ -1,8 +1,6 @@
 import React, { forwardRef, memo, useContext, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom';
 import { PromptContext } from '../../context/PromptContext.tsx';
-import { GoogleFontIconButton } from '../../components/GoogleFontIcon.tsx';
-import { COLORBOX_COLORS } from './interface.ts'
 import { MemoryContext } from '../../context/MemoryContext.tsx';
 import { ChatSession } from '../../context/interface.ts';
 import { SlotContextMenu } from './SlotContextMenu.tsx';
@@ -23,6 +21,7 @@ export const SessionSlotAdder = ({onClick}:SlotAdderProps) => (
 
 interface SlotProps {
     index:number;
+    className?:string;
     selected:boolean;
     session:ChatSession;
     onClick:()=>void;
@@ -30,7 +29,7 @@ interface SlotProps {
     onSessionChange:(data:ChatSession)=>void;
 }
 
-export const SessionSlot = ({ index, session, selected=false, onClick, onDelete, onSessionChange}:SlotProps) => {
+export const SessionSlot = ({ index, className='', session, selected=false, onClick, onDelete, onSessionChange}:SlotProps) => {
     const memoryContext = useContext(MemoryContext);
     if (!memoryContext) throw new Error("<SessionSlot/> required memoryContextProvider");
 
@@ -72,7 +71,7 @@ export const SessionSlot = ({ index, session, selected=false, onClick, onDelete,
         <>
             <div
                 className={
-                    `noflex prompt-slot center ${selected ? 'selected' : ''} \
+                    `${className} noflex prompt-slot center ${selected ? 'selected' : ''} \
 ${responseSuccessAlert ? 'slot-alert-success' : ''} \
 ${responseFailAlert ? 'slot-alert-fail' : ''}`
                 }

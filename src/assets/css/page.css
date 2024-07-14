@@ -1,0 +1,172 @@
+#home {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.textfield {
+    position: relative;
+    
+    border-radius: 6px;
+    border: 1px solid var(--inputfield-border-color);
+    background-color: var(--inputfield-background-color);
+    transition: 0.3s margin, 0.3s border-radius;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.input-section-container {
+    display: flex;
+    flex-direction: column;
+    flex : 1;
+    margin: 0px 0px 0px 16px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.output-section-container {
+    display: flex;
+    flex-direction: column;
+    flex : 1;
+    margin: 0px 16px 0px 0px;
+
+    resize: none;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.seperate-section-item {
+    display: inherit;
+}
+
+.seperate-section {
+    display: flex;
+    flex : none;
+    width: 48px;
+    transition: 0.3s width;
+}
+
+.expand-section {
+    display: flex;
+    flex: 1;
+}
+
+.small-form {
+    display: none;
+}
+
+.large-form {
+    display: inherit;
+}
+
+.floating-button {
+    font-size: 40px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    transform: scale(1.0);
+    transition: 0.3s ease transform;
+}
+.floating-button:hover {
+    transform: scale(1.1);
+}
+.floating-button:active {
+    transform: scale(0.9);
+}
+
+.submit-button {
+    font-size: 40px;
+}
+
+.font-button-container {
+    position: relative;
+}
+.font-button {
+    position: absolute;
+    color: white;
+    transition: 0.3s ease transform, 0.3s ease color;
+    transform: scale(1.0);
+    cursor: pointer;
+}
+.font-button.selected {
+    color:rgb(91, 126, 169);
+}
+
+.font-button:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.font-button:active {
+    transform: scale(0.9);
+    cursor: pointer;
+}
+
+.rotate {
+    animation: rotateImage 1.2s ease infinite;
+}
+
+.largewidth-only {
+    display: inherit;
+}
+
+.smallwidth-only {
+    display: none;
+}
+
+@keyframes rotateImage {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .seperate-section-item {
+        display: none;
+    }
+    #app-main .seperate-section {
+        width: 0px;
+    }
+    #app-main .textfield {
+        margin: 2px 2px;
+        border-radius: 1px;
+    }
+    #app-header .seperate-section {
+        width: 4px;
+    }
+    #app-footer .seperate-section {
+        width: 4px;
+    }
+
+    .largewidth-only {
+        display: none;
+    }
+    
+    .smallwidth-only {
+        display: inherit;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    #app-main {
+        flex: none;
+        flex-direction: column;
+        height: calc(100vh - var(--footer-height) - var(--header-height) - 5px);
+    }
+    #app-main .textfield {
+        margin: 2px 2px;
+        border-radius: 1px;
+    }
+    #app-main .input-section-container {
+        border-radius: 0px;
+    }
+    #app-main .output-section-container {
+        border-radius: 0px;
+    }
+}

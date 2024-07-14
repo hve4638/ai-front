@@ -11,9 +11,6 @@ export const splitByQuotes = (str:string) => {
         const group = pattern.exec(text);
         
         if (group) {
-            console.log('match')
-            console.log(group)
-
             parts.push(group[1]);
             text = group[2];
             return true;

@@ -13,7 +13,7 @@ interface VarEditorModalProps {
     onClose:()=>void
 }
 
-function VarEditorModal(props:VarEditorModalProps) {
+function VarEditorModal({onClose}:VarEditorModalProps) {
     const storeContext = useContext(StoreContext);
     const memoryContext = useContext(MemoryContext);
     if (!storeContext) throw new Error('VarEditorModal required StoreContextProvider');
@@ -26,11 +26,23 @@ function VarEditorModal(props:VarEditorModalProps) {
 
     const modalRef:any = useRef(null);
 
-    const onClose = ()=>{
-        props.onClose();
-    }
+    useEffect(()=>{
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+                event.preventDefault();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+    
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [onClose]);
+
     return (
         <div
+            id='vareditor-modal'
             className='modal vareditor-container undraggable column'
             ref = {modalRef}
         >
@@ -38,27 +50,25 @@ function VarEditorModal(props:VarEditorModalProps) {
                 name='변수'
                 onClose = {()=>onClose()}
             />
-            <div style={{height:'24px'}}/>
             <div
-                className='vareditor-content column scrollbar'
+                className='contents scrollbar'
             >
                 {
-                    promptInfomation.allVars.map((item, index)=>(
-                        <VarEditor
-                            key={index}
-                            item={item}
-                            value={item.name in currentSession.note ? currentSession.note[item.name] : null}
-                            onChange={(value)=>{
-                                const newCurrentSession = {...currentSession};
-                                const newNote = {...currentSession.note};
-                                newNote[item.name] = value;
-                                newCurrentSession.note = newNote;
-                                setCurrentSession(newCurrentSession);
-                            }}
-                        />
-                    ))
+                promptInfomation.allVars.map((item, index)=>(
+                    <VarEditor
+                        key={index}
+                        item={item}
+                        value={item.name in currentSession.note ? currentSession.note[item.name] : null}
+                        onChange={(value)=>{
+                            const newCurrentSession = {...currentSession};
+                            const newNote = {...currentSession.note};
+                            newNote[item.name] = value;
+                            newCurrentSession.note = newNote;
+                            setCurrentSession(newCurrentSession);
+                        }}
+                    />
+                ))
                 }
-                <div style={{height:'12px'}}/>
             </div>
         </div>
     )
@@ -69,7 +79,7 @@ const VarEditor = ({item, value, onChange}) => {
 
     if (item.type === "select") {
         return (
-            <div className='vareditor row main-spacebetween sub-center'>
+            <div className='vareditor row main-spacebetween'>
                 <div className='bold'>{item.display_name}</div>
                 <Dropdown
                     items={item.options}

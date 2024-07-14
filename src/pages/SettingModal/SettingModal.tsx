@@ -59,6 +59,20 @@ function SettingModal(props:SettingModalProps) {
 
         props.onClose();
     }
+
+    useEffect(()=>{
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+                event.preventDefault();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+    
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [props.onClose]);
     
     useEffect(()=>{
         if (modalRef.current) {
@@ -111,7 +125,8 @@ function SettingModal(props:SettingModalProps) {
 
     return (
         <div
-            className='modal setting-container undraggable column'
+            id='setting-modal'
+            className='modal undraggable column'
             ref = {modalRef}
         >
             {
@@ -150,18 +165,11 @@ function SettingModal(props:SettingModalProps) {
                 name='설정'
                 onClose = {()=>onClose()}
             />
-            <div style={{height:'4px'}}/>
-            <SelectFull
-                name='모델'
-                value={selectedCategoryName}
-                onClick={()=>setIsPopupCategories(true)}
-            />
-            <SelectFull
-                name={null}
-                value={selectedModelName}
-                onClick={()=>setIsPopupModels(true)}
-            />
-            <div style={{height:'4px'}}/>
+            <div className='item column'>
+                <p>모델</p>
+                <button onClick={()=>setIsPopupCategories(true)}>{selectedCategoryName}</button>
+                <button onClick={()=>setIsPopupModels(true)}>{selectedModelName}</button>
+            </div>
             {
                 selectedCategory == MODELS.GOOGLE_GEMINI &&
                 <GeminiOptions

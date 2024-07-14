@@ -91,12 +91,10 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                     />
                     <span className='center'>독립된 History</span>
                 </div>
-                <div className="wfill row slot-list-item main-end undraggable">
-                    <div style={{width:"5px"}}/>
+                <div className="row slot-list-item slot-bottom undraggable">
                     <GoogleFontIconButton
-                        className='font-button-animation'
+                        className='session-slot-button'
                         value='delete'
-                        size={20}
                         onClick={()=>onDelete()}
                     />
                 </div>

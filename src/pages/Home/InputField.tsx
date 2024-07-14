@@ -1,21 +1,41 @@
 import React from 'react';
+import { SubmitButton } from './component/SubmitButton.tsx';
+import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx';
 
 interface InputFieldProps {
-    text:string,
-    className?:string,
-    onChange:(x:string)=>void
+    text:string;
+    className?:string;
+    onSubmit:()=>void;
+    loading:boolean;
+    onChange:(x:string)=>void;
 }
 
-export default function InputField({text, onChange, className=''}:InputFieldProps) {
+export default function InputField({text, onSubmit, onChange, loading, className=''}:InputFieldProps) {
     return (
-        <div className={`${className} textarea-input-container`}>
+        <div className={`input-section-container textfield ${className}`}>
             <textarea
-              className='textarea-input scrollbar wfill fontstyle'
+              className='input-section-textarea fontstyle scrollbar'
               spellCheck='false'
               value={text}
               onChange={(e)=>{onChange(e.target.value)}}
               >
             </textarea>
+            {
+                !loading &&
+                <GoogleFontIcon
+                    className='floating-button smallwidth-only'
+                    value='send'
+                    onClick={()=>onSubmit()}
+                />
+            }
+            {
+                loading &&
+                <GoogleFontIcon
+                    className='floating-button smallwidth-only rotate'
+                    value='refresh'
+                    onClick={()=>{}}
+                />
+            }
         </div>
     );
 }
