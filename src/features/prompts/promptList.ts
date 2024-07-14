@@ -1,5 +1,5 @@
 import { IPromptInfomation, IPromptList, IPromptSubList } from './interface'
-import { MainPrompt, RawPrompt, RawPromptSublist, SubPrompt, Vars } from '../../data/interface'
+import { MainPrompt, RawPrompt, RawPromptSublist, Vars } from '../../data/interface'
 import { PromptInfomation } from './promptInfomation.ts';
 import { PromptSublist } from './promptSublist.ts';
 

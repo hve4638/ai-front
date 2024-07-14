@@ -10,7 +10,7 @@ import RequestInfoModal from "../RequestInfoModal/RequestInfoModal.tsx";
 import HistoryModal from '../HistoryModal/HistoryModal.tsx'
 import SettingModal from '../SettingModal/SettingModal.tsx'
 
-import { APIResponse } from "../../data/interface.tsx";
+import { APIResponse, FetchStatus } from "../../data/interface.ts";
 
 import Header from './Header.tsx'
 import Footer from './Footer.tsx'
@@ -55,10 +55,11 @@ export default function Home() {
         currentChat, setCurrentChat,
         apiSubmitPing, setApiSubmitPing,
         apiFetchWaiting,
-        setApiFetchWaiting,
+        sessionFetchStatus,
     } = memoryContext;
     const {
         enqueueApiRequest,
+        getFetchStatus
     } = eventContext;
 
     // Ctrl+Enter 핑
@@ -70,10 +71,9 @@ export default function Home() {
     }, [apiSubmitPing]);
 
     useEffect(()=>{
-        let key = currentSession.chatIsolation ? currentSession.id : NOSESSION_KEY;
-        
-        setSubmitLoading(key in apiFetchWaiting);
-    }, [currentSession, apiFetchWaiting])
+        const status = getFetchStatus(currentSession);
+        setSubmitLoading(status === FetchStatus.PROCESSING || status === FetchStatus.QUEUED);
+    }, [currentSession, sessionFetchStatus])
 
     const onSubmit = () => {
         if (currentChat.input) {
@@ -82,13 +82,6 @@ export default function Home() {
                 input:currentChat.input,
                 promptText:memoryContext.promptText
             })
-            
-            setApiFetchWaiting((waiting)=>{
-                const newWaiting = {...waiting};
-                const key = currentSession.chatIsolation ? currentSession.id : NOSESSION_KEY;
-                newWaiting[key] = 1;
-                return newWaiting;
-            });
         }
         return new AbortController();
     }

@@ -9,6 +9,8 @@ import { EventContext } from "../../context/EventContext.tsx";
 import { AIModels } from "../chatAI/index.ts";
 import { SecretContext } from "../../context/SecretContext.tsx";
 import { NOSESSION_KEY } from "../../data/constants.tsx";
+import { AIModelFetchManager } from "./aiModelFetchManager/index.ts";
+import { FetchStatus } from "../../data/interface.ts";
 
 const ANY:any = {};
 
@@ -26,6 +28,7 @@ export function EffectHandler() {
     const [previousSession, setPreviousSession] = useState<ChatSession>(ANY);
     const [changeSessionTabPing, setChangeSessionTabPing] = useState(0);
     const [wheelPing, setWheelPing] = useState(0);
+    const [aiModelFetchManager, setAIModelFetchManager] = useState(new AIModelFetchManager());
 
     const {
         sessions, setSessions,
@@ -42,15 +45,14 @@ export function EffectHandler() {
         setPromptText,
         setPromptSubList,
         setApiSubmitPing,
-        apiFetchBlock, setApiFetchBlock,
         apiFetchQueue, setApiFetchQueue,
         apiFetchResponse, setApiFetchResponse,
         currentChat, setCurrentChat,
         setCurrentHistory,
-        setApiFetchWaiting
     } = memoryContext;
     const {
-        changeCurrentSession
+        changeCurrentSession,
+        changeFetchStatus,
     } = eventContext;
 
     // Ctrl+Tab 핑
@@ -189,11 +191,11 @@ export function EffectHandler() {
 
     // API Fetch 큐 처리
     useEffect(()=>{
-        if (apiFetchBlock) return;
         if (apiFetchQueue.length === 0) return;
 
         const newApiFetchQueue = [...apiFetchQueue];
         const { sessionid, input, promptText } = newApiFetchQueue.shift();
+        setApiFetchQueue(newApiFetchQueue);
     
         let targetSession:ChatSession;
         if (sessionid < 0) {
@@ -209,73 +211,43 @@ export function EffectHandler() {
             targetSession ??= currentSession;
         }
         
+        console.log('targetSession')
+        console.log(targetSession)
+        changeFetchStatus(targetSession, FetchStatus.QUEUED);
         const sessionkey = (sessionid >= 0 && targetSession.chatIsolation) ? sessionid : NOSESSION_KEY;
-        const chatkey = targetSession.chatIsolation ? targetSession.id : NOSESSION_KEY;
-        try {
-            setApiFetchBlock(true);
-            setApiFetchQueue(newApiFetchQueue);
-
-            AIModels.request(
-                {
-                    contents: input,
-                    note: targetSession.note,
-                    prompt: promptText
-                },
-                {
-                    secretContext,
-                    storeContext
+        aiModelFetchManager.enqueueAPIRequest({
+            onFetchStart: ()=>{
+                changeFetchStatus(targetSession, FetchStatus.PROCESSING);
+            },
+            onFetchComplete : (success, data)=>{
+                if (success) {
+                    changeFetchStatus(targetSession, FetchStatus.COMPLETE);
                 }
-            )
-            .then(data=>{
-                setApiFetchBlock(false);
-                const res = {
-                    success : true,
-                    sessionid : sessionid,
-                    data : data
+                else {
+                    changeFetchStatus(targetSession, FetchStatus.ERROR);
                 }
                 
                 setApiFetchResponse((responses)=>{
                     return {
                         ...responses,
-                        [sessionkey] : res
+                        [sessionkey] : {
+                            success : success,
+                            sessionid : sessionkey,
+                            data : data
+                        }
                     };
                 });
-            })
-            .catch(err=>{
-                setApiFetchBlock(false);
-                const res = {
-                    success : false,
-                    sessionid : sessionid,
-                    data : {
-                        input : input,
-                        output : '',
-                        prompt : promptText,
-                        note : targetSession.note,
-                        tokens: 0,
-                        finishreason : 'EXCEPTION',
-                        normalresponse : false,
-                        warning : null,
-                        error: `${err}`
-                    }
-                }
-                
-                setApiFetchResponse((responses)=>{
-                    return {
-                        ...responses,
-                        [sessionkey] : res
-                    };
-                });
-            });
-        }
-        catch(e) {
-            setApiFetchBlock(false);
-            setApiFetchWaiting((waiting)=>{
-                const newWaiting = {...waiting};
-                delete newWaiting[sessionkey];
-                return newWaiting;
-            })
-        }
-    }, [apiFetchBlock, apiFetchQueue]);
+            },
+            args : {
+                contents : input,
+                note: targetSession.note,
+                prompt: promptText,
+                modelCategory: targetSession.modelCategory,
+                modelName: targetSession.modelName,
+                secretContext
+            }
+        });
+    }, [apiFetchQueue]);
 
     useEffect(()=>{
         const updateApiFetchResponse = (key:any) => {
@@ -290,12 +262,6 @@ export function EffectHandler() {
             }
             setCurrentChat({...res.data, input : currentChat.input});
             
-            setApiFetchWaiting((waiting)=>{
-                const newWaiting = {...waiting};
-                delete newWaiting[key];
-                return newWaiting;
-            })
-
             setApiFetchResponse(oldApiFetchResponse=>{
                 const newApiFetchResponse = {...oldApiFetchResponse}
                 delete newApiFetchResponse[key];
@@ -305,6 +271,8 @@ export function EffectHandler() {
         
         if (currentSession.chatIsolation && currentSession.id in apiFetchResponse) {
             updateApiFetchResponse(currentSession.id);
+            changeFetchStatus(currentSession, FetchStatus.IDLE);
+
         }
         else if (!currentSession.chatIsolation && NOSESSION_KEY in apiFetchResponse) {
             updateApiFetchResponse(NOSESSION_KEY);

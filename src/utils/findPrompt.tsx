@@ -1,6 +1,4 @@
-import { MainPrompt, SubPrompt } from '../data/interface.tsx'
-
-// function findPromptAsKey(prompts:MainPrompt[], key1:string): MainPrompt|SubPrompt|undefined;
+import { MainPrompt } from '../data/interface.tsx'
 
 export function findPromptAsKey(prompts:MainPrompt[], key1:string, key2:string) {
     const mainPrompt = findMainPromptAsKey(prompts, key1);

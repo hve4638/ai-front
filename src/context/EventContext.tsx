@@ -6,6 +6,7 @@ import { ChatSession } from "./interface.ts";
 import { StoreContext } from "./StoreContext.tsx";
 import { MemoryContext } from "./MemoryContext.tsx";
 import { NOSESSION_KEY } from "../data/constants.tsx";
+import { FetchStatus } from "../data/interface.ts";
 
 interface EventContextType {
     createSession:()=>void;
@@ -13,6 +14,8 @@ interface EventContextType {
     changeCurrentSession:(session:ChatSession)=>void;
     commitCurrentSession:()=>void;
     enqueueApiRequest:({session, input, promptText}:enqueueApiRequestArgs)=>void;
+    changeFetchStatus:(session:ChatSession, status:FetchStatus)=>void;
+    getFetchStatus:(session:ChatSession)=>FetchStatus;
 }
 const ANY:any = null;
 
@@ -55,7 +58,8 @@ export function EventContextProvider({children}) {
         currentChat, setCurrentChat,
         currentSession, setCurrentSession,
         nextSessionID, setNextSessionID,
-        apiFetchQueue, setApiFetchQueue
+        apiFetchQueue, setApiFetchQueue,
+        sessionFetchStatus, setSessionFetchStatus,
     } = memoryContext;
 
     const createSession = () => {
@@ -91,11 +95,9 @@ export function EventContextProvider({children}) {
             setCurrentChat(responses[NOSESSION_KEY] ?? getDefaultAPIResponse());
         }
         if (session.historyIsolation) {
-            console.log("SESSION")
             setCurrentHistory(history[session.id] ?? []);
         }
         else if (currentSession.historyIsolation) {
-            console.log("GLOBAL")
             setCurrentHistory(history[NOSESSION_KEY] ?? []);
         }
 
@@ -137,6 +139,25 @@ export function EventContextProvider({children}) {
             return newQueue;
         })
     }
+    const changeFetchStatus = (session, status) => {
+        const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
+        
+        setSessionFetchStatus((sessionStatus)=>{
+            const newSessionStatus = {...sessionStatus};
+            newSessionStatus[key] = status;
+            return newSessionStatus;
+        });
+    }
+    const getFetchStatus = (session) => {
+        const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
+        
+        if (key in sessionFetchStatus) {
+            return sessionFetchStatus[key];
+        }
+        else {
+            return FetchStatus.IDLE;
+        }
+    }
     
     return (
         <EventContext.Provider
@@ -146,6 +167,8 @@ export function EventContextProvider({children}) {
                 changeCurrentSession,
                 commitCurrentSession,
                 enqueueApiRequest,
+                changeFetchStatus,
+                getFetchStatus
             }}
         >
             {children}

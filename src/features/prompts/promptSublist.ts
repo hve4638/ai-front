@@ -1,4 +1,4 @@
-import { RawPromptSublist, SubPrompt } from "../../data/interface";
+import { RawPromptSublist } from "../../data/interface";
 import { IPromptSubList } from "./interface.ts";
 import { PromptInfomation } from "./promptInfomation.ts";
 

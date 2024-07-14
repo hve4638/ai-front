@@ -31,10 +31,15 @@ interface MemoryContextType {
     setApiFetchQueue:(x:any[]|((x:any)=>void))=>void;
     apiFetchBlock:boolean;
     setApiFetchBlock:(x:boolean)=>void;
+
     apiFetchWaiting:ApiFetchWaiting;
     setApiFetchWaiting:useStateCallback<ApiFetchWaiting>;
+
     apiFetchResponse:ApiFetchResponse;
     setApiFetchResponse:useStateCallback<ApiFetchResponse>;
+
+    sessionFetchStatus:SessionFetchStatus;
+    setSessionFetchStatus:useStateCallback<SessionFetchStatus>;
 }
 const ANY:any = null;
 
@@ -47,6 +52,9 @@ interface ApiFetchResponse {
 }
 
 interface ApiFetchWaiting {
+    [key:string]:any;
+}
+interface SessionFetchStatus {
     [key:string]:any;
 }
 
@@ -70,6 +78,7 @@ export default function MemoryContextProvider({children}) {
     const [apiFetchWaiting, setApiFetchWaiting] = useState<ApiFetchWaiting>({});
 
     const [apiSubmitPing, setApiSubmitPing] = useState(false);
+    const [sessionFetchStatus, setSessionFetchStatus] = useState({});
     
     return (
         <MemoryContext.Provider
@@ -88,7 +97,9 @@ export default function MemoryContextProvider({children}) {
                 apiFetchQueue, setApiFetchQueue,
                 apiFetchBlock, setApiFetchBlock,
                 apiFetchResponse, setApiFetchResponse,
-                apiFetchWaiting, setApiFetchWaiting
+                apiFetchWaiting, setApiFetchWaiting,
+                
+                sessionFetchStatus, setSessionFetchStatus
             }}
         >
             {children}

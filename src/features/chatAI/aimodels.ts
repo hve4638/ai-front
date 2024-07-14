@@ -77,9 +77,9 @@ export class AIModels {
         return models;
     }
 
-    static async request(request:AIModelRequest, {secretContext, storeContext}):Promise<AIModelResponse> {
-        const category = secretContext.modelInfo.category;
-        const model = secretContext.modelInfo.model;
+    static async request(request:AIModelRequest, {secretContext}):Promise<AIModelResponse> {
+        const category = request.modelCategory;
+        const model = request.modelName;
         const options = secretContext.modelInfo.modelOptions[category] ?? {};
         
         let aimodel:AIModel|null;

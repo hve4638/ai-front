@@ -1,5 +1,4 @@
 import { IPromptList, IPromptInfomation } from './interface.ts'
-import {MainPrompt, SubPrompt, Vars} from '../../data/interface'
 
 export class EmptyPromptList implements IPromptList {
     getPromptIndex(prompt1Key: string, prompt2Key?: string): number[] | null {

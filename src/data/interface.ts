@@ -26,7 +26,6 @@ export interface RawPrompt {
   vars?: string|object[];
 }
 
-
 export interface MainPrompt {
   name: string;
   value?: string;
@@ -34,29 +33,6 @@ export interface MainPrompt {
   vars?: string|object[];
 }
 
-export interface SubPrompt {
-  name: string;
-  value: string;
-  key: string;
-  vars?: string|object[];
-}
-/*
-interface MainPrompts {
-  name: string,
-  value: string,
-  path: string|undefined,
-  key: string,
-  list: SubPrompts[]|undefined,
-  vars: string[]|undefined,
-}
-
-interface SubPrompts {
-  name: string,
-  value: string,
-  key: string,
-  vars: string[]|undefined,
-}
-*/
 export interface Vars {
   [key:string] : VarItem[]
 }
@@ -64,4 +40,12 @@ export interface Vars {
 export interface VarItem {
   name:string,
   value:string
+}
+
+export enum FetchStatus {
+  IDLE,
+  QUEUED,
+  PROCESSING,
+  ERROR,
+  COMPLETE,
 }

@@ -100,7 +100,6 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                     sessions != null &&
                     [...sessions].map((session, index) => (
                         <SessionSlot
-                            className="noflex"
                             key={index}
                             session={session}
                             index={index+1}

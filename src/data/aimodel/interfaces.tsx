@@ -1,9 +1,11 @@
 import { Note } from "../interface";
 
 export interface AIModelRequest {
-    contents : string;
-    prompt : string;
-    note : Note;
+    contents: string;
+    prompt: string;
+    note: Note;
+    modelCategory: string;
+    modelName : string;
 }
   
 export interface AIModelConfig {

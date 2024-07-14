@@ -4,6 +4,8 @@ import { PromptContext } from '../../context/PromptContext.tsx';
 import { MemoryContext } from '../../context/MemoryContext.tsx';
 import { ChatSession } from '../../context/interface.ts';
 import { SlotContextMenu } from './SlotContextMenu.tsx';
+import { EventContext } from '../../context/EventContext.tsx';
+import { FetchStatus } from '../../data/interface.ts';
 
 interface SlotAdderProps {
     onClick:()=>void,
@@ -11,7 +13,7 @@ interface SlotAdderProps {
 
 export const SessionSlotAdder = ({onClick}:SlotAdderProps) => (
     <div
-        className='noflex prompt-slot center'
+        className='session-slot'
         onClick={(e)=>onClick()}
         onContextMenu={(event)=>{
             event.preventDefault();
@@ -31,18 +33,22 @@ interface SlotProps {
 
 export const SessionSlot = ({ index, className='', session, selected=false, onClick, onDelete, onSessionChange}:SlotProps) => {
     const memoryContext = useContext(MemoryContext);
-    if (!memoryContext) throw new Error("<SessionSlot/> required memoryContextProvider");
+    const eventContext = useContext(EventContext);
+    if (!memoryContext) throw new Error("<SessionSlot/> required MemoryContextProvider");
+    if (!eventContext) throw new Error("<SessionSlot/> required EventContextProvider");
 
     const targetRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [showTooptip, setShowTooltip] = useState(false);
-    const [responseSuccessAlert, setResponseSuccessAlert] = useState(false);
-    const [responseFailAlert, setResponseFailAlert] = useState(false);
+    const [alert, setAlert] = useState('');
 
     const {
         apiFetchResponse,
     } = memoryContext;
+    const {
+        getFetchStatus,
+    } = eventContext;
 
     let rect;
     if (targetRef.current) {
@@ -50,30 +56,36 @@ export const SessionSlot = ({ index, className='', session, selected=false, onCl
     }
 
     useEffect(()=>{
-        if (session.id in apiFetchResponse) {
-            const { success } = apiFetchResponse[session.id];
-            if (success) {
-                setResponseSuccessAlert(true);
-                setResponseFailAlert(false);
-            }
-            else {
-                setResponseSuccessAlert(false);
-                setResponseFailAlert(true);
-            }
+        if (!session.chatIsolation) {
+            setAlert('');
+            return;
         }
-        else {
-            setResponseSuccessAlert(false);
-            setResponseFailAlert(false);
+        const status = getFetchStatus(session);
+        
+        switch(status) {
+        case FetchStatus.IDLE:
+            setAlert('');
+            break;
+        case FetchStatus.COMPLETE:
+            setAlert('complete');
+            break;
+        case FetchStatus.ERROR:
+            setAlert('error');
+            break;
+        case FetchStatus.PROCESSING:
+        case FetchStatus.QUEUED:
+            setAlert('loading');
+            break;
         }
-    }, [apiFetchResponse])
-    
+    }, [apiFetchResponse]);
+
+    const extraClass = `${className} ${selected ? 'selected' : ''} ${alert}`
+
     return (
         <>
             <div
                 className={
-                    `${className} noflex prompt-slot center ${selected ? 'selected' : ''} \
-${responseSuccessAlert ? 'slot-alert-success' : ''} \
-${responseFailAlert ? 'slot-alert-fail' : ''}`
+                    `session-slot ${extraClass}`
                 }
                 ref={targetRef}
                 onClick={()=>onClick()}
@@ -172,7 +184,7 @@ function SlotTooltip({x, y, session}) {
     }, [session]);
     return (
         <div
-            className='prompt-slot-tooltip column'
+            className='session-slot-tooltip column'
             style={{top:y-h, left:x}}
             ref={targetRef}
         >
@@ -180,7 +192,7 @@ function SlotTooltip({x, y, session}) {
                 texts.map((text, index)=>(
                     <div
                         key={index}
-                        className='prompt-slot-tooltip-text'
+                        className='item'
                         style={{
                             maxWidth : '140px',
                         }}>

@@ -44,15 +44,15 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
     const height = 65;
     return (
         <div
-            className='session-contextmenu-container'
+            className='session-slot-menu-container shadow'
             style={{top: y - height, left:x - width/2}}
             ref={ref}
         >
             <div
-                className={`session-contextmenu column sub-center undraggable ${session.color}`}
+                className={`session-slot-menu column sub-center undraggable ${session.color}`}
             >
                 <div style={{margin:"2px 0px"}}><strong>슬롯 {index}</strong></div>
-                <div className="row slot-list-item">
+                <div className="row item">
                     {
                         colors.map((value, index)=>(
                             <ColorBox
@@ -69,7 +69,7 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                     }
                 </div>
                 <div style={{height:"5px"}}/>
-                <div className='wfill slot-list-item row main-start'>
+                <div className='item row main-start'>
                     <input type='checkbox'
                         checked={session.chatIsolation}
                         onChange={()=>{
@@ -80,7 +80,7 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                     />
                     <span className='center'>독립된 채팅</span>
                 </div>
-                <div className='wfill slot-list-item row main-start'>
+                <div className='item row main-start'>
                     <input type='checkbox'
                         checked={!session.historyIsolation}
                         onChange={()=>{
@@ -91,7 +91,7 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                     />
                     <span className='center'>독립된 History</span>
                 </div>
-                <div className="row slot-list-item slot-bottom undraggable">
+                <div className="item bottom row">
                     <GoogleFontIconButton
                         className='session-slot-button'
                         value='delete'
@@ -106,7 +106,7 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
 function ColorBox({color, onClick, value}) {
     return (
         <div
-            className='slot-colorbox clickable'
+            className='colorbox clickable'
             style={{ backgroundColor: COLORBOX_COLORS[color]}}
             onClick={()=>onClick(value)}
         ></div>

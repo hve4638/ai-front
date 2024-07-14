@@ -1,10 +1,33 @@
-.prompt-slot {
+:root {
+    --slot-menu-fontsize : 14px;
+}
+
+.theme-dark {
+    --slot-selected-color : rgb(116, 161, 233);
+
+    --slot-menu-background-color : rgb(47, 47, 47);
+    --slot-menu-border-color : rgb(68, 68, 68);
+    --slot-bgcolor: rgb(47, 47, 47);
+    --slot-hover-color: rgb(83, 83, 83);
+    --slot-select-color: rgb(62, 65, 74);
+    --slot-alert-green-color: rgb(68, 103, 26);
+    --slot-alert-green-accent-color: rgb(81, 125, 20);
+    --slot-alert-red-color: rgb(103, 26, 26);
+    --slot-alert-red-accent-color: rgb(125, 20, 20);
+}
+
+.session-slot {
     position: relative;
+    display: flex;
+    flex: none;
+    justify-content: center;
+    align-items: center;
+
     margin-left: 4px;
     border-radius: 6px;
     
     color: var(--text-color);
-    background-color: var(--slot-color);
+    background-color: var(--slot-bgcolor);
     border: 1px solid rgb(118, 118, 118);
     transition: 0.3s background-color  ease;
 
@@ -16,101 +39,77 @@
     cursor : pointer;
 }
 
-.prompt-slot.selected {
-    color: rgb(116, 161, 233);
-    /*background-color: var(--slot-select-color);*/
+.session-slot.selected {
+    color: var(--slot-selected-color);
 }
 
-.prompt-slot:hover {
+.session-slot:hover {
     background-color: var(--slot-hover-color);
 }
 
-.session-contextmenu-container {
+.session-slot-menu-container {
     position: absolute;
-    background-color: var(--field-color);
-    z-index: 100;
+    
     border-radius: 8px;
-    border: 1px solid rgb(68, 68, 68);
-    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
+    background-color: var(--slot-menu-background-color);
+    border: 1px solid var(--slot-menu-border-color);
+    overflow: hidden;
+
+    z-index: 10;
 }
-.session-contextmenu {
+
+.session-slot-menu {
     color: white;
-    border-radius: 8px;
+
     padding: 4px 10px;
     min-width: 140px;
-    font-size: 14px;
+    font-size: var(--slot-menu-fontsize);
+    
     transition: 0.3s ease background-color;
 }
 
-.session-contextmenu.red {
+.session-slot-menu.red {
     background-color : var(--background-red);
 }
-.session-contextmenu.orange {
+.session-slot-menu.orange {
     background-color : var(--background-orange);
 }
-.session-contextmenu.yellow {
+.session-slot-menu.yellow {
     background-color : var(--background-yellow);
 }
-.session-contextmenu.green {
+.session-slot-menu.green {
     background-color : var(--background-green);
 }
-.session-contextmenu.lime {
+.session-slot-menu.lime {
     background-color : var(--background-lime);
 }
-.session-contextmenu.aqua {
+.session-slot-menu.aqua {
     background-color : var(--background-aqua);
 }
-.session-contextmenu.blue {
+.session-slot-menu.blue {
     background-color : var(--background-blue);
 }
-.session-contextmenu.purple {
+.session-slot-menu.purple {
     background-color : var(--background-purple);
 }
 
-.slot-alert-success {
-    animation: animation-alert-success 3s infinite;
-}
-@keyframes animation-alert-success {
-    0% {
-        background-color: var(--slot-alert-green-color);
-    }
-    50% {
-        background-color: var(--slot-alert-green-accent-color);
-    }
-    100% {
-        background-color: var(--slot-alert-green-color);
-    }
-}
-
-.slot-alert-fail {
-    border: 1px solid rgb(110, 65, 65);
-    animation: animation-alert-fail 4s infinite;
-}
-@keyframes animation-alert-fail {
-    0% {
-        border-color: rgb(110, 65, 65);
-    }
-    50% {
-        border-color: rgb(141, 85, 85);
-    }
-    100% {
-        border-color: rgb(110, 65, 65);
-    }
-}
-
-.slot-list-item {
+.session-slot-menu .item {
+    width: 100%;
     margin: 1px 0px;
 }
 
-.slot-bottom {
+.session-slot-button {
+    font-size: 20px;
+}
+
+.session-slot-menu .bottom {
     justify-content: flex-end;
-    width: 100%;
-    min-height: 12px;
     margin: 5px;
+    min-height: 12px;
     padding-right: 8px;
 }
 
-.slot-colorbox {
+.session-slot-menu .colorbox {
     border-radius: 4px;
     border: 1px solid rgb(130, 130, 130);
     width: 14px;
@@ -118,37 +117,8 @@
     margin: 2px;
 }
 
-.menu-item {
-    width : 150px;
-    margin : 1px;
-    padding : 3px;
-    overflow: hidden;
-    text-wrap: nowrap;
-    border-radius: 8px;
-    cursor : pointer;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.menu-item:hover {
-    background-color: #f1f1f124;
-}
-
-.menu-item span {
-    margin-right: 4px;
-}
-
-.menu-item:hover {
-    background-color: #f1f1f124;
-}
-
-.menu-item.red {
-    color: var(--warn-color);
-}
-
-.prompt-slot-tooltip {
+.session-slot-tooltip {
     position: absolute;
-    z-index: 5;
     width: auto;
     white-space: nowrap;
     padding: 6px;
@@ -162,15 +132,63 @@
     color: var(--tooltip-text-color);
     background-color: var(--tooltip-background-color);
     border: 1px solid var(--tooltip-border-color);
+
+    z-index: 5;
 }
 
-.prompt-slot-tooltip-text {
+.session-slot-tooltip .item {
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.session-slot-button {
-    font-size: 20px;
+
+.session-slot.complete {
+    animation: animation-slot-complete 3s infinite;
+}
+.session-slot.error {
+    animation: animation-slot-error 3s infinite;
+}
+.session-slot.loading {
+    animation: animation-slot-loading 3s infinite;
+}
+
+@keyframes animation-slot-loading {
+    0% {
+        background-color: var(--slot-bgcolor);
+    }
+    50% {
+        background-color: rgb(54, 60, 71);
+    }
+    100% {
+        background-color: var(--slot-bgcolor);
+    }
+}
+@keyframes animation-slot-complete {
+    0% {
+        background-color: var(--slot-bgcolor);
+    }
+    50% {
+        background-color: rgb(72, 102, 73);
+    }
+    100% {
+        background-color: var(--slot-bgcolor);
+    }
+}
+@keyframes animation-slot-error {
+    0% {
+        background-color: var(--slot-bgcolor);
+    }
+    50% {
+        background-color: rgb(90, 57, 57);
+    }
+    100% {
+        background-color: var(--slot-bgcolor);
+    }
+}
+
+.slot-alert-fail {
+    border: 1px solid rgb(110, 65, 65);
+    animation: animation-alert-fail 4s infinite;
 }
