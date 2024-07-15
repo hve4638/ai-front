@@ -5,6 +5,7 @@ import Markdown from '../../components/Markdown.tsx'
 import { StoreContext } from '../../context/StoreContext.tsx'
 import { LineByLineRenderer } from '../../components/LineByLine.tsx'
 import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
+import { copyToClipboard } from '../../utils/clipboard.tsx'
 
 interface OutputFieldProps {
   className?:string,
@@ -25,6 +26,9 @@ export default function OutputField(props:OutputFieldProps) {
           <GoogleFontIcon
             className='floating-button'
             value='content_paste'
+            onClick={()=>{
+              copyToClipboard(response.output ?? '');
+            }}
           />
           <div className='token-display-container undraggable'>
             {
