@@ -2,6 +2,7 @@ import { HOMEPAGE } from "../../data/constants.tsx";
 import { Promptlist } from "./interface";
 import { COOKIE_OPTION_NOEXPIRE } from "../../data/constants.tsx"
 import { getCookie, setCookie } from "../../libs/cookies.tsx"
+import { getCookies, removeCookie } from "../../libs/cookies.tsx";
 
 export class WebInteractive {
     static loadPromptlist():Promise<Promptlist> {
@@ -47,6 +48,12 @@ export class WebInteractive {
     
     static openBrowser(url) {
       window.open(url);
+    }
+
+    static resetAllValues() {
+      for (const name of getCookies()) {
+          removeCookie(name);
+      }
     }
   }
   

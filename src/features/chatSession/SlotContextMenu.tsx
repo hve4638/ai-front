@@ -14,7 +14,8 @@ interface SlotContextMenuProps {
 }
 
 export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDelete, onChange}:SlotContextMenuProps, ref) => {
-    const colors = ["red", "orange", "yellow", "lime", "green", "aqua", "purple", "reset"]
+    const colors = ["red", "orange", "yellow", "lime", "aqua", "blue", "purple", "reset"]
+
     const onGlobalClick = (event) => {
       if (ref != null && ref.current && !ref.current.contains(event.target)) {
         onClose();

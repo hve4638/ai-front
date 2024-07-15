@@ -4,7 +4,7 @@ import { PromptContext } from "../../context/PromptContext.tsx";
 import { loadPromptList } from "../../services/local/index.ts";
 import { PromptList } from "../prompts/index.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
-import { NOSESSION_KEY, SESSION_TEMPLATE } from "../../data/constants.tsx";
+import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from "../../data/constants.tsx";
 import { AIModels } from "../chatAI/aimodels.ts";
 
 export function Initializer({ onLoad }) {
@@ -95,11 +95,11 @@ export function Initializer({ onLoad }) {
         
 
         const category = AIModels.getCategories()[0]
-        const model = AIModels.getModels(category.value);
+        const model = AIModels.getModels(category.value)[0];
         const defaultSession = {
             ...SESSION_TEMPLATE,
             modelCategory : category.value,
-            modelName : category.value,
+            modelName : model.value,
             promptKey : promptList.firstPrompt().key,
         } as const;
 
@@ -147,17 +147,7 @@ export function Initializer({ onLoad }) {
             setChatLoaded(true);
         }
         else {
-            setCurrentChat({
-                input: '',
-                output : '',
-                prompt: '',
-                note : {},
-                tokens: 0,
-                warning: null,
-                error : null,
-                finishreason : '',
-                normalresponse : true,
-            });
+            setCurrentChat({...APIRESPONSE_TEMPLATE});
             setChatLoaded(true);
         }
     }, [storedValueLoaded, sessionLoaded]);

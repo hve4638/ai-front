@@ -43,13 +43,13 @@
     --tooltip-border-color : rgb(68, 68, 68);
 
     --background-red : rgba(255, 0, 0, 0.1);
-    --background-orange : rgba(255, 128, 0, 0.1);
+    --background-orange : rgba(255, 77, 0, 0.1);
     --background-yellow : rgba(255, 255, 0, 0.1);
+    --background-lime : rgba(26, 255, 0, 0.1);
     --background-green : rgba(132, 255, 0, 0.1);
-    --background-lime : rgba(0, 255, 47, 0.1);
     --background-aqua : rgba(0, 247, 255, 0.1);
-    --background-blue : rgba(0, 72, 255, 0.1);
-    --background-purple  : rgba(157, 0, 255, 0.1);
+    --background-blue : rgba(36, 153, 255, 0.1);
+    --background-purple  : rgba(64, 0, 255, 0.1);
     --background-reset  : rgb(23, 23, 23);
 
     --default-border-color: rgb(118, 118, 118);

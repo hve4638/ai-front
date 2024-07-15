@@ -83,7 +83,7 @@ export function LayerDropdown({
         
         const timeout = setTimeout(()=>{
             setFocusMainItem(hoverMainItem);
-        }, 100);
+        }, 45);
 
         return ()=>{
             clearTimeout(timeout);

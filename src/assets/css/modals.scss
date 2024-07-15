@@ -76,9 +76,10 @@
     .dropdown2-header {
         background-color: var(--dropdown-light-color);
         border-radius: 14px;
-    }
-    .dropdown2-header:hover {
-        background-color: var(--dropdown-light-hover-color);
+        font-size: 1.1em;
+        &:hover {
+            background-color: var(--dropdown-light-hover-color);
+        }
     }
 }
 

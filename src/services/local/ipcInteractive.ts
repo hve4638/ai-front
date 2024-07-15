@@ -12,7 +12,7 @@ export class IPCInteractive {
         });
       });
     }
-    
+
     static loadPrompt(value:string):Promise<string> {
       return new Promise((resolve, reject)=>{
         window.electron.loadPrompt(value)
@@ -42,7 +42,7 @@ export class IPCInteractive {
             .catch((err)=>reject(err))
         });
     }
-    
+
     static storeSecretValue(name:string, value:any) {
       return new Promise((resolve, reject)=>{
           window.electron.storeSecretValue(name, value)
@@ -56,14 +56,16 @@ export class IPCInteractive {
             .catch((err)=>reject(err))
         });
     }
-    
+
     static fetch(url, init) {
       return window.electron.fetch(url, init);
     }
-    
+
     static openBrowser(url) {
-      window.electron.openBrowser(url);
+        window.electron.openBrowser(url);
     }
 
-    
+    static resetAllValues() {
+        window.electron.resetAllValues();
+    }
 }

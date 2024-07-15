@@ -37,14 +37,14 @@
     
     aspect-ratio: 1 / 1;
     cursor : pointer;
-}
 
-.session-slot.selected {
-    color: var(--slot-selected-color);
-}
-
-.session-slot:hover {
-    background-color: var(--slot-hover-color);
+    &.selected {
+        color: var(--slot-selected-color);
+    }
+    
+    &:hover {
+        background-color: var(--slot-hover-color);
+    }
 }
 
 .session-slot-menu-container {
@@ -66,31 +66,32 @@
     font-size: var(--slot-menu-fontsize);
     
     transition: 0.3s ease background-color;
-}
+        
+    &.red {
+        background-color : var(--background-red);
+    }
+    &.orange {
+        background-color : var(--background-orange);
+    }
+    &.yellow {
+        background-color : var(--background-yellow);
+    }
+    &.green {
+        background-color : var(--background-green);
+    }
+    &.lime {
+        background-color : var(--background-lime);
+    }
+    &.aqua {
+        background-color : var(--background-aqua);
+    }
+    &.blue {
+        background-color : var(--background-blue);
+    }
+    &.purple {
+        background-color : var(--background-purple);
+    }
 
-.session-slot-menu.red {
-    background-color : var(--background-red);
-}
-.session-slot-menu.orange {
-    background-color : var(--background-orange);
-}
-.session-slot-menu.yellow {
-    background-color : var(--background-yellow);
-}
-.session-slot-menu.green {
-    background-color : var(--background-green);
-}
-.session-slot-menu.lime {
-    background-color : var(--background-lime);
-}
-.session-slot-menu.aqua {
-    background-color : var(--background-aqua);
-}
-.session-slot-menu.blue {
-    background-color : var(--background-blue);
-}
-.session-slot-menu.purple {
-    background-color : var(--background-purple);
 }
 
 .session-slot-menu .item {

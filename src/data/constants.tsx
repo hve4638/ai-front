@@ -36,3 +36,14 @@ export const DEFAULT_TOPP = 1.0;
 export const DEFAULT_TEMPERATURE = 1.0;
 export const DEFAULT_MAXTOKEN = 1000;
 
+export const APIRESPONSE_TEMPLATE = {
+    input: '',
+    output : '',
+    prompt: '',
+    note : {},
+    tokens: 0,
+    warning: null,
+    error : null,
+    finishreason : '',
+    normalresponse : true
+} as const;

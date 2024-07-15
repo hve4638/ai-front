@@ -24,8 +24,8 @@ import './assets/css/main.scss';
 import './assets/css/footer.scss';
 
 import './assets/css/markdown.scss';
+import './assets/css/slot.scss';
 import './assets/css/linebyline.css';
-import './assets/css/slot.css';
 
 import './assets/css/modals.scss';
 

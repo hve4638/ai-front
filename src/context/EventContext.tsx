@@ -1,11 +1,10 @@
 import React, { useContext, useState } from "react";
 import { createContext } from 'react';
 
-import { IPromptInfomation, IPromptList, IPromptSubList } from "../features/prompts/interface.ts";
 import { ChatSession } from "./interface.ts";
 import { StoreContext } from "./StoreContext.tsx";
 import { MemoryContext } from "./MemoryContext.tsx";
-import { NOSESSION_KEY } from "../data/constants.tsx";
+import { NOSESSION_KEY, SESSION_TEMPLATE, APIRESPONSE_TEMPLATE } from "../data/constants.tsx";
 import { FetchStatus } from "../data/interface.ts";
 
 interface EventContextType {
@@ -63,10 +62,24 @@ export function EventContextProvider({children}) {
     } = memoryContext;
 
     const createSession = () => {
-        const newSession = {...currentSession};
-        newSession.id = nextSessionID;
+        const newSession:ChatSession = {
+            ...SESSION_TEMPLATE,
+            promptKey : currentSession.promptKey,
+            modelName : currentSession.modelName,
+            modelCategory : currentSession.modelCategory,
+            color : currentSession.modelCategory,
+            note : {...currentSession.note},
+            chatIsolation : currentSession.chatIsolation,
+            historyIsolation : currentSession.historyIsolation,
+            id : nextSessionID,
+        };
+
+        
         setNextSessionID(nextSessionID+1);
         
+        if (newSession.chatIsolation) {
+            setCurrentChat({...APIRESPONSE_TEMPLATE});
+        }
         setCurrentSession(newSession);
         setCurrentSessionId(newSession.id);
 

@@ -3,11 +3,11 @@ import { SecretContext } from '../../context/SecretContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
 import { ButtonFull, InputFull, InputSmall, SelectFull } from './Forms.tsx'
 
-import { getCookies, removeCookie } from "../../libs/cookies.tsx";
 import { LayerDropdown } from '../../components/LayerDropdown.tsx'
 import { MemoryContext } from '../../context/MemoryContext.tsx';
 import { StoreContext } from '../../context/StoreContext.tsx';
 import { LayoutModes } from '../../data/interface.ts';
+import { resetAllValues } from '../../services/local/index.ts'
 
 interface SettingModalProps {
     onClose:()=>void
@@ -72,10 +72,8 @@ function SettingModal(props:SettingModalProps) {
             </div>
             <ButtonFull
                 name="데이터 초기화"
-                onClick={()=>{
-                    for (const name of getCookies()) {
-                        removeCookie(name);
-                    }
+                onClick={async ()=>{
+                    await resetAllValues();
                     window.location.reload();
                 }}
             />

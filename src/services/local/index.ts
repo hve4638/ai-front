@@ -159,3 +159,14 @@ export async function fetchLastVersion() {
         return null;
     }
 }
+
+export async function resetAllValues() {
+    switch(TARGET_ENV) {
+    case "WEB":
+        return WebInteractive.resetAllValues();
+    case "WINDOWS":
+        return IPCInteractive.resetAllValues();
+    default:
+        throw errorNotAvailable();
+    }
+}
