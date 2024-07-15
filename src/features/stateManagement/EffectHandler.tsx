@@ -27,6 +27,7 @@ export function EffectHandler() {
     if (!eventContext) throw new Error('<EffectHandler/> required EventContextProvider');
     const [previousSession, setPreviousSession] = useState<ChatSession>(ANY);
     const [changeSessionTabPing, setChangeSessionTabPing] = useState(0);
+    const [changeSessionMovePing, setChangeSessionMovePing] = useState<number|null>(null);
     const [wheelPing, setWheelPing] = useState(0);
     const [aiModelFetchManager, setAIModelFetchManager] = useState(new AIModelFetchManager());
 
@@ -55,9 +56,18 @@ export function EffectHandler() {
         changeFetchStatus,
     } = eventContext;
 
-    // @TODO : Ctrl+숫자 로 탭 이동하기
-    // @TODO : 설정창 다시 채워넣기
-    // - 화면 모드 (자동, 가로고정, 새로고정)
+    // Ctrl+숫자 핑
+    useEffect(()=>{
+        if (changeSessionMovePing == null) return;
+        
+        const index = changeSessionMovePing - 1;
+        if (index < sessions.length) {
+            const nextSession = sessions[index];
+            changeCurrentSession(nextSession);
+        }
+
+        setChangeSessionMovePing(null);
+    }, [changeSessionMovePing])
 
     // Ctrl+Tab 핑
     useEffect(()=>{
@@ -100,18 +110,28 @@ export function EffectHandler() {
     // 단축키 핸들링
     useEffect(()=>{
         const handleKeyDown = (event) => {
-            if (event.ctrlKey && event.key === 'Tab') {
-                if (event.shiftKey) {
-                    setChangeSessionTabPing((ping)=>ping-1);
+            if (event.ctrlKey) {
+                if (event.key === 'Tab') {
+                    if (event.shiftKey) {
+                        setChangeSessionTabPing((ping)=>ping-1);
+                    }
+                    else {
+                        setChangeSessionTabPing((ping)=>ping+1);
+                    }
+                    event.preventDefault();
+                }
+                else if (event.key === 'Enter') {
+                    setApiSubmitPing(true);
+                    event.preventDefault();
                 }
                 else {
-                    setChangeSessionTabPing((ping)=>ping+1);
+                    for (let i = 1; i < 10; i++) {
+                        if (event.key === String(i)) {
+                            setChangeSessionMovePing(i);
+                            event.preventDefault();
+                        }
+                    }
                 }
-                event.preventDefault();
-            }
-            else if (event.ctrlKey && event.key === 'Enter') {
-                setApiSubmitPing(true);
-                event.preventDefault();
             }
         }
         window.addEventListener('keydown', handleKeyDown);

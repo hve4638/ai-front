@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createContext } from 'react';
-import { Note } from "../data/interface.ts";
+import { LayoutModes, Note } from "../data/interface.ts";
 import { usePlainCookie } from '../hooks/usePlainCookie.tsx'
 import { COOKIE_OPTION_NOEXPIRE } from "../data/constants.tsx";
 import { ChatSession, SessionHistory, SessionResponse, useStateCallback } from "./interface.ts";
@@ -36,7 +36,7 @@ export default function StoreContextProvider({children}) {
     const [history, setHistory] = useState({});
     const [responses, setResponses] = usePlainCookie('responses', {});
     const [fontSize, setFontSize] = usePlainCookie('fontsize', 18);
-    const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', 'auto');
+    const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', LayoutModes.AUTO);
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);

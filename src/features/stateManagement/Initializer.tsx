@@ -27,7 +27,8 @@ export function Initializer({ onLoad }) {
         currentSessionId,
         history,
         responses,
-        fontSize
+        fontSize,
+        layoutMode
     } = storeContext;
     const {
         promptList
@@ -62,6 +63,7 @@ export function Initializer({ onLoad }) {
             && history !== undefined
             && responses !== undefined
             && fontSize !== undefined
+            && layoutMode !== undefined
         ) {
             const rootElement = document.querySelector("html") ?? document.body;
             rootElement.style.fontSize = `${fontSize}px`;
