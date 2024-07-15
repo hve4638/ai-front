@@ -211,8 +211,6 @@ export function EffectHandler() {
             targetSession ??= currentSession;
         }
         
-        console.log('targetSession')
-        console.log(targetSession)
         changeFetchStatus(targetSession, FetchStatus.QUEUED);
         const sessionkey = (sessionid >= 0 && targetSession.chatIsolation) ? sessionid : NOSESSION_KEY;
         aiModelFetchManager.enqueueAPIRequest({

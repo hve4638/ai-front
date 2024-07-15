@@ -23,16 +23,17 @@ import { MemoryContext } from "../../context/MemoryContext.tsx";
 import { EventContext } from "../../context/EventContext.tsx";
 import { NOSESSION_KEY } from "../../data/constants.tsx";
 import { SubmitButton } from "./component/SubmitButton.tsx";
+import { ModelSettingModal } from "../ModelSettingModal/ModelSettingModal.tsx";
 
-const MODALS = {
-    SettingModal : "SettingModal",
-    RequestInfoModal : "RequestInfoModal",
-    HistoryModal : "HistoryModal",
-    VarEditorModal : "VarEditorModal",
-    DebugModal : "DebugModal",
-    MessageModal : "MessageModal",
-} as const;
-type MODALS = typeof MODALS[keyof typeof MODALS];
+enum MODALS {
+    SettingModal,
+    RequestInfoModal,
+    HistoryModal,
+    VarEditorModal,
+    DebugModal,
+    MessageModal,
+    ModelSettingModal,
+};
 
 export default function Home() {
     const secretContext = useContext(SecretContext);
@@ -54,7 +55,6 @@ export default function Home() {
         currentSession,
         currentChat, setCurrentChat,
         apiSubmitPing, setApiSubmitPing,
-        apiFetchWaiting,
         sessionFetchStatus,
     } = memoryContext;
     const {
@@ -106,7 +106,8 @@ export default function Home() {
         >
             <Header
                 onOpenHistory={()=>setCurrentModal(MODALS.HistoryModal)}
-                onOpenModelConfig={()=>setCurrentModal(MODALS.RequestInfoModal)}
+                onOpenRequestInfo={()=>setCurrentModal(MODALS.RequestInfoModal)}
+                onOpenModelSetting={()=>setCurrentModal(MODALS.ModelSettingModal)}
                 onOpenSetting={()=>setCurrentModal(MODALS.SettingModal)}
                 onOpenVarEditor={()=>setCurrentModal(MODALS.VarEditorModal)}
             />
@@ -166,6 +167,12 @@ export default function Home() {
                 {
                     (currentModal === MODALS.DebugModal) &&
                     <DebugModal
+                        onClose = {()=>setCurrentModal(null)}
+                    />
+                }
+                {
+                    (currentModal === MODALS.ModelSettingModal) &&
+                    <ModelSettingModal
                         onClose = {()=>setCurrentModal(null)}
                     />
                 }

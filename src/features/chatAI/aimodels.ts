@@ -1,6 +1,6 @@
 import { SecretContextType, ModelInfo } from "../../context/SecretContext.tsx"
 import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.ts"
-import { DEBUG_MODE, TARGET_ENV } from "../../data/constants.tsx"
+import { DEBUG_MODE, DEFAULT_MAXTOKEN, DEFAULT_TEMPERATURE, DEFAULT_TOPP, TARGET_ENV } from "../../data/constants.tsx"
 import { Claude } from "../../services/claude/Claude.ts"
 import { GoogleGemini } from "../../services/googleGemini/index.ts"
 import { GoogleVertexAI } from "../../services/googleVertexAI/googleVertexAI.ts"
@@ -101,6 +101,10 @@ export class AIModels {
         else {
             throw new Error("Not implement");
         }
+
+        options.topp ??= DEFAULT_TOPP;
+        options.temperature ??= DEFAULT_TEMPERATURE;
+        options.maxtoken ??= DEFAULT_MAXTOKEN;
 
         const config:AIModelConfig = {
             topp : secretContext.topp,

@@ -31,3 +31,7 @@ export const SESSION_TEMPLATE = {
     promptKey : undefined,
     historyKey : "",
 } as const;
+
+export const DEFAULT_TOPP = 1.0;
+export const DEFAULT_TEMPERATURE = 1.0;
+export const DEFAULT_MAXTOKEN = 1000;

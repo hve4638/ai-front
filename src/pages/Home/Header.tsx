@@ -16,7 +16,8 @@ import { AIModels } from "../../features/chatAI/aimodels.ts";
 interface HeaderProps {
   onOpenSetting : () => void,
   onOpenHistory : () => void,
-  onOpenModelConfig : () => void,
+  onOpenModelSetting : () => void,
+  onOpenRequestInfo : () => void,
   onOpenVarEditor : () => void,
 }
 
@@ -118,6 +119,11 @@ export default function Header(props:HeaderProps) {
               onChange={(item)=>onModelChange(item)}
               onCompare={(a, b)=>a.modelCategory===b.modelCategory && a.modelName===b.modelName}
             />
+            <GoogleFontIconButton
+              onClick={props.onOpenModelSetting}
+              className='small-icon rotate-90deg'
+              value="discover_tune"
+            />
             <div className='flex'></div>
             <>
               <div className="dropdown-pad"/>
@@ -172,8 +178,6 @@ export default function Header(props:HeaderProps) {
                 })
             }
             </div>
-            
-            <div style={{width:'10px'}}></div>
             <div className='flex'></div>
             {
               (promptInfomation?.allVars?.length ?? 0) !== 0 &&
@@ -193,7 +197,7 @@ export default function Header(props:HeaderProps) {
             <div className='small-pad'/>
             <GoogleFontIconButton
               value="dns"
-              onClick={props.onOpenModelConfig}
+              onClick={props.onOpenRequestInfo}
             />
             <div className='small-pad'/>
             <GoogleFontIconButton

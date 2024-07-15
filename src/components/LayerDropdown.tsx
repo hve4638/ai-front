@@ -28,8 +28,9 @@ export function LayerDropdown({
   onCompare=(a, b)=>a===b
 }:LayerDropdownProps) {
     const dropdownRef:any = useRef(null);
-    const mainListref:any = useRef(null);
-    const mainItemref:any = useRef(null);;
+    const mainListRef:any = useRef(null);
+    const mainItemRef:any = useRef(null);;
+    const subListRef:any = useRef(null);;
 
     let dropdownRect:any = {};
     const [mainListRect, setMainListRect] = useState<any>({});
@@ -67,11 +68,11 @@ export function LayerDropdown({
     }
 
     useEffect(()=>{
-        if (mainItemref.current) {
-            setMainItemRect(mainItemref.current.getBoundingClientRect());
+        if (mainItemRef.current) {
+            setMainItemRect(mainItemRef.current.getBoundingClientRect());
         }
-        if (mainListref.current) {
-            setMainListRect(mainListref.current.getBoundingClientRect());
+        if (mainListRef.current) {
+            setMainListRect(mainListRef.current.getBoundingClientRect());
         }
     }, [focusMainItem, hoverMainItem])
 
@@ -95,15 +96,24 @@ export function LayerDropdown({
 
     useEffect(()=>{ 
         const handleClick = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setIsOpen(false);
-        }
+            if (isOpen) {
+                if (
+                    (dropdownRef?.current && dropdownRef.current.contains(event.target)) ||
+                    (mainListRef?.current && mainListRef.current.contains(event.target)) ||
+                    (subListRef?.current && subListRef.current.contains(event.target))
+                ) {
+                    
+                }
+                else {
+                    setIsOpen(false);
+                }
+            }
         }
         document.addEventListener('click', handleClick);
         return () => {
             document.removeEventListener('click', handleClick);
         };
-    }, []);
+    });
 
     return (
         <div className={`${className} dropdown2`} style={style} ref={dropdownRef}>
@@ -119,13 +129,13 @@ export function LayerDropdown({
                         top: dropdownRect.bottom + 10,
                         left: dropdownRect.left,
                     }}
-                    ref={mainListref}
+                    ref={mainListRef}
                 >
                 {
                     items.map((item, index) => (
                         <div
                             key={index}
-                            ref={focusMainItem === item ? mainItemref : null}
+                            ref={focusMainItem === item ? mainItemRef : null}
                             className="dropdown2-item"
                             onMouseEnter={(e)=>{
                                 setHoverMainItem(item);
@@ -159,8 +169,9 @@ export function LayerDropdown({
                     className={`${itemClassName} dropdown2-sublist`}
                     style={{
                         top: mainItemRect.top ?? (dropdownRect.bottom + 10),
-                        left: dropdownRect.left + 5 + (mainListRect.width ?? 0),
+                        left: dropdownRect.left + 1 + (mainListRect.width ?? 0),
                     }}
+                    ref={subListRef}
                 >
                 {
                     focusMainItem.list.map((item, index) => (

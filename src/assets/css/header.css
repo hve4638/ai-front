@@ -2,6 +2,9 @@
     --header-height : 46px;
     --font-icon-size : 46px;
     --title-font-size : 24px;
+    --header-height-smallmedia : 30px;
+    --font-icon-size-smallmedia : 46px;
+    --title-font-size-smallmedia : 24px;
 }
 
 #app-header {
@@ -19,6 +22,13 @@
     height: var(--header-height);
     font-size: var(--font-icon-size);
     color: white;
+}
+#app-header .font-button:hover {
+    transform: scale(1.08);
+}
+
+#app-header .small-icon {
+    font-size : 38px;
 }
 
 #app-header .title {
@@ -58,5 +68,8 @@
     }
     #app-header .small-pad {
         width: 3px;
+    }
+    #app-header .small-icon {
+        font-size : 28px;
     }
 }

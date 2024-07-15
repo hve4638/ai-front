@@ -90,9 +90,9 @@ export class GoogleGemini implements AIModel {
         const body = {
             contents: result,
             "generation_config" : {
-                "maxOutputTokens": config.maxtoken,
-                "temperature": config.temperature,
-                "topP": config.topp
+                "maxOutputTokens": options.maxtoken,
+                "temperature": options.temperature,
+                "topP": options.topp
             },
             "safetySettings" : GENIMI_OPTION_SAFETY
         };

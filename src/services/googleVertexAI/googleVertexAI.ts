@@ -94,9 +94,9 @@ export class GoogleVertexAI implements AIModel {
             anthropic_version: "vertex-2023-10-16",
             messages : messages,
             system : systemPrompt,
-            temperature: Number(config.temperature),
-            max_tokens: Number(config.maxtoken),
-            top_p : Number(config.topp),
+            temperature: Number(options.temperature),
+            max_tokens: Number(options.maxtoken),
+            top_p : Number(options.topp),
             top_k: 0,
         }
         

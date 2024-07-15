@@ -95,14 +95,11 @@
 .font-button.selected {
     color:rgb(91, 126, 169);
 }
-
 .font-button:hover {
     transform: scale(1.1);
-    cursor: pointer;
 }
 .font-button:active {
     transform: scale(0.9);
-    cursor: pointer;
 }
 
 .rotate {
@@ -115,6 +112,10 @@
 
 .smallwidth-only {
     display: none;
+}
+
+.rotate-90deg {
+    transform: rotate(90deg);
 }
 
 @keyframes rotateImage {
