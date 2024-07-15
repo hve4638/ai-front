@@ -9,9 +9,11 @@ import { PromptSublist } from "../../features/prompts/promptSublist.ts";
 import { Note } from "../../data/interface.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
 import { ChatSession } from "../../context/interface.ts";
-import { GoogleFontIcon, GoogleFontIconButton } from "../../components/GoogleFontIcon.tsx";
+import { GoogleFontIconButton } from "../../components/GoogleFontIcon.tsx";
 import { LayerDropdown } from "../../components/LayerDropdown.tsx";
-import { AIModels } from "../../features/chatAI/aimodels.ts";
+import { AIModels, MODELS } from "../../features/chatAI/aimodels.ts";
+import { AnthropicIcon, GoogleIcon, OpenAIIcon, GoogleVertexAIIcon } from "../../components/Icons/index.tsx"
+
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -47,7 +49,27 @@ export default function Header(props:HeaderProps) {
         for (const category of AIModels.getCategories()) {
             const categorylist:any[] = [];
             const categorydata = {
-                name : category.name,
+                name : (
+                  <span className='center'>
+                    {
+                      category.value === MODELS.GOOGLE_GEMINI &&
+                      <GoogleIcon style={{marginRight: '8px'}}/>
+                    }
+                    {
+                      category.value === MODELS.GOOGLE_VERTEXAI &&
+                      <GoogleVertexAIIcon style={{marginRight: '8px'}}/>
+                    }
+                    {
+                      category.value === MODELS.OPENAI_GPT &&
+                      <OpenAIIcon style={{marginRight: '8px'}}/>
+                    }
+                    {
+                      category.value === MODELS.CLAUDE &&
+                      <AnthropicIcon style={{marginRight: '8px'}}/>
+                    }
+                    <span>{category.name}</span>
+                  </span>
+                ),
                 list : categorylist
             }
             dropdownItems.push(categorydata);
@@ -118,13 +140,30 @@ export default function Header(props:HeaderProps) {
               items={dropdownItem}
               onChange={(item)=>onModelChange(item)}
               onCompare={(a, b)=>a.modelCategory===b.modelCategory && a.modelName===b.modelName}
-            />
+            >
+            {
+              currentSession.modelCategory === MODELS.GOOGLE_GEMINI &&
+              <GoogleIcon style={{marginRight: '8px'}}/>
+            }
+            {
+              currentSession.modelCategory === MODELS.GOOGLE_VERTEXAI &&
+              <GoogleVertexAIIcon style={{marginRight: '8px'}}/>
+            }
+            {
+              currentSession.modelCategory === MODELS.OPENAI_GPT &&
+              <OpenAIIcon style={{marginRight: '8px'}}/>
+            }
+            {
+              currentSession.modelCategory === MODELS.CLAUDE &&
+              <AnthropicIcon style={{marginRight: '8px'}}/>
+            }
+            </LayerDropdown>
             <GoogleFontIconButton
               onClick={props.onOpenModelSetting}
               className='small-icon rotate-90deg'
               value="discover_tune"
             />
-            <div className='flex'></div>
+            <div className='flex'/>
             <>
               <div className="dropdown-pad"/>
               <Dropdown

@@ -49,3 +49,9 @@ export enum FetchStatus {
   ERROR,
   COMPLETE,
 }
+
+export enum LayoutModes {
+  AUTO = 'auto',
+  VERTICAL = 'vertical',
+  HORIZONTAL = 'horizontal'
+}

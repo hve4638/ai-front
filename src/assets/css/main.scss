@@ -6,6 +6,12 @@
     --textarea-alert-font-size : 14px;
 }
 
+#app {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
 #app-main {
     display: flex;
     flex: 1;

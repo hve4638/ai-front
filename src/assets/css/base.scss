@@ -11,20 +11,17 @@ a {
     border: none;
     outline: none;
     cursor: pointer !important;
-}
-
-a:hover {
-    text-decoration: none;
+    &:hover {
+        text-decoration: none;
+    }
 }
 
 button {
     background-color: var(--button-color);
     border-color: var(--button-border-color);
     transform: scale(1.0);
+    &:hover {
+        background-color: var(--button-hover-color);
+        transform: scale(1.0);
+    }
 }
-
-button:hover {
-    background-color: var(--button-hover-color);
-    transform: scale(1.0);
-}
-

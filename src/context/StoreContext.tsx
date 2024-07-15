@@ -16,6 +16,9 @@ interface StoreContextType {
     setResponses: (x:SessionResponse)=>void;
     fontSize: number;
     setFontSize: (x:number)=>void;
+    layoutMode: string;
+    setLayoutMode: (x:string)=>void;
+    
 
     // @TODO : 리팩토링 필요
     markdownMode: boolean;
@@ -33,6 +36,7 @@ export default function StoreContextProvider({children}) {
     const [history, setHistory] = useState({});
     const [responses, setResponses] = usePlainCookie('responses', {});
     const [fontSize, setFontSize] = usePlainCookie('fontsize', 18);
+    const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', 'auto');
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
@@ -45,6 +49,7 @@ export default function StoreContextProvider({children}) {
                 history, setHistory,
                 responses, setResponses,
                 fontSize, setFontSize,
+                layoutMode, setLayoutMode,
                 
                 markdownMode,
                 setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),

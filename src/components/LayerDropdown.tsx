@@ -5,11 +5,12 @@ import { AIModels } from "../features/chatAI/aimodels.ts";
 interface LayerDropdownProps {
   value:any;
   items:Item[];
-  onChange:(x:any)=>void,
-  style?:Object,
-  className?:string,
-  itemClassName?:string,
-  onCompare?:(a:any, b:any)=>boolean
+  onChange:(x:any)=>void;
+  style?:Object;
+  className?:string;
+  itemClassName?:string;
+  onCompare?:(a:any, b:any)=>boolean;
+  children?:any;
 }
 
 interface Item {
@@ -25,7 +26,8 @@ export function LayerDropdown({
   value,
   items,
   onChange,
-  onCompare=(a, b)=>a===b
+  onCompare=(a, b)=>a===b,
+  children=null
 }:LayerDropdownProps) {
     const dropdownRef:any = useRef(null);
     const mainListRef:any = useRef(null);
@@ -118,6 +120,10 @@ export function LayerDropdown({
     return (
         <div className={`${className} dropdown2`} style={style} ref={dropdownRef}>
         <div className="dropdown2-header" onClick={() => setIsOpen(!isOpen)}>
+            {
+                children != null &&
+                <>{children}</>
+            }
             <span>{title}</span>
             <span className='dropdown2-arrow material-symbols-outlined'>arrow_drop_down</span>
         </div>
@@ -128,6 +134,7 @@ export function LayerDropdown({
                     style={{
                         top: dropdownRect.bottom + 10,
                         left: dropdownRect.left,
+                        minWidth: dropdownRect.width,
                     }}
                     ref={mainListRef}
                 >
@@ -136,7 +143,10 @@ export function LayerDropdown({
                         <div
                             key={index}
                             ref={focusMainItem === item ? mainItemRef : null}
-                            className="dropdown2-item"
+                            className={
+                                'dropdown2-item'
+                                + ('list' in item ? ' cursordefault' : '')
+                            }
                             onMouseEnter={(e)=>{
                                 setHoverMainItem(item);
                             }}

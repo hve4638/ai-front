@@ -70,12 +70,12 @@
     cursor: pointer;
     transform: scale(1.0);
     transition: 0.3s ease transform;
-}
-.floating-button:hover {
-    transform: scale(1.1);
-}
-.floating-button:active {
-    transform: scale(0.9);
+    &:hover {
+        transform: scale(1.1);
+    }
+    &:active {
+        transform: scale(0.9);
+    }
 }
 
 .submit-button {
@@ -91,15 +91,15 @@
     transition: 0.3s ease transform, 0.3s ease color;
     transform: scale(1.0);
     cursor: pointer;
-}
-.font-button.selected {
-    color:rgb(91, 126, 169);
-}
-.font-button:hover {
-    transform: scale(1.1);
-}
-.font-button:active {
-    transform: scale(0.9);
+    &.selected {
+        color:rgb(91, 126, 169);
+    }
+    &:hover {
+        transform: scale(1.1);
+    }
+    &:active {
+        transform: scale(0.9);
+    }
 }
 
 .rotate {
@@ -127,47 +127,3 @@
     }
 }
 
-@media screen and (max-width: 900px) {
-    .seperate-section-item {
-        display: none;
-    }
-    #app-main .seperate-section {
-        width: 0px;
-    }
-    #app-main .textfield {
-        margin: 2px 2px;
-        border-radius: 1px;
-    }
-    #app-header .seperate-section {
-        width: 4px;
-    }
-    #app-footer .seperate-section {
-        width: 4px;
-    }
-
-    .largewidth-only {
-        display: none;
-    }
-    
-    .smallwidth-only {
-        display: inherit;
-    }
-}
-
-@media screen and (max-width: 750px) {
-    #app-main {
-        flex: none;
-        flex-direction: column;
-        height: calc(100vh - var(--footer-height) - var(--header-height) - 5px);
-    }
-    #app-main .textfield {
-        margin: 2px 2px;
-        border-radius: 1px;
-    }
-    #app-main .input-section-container {
-        border-radius: 0px;
-    }
-    #app-main .output-section-container {
-        border-radius: 0px;
-    }
-}

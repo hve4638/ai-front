@@ -1,30 +1,30 @@
-import React, { useState, useContext, useRef, useEffect } from 'react'
+import React, { useState, useContext, useRef, useEffect, memo } from 'react'
 import { SecretContext } from '../../context/SecretContext.tsx'
 import ModalHeader from '../../components/ModalHeader.tsx'
-import { PopUpMenu } from '../../components/PopUpMenu.tsx'
-import { AIModels, MODELS } from '../../features/chatAI/index.ts'
 import { ButtonFull, InputFull, InputSmall, SelectFull } from './Forms.tsx'
-import { CommonOptions } from './options/CommonOptions.tsx'
-import { GeminiOptions } from './options/GeminiOptions.tsx'
-import { GPTOptions } from './options/GPTOptions.tsx'
-import { ClaudeOptions } from './options/ClaudeOptions.tsx'
-import { GoogleVertexAIOptions } from './options/GoogleVertexAIOptions.tsx'
 
 import { getCookies, removeCookie } from "../../libs/cookies.tsx";
+import { LayerDropdown } from '../../components/LayerDropdown.tsx'
+import { MemoryContext } from '../../context/MemoryContext.tsx';
+import { StoreContext } from '../../context/StoreContext.tsx';
+import { LayoutModes } from '../../data/interface.ts';
 
 interface SettingModalProps {
     onClose:()=>void
 }
 
 function SettingModal(props:SettingModalProps) {
+    const storeContext = useContext(StoreContext);
+    const memoryContext = useContext(MemoryContext);
     const secretContext = useContext(SecretContext);
-    if (secretContext == null) {
-        throw new Error('SettingModel required SecretContextProvider')
-    }
+    if (!secretContext) throw new Error('SettingModel required SecretContextProvider')
+    if (!memoryContext) throw new Error('SettingModel required MemoryContextProvider')
+    if (!storeContext) throw new Error('SettingModel required StoreContextProvider')
     
     const modalRef:any = useRef(null);
-    const [size, setWidth] = useState({width:0, height:0});
-
+    const {
+        layoutMode, setLayoutMode
+    } = storeContext;
     const onClose = ()=>{
         props.onClose();
     }
@@ -53,7 +53,23 @@ function SettingModal(props:SettingModalProps) {
                 name='설정'
                 onClose = {()=>onClose()}
             />
-            <div style={{height:'16px'}}/>
+            <div
+                className='item row main-spacebetween'
+                style={{alignItems:'center', paddingLeft: '8px'}}
+            >
+                <span><strong>레이아웃</strong></span>
+                <LayerDropdown
+                    value={layoutMode}
+                    items={[
+                        {name:'자동', value: LayoutModes.AUTO},
+                        {name:'가로 고정', value: LayoutModes.HORIZONTAL},
+                        {name:'세로 고정', value: LayoutModes.VERTICAL},
+                    ]}
+                    onChange={(value)=>{
+                        setLayoutMode(value);
+                    }}
+                />
+            </div>
             <ButtonFull
                 name="데이터 초기화"
                 onClick={()=>{

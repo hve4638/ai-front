@@ -36,7 +36,9 @@ const modelCategory = {
     [MODELS.GOOGLE_VERTEXAI] : {
         name : "Google VertexAI",
         models : [
-            { name : "Claude Sonnet 3.5", value: "claude-3-5-sonnet@20240620" }
+            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet@20240620" },
+            { name : "Claude 3 Opus", value: "claude-3-opus@20240229" },
+            { name : "Claude 3 Haiku", value: "claude-3-haiku@20240307" },
         ]
     }
 }
@@ -47,7 +49,9 @@ if (TARGET_ENV === "WINDOWS") {
     modelCategory[MODELS.CLAUDE] = {
         "name" : "Anthropic Claude",
         "models" : [
-            { name : "Sonnet 3.5", value: "claude-3-5-sonnet-20240620" }
+            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet-20240620" },
+            { name : "Claude 3 Opus", value: "claude-3-opus-20240229" },
+            { name : "Claude 3 Haiku", value: "claude-3-haiku-20240307" },
         ]
     };
 }

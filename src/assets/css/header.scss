@@ -1,0 +1,51 @@
+:root {
+    --header-height : 46px;
+    --font-icon-size : 46px;
+    --title-font-size : 24px;
+    --header-height-smallmedia : 30px;
+    --font-icon-size-smallmedia : 46px;
+    --title-font-size-smallmedia : 24px;
+}
+
+#app-header {
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    white-space: nowrap;
+    height: var(--header-height);
+    margin: 16px 16px 16px 16px;
+    transition: 0.3s height;
+    
+    .font-button-container {
+        width: var(--header-height);
+        height: var(--header-height);
+        font-size: var(--font-icon-size);
+        color: white;
+    }
+    .font-button:hover {
+        transform: scale(1.08);
+    }
+    .small-icon {
+        font-size : 38px;
+    }
+    .title {
+        font-size : var(--title-font-size);
+        color: var(--title-color);
+        font-weight: bold;
+    }
+    .pad {
+        width: 10px;
+        transition: 0.3s width;
+    }
+    .small-pad {
+        width: 6px;
+        transition: 0.3s width;
+    }
+    .expanded {
+        display: flex;
+        flex: 1;
+    }
+    .dropdown-pad {
+        width: 15px;
+    }
+}

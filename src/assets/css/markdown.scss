@@ -1,0 +1,42 @@
+.markdown {
+  display: flex;
+  flex-direction: column;
+  --normal :rgb(146, 148, 152);
+  --think : rgb(237, 163, 85);
+  --say : white;
+  --accent : rgb(177, 222, 232);
+
+  p {
+      margin-top: 0px;
+      margin-bottom: 16px;
+      color : var(--normal);
+  }
+  
+  h2 {
+      margin: 0px;
+  }
+  
+  code {
+    color :rgb(177, 222, 232);
+    margin-bottom: 16px;
+  }
+  
+  ul {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+  
+  em { /* ** */
+    color: var(--think);
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  
+  .say {
+    color: white;
+  }
+  
+  .accent {
+    color: var(--accent);
+  }
+}

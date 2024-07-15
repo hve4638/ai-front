@@ -55,6 +55,10 @@ export function EffectHandler() {
         changeFetchStatus,
     } = eventContext;
 
+    // @TODO : Ctrl+숫자 로 탭 이동하기
+    // @TODO : 설정창 다시 채워넣기
+    // - 화면 모드 (자동, 가로고정, 새로고정)
+
     // Ctrl+Tab 핑
     useEffect(()=>{
         if (changeSessionTabPing === 0) {

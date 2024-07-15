@@ -91,21 +91,3 @@
     background-color: var(--dropdown-model-provider-hover-background-color);
     border-radius: 10px;
 }
-
-@media screen and (max-width: 900px) {
-    .responsive.dropdown {
-        --dropdown-font-size: 15px;
-        --dropdown-header-border-radius : 10px;
-        --dropdown-item-border-radius : 10px;
-        --dropdown-item-height : 10px;
-    }
-    .responsive.dropdown-list {
-        --dropdown-font-size: 15px;
-        --dropdown-header-border-radius : 10px;
-        --dropdown-item-border-radius : 10px;
-        --dropdown-item-height : 10px;
-    }
-    .dropdown-header {
-        padding: 5px 8px;
-    }
-}

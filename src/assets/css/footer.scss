@@ -1,0 +1,73 @@
+:root {
+    --footer-height: 35px;
+    --footer-text-size : 15px;
+}
+
+.theme-dark {
+    --version-text-color : rgb(61, 60, 68);
+}
+
+#app-footer {
+    display: flex;
+    flex: none;
+    margin: 16px 24px 12px 16px;
+    height: var(--footer-height);
+    transition: 0.3s margin;
+    
+    .browse-button {
+        width: var(--footer-height);
+        height: var(--footer-height);
+        cursor: pointer;
+        transform: scale(1.0);
+        transition: transform 0.3s ease;
+    }
+    .browse-button:hover {
+        transform: scale(1.1);
+    }
+    .browse-button:active {
+        transform: scale(0.9);
+    }
+
+    .footer-version-container {
+        font-size: var(--footer-text-size);
+        height: 100%;
+    }
+    .footer-version {
+        color: var(--version-text-color);
+    }
+
+    .footer-newversion-text  {
+        color: rgb(0, 123, 0);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .footer-newversion-text:hover {
+        color: rgb(0, 168, 0);
+    }
+
+    .font-button-container {
+        position: relative;
+        width: var(--footer-text-size);
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+
+    .font-button {
+        font-size: 30px;
+    }
+
+    .font-button:hover {
+        font-size: 32px;
+    }
+
+    .font-button:focus {
+        font-size: 28px;
+    }
+
+    .footer-pad {
+        width: 8px;
+        transition: 0.3s width;
+    }
+}

@@ -21,7 +21,6 @@ export interface SecretContextType {
 
 export const SecretContext = createContext<SecretContextType|null>(null);
 
-/// @TODO : StoreContext에 통합하기
 export default function SecretContextProvider({children}) {
     const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
