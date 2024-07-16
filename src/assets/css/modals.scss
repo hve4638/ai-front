@@ -166,18 +166,19 @@
     
         border: 1px solid var(--textbox-border-color);
         background-color: var(--textbox-background-color);
+        font-size : 1rem;
         color: var(--textbox-color);
         resize: none;
         overflow: none;
+        &.preview {
+            background-color: var(--text-field-preview-color);
+        }
         pre {
             margin: 0px;
             white-space: pre-wrap;
             word-wrap: break-word;
             resize: none;
             min-height: 1em;
-        }
-        .preview {
-            background-color: var(--text-field-preview-color);
         }
         hr {
             border: 0.5px solid var(--hr-color);

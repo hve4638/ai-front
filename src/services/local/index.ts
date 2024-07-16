@@ -170,3 +170,14 @@ export async function resetAllValues() {
         throw errorNotAvailable();
     }
 }
+
+export async function loadHistory(sessionid:number) {
+    switch(TARGET_ENV) {
+    case "WEB":
+        return WebInteractive.loadHistory(sessionid);
+    case "WINDOWS":
+        return IPCInteractive.loadHistory(sessionid);
+    default:
+        throw errorNotAvailable();
+    }
+}

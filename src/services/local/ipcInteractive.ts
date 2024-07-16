@@ -1,9 +1,11 @@
 import { Promptlist } from "./interface";
 
+const electron:any = window.electron;
+
 export class IPCInteractive {
     static loadPromptlist():Promise<Promptlist> {
       return new Promise((resolve, reject)=>{
-        window.electron.loadPromptList()
+        electron.loadPromptList()
         .then((data)=>{
           resolve(JSON.parse(data))
         })
@@ -15,7 +17,7 @@ export class IPCInteractive {
 
     static loadPrompt(value:string):Promise<string> {
       return new Promise((resolve, reject)=>{
-        window.electron.loadPrompt(value)
+        electron.loadPrompt(value)
         .then((data)=>{
           resolve(data)
         })
@@ -26,46 +28,50 @@ export class IPCInteractive {
     }
 
     static openPromptFolder() {
-        window.electron.openPromptFolder();
+      electron.openPromptFolder();
     }
 
     static storeValue(name:string, value:any) {
         return new Promise((resolve, reject)=>{
-          window.electron.storeValue(name, value)
+          electron.storeValue(name, value)
         });
     }
 
     static loadValue(name:string):any|undefined {
         return new Promise((resolve, reject)=>{
-            window.electron.loadValue(name)
+          electron.loadValue(name)
             .then((data)=>resolve(data))
             .catch((err)=>reject(err))
         });
     }
 
     static storeSecretValue(name:string, value:any) {
-      return new Promise((resolve, reject)=>{
-          window.electron.storeSecretValue(name, value)
-      });
+        return new Promise((resolve, reject)=>{
+        electron.storeSecretValue(name, value)
+        });
     }
 
     static loadSecretValue(name:string):any|undefined {
         return new Promise((resolve, reject)=>{
-            window.electron.loadSecretValue(name)
+            electron.loadSecretValue(name)
             .then((data)=>resolve(data))
             .catch((err)=>reject(err))
         });
     }
 
     static fetch(url, init) {
-      return window.electron.fetch(url, init);
+      return electron.fetch(url, init);
     }
 
     static openBrowser(url) {
-        window.electron.openBrowser(url);
+        electron.openBrowser(url);
     }
 
     static resetAllValues() {
-        window.electron.resetAllValues();
+        electron.resetAllValues();
+    }
+
+    static loadHistory(sessionid) {
+        //electron
     }
 }

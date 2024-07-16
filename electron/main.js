@@ -2,16 +2,11 @@ const { app, BrowserWindow, Menu, ipcMain, shell  } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const path = require('path');
 const fs = require('fs');
-const { default: fetch, Headers } = require('node-fetch-cjs');
+const { default: fetch } = require('node-fetch-cjs');
 const ipcping = require('./ipc');
 const utils = require('./utils');
 const prompttemplate = require('./prompt-template');
-
-const documentsPath = app.getPath('documents');
-const saveFolderPath = path.join(documentsPath, "AIFront");
-const promptFolderPath = path.join(saveFolderPath, "prompts");
-const configFilePath = path.join(saveFolderPath, "config.json");
-const secretFilePath = path.join(saveFolderPath, "secret.json");
+const store = require('./store');
 
 let plainDataThrottle = utils.throttle(500);
 let secretDataThrottle = utils.throttle(500);
@@ -49,122 +44,116 @@ function createWindow() {
 }
 
 app.whenReady().then(() => { 
-  fs.mkdirSync(saveFolderPath, { recursive: true });
-  prompttemplate.initialize(promptFolderPath);
-  if (fs.existsSync(configFilePath)) {
-    const contents = fs.readFileSync(configFilePath, 'utf8');
-    try { plainData = JSON.parse(contents); }
-    catch {}
-  }
-  if (fs.existsSync(secretFilePath)) {
-    const contents = fs.readFileSync(secretFilePath, 'utf8');
-    try { secretData = JSON.parse(contents); }
-    catch {}
-  }
+    store.createBasePath();
+    plainData = store.readConfigData() ?? {};
+    secretData = store.readSecretData() ?? {};
+    prompttemplate.initialize(store.promptDirectoryPath);
 
-  createWindow();
+    createWindow();
 }) 
 
 app.on('window-all-closed', function () { 
-  fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
-  fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
-  app.quit() 
+    store.writeConfigData(plainData);
+    store.writeSecretData(secretData);
+    app.quit() 
 })
 
 ipcMain.handle(ipcping.ECHO, (event, arg) => {
-  console.log('ECHO: ' + arg);
-  return arg;
+    console.log('ECHO: ' + arg);
+    return arg;
 });
 
 ipcMain.handle(ipcping.OPEN_PROMPT_FOLDER, (event, arg) => {
   try {
-    fs.mkdirSync(promptFolderPath, { recursive: true });
-    shell.openPath(promptFolderPath);
+    fs.mkdirSync(store.promptDirectoryPath, { recursive: true });
+    shell.openPath(store.promptDirectoryPath);
   } catch (err) {
 
   }
 });
 
 ipcMain.handle(ipcping.LOAD_PROMPTLIST, (event, args) => {
-  const targetPath = path.join(promptFolderPath, "list.json");
-
-  return fs.readFileSync(targetPath, 'utf8');
+    return store.readPromptList();
 })
 
-ipcMain.handle(ipcping.LOAD_PROMPT, (event, args) => {
-  const targetPath = path.join(promptFolderPath, args);
-
-  return fs.readFileSync(targetPath, 'utf8');
+ipcMain.handle(ipcping.LOAD_PROMPT, (event, value) => {
+    return store.readPromptContents(value);
 })
 
 ipcMain.handle(ipcping.STORE_VALUE, (event, name, value) => {
-  plainDataThrottle(()=>{
-    fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
-  });
-  plainData[name] = value;
+    plainDataThrottle(()=>store.writeConfigData(plainData));
+
+    plainData[name] = value;
 })
 
 ipcMain.handle(ipcping.LOAD_VALUE, (event, name) => {
-  if (name in plainData) {
-    return plainData[name];
-  }
-  else {
-    return null;
-  }
+    if (name in plainData) {
+        return plainData[name];
+    }
+    else {
+        return null;
+    }
 })
 
 ipcMain.handle(ipcping.STORE_SECRET_VALUE, (event, name, value) => {
-  secretDataThrottle(()=>{
-    fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
-  });
+  secretDataThrottle(()=>store.writeSecretData(secretData));
+
   secretData[name] = value;
 })
 
 ipcMain.handle(ipcping.LOAD_SECRET_VALUE, (event, name) => {
-  if (name in secretData) {
-    return secretData[name];
-  }
-  else {
-    return null;
-  } 
+    if (name in secretData) {
+        return secretData[name];
+    }
+    else {
+        return null;
+    }
 })
 
 ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
-  try {
-    const res = await fetch(url, init);
-    
-    if (!res.ok) {
-      return {
-        ok : false,
-        reason : "HTTP Error",
-        status : res.status
-      }
+    try {
+        const res = await fetch(url, init);
+
+        if (!res.ok) {
+            return {
+                ok : false,
+                reason : "HTTP Error",
+                status : res.status
+            }
+        }
+        else {
+            const data = await res.json();
+            return {
+                ok : true,
+                data : data
+            }
+        }
     }
-    else {
-      const data = await res.json();
-      return {
-        ok : true,
-        data : data
-      }
+    catch(error) {
+        return {
+            ok : false,
+            reason : "Unexpected Error",
+            error :  `${error}`
+        }
     }
-  }
-  catch(error) {
-    return {
-      ok : false,
-      reason : "Unexpected Error",
-      error :  `${error}`
-    }
-  }
 })
 
 ipcMain.handle(ipcping.OPEN_BROWSER, async (event, url) => {
-  utils.openBrowser(url);
+    utils.openBrowser(url);
 })
 
 ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
-  fs.writeFileSync(secretFilePath, JSON.stringify(secretData, null, 4), 'utf8');
-  fs.writeFileSync(configFilePath, JSON.stringify(plainData, null, 4), 'utf8');
+    secretData = {}
+    plainData = {}
+    store.writeConfigData(plainData);
+    store.writeSecretData(secretData);
+})
 
-  secretData = {}
-  plainData = {}
+
+ipcMain.handle(ipcping.LOAD_HISTORY, async (event, key) => {
+    return store.readHistory(key);
+})
+
+ipcMain.handle(ipcping.STORE_HISTORY, async (event, key, data) => {
+    store.writeHistory(key, data);
 })

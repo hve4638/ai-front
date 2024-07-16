@@ -54,6 +54,18 @@
     outline: none;
 }
 
+.clipboard-icon--- {
+    &.activate span {
+        color : rgb(146, 215, 241);
+        text-shadow: 0 0 5px rgba(146, 215, 241, 0.5);
+        transition: 0.1s ease color, 0.1s ease text-shadow;
+    }
+    &.deactivate span {
+        transition: 0.2s ease color, 0.2s ease text-shadow;
+    }
+    
+}
+
 .output-section-textarea {
     margin: 8px;
     font-size: var(--textarea-font-size);

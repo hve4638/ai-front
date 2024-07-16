@@ -9,5 +9,7 @@ module.exports = {
     LOAD_SECRET_VALUE : 'load-secret-value',
     FETCH : 'fetch-proxy',
     OPEN_BROWSER : 'open-browser',
-    RESET_ALL_VALUES : 'reset-all-values'
+    RESET_ALL_VALUES : 'reset-all-values',
+    LOAD_HISTORY : 'load-history',
+    STORE_HISTORY : 'store-history',
 }

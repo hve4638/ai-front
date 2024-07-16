@@ -51,12 +51,12 @@ export function EventContextProvider({children}) {
         currentSessionId, setCurrentSessionId,
         history, setHistory,
         responses, setResponses,
+        nextSessionID, setNextSessionID,
     } = storeContext;
     const {
         currentHistory, setCurrentHistory,
         currentChat, setCurrentChat,
         currentSession, setCurrentSession,
-        nextSessionID, setNextSessionID,
         apiFetchQueue, setApiFetchQueue,
         sessionFetchStatus, setSessionFetchStatus,
     } = memoryContext;
@@ -73,7 +73,6 @@ export function EventContextProvider({children}) {
             historyIsolation : currentSession.historyIsolation,
             id : nextSessionID,
         };
-
         
         setNextSessionID(nextSessionID+1);
         
@@ -89,17 +88,43 @@ export function EventContextProvider({children}) {
     const deleteSession = (session) => {
         const newSessions = sessions.filter((s, index) => s.id !== session.id);
         setSessions(newSessions);
-        if (currentSessionId == session.id) {
-            const newSession = {...currentSession};
-            newSession.id = -1;
-            newSession.chatIsolation = false;
-            newSession.historyIsolation = false;
-            setCurrentSession(newSession);
-            setCurrentSessionId(-1);
+        
+        if (currentSession.id == session.id) {
+            let index:number|null = null;
+            for (const i in sessions) {
+                if (sessions[i].id == currentSession.id) {
+                    index = Number(i);
+                    if (index == sessions.length-1) {
+                        index -= 1;
+                    }
+                    break;
+                }
+            }
+
+            if (session.id in responses) {
+                const newResponses = {...responses}
+                delete newResponses[session.id];
+                setResponses(newResponses);
+            }
+            
+            let newSession;
+            if (index === null || newSessions.length === 0) {
+                newSession = {...currentSession}
+                newSession.id = -1;
+                newSession.chatIsolation = false;
+                newSession.historyIsolation = false;
+            }
+            else {
+                newSession = {...newSessions[index]}
+            }
+
+            changeCurrentSession(newSession);
+            // setCurrentSession(newSession);
+            // setCurrentSessionId(newSession.id);
         }
     }
-    const changeCurrentSession = (session) => {
-        commitCurrentSession();
+    const changeCurrentSession = (session, nocommit:boolean=false) => {
+        if (!nocommit) commitCurrentSession();
         
         if (session.chatIsolation) {
             setCurrentChat(responses[session.id] ?? getDefaultAPIResponse());
@@ -114,9 +139,8 @@ export function EventContextProvider({children}) {
             setCurrentHistory(history[NOSESSION_KEY] ?? []);
         }
 
-        setCurrentSessionId(session.id);
         setCurrentSession(session);
-
+        setCurrentSessionId(session.id);
     }
     const commitCurrentSession = () => {
         if (currentSession === null) return;

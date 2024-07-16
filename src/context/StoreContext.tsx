@@ -18,7 +18,8 @@ interface StoreContextType {
     setFontSize: (x:number)=>void;
     layoutMode: string;
     setLayoutMode: (x:string)=>void;
-    
+    nextSessionID:number;
+    setNextSessionID:(x:number)=>void;
 
     // @TODO : 리팩토링 필요
     markdownMode: boolean;
@@ -32,11 +33,11 @@ export const StoreContext = createContext<StoreContextType|undefined>(undefined)
 export default function StoreContextProvider({children}) {
     const [currentSessionId, setCurrentSessionId] = usePlainCookie('currentSessionId', null);
     const [sessions, setSessions] = usePlainCookie('sessions', []);
-    //const [history, setHistory] = usePlainCookie('history', {});
     const [history, setHistory] = useState({});
     const [responses, setResponses] = usePlainCookie('responses', {});
     const [fontSize, setFontSize] = usePlainCookie('fontsize', 18);
     const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', LayoutModes.AUTO);
+    const [nextSessionID, setNextSessionID] = usePlainCookie('nextsessionid', 0);
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
@@ -50,6 +51,7 @@ export default function StoreContextProvider({children}) {
                 responses, setResponses,
                 fontSize, setFontSize,
                 layoutMode, setLayoutMode,
+                nextSessionID, setNextSessionID,
                 
                 markdownMode,
                 setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),

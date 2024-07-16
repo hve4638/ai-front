@@ -18,8 +18,6 @@ interface MemoryContextType {
     setCurrentSession:(x:ChatSession)=>void;
     promptSubList : IPromptSubList|null;
     setPromptSubList : (x:IPromptSubList|null)=>void;
-    currentInput:string;
-    setCurrentInput:(x:string)=>void;
     currentHistory:APIResponse[];
     setCurrentHistory:useStateCallback<APIResponse[]>;
     currentChat:APIResponse;
@@ -68,7 +66,6 @@ export default function MemoryContextProvider({children}) {
     const [promptSubList, setPromptSubList] = useState<IPromptSubList|null>(null);
     const [nextSessionID, setNextSessionID] = useState<number>(0);
 
-    const [currentInput, setCurrentInput] = useState<string>("");
     const [apiFetchQueue, setApiFetchQueue] = useState<any>([]);
     const [apiFetchResponse, setApiFetchResponse] = useState<any>([]);
     const [apiFetchBlock, setApiFetchBlock] = useState(false);
@@ -89,7 +86,6 @@ export default function MemoryContextProvider({children}) {
                 currentSession, setCurrentSession,
                 promptSubList, setPromptSubList,
                 nextSessionID, setNextSessionID,
-                currentInput, setCurrentInput,
                 currentHistory, setCurrentHistory,
                 currentChat, setCurrentChat,
                 apiSubmitPing, setApiSubmitPing,

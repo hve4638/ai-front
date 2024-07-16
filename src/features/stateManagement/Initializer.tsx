@@ -28,7 +28,9 @@ export function Initializer({ onLoad }) {
         history,
         responses,
         fontSize,
-        layoutMode
+        layoutMode,
+        nextSessionID,
+        setNextSessionID,
     } = storeContext;
     const {
         promptList
@@ -38,7 +40,6 @@ export function Initializer({ onLoad }) {
         setPromptIndex,
         setCurrentSession,
         setPromptInfomation,
-        setNextSessionID,
         currentChat, setCurrentChat
     } = memoryContext;
     
@@ -64,6 +65,7 @@ export function Initializer({ onLoad }) {
             && responses !== undefined
             && fontSize !== undefined
             && layoutMode !== undefined
+            && nextSessionID !== undefined
         ) {
             const rootElement = document.querySelector("html") ?? document.body;
             rootElement.style.fontSize = `${fontSize}px`;
@@ -76,7 +78,7 @@ export function Initializer({ onLoad }) {
         if (!storedValueLoaded) return;
         
         if (sessions.length > 0) {
-            let maxid:number = 0;
+            let maxid:number = nextSessionID;
             for (const session of sessions) {
                 const id = session.id;
                 if (maxid < id+1) maxid = id+1;

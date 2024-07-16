@@ -88,11 +88,11 @@
 .font-button {
     position: absolute;
     color: white;
-    transition: 0.3s ease transform, 0.3s ease color;
+    transition: 0.1s color, 0.3s ease transform;
     transform: scale(1.0);
     cursor: pointer;
     &.selected {
-        color:rgb(91, 126, 169);
+        color: rgb(56, 139, 241);
     }
     &:hover {
         transform: scale(1.1);

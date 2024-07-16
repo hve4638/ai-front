@@ -1,7 +1,6 @@
 import { AIModel, AIModelRequestData, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
 import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
 
-import { bracketFormat } from "../../utils/format.tsx";
 import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
 
 import { CLAUDE_URL, ROLE } from "./constant.ts"

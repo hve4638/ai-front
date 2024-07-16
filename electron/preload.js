@@ -13,4 +13,6 @@ contextBridge.exposeInMainWorld('electron', {
   fetch : (url, init) => ipcRenderer.invoke(ipcping.FETCH, url, init),
   openBrowser : (url) => ipcRenderer.invoke(ipcping.OPEN_BROWSER, url),
   resetAllValues : () => ipcRenderer.invoke(ipcping.RESET_ALL_VALUES),
+  loadHistory : (sessionid) => ipcRenderer.invoke(ipcping.LOAD_HISTORY, sessionid),
+  storeHistory : (sessionid, history) => ipcRenderer.invoke(ipcping.LOAD_HISTORY, sessionid, history),
 });

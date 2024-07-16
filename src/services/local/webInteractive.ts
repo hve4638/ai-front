@@ -35,15 +35,32 @@ export class WebInteractive {
         })
     }
 
-    static fetch(url, init) {
-      return fetch(url, init)
-      .then(async (res)=>{
-        const data = await res.json();
-        if (!res.ok) {
-          throw data.error.message;
+    static async fetch(url, init) {
+        try {
+            const res = await fetch(url, init);
+    
+            if (!res.ok) {
+                return {
+                    ok : false,
+                    reason : "HTTP Error",
+                    status : res.status
+                }
+            }
+            else {
+                const data = await res.json();
+                return {
+                    ok : true,
+                    data : data
+                }
+            }
         }
-        return data;
-      });
+        catch(error) {
+            return {
+                ok : false,
+                reason : "Unexpected Error",
+                error :  `${error}`
+            }
+        }
     }
     
     static openBrowser(url) {
@@ -54,6 +71,10 @@ export class WebInteractive {
       for (const name of getCookies()) {
           removeCookie(name);
       }
+    }
+    
+    static loadHistory(sessionid) {
+      return [];
     }
   }
   

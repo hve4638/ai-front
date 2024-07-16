@@ -33,14 +33,6 @@ const modelCategory = {
             { name : "GPT 3.5 Turbo", value: "gpt-3.5-turbo" },
         ]
     },
-    [MODELS.GOOGLE_VERTEXAI] : {
-        name : "Google VertexAI",
-        models : [
-            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet@20240620" },
-            { name : "Claude 3 Opus", value: "claude-3-opus@20240229" },
-            { name : "Claude 3 Haiku", value: "claude-3-haiku@20240307" },
-        ]
-    }
 }
 
 if (TARGET_ENV === "WINDOWS") {
@@ -54,6 +46,14 @@ if (TARGET_ENV === "WINDOWS") {
             { name : "Claude 3 Haiku", value: "claude-3-haiku-20240307" },
         ]
     };
+    modelCategory[MODELS.GOOGLE_VERTEXAI] = {
+        name : "Google VertexAI",
+        models : [
+            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet@20240620" },
+            { name : "Claude 3 Opus", value: "claude-3-opus@20240229" },
+            { name : "Claude 3 Haiku", value: "claude-3-haiku@20240307" },
+        ]
+    }
 }
 
 if (DEBUG_MODE) {

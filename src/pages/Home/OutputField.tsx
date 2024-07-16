@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { APIResponse } from '../../data/interface.js'
 
 import Markdown from '../../components/Markdown.tsx'
@@ -12,11 +12,39 @@ interface OutputFieldProps {
   response:APIResponse,
 }
 
-export default function OutputField(props:OutputFieldProps) {
-  const { className='', response } = props;
+export default function OutputField({ className='', response }:OutputFieldProps) {
   const storeContext = useContext(StoreContext);
+
   if (!storeContext) throw new Error('OutputField required StoreContext');
   
+  const [copyPing, setCopyPing] = useState(false);
+  const [copyEffect, setCopyEffect] = useState(false);
+
+  useEffect(()=>{
+    if (copyPing) {
+      copyToClipboard(response.output ?? '');
+      
+      setCopyEffect(true);
+      setTimeout(()=>setCopyEffect(false), 300);
+
+      setCopyPing(false);
+    }
+  }, [copyPing]);
+
+  useEffect(()=>{
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.shiftKey && (event.key === 'C' || event.key === 'c')) {
+        setCopyPing(true);
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [])
+
   return (
       <div className={`${className} textfield output-section-container`}>
         <div
@@ -24,10 +52,10 @@ export default function OutputField(props:OutputFieldProps) {
           style={{overflow:'auto'}}
         >
           <GoogleFontIcon
-            className='floating-button'
+            className={'floating-button clipboard-icon' + (copyEffect ? ' activate' : ' deactivate')}
             value='content_paste'
             onClick={()=>{
-              copyToClipboard(response.output ?? '');
+              setCopyPing(true);
             }}
           />
           <div className='token-display-container undraggable'>
