@@ -6,8 +6,12 @@ import { PromptList } from "../prompts/index.ts";
 import { MemoryContext } from "../../context/MemoryContext.tsx";
 import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from "../../data/constants.tsx";
 import { AIModels } from "../chatAI/aimodels.ts";
+import React from "react";
 
-export function Initializer({ onLoad }) {
+export function Initializer({ onLoad, historyManager }) {
+    const [isLoadTooLong, setIsLoadTooLong] = useState(false);
+
+    const [initialized, setInitialized] = useState(false);
     const [promptsLoaded, setPromptsLoaded] = useState(false);
     const [sessionLoaded, setSessionLoaded] = useState(false);
     const [promptLoaded, setPromptLoaded] = useState(false);
@@ -40,8 +44,25 @@ export function Initializer({ onLoad }) {
         setPromptIndex,
         setCurrentSession,
         setPromptInfomation,
-        currentChat, setCurrentChat
+        currentChat, setCurrentChat,
+        setHistoryManager
     } = memoryContext;
+
+    useEffect(()=>{
+        const to = setTimeout(()=>{
+            setIsLoadTooLong(true);
+        }, 5000);
+
+        return ()=>{
+            clearTimeout(to);
+        }
+    })
+
+    useEffect(()=>{
+        setHistoryManager(historyManager);
+
+        setInitialized(true);
+    }, [])
     
     useEffect(()=>{
         loadPromptList()
@@ -95,7 +116,6 @@ export function Initializer({ onLoad }) {
     useEffect(()=>{
         if (!storedValueLoaded || !promptsLoaded) return;
         
-
         const category = AIModels.getCategories()[0]
         const model = AIModels.getModels(category.value)[0];
         const defaultSession = {
@@ -173,7 +193,8 @@ export function Initializer({ onLoad }) {
     }, [promptsLoaded, sessionLoaded]);
 
     useEffect(()=>{
-        if (promptsLoaded
+        if (initialized
+            && promptsLoaded
             && sessionLoaded
             && promptLoaded
             && nextSessionIDLoaded
@@ -185,6 +206,26 @@ export function Initializer({ onLoad }) {
     }, [
         promptsLoaded, sessionLoaded, promptLoaded,
         nextSessionIDLoaded, storedValueLoaded, chatLoaded,
-        
     ]);
+
+    return (
+        <div className='loader-container undraggable'>
+            <div className='row' style={{padding:'16px', alignItems: 'center'}}>
+                <span className='loader-text'>loading...</span>
+                <div className='loader'></div>
+            </div>
+            {
+                isLoadTooLong &&
+                <div className='column loaded-list'  style={{padding:'16px'}}>
+                    <span className={initialized ? 'loaded' : 'loading'}>Initialized</span>
+                    <span className={promptsLoaded ? 'loaded' : 'loading'}>Prompts load</span>
+                    <span className={storedValueLoaded ? 'loaded' : 'loading'}>Cookie load</span>
+                    <span className={sessionLoaded ? 'loaded' : 'loading'}>Session load</span>
+                    <span className={nextSessionIDLoaded ? 'loaded' : 'loading'}>SessionID validation</span>
+                    <span className={chatLoaded ? 'loaded' : 'loading'}>Chat load</span>
+                    <span className={promptLoaded ? 'loaded' : 'loading'}>Prompt load</span>
+                </div>
+            }
+        </div>
+    )
 }

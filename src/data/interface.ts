@@ -55,3 +55,9 @@ export enum LayoutModes {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal'
 }
+
+export enum ThemeModes {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+  SYSTEM_DEFAULT = 'SYSTEM_DEFAULT'
+}

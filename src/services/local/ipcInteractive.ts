@@ -71,7 +71,15 @@ export class IPCInteractive {
         electron.resetAllValues();
     }
 
-    static loadHistory(sessionid) {
-        //electron
+    static storeHistory(sessionid:number, data:any) {
+        electron.storeHistory(sessionid, data);
+    }
+
+    static async loadHistory(sessionid:number, offset:number, limit:number) {
+        return await electron.loadHistory(sessionid, offset, limit);
+    }
+
+    static deleteHistory(sessionid:number) {
+        electron.deleteHistory(sessionid);
     }
 }

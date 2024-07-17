@@ -59,6 +59,7 @@
     }
     .item {
         margin: 4px 0px;
+        min-height: 30px;
     }
     .upload-container {
         border: 3px dotted white;
@@ -81,6 +82,27 @@
             background-color: var(--dropdown-light-hover-color);
         }
     }
+    
+    .checkbox {
+        background-color: rgb(218, 218, 218);
+        transition: 0.15s background-color, 0.3s ease transform;
+
+        &:hover {
+            transform: scale(1.05);
+            background-color: rgb(215, 215, 215);
+        }
+        &:active {
+            transform: scale(0.9);
+        }
+        &.checked {
+            background-color: rgb(69, 125, 189);
+        }
+
+        span {
+            color: white;
+            font-weight: 800;
+        }
+    }
 }
 
 #history-modal {
@@ -93,6 +115,7 @@
         display: flex;
         flex-direction: column;
         overflow-y: auto;
+        min-height: 100px;
     }
     .history {
         display: flex;
@@ -223,3 +246,5 @@
         }
     }
 }
+
+

@@ -1,15 +1,84 @@
-class HistoryManager {
-    #cache:any;
+import { ChatSession } from '../../context/interface.ts';
+import { NOSESSION_KEY } from '../../data/constants.tsx';
+import { APIResponse } from '../../data/interface.ts';
+import {storeHistory, loadHistory, deleteHistory} from '../../services/local/index.ts'
+
+interface HistoryCache {
+    allFetched : boolean;
+    data : APIResponse[];
+}
+export class HistoryManager {
+    #caches:{[key:string]:HistoryCache};
+    #volatiedKey:{[key:string]:boolean};
 
     constructor() {
-        this.#cache = {};
+        this.#caches = {};
+        this.#volatiedKey = {}
     }
 
-    loadHistory(seesionid) {
-        
+    #getKey(session:ChatSession) {
+        return (session.id >= 0 && session.historyIsolation) ? session.id : NOSESSION_KEY;
     }
 
-    storeHistory(sessionid, history) {
+    #getCache(key) {
+        if (!(key in this.#caches)) {
+            this.#caches[key] = {
+                allFetched : false,
+                data : []
+            }
+            if (this.#isVolatieHistory(key)) {
+                this.#caches[key].allFetched = true;
+                deleteHistory(key);
+                console.log("end?")
+            }
+        }
         
+        return this.#caches[key];
+    }
+
+    #isVolatieHistory(key) {
+        return this.#volatiedKey[key] ?? false
+    }
+
+    async load(session:ChatSession, offset=0, limit=10) {
+        const historyKey = this.#getKey(session);
+        const cache = this.#getCache(historyKey);
+        
+        if (!cache.allFetched && offset + limit >= cache.data.length) {
+            const rows = await loadHistory(historyKey, offset, limit);
+            const loaded = rows.map((row) => JSON.parse(row.data));
+
+            if (rows.length !== limit) {
+                cache.allFetched = true;
+            }
+
+            cache.data = [...cache.data, ...loaded]
+        }
+        
+        return cache.data.slice(offset, offset+limit);
+    }
+
+    insert(session:ChatSession, data:APIResponse) {
+        const historyKey = this.#getKey(session);
+        const cache = this.#getCache(historyKey);
+        cache.data.unshift(data);
+
+        if (!this.#isVolatieHistory(historyKey)) {
+            storeHistory(historyKey, data);
+        }
+    }
+
+    setHistoryVolatile(key, isVolatile) {
+        this.#volatiedKey[key] = isVolatile;
+        console.log('this.#isVolatieHistory(key)')
+        console.log(this.#isVolatieHistory(key))
+    }
+
+    close() {
+        for (const key in this.#volatiedKey) {
+            if (this.#volatiedKey[key]) {
+                deleteHistory(key)
+            }
+        }
     }
 }

@@ -34,6 +34,7 @@ export function EffectHandler() {
     const {
         sessions, setSessions,
         fontSize, setFontSize,
+        isGlobalHistoryVolatile
     } = storeContext;
     const {
         promptList
@@ -50,6 +51,7 @@ export function EffectHandler() {
         apiFetchResponse, setApiFetchResponse,
         currentChat, setCurrentChat,
         setCurrentHistory,
+        historyManager
     } = memoryContext;
     const {
         changeCurrentSession,
@@ -184,6 +186,11 @@ export function EffectHandler() {
         setPreviousSession(currentSession);
     }, [currentSession]);
 
+    
+    useEffect(()=>{
+        historyManager.setHistoryVolatile(NOSESSION_KEY, isGlobalHistoryVolatile);
+    }, [isGlobalHistoryVolatile]);
+
     // 프롬프트 컨텐츠 로드
     useEffect(()=>{
         if (promptInfomation) {
@@ -271,11 +278,13 @@ export function EffectHandler() {
         });
     }, [apiFetchQueue]);
 
+    // 현 세션의 응답 처리
     useEffect(()=>{
         const updateApiFetchResponse = (key:any) => {
             const res = apiFetchResponse[key];
-
             if (res.success) {
+                historyManager.insert(currentSession, res.data);
+
                 setCurrentHistory((history)=>{
                     const newhistory = [...history];
                     newhistory.push(res.data);

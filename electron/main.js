@@ -7,11 +7,19 @@ const ipcping = require('./ipc');
 const utils = require('./utils');
 const prompttemplate = require('./prompt-template');
 const store = require('./store');
+const {HistoryManager} = require('./history');
 
 let plainDataThrottle = utils.throttle(500);
 let secretDataThrottle = utils.throttle(500);
 let plainData = {};
 let secretData = {};
+
+store.createBasePath();
+
+const historyManager = new HistoryManager(store.historyDirectoryPath);
+
+plainData = store.readConfigData() ?? {};
+secretData = store.readSecretData() ?? {};
 
 function createWindow() { 
   const win = new BrowserWindow({ 
@@ -44,9 +52,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => { 
-    store.createBasePath();
-    plainData = store.readConfigData() ?? {};
-    secretData = store.readSecretData() ?? {};
     prompttemplate.initialize(store.promptDirectoryPath);
 
     createWindow();
@@ -150,10 +155,14 @@ ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
 })
 
 
-ipcMain.handle(ipcping.LOAD_HISTORY, async (event, key) => {
-    return store.readHistory(key);
+ipcMain.handle(ipcping.LOAD_HISTORY, async (event, key, offset, limit) => {
+    return await historyManager.select(key, offset, limit);
 })
 
 ipcMain.handle(ipcping.STORE_HISTORY, async (event, key, data) => {
-    store.writeHistory(key, data);
+    historyManager.insert(key, data);
+})
+
+ipcMain.handle(ipcping.DELETE_HISTORY, async (event, key) => {
+    historyManager.dropAll(key);
 })

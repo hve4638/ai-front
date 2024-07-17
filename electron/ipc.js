@@ -12,4 +12,5 @@ module.exports = {
     RESET_ALL_VALUES : 'reset-all-values',
     LOAD_HISTORY : 'load-history',
     STORE_HISTORY : 'store-history',
+    DELETE_HISTORY : 'delete-history',
 }

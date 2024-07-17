@@ -22,7 +22,7 @@ export function Checkbox({
             onClick={(e)=>onChange(!checked)}
         >
             <div
-                className='checkbox center'
+                className={'checkbox center' + (checked ? ' checked' : '')}
             >
                 {
                     checked &&

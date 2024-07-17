@@ -5,23 +5,24 @@ import './style.js'
 import { Initializer, EffectHandler } from './features/stateManagement/index.ts'
 import { CleanUp } from './features/stateManagement/CleanUp.tsx';
 import { StoreContext } from './context/StoreContext.tsx';
-import { LayoutModes } from './data/interface.ts';
+import { LayoutModes, ThemeModes } from './data/interface.ts';
 
-function App() {
+function App({historyManager}) {
     const storeContext = useContext(StoreContext);
     if (!storeContext) throw new Error('<App/> required StoreContextProvider');
-
+    
     const [initialized, setInitialized] = useState(false);
 
     const {
-        layoutMode
+        layoutMode,
+        themeMode,
     } = storeContext;
     
     return (
         <div
             id="app"
             className={
-                'theme-dark'
+                (themeMode === ThemeModes.DARK ? 'theme-dark' : '') 
                 + (layoutMode==LayoutModes.AUTO ? ' layout-auto' : '')
                 + (layoutMode==LayoutModes.HORIZONTAL ? ' layout-horizontal' : '')
                 + (layoutMode==LayoutModes.VERTICAL ? ' layout-vertical' : '')
@@ -31,6 +32,7 @@ function App() {
             !initialized &&
             <Initializer
                 onLoad={()=>setInitialized(true)}
+                historyManager={historyManager}
             />
         }
         {

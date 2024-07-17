@@ -171,12 +171,35 @@ export async function resetAllValues() {
     }
 }
 
-export async function loadHistory(sessionid:number) {
+export async function storeHistory(key:any, data:any) {
     switch(TARGET_ENV) {
     case "WEB":
-        return WebInteractive.loadHistory(sessionid);
+        // nothing to do
+        break;
     case "WINDOWS":
-        return IPCInteractive.loadHistory(sessionid);
+        return IPCInteractive.storeHistory(key, data);
+    default:
+        throw errorNotAvailable();
+    }
+}
+
+export async function loadHistory(key:any, offset:number=0, limit:number=1000) {
+    switch(TARGET_ENV) {
+    case "WEB":
+        return [];
+    case "WINDOWS":
+        return IPCInteractive.loadHistory(key, offset, limit);
+    default:
+        throw errorNotAvailable();
+    }
+}
+
+export async function deleteHistory(key:any) {
+    switch(TARGET_ENV) {
+    case "WEB":
+        return [];
+    case "WINDOWS":
+        return IPCInteractive.deleteHistory(key);
     default:
         throw errorNotAvailable();
     }

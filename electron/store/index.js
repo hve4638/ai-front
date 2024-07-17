@@ -69,4 +69,5 @@ module.exports = {
     readPromptContents : readPromptContents,
     readPromptList : readPromptList,
     promptDirectoryPath : promptFolderPath,
+    historyDirectoryPath : historyFolderPath,
 }

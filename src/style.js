@@ -1,3 +1,5 @@
+// @TODO : scss로 변환 및 정리
+
 import './assets/css/flexstyle/animation.css'
 import './assets/css/flexstyle/flex.css'
 import './assets/css/flexstyle/overloaded.css'
@@ -17,6 +19,10 @@ import './assets/css/tooltip.css';
 
 import './assets/css/textarea.css';
 import './assets/css/textarea-textstyle.css';
+
+
+
+import './assets/css/loading.scss';
 
 import './assets/css/page.scss';
 import './assets/css/header.scss';

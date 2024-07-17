@@ -83,7 +83,7 @@ export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDel
                 </div>
                 <div className='item row main-start'>
                     <input type='checkbox'
-                        checked={!session.historyIsolation}
+                        checked={session.historyIsolation}
                         onChange={()=>{
                             const newSession = {...session};
                             newSession.historyIsolation = !session.historyIsolation;

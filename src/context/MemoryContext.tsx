@@ -4,6 +4,7 @@ import { APIResponse } from '../data/interface.ts'
 
 import { IPromptInfomation, IPromptSubList } from "../features/prompts/interface.ts";
 import { ChatSession, useStateCallback } from "./interface.ts";
+import { HistoryManager } from "../features/historyManager/index.ts";
 
 interface MemoryContextType {
     nextSessionID:number;
@@ -38,6 +39,9 @@ interface MemoryContextType {
 
     sessionFetchStatus:SessionFetchStatus;
     setSessionFetchStatus:useStateCallback<SessionFetchStatus>;
+
+    historyManager:HistoryManager
+    setHistoryManager:useStateCallback<HistoryManager>;
 }
 const ANY:any = null;
 
@@ -76,6 +80,8 @@ export default function MemoryContextProvider({children}) {
 
     const [apiSubmitPing, setApiSubmitPing] = useState(false);
     const [sessionFetchStatus, setSessionFetchStatus] = useState({});
+
+    const [historyManager, setHistoryManager] = useState<HistoryManager>(ANY);
     
     return (
         <MemoryContext.Provider
@@ -95,7 +101,9 @@ export default function MemoryContextProvider({children}) {
                 apiFetchResponse, setApiFetchResponse,
                 apiFetchWaiting, setApiFetchWaiting,
                 
-                sessionFetchStatus, setSessionFetchStatus
+                sessionFetchStatus, setSessionFetchStatus,
+
+                historyManager, setHistoryManager
             }}
         >
             {children}

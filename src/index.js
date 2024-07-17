@@ -15,6 +15,9 @@ import MemoryContextProvider from './context/MemoryContext.tsx'
 import {EventContextProvider} from './context/EventContext.tsx'
 import {TARGET_ENV} from './data/constants.tsx'
 
+import { HistoryManager } from './features/historyManager/index.ts';
+
+const historyManager = new HistoryManager();
 
 if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
   const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,7 +29,9 @@ if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
             <MemoryContextProvider>
               <EventContextProvider>
                 <DebugContextProvider>
-                  <App/>
+                  <App
+                    historyManager={historyManager}
+                  />
                 </DebugContextProvider>
               </EventContextProvider>
             </MemoryContextProvider>

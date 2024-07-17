@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { Checkbox } from '../../components/Checkbox.tsx'
 import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
 
 export const SelectFull = ({name, value, onClick}) => (
@@ -15,6 +16,22 @@ export const SelectFull = ({name, value, onClick}) => (
         </button>
     </div>
 )
+
+export function RowCheckBox({name, value, onChange}) {
+    return (
+        <div
+            className='setting-form item row main-spacebetween'
+            style={{alignItems:'center', paddingLeft: '8px'}}
+        >
+            <span><strong>{name}</strong></span>
+            <Checkbox
+                style={{height : '22px'}}
+                checked={value}
+                onChange={()=>onChange(!value)}
+            />
+        </div>
+    )
+}
 
 export const InputFull = ({name, value, onChange, placeholder}) => (
     <div className='item column'>
