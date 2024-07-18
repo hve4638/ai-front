@@ -4,8 +4,9 @@ import { APIResponse } from '../../data/interface.ts';
 import {storeHistory, loadHistory, deleteHistory} from '../../services/local/index.ts'
 
 interface HistoryCache {
-    allFetched : boolean;
-    data : APIResponse[];
+    allFetched: boolean;
+    noFetched: boolean;
+    data: APIResponse[];
 }
 export class HistoryManager {
     #caches:{[key:string]:HistoryCache};
@@ -24,12 +25,12 @@ export class HistoryManager {
         if (!(key in this.#caches)) {
             this.#caches[key] = {
                 allFetched : false,
+                noFetched : true,
                 data : []
             }
             if (this.#isVolatieHistory(key)) {
                 this.#caches[key].allFetched = true;
                 deleteHistory(key);
-                console.log("end?")
             }
         }
         
@@ -43,7 +44,8 @@ export class HistoryManager {
     async load(session:ChatSession, offset=0, limit=10) {
         const historyKey = this.#getKey(session);
         const cache = this.#getCache(historyKey);
-        
+
+        cache.noFetched = false;
         if (!cache.allFetched && offset + limit >= cache.data.length) {
             const rows = await loadHistory(historyKey, offset, limit);
             const loaded = rows.map((row) => JSON.parse(row.data));
@@ -61,7 +63,9 @@ export class HistoryManager {
     insert(session:ChatSession, data:APIResponse) {
         const historyKey = this.#getKey(session);
         const cache = this.#getCache(historyKey);
-        cache.data.unshift(data);
+        if (!cache.noFetched) {
+            cache.data.unshift(data);
+        }
 
         if (!this.#isVolatieHistory(historyKey)) {
             storeHistory(historyKey, data);
@@ -70,8 +74,6 @@ export class HistoryManager {
 
     setHistoryVolatile(key, isVolatile) {
         this.#volatiedKey[key] = isVolatile;
-        console.log('this.#isVolatieHistory(key)')
-        console.log(this.#isVolatieHistory(key))
     }
 
     close() {
