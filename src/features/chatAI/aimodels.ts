@@ -28,9 +28,9 @@ const modelCategory = {
     [MODELS.OPENAI_GPT] : {
         name: "OpenAI GPT",
         models : [
-            { name : "GPT 4o", value: "gpt-4o" },
-            { name : "GPT 4", value: "gpt-4-turbo" },
-            { name : "GPT 3.5 Turbo", value: "gpt-3.5-turbo" },
+            { name : "GPT-4o", value: "gpt-4o" },
+            { name : "GPT-4o mini", value: "gpt-4o-mini" },
+            { name : "GPT-4 Turbo", value: "gpt-4-turbo" },
         ]
     },
 }
