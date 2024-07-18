@@ -22,7 +22,7 @@ function App({historyManager}) {
         <div
             id="app"
             className={
-                (themeMode === ThemeModes.DARK ? 'theme-dark' : '') 
+                'theme-dark'
                 + (layoutMode==LayoutModes.AUTO ? ' layout-auto' : '')
                 + (layoutMode==LayoutModes.HORIZONTAL ? ' layout-horizontal' : '')
                 + (layoutMode==LayoutModes.VERTICAL ? ' layout-vertical' : '')

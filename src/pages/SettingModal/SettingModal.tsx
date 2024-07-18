@@ -59,21 +59,25 @@ function SettingModal(props:SettingModalProps) {
                     onClose = {()=>onClose()}
                 />
                 <div style={{height:'10px'}}/>
-                <div
-                    className='item row main-spacebetween'
-                    style={{alignItems:'center', paddingLeft: '8px'}}
-                >
-                    <span><strong>테마</strong></span>
-                    <LayerDropdown
-                        value={themeMode}
-                        items={[
-                            {name:'시스템 설정', value: ThemeModes.SYSTEM_DEFAULT},
-                            {name:'Light', value: ThemeModes.LIGHT},
-                            {name:'Dark', value: ThemeModes.DARK},
-                        ]}
-                        onChange={(value)=>setThemeMode(value)}
-                    />
-                </div>
+                {
+                    false &&
+                    <div
+                        className='item row main-spacebetween'
+                        style={{alignItems:'center', paddingLeft: '8px'}}
+                    >
+                        <span><strong>테마</strong></span>
+                        <LayerDropdown
+                            value={themeMode}
+                            items={[
+                                {name:'시스템 설정', value: ThemeModes.SYSTEM_DEFAULT},
+                                {name:'Light', value: ThemeModes.LIGHT},
+                                {name:'Dark', value: ThemeModes.DARK},
+                            ]}
+                            onChange={(value)=>setThemeMode(value)}
+                        />
+                    </div>
+
+                }
                 <div
                     className='item row main-spacebetween'
                     style={{alignItems:'center', paddingLeft: '8px'}}

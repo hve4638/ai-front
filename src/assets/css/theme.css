@@ -1,5 +1,13 @@
 .theme-light {
     background-color: rgb(245, 247, 248);
+    --background-color: rgb(245, 247, 248);
+    --border-color: rgb(118, 118, 118);
+
+    --default-border-color: rgb(118, 118, 118);
+
+    --button-bgcolor: rgb(52, 52, 53);
+    --button-border-color : rgb(104, 104, 104);
+    --button-hover-color: rgb(57, 57, 57);
 
     --text-color: black;
     --title-color: rgb(9, 26, 43);
@@ -7,7 +15,22 @@
     --field-color: rgb(208, 212, 214);
     --field-color-hover: rgb(198, 223, 255);
     
+    --inputfield-border-color : var(--default-border-color);
+    --inputfield-background-color: rgb(255, 255, 255);
+    --inputfield-transparent-color: #dddddd;
+    
     --icon-theme-color: black;
+
+    --background-red : rgba(255, 0, 0, 0.1);
+    --background-orange : rgba(255, 77, 0, 0.1);
+    --background-yellow : rgba(255, 255, 0, 0.1);
+    --background-lime : rgba(26, 255, 0, 0.1);
+    --background-green : rgba(132, 255, 0, 0.1);
+    --background-aqua : rgba(0, 247, 255, 0.1);
+    --background-blue : rgba(36, 153, 255, 0.1);
+    --background-purple  : rgba(64, 0, 255, 0.1);
+    --background-reset  : rgb(23, 23, 23);
+
 }
 
 .theme-dark {
@@ -26,7 +49,7 @@
     --warn-background-color: rgb(73, 53, 53);
 
     --button-border-color : rgb(104, 104, 104);
-    --button-color: rgb(52, 52, 53);
+    --button-bgcolor: rgb(52, 52, 53);
     --button-hover-color: rgb(57, 57, 57);
 
     --dropdown-light-color : rgb(60, 60, 60);

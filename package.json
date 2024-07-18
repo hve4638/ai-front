@@ -2,12 +2,13 @@
   "name": "ai-front",
   "author": "Hve",
   "description": "ChatAI Frontend",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "better-sqlite3": "^11.1.2",
     "crypto-js": "^4.2.0",
     "electron-is-dev": "^3.0.1",
     "electron-localshortcut": "^3.2.1",
@@ -23,7 +24,6 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
     "sass": "^1.77.8",
-    "sqlite3": "^5.1.7",
     "web-vitals": "^2.1.4"
   },
   "main": "electron/main.js",
