@@ -1,1 +1,1 @@
-export { CurlyBraceFormatParser } from './templateParser'
+export { CurlyBraceFormatParser } from './CurlyBraceFormatParser'

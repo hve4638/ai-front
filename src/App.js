@@ -2,10 +2,10 @@ import React, { useEffect, useContext, useState} from 'react';
 import Home from './pages/Home/Home.tsx'
 import './style.js'
 
-import { Initializer, EffectHandler } from './features/stateManagement/index.ts'
-import { CleanUp } from './features/stateManagement/CleanUp.tsx';
-import { StoreContext } from './context/StoreContext.tsx';
-import { LayoutModes, ThemeModes } from './data/interface.ts';
+import { Initializer, EffectHandler } from './features/stateManagement'
+import { CleanUp } from './features/stateManagement/CleanUp';
+import { StoreContext } from './context/StoreContext';
+import { LayoutModes, ThemeModes } from './data/interface';
 
 function App({historyManager}) {
     const storeContext = useContext(StoreContext);
