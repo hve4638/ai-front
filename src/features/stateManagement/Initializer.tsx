@@ -1,10 +1,10 @@
 import React, { memo, useContext, useEffect, useState } from 'react';
-import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from 'data/constants.tsx';
-import { StoreContext } from 'context/StoreContext.tsx';
-import { MemoryContext } from 'context/MemoryContext.tsx';
-import { PromptContext } from 'context/PromptContext.tsx';
-import { loadPromptList } from 'services/local/index.ts';
-import { PromptList } from 'features/prompts/';
+
+import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from 'data/constants';
+import { StoreContext, MemoryContext, PromptContext } from 'context';
+import { loadPromptList } from 'services/local';
+
+import { PromptList } from 'features/prompts';
 import { AIModels } from 'features/chatAI';
 
 export function Initializer({ onLoad, historyManager }) {

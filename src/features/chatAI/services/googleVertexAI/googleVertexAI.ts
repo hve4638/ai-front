@@ -4,9 +4,11 @@ import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse } fr
 
 import { bracketFormat } from 'utils/format'
 
+import { proxyFetch } from 'services/local'
+
 import { SecretContextType } from 'context/SecretContext'
+
 import { Claude } from '../claude'
-import { proxyFetch } from '../local'
 import { TokenGenerator } from './tokenGenerator'
 import { VERTEXAI_URL, ROLE, ROLE_DEFAULT } from './constant'
 

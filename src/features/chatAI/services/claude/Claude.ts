@@ -1,10 +1,10 @@
-import { AIModel, AIModelRequestData, AIModelReturns } from '../../data/aimodel/interfaces';
-import { AIModelConfig, AIModelRequest, AIModelResponse } from '../../data/aimodel/interfaces';
+import { AIModel, AIModelRequestData, AIModelReturns } from 'data/aimodel/interfaces';
+import { AIModelConfig, AIModelRequest, AIModelResponse } from 'data/aimodel/interfaces';
 
-import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat';
+import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
 
 import { CLAUDE_URL, ROLE } from './constant'
-import { proxyFetch } from '../local';
+import { proxyFetch } from 'services/local';
 
 export class Claude implements AIModel {
     async preprocess() {

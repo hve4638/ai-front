@@ -1,15 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import GithubIcon from 'assets/icons/github.png'
-import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from 'data/constants.tsx';
+import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from 'data/constants';
 
-import { isNewVersionAvailable, openBrowser, openPromptFolder } from 'services/local/index.ts';
-import { SessionSlot, SessionSlotAdder } from 'features/chatSession/index.ts';
+import { isNewVersionAvailable, openBrowser, openPromptFolder } from 'services/local';
+import { SessionSlot, SessionSlotAdder } from 'features/chatSession';
 
-import { StoreContext } from 'context/StoreContext.tsx';
-import { DebugContext } from 'context/DebugContext.tsx';
-import { PromptContext } from 'context/PromptContext.tsx';
-import { MemoryContext } from 'context/MemoryContext.tsx';
-import { EventContext } from 'context/EventContext.tsx';
+import { StoreContext, PromptContext, DebugContext, MemoryContext, EventContext } from 'context';
 
 import { GoogleFontIconButton } from 'components/GoogleFontIcon.tsx';
 import { HoverTooltip } from 'components/HoverTooltip.tsx';

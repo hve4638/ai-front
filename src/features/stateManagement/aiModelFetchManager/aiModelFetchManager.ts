@@ -1,7 +1,5 @@
-//type Dict<KEY, VALUE> = {[key]:KEY:VALUE};
-
-import { APIResponse, Note } from "../../../data/interface";
-import { AIModels } from "../../chatAI/index.ts";
+import { APIResponse, Note } from "data/interface";
+import { AIModels } from "features/chatAI";
 
 interface RequestArgs {
     contents:string;

@@ -7,15 +7,15 @@ import analytics from './analytics.ts';
 import reportWebVitals from './reportWebVitals';
 
 import { CookiesProvider } from 'react-cookie';
-import SecretContextProvider from './context/SecretContext.tsx'
-import PromptContextProvider from './context/PromptContext.tsx'
-import StoreContextProvider from './context/StoreContext.tsx'
-import DebugContextProvider from './context/DebugContext.tsx'
-import MemoryContextProvider from './context/MemoryContext.tsx'
-import {EventContextProvider} from './context/EventContext.tsx'
+import SecretContextProvider from './context/SecretContext'
+import PromptContextProvider from './context/PromptContext'
+import StoreContextProvider from './context/StoreContext'
+import DebugContextProvider from './context/DebugContext'
+import MemoryContextProvider from './context/MemoryContext'
+import {EventContextProvider} from './context/EventContext'
 import {TARGET_ENV} from './data/constants.tsx'
 
-import { HistoryManager } from './features/historyManager/index.ts';
+import { HistoryManager } from './features/historyManager';
 
 const historyManager = new HistoryManager();
 

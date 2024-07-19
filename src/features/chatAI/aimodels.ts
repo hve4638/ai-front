@@ -1,13 +1,11 @@
 import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "data/aimodel/interfaces"
 import { DEBUG_MODE, DEFAULT_MAXTOKEN, DEFAULT_TEMPERATURE, DEFAULT_TOPP, TARGET_ENV } from "data/constants"
-import { SecretContextType, ModelInfo } from "context/SecretContext.tsx"
 
-import { Claude } from "services/claude/Claude.ts"
-import { GoogleGemini } from "services/googleGemini/index.ts"
-import { GoogleVertexAI } from "services/googleVertexAI/googleVertexAI.ts"
-import { proxyFetch } from "services/local"
-import { OpenAIGPT } from "services/openaiGPT/openaiGPT.ts"
-import { MockAIModel } from "./services/mockAIModel/index.ts"
+import { MockAIModel } from "./services/mockAIModel"
+import { Claude } from "./services/claude/Claude"
+import { GoogleGemini } from "./services/googleGemini"
+import { GoogleVertexAI } from "./services/googleVertexAI/googleVertexAI"
+import { OpenAIGPT } from "./services/openaiGPT/openaiGPT"
 
 export const MODELS = {
     GOOGLE_GEMINI : "GOOGLE_GEMINI",

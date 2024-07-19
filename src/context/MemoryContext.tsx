@@ -1,10 +1,10 @@
 import React, { useState, createContext } from "react";
 
-import { APIResponse } from 'data/interface.ts'
+import { APIResponse } from 'data/interface'
 
-import { IPromptInfomation, IPromptSubList } from "features/prompts/interface.ts";
-import { HistoryManager } from "features/historyManager/index.ts";
-import { ChatSession, useStateCallback } from "./interface.ts";
+import { IPromptInfomation, IPromptSubList } from "features/prompts/interface";
+import { HistoryManager } from "features/historyManager";
+import { ChatSession, useStateCallback } from "./interface";
 
 interface MemoryContextType {
     nextSessionID:number;

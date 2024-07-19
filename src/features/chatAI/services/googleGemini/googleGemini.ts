@@ -1,12 +1,11 @@
 import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse, AIModelReturns } from 'data/aimodel/interfaces';
-import { APIResponse } from '../../data/interface';
+import { AIModel } from 'data/aimodel/interfaces';
+import { APIResponse } from 'data/interface';
+import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
+import { bracketFormat } from 'utils/format';
 
-import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat';
+import { proxyFetch } from 'services/local';
 
-import { bracketFormat } from '../../utils/format';
-
-import { AIModel } from '../../data/aimodel/interfaces';
-import { proxyFetch } from '../local';
 import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant'
 
 interface Note {
