@@ -161,6 +161,10 @@ export class CurlyBraceFormatParser {
         return text.substring(2, text.length-2)
     }
 
+    get raw() {
+        return this.parsed;
+    }
+
     build(props:CurlyBraceFormatBuildArgs) {
         const contents:{
             role:string,

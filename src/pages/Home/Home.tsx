@@ -60,6 +60,9 @@ export default function Home() {
         enqueueApiRequest,
         getFetchStatus
     } = eventContext;
+    const {
+        setResponses, responses
+    } = storeContext;
 
     // Ctrl+Enter 핑
     useEffect(()=>{
@@ -86,6 +89,9 @@ export default function Home() {
     }
 
     const loadHistory = (response:APIResponse) => {
+        const newResponses = {...responses};
+        newResponses[currentSession.id] = response;
+        setResponses(newResponses);
         setCurrentChat(response);
     }
     

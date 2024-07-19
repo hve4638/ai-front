@@ -92,7 +92,7 @@ export function Initializer({ onLoad, historyManager }) {
 
             setStoredValueLoaded(true);
         }
-    }, [currentSessionId, sessions, history, responses]);
+    }, [currentSessionId, sessions, history, responses, fontSize, layoutMode, nextSessionID]);
 
     useEffect(()=>{
         if (!storedValueLoaded) return;

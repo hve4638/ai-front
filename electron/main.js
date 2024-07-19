@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, shell  } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, shell } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
 const path = require('path');
 const fs = require('fs');
@@ -7,7 +7,7 @@ const ipcping = require('./ipc');
 const utils = require('./utils');
 const prompttemplate = require('./prompt-template');
 const store = require('./store');
-const {HistoryManager} = require('./history');
+const { HistoryManager } = require('./history');
 
 let plainDataThrottle = utils.throttle(500);
 let secretDataThrottle = utils.throttle(500);
@@ -21,46 +21,47 @@ const historyManager = new HistoryManager(store.historyDirectoryPath);
 plainData = store.readConfigData() ?? {};
 secretData = store.readSecretData() ?? {};
 
-function createWindow() { 
-  const win = new BrowserWindow({ 
-    width: 1280, 
-    height: 900,
-    minWidth : 500,
-    minHeight : 500,
-    icon: path.join(__dirname, '../build/favicon.ico'),
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      nodeIntegration : true,
-      contextIsolation : true
+function createWindow() {
+    const win = new BrowserWindow({
+        width: 1280,
+        height: 900,
+        minWidth: 500,
+        minHeight: 500,
+        icon: path.join(__dirname, '../build/favicon.ico'),
+        webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
+            nodeIntegration: true,
+            contextIsolation: true
+        }
+    })
+
+    if (process.env.DEV === 'TRUE') {
+        win.loadURL('http://localhost:3000');
     }
-  })
+    else {
+        win.loadFile(`${path.join(__dirname, '../build/index.html')}`);
+    }
+    Menu.setApplicationMenu(null);
 
-  if (process.env.DEV === 'TRUE') {
-    win.loadURL('http://localhost:3000'); 
-  }
-  else {
-    win.loadFile(`${path.join(__dirname,'../build/index.html')}`);
-  }
-  Menu.setApplicationMenu(null);
-
-  electronLocalshortcut.register(win, 'F5', () => {
-    win.reload();
-  });
-  electronLocalshortcut.register(win, 'F12', () => {
-    win.webContents.toggleDevTools();
-  });
+    electronLocalshortcut.register(win, 'F5', () => {
+        win.reload();
+    });
+    electronLocalshortcut.register(win, 'F12', () => {
+        win.webContents.toggleDevTools();
+    });
 }
 
-app.whenReady().then(() => { 
+app.whenReady().then(() => {
     prompttemplate.initialize(store.promptDirectoryPath);
 
     createWindow();
-}) 
+})
 
-app.on('window-all-closed', function () { 
+app.on('window-all-closed', function () {
     store.writeConfigData(plainData);
     store.writeSecretData(secretData);
-    app.quit() 
+    historyManager.close();
+    app.quit()
 })
 
 ipcMain.handle(ipcping.ECHO, (event, arg) => {
@@ -69,12 +70,12 @@ ipcMain.handle(ipcping.ECHO, (event, arg) => {
 });
 
 ipcMain.handle(ipcping.OPEN_PROMPT_FOLDER, (event, arg) => {
-  try {
-    fs.mkdirSync(store.promptDirectoryPath, { recursive: true });
-    shell.openPath(store.promptDirectoryPath);
-  } catch (err) {
+    try {
+        fs.mkdirSync(store.promptDirectoryPath, { recursive: true });
+        shell.openPath(store.promptDirectoryPath);
+    } catch (err) {
 
-  }
+    }
 });
 
 ipcMain.handle(ipcping.LOAD_PROMPTLIST, (event, args) => {
@@ -86,7 +87,7 @@ ipcMain.handle(ipcping.LOAD_PROMPT, (event, value) => {
 })
 
 ipcMain.handle(ipcping.STORE_VALUE, (event, name, value) => {
-    plainDataThrottle(()=>store.writeConfigData(plainData));
+    plainDataThrottle(() => store.writeConfigData(plainData));
 
     plainData[name] = value;
 })
@@ -101,9 +102,9 @@ ipcMain.handle(ipcping.LOAD_VALUE, (event, name) => {
 })
 
 ipcMain.handle(ipcping.STORE_SECRET_VALUE, (event, name, value) => {
-  secretDataThrottle(()=>store.writeSecretData(secretData));
+    secretDataThrottle(() => store.writeSecretData(secretData));
 
-  secretData[name] = value;
+    secretData[name] = value;
 })
 
 ipcMain.handle(ipcping.LOAD_SECRET_VALUE, (event, name) => {
@@ -121,24 +122,24 @@ ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
 
         if (!res.ok) {
             return {
-                ok : false,
-                reason : "HTTP Error",
-                status : res.status
+                ok: false,
+                reason: "HTTP Error",
+                status: res.status
             }
         }
         else {
             const data = await res.json();
             return {
-                ok : true,
-                data : data
+                ok: true,
+                data: data
             }
         }
     }
-    catch(error) {
+    catch (error) {
         return {
-            ok : false,
-            reason : "Unexpected Error",
-            error :  `${error}`
+            ok: false,
+            reason: "Unexpected Error",
+            error: `${error}`
         }
     }
 })
@@ -156,13 +157,14 @@ ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
 
 
 ipcMain.handle(ipcping.LOAD_HISTORY, async (event, key, offset, limit) => {
-    return await historyManager.select(key, offset, limit);
+    const item = historyManager.get(key, offset, limit);
+    return item;
 })
 
 ipcMain.handle(ipcping.STORE_HISTORY, async (event, key, data) => {
-    historyManager.insert(key, data);
+    historyManager.append(key, data);
 })
 
 ipcMain.handle(ipcping.DELETE_HISTORY, async (event, key) => {
-    historyManager.dropAll(key);
+    historyManager.drop(key);
 })
