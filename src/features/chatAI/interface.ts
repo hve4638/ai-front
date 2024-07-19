@@ -1,3 +1,5 @@
+import { Note } from "data/interface";
+
 export interface AIModelRequest {
     contents : string;
     prompt : string;

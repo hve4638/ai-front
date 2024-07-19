@@ -8,16 +8,15 @@ interface GoogleFontIconProps {
 }
 
 export function GoogleFontIcon({
-    className='', value, size, enabled=false, onClick = ()=>{}
+    className='', value, onClick = ()=>{}
 }:GoogleFontIconProps) {
-    const pxsize = `${size}px`;
     return (
         <label
             className={`${className} undraggable center`}
-            style={{ color: 'white', fontSize: pxsize, width: pxsize, height: pxsize }}
+            style={{ color: 'white' }}
             onClick={(e)=>onClick()}
         >
-            <span className={`${enabled ? 'selected' : ''} material-symbols-outlined`}>
+            <span className={`material-symbols-outlined`}>
                 {value}
             </span>
         </label>

@@ -1,1 +1,1 @@
-export { MockAIModel } from './mockAIModel.ts'
+export { MockAIModel } from './mockAIModel'

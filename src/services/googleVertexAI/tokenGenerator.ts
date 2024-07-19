@@ -58,6 +58,7 @@ export class TokenGenerator {
     static #base64url(source) {
         // Encode in classical base64
         let encodedSource = btoa(
+            //@ts-ignore
             String.fromCharCode.apply(null, new Uint8Array(source))
         )
 

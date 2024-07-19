@@ -1,5 +1,4 @@
-import React, { useState } from "react"
-import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
+import React, { useState } from 'react'
 
 export const SelectFull = ({name, value, onClick}) => (
     <div className='column item'>

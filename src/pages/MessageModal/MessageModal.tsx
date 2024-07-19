@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import ModalHeader from '../../components/ModalHeader.tsx'
+import ModalHeader from 'components/ModalHeader.tsx'
 
 interface VarEditorModalProps {
     title:any

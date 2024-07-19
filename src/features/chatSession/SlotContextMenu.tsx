@@ -1,7 +1,7 @@
-import React, { forwardRef, useEffect } from "react";
-import { GoogleFontIconButton } from "../../components/GoogleFontIcon.tsx";
-import { ChatSession } from "../../context/interface";
-import { COLORBOX_COLORS } from "./interface.ts";
+import React, { forwardRef, RefObject, useEffect } from "react";
+import { GoogleFontIconButton } from "components/GoogleFontIcon";
+import { ChatSession } from "context/interface";
+import { COLORBOX_COLORS } from "./interface";
 
 interface SlotContextMenuProps {
     x:number;
@@ -13,13 +13,14 @@ interface SlotContextMenuProps {
     onDelete:()=>void;
 }
 
-export const SlotContextMenu = forwardRef(({x, y, session, index, onClose, onDelete, onChange}:SlotContextMenuProps, ref) => {
+export const SlotContextMenu = forwardRef<HTMLDivElement, SlotContextMenuProps>(({x, y, session, index, onClose, onDelete, onChange}, ref) => {
     const colors = ["red", "orange", "yellow", "lime", "aqua", "blue", "purple", "reset"]
 
     const onGlobalClick = (event) => {
-      if (ref != null && ref.current && !ref.current.contains(event.target)) {
-        onClose();
-      }
+        const ele = (ref as RefObject<HTMLDivElement>)?.current;
+        if (ele && !ele.contains(event.target)) {
+            onClose();
+        }
     }
   
     useEffect(()=>{ 

@@ -1,1 +1,1 @@
-export { GoogleGemini } from './googleGemini.ts'
+export { GoogleVertexAI } from './googleVertexAI'

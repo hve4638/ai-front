@@ -1,12 +1,11 @@
-import { memo, useContext, useEffect, useState } from "react";
-import { StoreContext } from "../../context/StoreContext.tsx";
-import { PromptContext } from "../../context/PromptContext.tsx";
-import { loadPromptList } from "../../services/local/index.ts";
-import { PromptList } from "../prompts/index.ts";
-import { MemoryContext } from "../../context/MemoryContext.tsx";
-import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from "../../data/constants.tsx";
-import { AIModels } from "../chatAI/aimodels.ts";
-import React from "react";
+import React, { memo, useContext, useEffect, useState } from 'react';
+import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from 'data/constants.tsx';
+import { StoreContext } from 'context/StoreContext.tsx';
+import { MemoryContext } from 'context/MemoryContext.tsx';
+import { PromptContext } from 'context/PromptContext.tsx';
+import { loadPromptList } from 'services/local/index.ts';
+import { PromptList } from 'features/prompts/';
+import { AIModels } from 'features/chatAI';
 
 export function Initializer({ onLoad, historyManager }) {
     const [isLoadTooLong, setIsLoadTooLong] = useState(false);

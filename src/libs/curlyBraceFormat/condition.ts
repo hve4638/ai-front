@@ -1,5 +1,5 @@
-import { CurlyBraceFormatItem } from "./interface.ts";
-import { IExpression, AlwaysTrue } from "./expression.ts"
+import { CurlyBraceFormatItem } from './interface'
+import { IExpression, AlwaysTrue } from './expression'
 
 export class Condition implements CurlyBraceFormatItem {
     conditions:IExpression[];

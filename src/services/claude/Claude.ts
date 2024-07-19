@@ -1,10 +1,10 @@
-import { AIModel, AIModelRequestData, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
-import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
+import { AIModel, AIModelRequestData, AIModelReturns } from '../../data/aimodel/interfaces';
+import { AIModelConfig, AIModelRequest, AIModelResponse } from '../../data/aimodel/interfaces';
 
-import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
+import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat';
 
-import { CLAUDE_URL, ROLE } from "./constant.ts"
-import { proxyFetch } from "../local/index.ts";
+import { CLAUDE_URL, ROLE } from './constant'
+import { proxyFetch } from '../local';
 
 export class Claude implements AIModel {
     async preprocess() {
@@ -23,7 +23,7 @@ export class Claude implements AIModel {
         }
     }
     async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
-        let systemPrompt = "";
+        let systemPrompt = '';
         const messages:{role:string,content:string}[] = []
         
         const promptParser = new CurlyBraceFormatParser(request.prompt);
@@ -38,13 +38,13 @@ export class Claude implements AIModel {
                 return ROLE[x];
             },
             map(text, role) {
-                if (role === "system") {
+                if (role === 'system') {
                     if (messages.length === 0) {
                         systemPrompt += text;
                     }
                     else {
                         messages.push({
-                            role : "assistant",
+                            role : 'assistant',
                             content : 'system: ' + text
                         })
                     }
@@ -97,10 +97,10 @@ export class Claude implements AIModel {
         }
       
         const reason = rawResponse.stop_reason;
-        const text = rawResponse.content[0]?.text ?? "";
+        const text = rawResponse.content[0]?.text ?? '';
 
-        if (reason == "end_turn") warning = null;
-        else if (reason == "max_tokens") warning = "max token limit";
+        if (reason == 'end_turn') warning = null;
+        else if (reason == 'max_tokens') warning = 'max token limit';
         else warning = `unhandle reason : ${reason}`;
       
         return {
@@ -110,9 +110,9 @@ export class Claude implements AIModel {
             normalresponse : true,
             warning : warning,
             error : null,
-            input : "",
+            input : '',
             note : {},
-            prompt : ""
+            prompt : ''
         }
     }
 }

@@ -1,11 +1,13 @@
-import { APIResponse } from "../../data/interface.tsx";
-import { bracketFormat } from "../../utils/format.tsx";
-import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
+import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse, AIModelReturns } from 'data/aimodel/interfaces';
+import { APIResponse } from '../../data/interface';
 
-import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant.ts'
-import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
-import { AIModel } from "../../data/aimodel/interfaces.tsx";
-import { proxyFetch } from "../local/index.ts";
+import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat';
+
+import { bracketFormat } from '../../utils/format';
+
+import { AIModel } from '../../data/aimodel/interfaces';
+import { proxyFetch } from '../local';
+import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant'
 
 interface Note {
     [key:string]:string

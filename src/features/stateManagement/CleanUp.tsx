@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
-import { EventContext } from "../../context/EventContext.tsx";
-import { MemoryContext } from "../../context/MemoryContext.tsx";
+import React, { useContext, useEffect, useState } from 'react';
+import { EventContext } from 'context/EventContext.tsx';
+import { MemoryContext } from 'context/MemoryContext.tsx';
 
 export function CleanUp() {
     const memoryContext = useContext(MemoryContext);

@@ -1,7 +1,7 @@
-import { ChatSession } from '../../context/interface.ts';
-import { NOSESSION_KEY } from '../../data/constants.tsx';
-import { APIResponse } from '../../data/interface.ts';
-import {storeHistory, loadHistory, deleteHistory} from '../../services/local/index.ts'
+import { storeHistory, loadHistory, deleteHistory } from 'services/local/index.ts'
+import { ChatSession } from 'context/interface.ts';
+import { NOSESSION_KEY } from 'data/constants.tsx';
+import { APIResponse } from 'data/interface.ts';
 
 interface HistoryCache {
     allFetched: boolean;

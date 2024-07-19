@@ -1,14 +1,16 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import { SecretContext } from '../../context/SecretContext.tsx'
-import ModalHeader from '../../components/ModalHeader.tsx'
-import { PopUpMenu } from '../../components/PopUpMenu.tsx'
-import { AIModels, MODELS } from '../../features/chatAI/index.ts'
-import { CommonOptions } from './options/CommonOptions.tsx'
-import { GeminiOptions } from './options/GeminiOptions.tsx'
-import { GPTOptions } from './options/GPTOptions.tsx'
-import { ClaudeOptions } from './options/ClaudeOptions.tsx'
-import { GoogleVertexAIOptions } from './options/GoogleVertexAIOptions.tsx'
-import { MemoryContext } from '../../context/MemoryContext.tsx'
+
+import { AIModels, MODELS } from 'features/chatAI'
+import { MemoryContext, SecretContext } from 'context'
+
+import ModalHeader from 'components/ModalHeader'
+import { PopUpMenu } from 'components/PopUpMenu'
+
+import { CommonOptions } from './options/CommonOptions'
+import { GeminiOptions } from './options/GeminiOptions'
+import { GPTOptions } from './options/GPTOptions'
+import { ClaudeOptions } from './options/ClaudeOptions'
+import { GoogleVertexAIOptions } from './options/GoogleVertexAIOptions'
 
 interface ModelSettingModalProps {
     onClose:()=>void

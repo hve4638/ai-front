@@ -1,6 +1,5 @@
 import React, { useState } from "react"
-import { Checkbox } from '../../components/Checkbox.tsx'
-import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
+import { Checkbox } from 'components/Checkbox'
 
 export const SelectFull = ({name, value, onClick}) => (
     <div className='column item'>

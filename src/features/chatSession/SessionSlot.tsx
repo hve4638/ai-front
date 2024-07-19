@@ -1,11 +1,11 @@
 import React, { forwardRef, memo, useContext, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom';
-import { PromptContext } from '../../context/PromptContext.tsx';
-import { MemoryContext } from '../../context/MemoryContext.tsx';
-import { ChatSession } from '../../context/interface.ts';
-import { SlotContextMenu } from './SlotContextMenu.tsx';
-import { EventContext } from '../../context/EventContext.tsx';
-import { FetchStatus } from '../../data/interface.ts';
+import { PromptContext } from 'context/PromptContext';
+import { MemoryContext } from 'context/MemoryContext';
+import { EventContext } from 'context/EventContext';
+import { ChatSession } from 'context/interface';
+import { SlotContextMenu } from './SlotContextMenu';
+import { FetchStatus } from 'data/interface';
 
 interface SlotAdderProps {
     onClick:()=>void,

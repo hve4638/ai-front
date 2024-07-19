@@ -1,8 +1,8 @@
-import { HOMEPAGE } from "../../data/constants.tsx";
-import { Promptlist } from "./interface";
-import { COOKIE_OPTION_NOEXPIRE } from "../../data/constants.tsx"
-import { getCookie, setCookie } from "../../libs/cookies.tsx"
-import { getCookies, removeCookie } from "../../libs/cookies.tsx";
+import { HOMEPAGE } from 'data/constants.tsx'
+import { COOKIE_OPTION_NOEXPIRE } from 'data/constants.tsx'
+import { getCookie, setCookie } from 'libs/cookies.tsx'
+import { getCookies, removeCookie } from 'libs/cookies.tsx'
+import { Promptlist } from './interface'
 
 export class WebInteractive {
     static loadPromptlist():Promise<Promptlist> {
@@ -42,7 +42,7 @@ export class WebInteractive {
             if (!res.ok) {
                 return {
                     ok : false,
-                    reason : "HTTP Error",
+                    reason : 'HTTP Error',
                     status : res.status
                 }
             }
@@ -57,7 +57,7 @@ export class WebInteractive {
         catch(error) {
             return {
                 ok : false,
-                reason : "Unexpected Error",
+                reason : 'Unexpected Error',
                 error :  `${error}`
             }
         }

@@ -1,13 +1,12 @@
-import React from "react";
-import { ButtonFull, InputSmall } from "../Forms.tsx";
-import { getCookies, removeCookie } from "../../../libs/cookies.tsx";
-import { DEFAULT_MAXTOKEN, DEFAULT_TEMPERATURE, DEFAULT_TOPP } from "../../../data/constants.tsx";
+import React from 'react'
+import { ButtonFull, InputSmall } from '../Forms'
+import { DEFAULT_MAXTOKEN, DEFAULT_TEMPERATURE, DEFAULT_TOPP } from 'data/constants'
 
 export function CommonOptions({ option, setOption }) {
     return (
         <>
             <InputSmall
-                name = "응답 토큰 제한"
+                name = '응답 토큰 제한'
                 value = {option.maxtoken ?? DEFAULT_MAXTOKEN}
                 onChange={(value)=>{
                     const newOptions = {...option};
@@ -16,7 +15,7 @@ export function CommonOptions({ option, setOption }) {
                 }}
             />
             <InputSmall
-                name = "온도"
+                name = '온도'
                 value = {option.temperature ?? DEFAULT_TEMPERATURE}
                 onChange={(value)=>{
                     const newOptions = {...option};
@@ -25,7 +24,7 @@ export function CommonOptions({ option, setOption }) {
                 }}
             />
             <InputSmall
-                name = "top-p"
+                name = 'top-p'
                 value = {option.topp ?? DEFAULT_TOPP}
                 onChange={(value)=>{
                     const newOptions = {...option};

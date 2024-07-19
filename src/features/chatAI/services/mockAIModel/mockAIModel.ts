@@ -1,5 +1,5 @@
-import { AIModel, AIModelRequestData, AIModelReturns } from "../../interface.ts";
-import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../interface.ts";
+import { AIModel, AIModelRequestData } from "../../interface";
+import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../interface";
 
 export class MockAIModel implements AIModel {
     async preprocess() {

@@ -1,10 +1,11 @@
-import { AIModel, AIModelRequestData, AIModelReturns } from "../../data/aimodel/interfaces.tsx";
-import { AIModelConfig, AIModelRequest, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
+import { CurlyBraceFormatParser } from "libs/curlyBraceFormat";
 
-import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
+import { AIModel, AIModelRequestData, AIModelReturns } from "data/aimodel/interfaces";
+import { AIModelConfig, AIModelRequest, AIModelResponse } from "data/aimodel/interfaces";
 
-import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant.ts"
-import { proxyFetch } from "../local/index.ts";
+import { proxyFetch } from "services/local";
+
+import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant"
 
 export class OpenAIGPT implements AIModel {
     async preprocess() {

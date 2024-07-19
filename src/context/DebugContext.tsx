@@ -1,12 +1,11 @@
 import React, { useState, createContext } from "react";
-import { DEBUG_MODE } from "../data/constants.tsx";
+import { DEBUG_MODE } from "data/constants.tsx";
 
 interface DebugContextType {
     mirror: boolean;
     setMirror: (x: boolean) => void;
     isDebugMode: boolean;
 }
-
 
 export const DebugContext = createContext<DebugContextType|null>(null);
 

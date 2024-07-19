@@ -1,15 +1,15 @@
-import { TARGET_ENV, VERSION } from '../../data/constants.tsx'
-import { Promptlist } from './interface.ts';
-import { IPCInteractive } from './ipcInteractive.ts';
-import { WebInteractive } from './webInteractive.ts';
+import { TARGET_ENV, VERSION } from '../../data/constants'
+import { Promptlist } from './interface';
+import { IPCInteractive } from './ipcInteractive';
+import { WebInteractive } from './webInteractive';
 
-const errorNotAvailable = () => new Error("This feature is not available on this platform.");
+const errorNotAvailable = () => new Error('This feature is not available on this platform.');
 
 export function loadPromptList():Promise<Promptlist> {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.loadPromptlist();
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.loadPromptlist();
     default:
         throw errorNotAvailable();
@@ -18,9 +18,9 @@ export function loadPromptList():Promise<Promptlist> {
 
 export function loadPrompt(filename:string):Promise<string> {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.loadPrompt(filename);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.loadPrompt(filename);
     default:
         throw errorNotAvailable();
@@ -29,7 +29,7 @@ export function loadPrompt(filename:string):Promise<string> {
 
 export function openPromptFolder() {
     switch(TARGET_ENV) {
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.openPromptFolder();
     default:
         throw errorNotAvailable();
@@ -38,9 +38,9 @@ export function openPromptFolder() {
 
 export function storeValue(name:string, value:any) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.storeValue(name, value);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.storeValue(name, value);
     default:
         throw errorNotAvailable();
@@ -49,9 +49,9 @@ export function storeValue(name:string, value:any) {
 
 export function loadValue(name:string) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.loadValue(name);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.loadValue(name);
     default:
         throw errorNotAvailable();
@@ -60,9 +60,9 @@ export function loadValue(name:string) {
 
 export function storeSecretValue(name:string, value:any) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.storeValue(name, value);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.storeSecretValue(name, value);
     default:
         throw errorNotAvailable();
@@ -71,9 +71,9 @@ export function storeSecretValue(name:string, value:any) {
 
 export function loadSecretValue(name:string) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.loadValue(name);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.loadSecretValue(name);
     default:
         throw errorNotAvailable();
@@ -82,9 +82,9 @@ export function loadSecretValue(name:string) {
 
 export function proxyFetch(url:string, init:RequestInit) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.fetch(url, init);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.fetch(url, init);
     default:
         throw errorNotAvailable();
@@ -93,9 +93,9 @@ export function proxyFetch(url:string, init:RequestInit) {
 
 export function openBrowser(url:string) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.openBrowser(url);
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.openBrowser(url);
     default:
         throw errorNotAvailable();
@@ -122,9 +122,9 @@ export async function isNewVersionAvailable() {
     const patternVersion = /v(\d+)[.](\d+)[.](\d+)/;
 
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return false;
-    case "WINDOWS":
+    case 'WINDOWS':
     {
         const lastVersion:string = await fetchLastVersion();
         const currentVersionMatch = VERSION.match(patternVersion);
@@ -147,7 +147,7 @@ export async function isNewVersionAvailable() {
 
 export async function fetchLastVersion() {
     try {
-        const url = "https://api.github.com/repos/hve4638/ai-front/releases/latest";
+        const url = 'https://api.github.com/repos/hve4638/ai-front/releases/latest';
         const response = await fetch(url);
         if (response.ok) {
             const data = await response.json();
@@ -162,9 +162,9 @@ export async function fetchLastVersion() {
 
 export async function resetAllValues() {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return WebInteractive.resetAllValues();
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.resetAllValues();
     default:
         throw errorNotAvailable();
@@ -173,10 +173,10 @@ export async function resetAllValues() {
 
 export async function storeHistory(key:any, data:any) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         // nothing to do
         break;
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.storeHistory(key, data);
     default:
         throw errorNotAvailable();
@@ -185,9 +185,9 @@ export async function storeHistory(key:any, data:any) {
 
 export async function loadHistory(key:any, offset:number=0, limit:number=1000) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return [];
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.loadHistory(key, offset, limit);
     default:
         throw errorNotAvailable();
@@ -196,9 +196,9 @@ export async function loadHistory(key:any, offset:number=0, limit:number=1000) {
 
 export async function deleteHistory(key:any) {
     switch(TARGET_ENV) {
-    case "WEB":
+    case 'WEB':
         return [];
-    case "WINDOWS":
+    case 'WINDOWS':
         return IPCInteractive.deleteHistory(key);
     default:
         throw errorNotAvailable();

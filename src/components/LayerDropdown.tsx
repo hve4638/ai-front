@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
-import { AIModels } from "../features/chatAI/aimodels.ts";
 
 interface LayerDropdownProps {
   value:any;

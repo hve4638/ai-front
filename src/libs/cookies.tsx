@@ -1,4 +1,3 @@
-// 사용하기위해 CookiesProvider로 감싸야 한다
 import {Cookies} from 'react-cookie';
 
 const cookies = new Cookies();

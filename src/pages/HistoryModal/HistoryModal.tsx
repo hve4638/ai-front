@@ -1,9 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react'
-import ModalHeader from '../../components/ModalHeader.tsx'
-import { StoreContext } from "../../context/StoreContext.tsx";
-import { MemoryContext } from '../../context/MemoryContext.tsx';
-import { APIResponse } from '../../data/interface.tsx';
-import { NOSESSION_KEY, TARGET_ENV } from '../../data/constants.tsx';
+import ModalHeader from 'components/ModalHeader.tsx'
+import { APIResponse } from 'data/interface.tsx';
+import { TARGET_ENV } from 'data/constants.tsx';
+import { MemoryContext } from 'context/MemoryContext.tsx';
 
 interface HistoryModalProps {
     onClose:()=>void;
@@ -12,9 +11,7 @@ interface HistoryModalProps {
 
 function HistoryModal({ onClose, onClick }:HistoryModalProps) {
     const memoryContext = useContext(MemoryContext);
-    //const storeContext = useContext(StoreContext);
     if (memoryContext == null) throw new Error('MemoryModal() required StateContextProvider');
-    //if (storeContext == null) throw new Error('HistoryModal() required StateContextProvider');
 
     const {
         currentSession,

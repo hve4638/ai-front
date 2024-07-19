@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { InputFull } from "../Forms.tsx";
+import React, { useEffect, useState } from 'react';
+import { InputFull } from '../Forms';
 
 export function GPTOptions({option, setOption}) {
-    const [apikey, setAPIKey] = useState("");
+    const [apikey, setAPIKey] = useState('');
 
     return (
         <>

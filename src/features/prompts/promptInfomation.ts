@@ -1,6 +1,6 @@
-import { Vars } from "../../context/interface/promptInterface";
-import { RawPrompt } from "../../data/interface";
-import { IPromptInfomation } from "./interface";
+import { Vars } from 'context/interface/promptInterface';
+import { RawPrompt } from '../../data/interface';
+import { IPromptInfomation } from './interface';
 
 export class PromptInfomation implements IPromptInfomation {
     #raw:RawPrompt;

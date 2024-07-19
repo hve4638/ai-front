@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createContext } from 'react';
 
-import { EmptyPromptList } from "../features/prompts/index.ts";
-import { IPromptList } from "../features/prompts/interface.ts";
+import { EmptyPromptList } from "features/prompts/index.ts";
+import { IPromptList } from "features/prompts/interface.ts";
 
 interface PromptContextType {
     promptList : IPromptList,

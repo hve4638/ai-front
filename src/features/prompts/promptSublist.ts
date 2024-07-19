@@ -1,6 +1,6 @@
-import { RawPromptSublist } from "../../data/interface";
+import { RawPromptSublist } from 'data/interface';
 import { IPromptSubList } from "./interface.ts";
-import { PromptInfomation } from "./promptInfomation.ts";
+import { PromptInfomation } from './promptInfomation.ts';
 
 export class PromptSublist implements IPromptSubList {
     #raw:RawPromptSublist;
@@ -8,6 +8,7 @@ export class PromptSublist implements IPromptSubList {
 
     constructor(data:RawPromptSublist, { selects }) {
         this.#raw = data;
+        this.#list = [];
 
         this.#validate(this.#raw);
         this.#parseList(this.#raw, { selects })

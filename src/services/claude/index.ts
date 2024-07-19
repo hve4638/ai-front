@@ -1,1 +1,1 @@
-export { Claude } from './Claude.ts'
+export { Claude } from './Claude'

@@ -16,9 +16,10 @@ export function PopUpMenu({
     onClickOutside
 }:PopUpMenuProps) {
     const targetRef = useRef(null);
-    
+
     const onGlobalClick = (event) => {
-        if (targetRef.current && !targetRef.current.contains(event.target)) {
+        const element = targetRef.current as HTMLElement|null;
+        if (element && !element.contains(event.target)) {
             onClickOutside();
         }
     }

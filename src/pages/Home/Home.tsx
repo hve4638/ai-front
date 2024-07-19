@@ -1,29 +1,28 @@
 import React, { useState, useEffect, useContext } from "react";
 
-import { PromptContext } from "../../context/PromptContext.tsx";
-import { StoreContext } from "../../context/StoreContext.tsx";
-import { SecretContext } from "../../context/SecretContext.tsx";
-import { DebugContext } from "../../context/DebugContext.tsx";
+import { APIResponse, FetchStatus } from "data/interface";
 
-import ModalBackground from '../../components/ModalBackground.tsx'
-import RequestInfoModal from "../RequestInfoModal/RequestInfoModal.tsx";
-import HistoryModal from '../HistoryModal/HistoryModal.tsx'
-import SettingModal from '../SettingModal/SettingModal.tsx'
+import { PromptContext } from "context/PromptContext";
+import { StoreContext } from "context/StoreContext";
+import { SecretContext } from "context/SecretContext";
+import { DebugContext } from "context/DebugContext";
+import { MemoryContext } from "context/MemoryContext";
+import { EventContext } from "context/EventContext";
 
-import { APIResponse, FetchStatus } from "../../data/interface.ts";
+import ModalBackground from 'components/ModalBackground'
+import { SubmitButton } from "./components/SubmitButton";
 
-import Header from './Header.tsx'
-import Footer from './Footer.tsx'
-import InputField from './InputField.tsx'
-import OutputField from './OutputField.tsx'
+import RequestInfoModal from "pages/RequestInfoModal/RequestInfoModal";
+import HistoryModal from 'pages/HistoryModal/HistoryModal'
+import SettingModal from 'pages/SettingModal/SettingModal'
+import VarEditorModal from "pages/VarEditorModal/VarEditorModal";
+import DebugModal from "pages/DebugModal/DebugModal";
+import { ModelSettingModal } from "pages/ModelSettingModal/ModelSettingModal";
 
-import VarEditorModal from "../VarEditorModal/VarEditorModal.tsx";
-import DebugModal from "../DebugModal/DebugModal.tsx";
-import { MemoryContext } from "../../context/MemoryContext.tsx";
-import { EventContext } from "../../context/EventContext.tsx";
-import { NOSESSION_KEY } from "../../data/constants.tsx";
-import { SubmitButton } from "./component/SubmitButton.tsx";
-import { ModelSettingModal } from "../ModelSettingModal/ModelSettingModal.tsx";
+import Header from './Header'
+import Footer from './Footer'
+import InputField from './InputField'
+import OutputField from './OutputField'
 
 enum MODALS {
     SettingModal,

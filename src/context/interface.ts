@@ -1,6 +1,5 @@
 import { APIResponse, Note } from "../data/interface";
 
-
 export interface SessionHistory {
     [key:number]:APIResponse[]
 }

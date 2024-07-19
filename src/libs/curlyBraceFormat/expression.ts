@@ -1,13 +1,13 @@
-import { CurlyBraceFormatItem } from "./interface.ts";
-import { Constant } from "./constant.ts"
-import { Var } from "./var.ts";
+import { CurlyBraceFormatItem } from './interface';
+import { Constant } from './constant'
+import { Var } from './var';
 
 export interface IExpression extends CurlyBraceFormatItem {
     build:(props:any)=>boolean;
 }
 
 const RE_EXPRESSION_DELEMITER = /(=)/;
-const RE_EXPRESSION_STRING = /^("[^"]*"|'[^']*')$/
+const RE_EXPRESSION_STRING = /^('[^']*'|'[^']*')$/
 export class Expression implements IExpression {
     expression;
 
@@ -27,7 +27,7 @@ export class Expression implements IExpression {
             }
         }
         else {
-            throw new Error("Implement Error : Expression");
+            throw new Error('Implement Error : Expression');
         }
     }
 

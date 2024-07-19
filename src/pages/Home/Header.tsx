@@ -1,18 +1,21 @@
 import React, {memo, useContext, useEffect, useState} from "react";
 
-import { PromptContext } from "../../context/PromptContext.tsx";
-import { StoreContext } from "../../context/StoreContext.tsx";
+import { Note } from 'data/interface';
 
-import Dropdown from "../../components/Dropdown.tsx";
-import { PromptInfomation } from "../../features/prompts/promptInfomation.ts";
-import { PromptSublist } from "../../features/prompts/promptSublist.ts";
-import { Note } from "../../data/interface.ts";
-import { MemoryContext } from "../../context/MemoryContext.tsx";
-import { ChatSession } from "../../context/interface.ts";
-import { GoogleFontIconButton } from "../../components/GoogleFontIcon.tsx";
-import { LayerDropdown } from "../../components/LayerDropdown.tsx";
-import { AIModels, MODELS } from "../../features/chatAI/aimodels.ts";
-import { AnthropicIcon, GoogleIcon, OpenAIIcon, GoogleVertexAIIcon } from "../../components/Icons/index.tsx"
+import { PromptContext } from 'context/PromptContext';
+import { StoreContext } from 'context/StoreContext';
+import { MemoryContext } from 'context/MemoryContext';
+import { ChatSession } from 'context/interface';
+
+import { AIModels, MODELS } from 'features/chatAI/aimodels';
+import { PromptInfomation } from 'features/prompts/promptInfomation';
+import { PromptSublist } from 'features/prompts/promptSublist';
+
+import Dropdown from 'components/Dropdown';
+import { GoogleFontIconButton } from 'components/GoogleFontIcon';
+import { LayerDropdown } from 'components/LayerDropdown';
+import { AnthropicIcon, GoogleIcon, OpenAIIcon, GoogleVertexAIIcon } from 'components/Icons'
+
 
 
 interface HeaderProps {

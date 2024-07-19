@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { InputFull } from "../Forms.tsx";
+import { InputFull } from "../Forms";
 
 export function ClaudeOptions({option, setOption}) {
     const [apikey, setAPIKey] = useState("");

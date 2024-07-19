@@ -1,15 +1,14 @@
-import { APIResponse } from "../../data/interface.ts";
-import { bracketFormat } from "../../utils/format.tsx";
-import { CurlyBraceFormatParser } from "../../libs/curlyBraceFormat/index.ts";
+import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat'
+import { AIModel } from 'data/aimodel/interfaces'
+import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse } from 'data/aimodel/interfaces'
 
-import { VERTEXAI_URL, ROLE, ROLE_DEFAULT } from './constant.ts'
-import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse } from "../../data/aimodel/interfaces.tsx";
-import { AIModel } from "../../data/aimodel/interfaces.tsx";
-import { proxyFetch } from "../local/index.ts";
-import { Claude } from "../claude/Claude.ts";
+import { bracketFormat } from 'utils/format'
 
-import { TokenGenerator } from "./tokenGenerator.ts";
-import { SecretContextType } from "../../context/SecretContext.tsx";
+import { SecretContextType } from 'context/SecretContext'
+import { Claude } from '../claude'
+import { proxyFetch } from '../local'
+import { TokenGenerator } from './tokenGenerator'
+import { VERTEXAI_URL, ROLE, ROLE_DEFAULT } from './constant'
 
 export class GoogleVertexAI implements AIModel {
     static #claude = new Claude();
@@ -21,6 +20,7 @@ export class GoogleVertexAI implements AIModel {
     constructor({ secretContext, category }:{ secretContext:SecretContextType, category:string }) {
         this.#secretContext = secretContext;
         this.#category = category;
+        this.#lasttoken = "";
     }
 
     async preprocess() {
@@ -36,7 +36,7 @@ export class GoogleVertexAI implements AIModel {
         setModelInfo(newModelInfo);
     }
 
-    async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModlRequestData> {
+    async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
         if (!options.clientemail) {
             throw new Error("clientemail is invalid.");
         }

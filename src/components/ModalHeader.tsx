@@ -15,7 +15,7 @@ export default function ModalHeader({className='', name, onClose}:ModalHeaderPro
                 className='close-button'
                 onClick={()=>onClose()}
                 value='close'
-            />
+            />x
         </div>
     )
 }

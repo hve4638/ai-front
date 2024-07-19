@@ -1,7 +1,7 @@
 const RE_BRACKET = /^(.*?)\{\{([^\s{}]+?)\}\}(.*)$/ms
 
-export function bracketFormat(text:string, notes:Object|Map<string,string>):string {
-    const splited:string[] = [];
+export function bracketFormat(text: string, notes: Object | Map<string, string>): string {
+    const splited: string[] = [];
 
     while (text.length != 0) {
         const group = text.match(RE_BRACKET);

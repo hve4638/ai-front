@@ -1,9 +1,9 @@
-import { CurlyBraceFormatItem, CurlyBraceFormatBuildArgs } from "./interface.ts";
-import { Var, ReservedVar } from "./var.ts"
-import { Expression } from "./expression.ts";
-import { Condition } from "./condition.ts"
-import { Role } from "./role.ts";
-import { Constant } from "./constant.ts";
+import { CurlyBraceFormatItem, CurlyBraceFormatBuildArgs } from './interface'
+import { Var, ReservedVar } from './var'
+import { Expression } from './expression'
+import { Condition } from './condition'
+import { Role } from './role'
+import { Constant } from './constant'
 
 const RE_CURLY = /(\s*\{\{::[^\n{}]+?\}\}\s*|\{\{:?[^:\n{}]+?\}\})/ms
 

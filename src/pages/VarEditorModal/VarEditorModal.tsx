@@ -1,13 +1,12 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import { getCookies, removeCookie } from '../../libs/cookies.tsx'
-import { SecretContext } from '../../context/SecretContext.tsx'
-import ModalHeader from '../../components/ModalHeader.tsx'
-import { PopUpMenu } from '../../components/PopUpMenu.tsx'
-import { AIModels, MODELS } from '../../features/chatAI/index.ts'
-import { StoreContext } from '../../context/StoreContext.tsx'
-import Dropdown from '../../components/Dropdown.tsx'
-import useDebouncing from '../../hooks/useDebouncing.ts'
-import { MemoryContext } from '../../context/MemoryContext.tsx'
+
+import useDebouncing from 'hooks/useDebouncing'
+
+import { StoreContext } from 'context/StoreContext'
+import { MemoryContext } from 'context/MemoryContext'
+
+import ModalHeader from 'components/ModalHeader'
+import Dropdown from 'components/Dropdown'
 
 interface VarEditorModalProps {
     onClose:()=>void

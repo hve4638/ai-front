@@ -1,14 +1,19 @@
 import React, { useState, useContext, useRef, useEffect, memo } from 'react'
-import { SecretContext } from '../../context/SecretContext.tsx'
-import ModalHeader from '../../components/ModalHeader.tsx'
-import { ButtonFull, InputFull, InputSmall, SelectFull, CheckBox, RowCheckBox } from './Forms.tsx'
 
-import { LayerDropdown } from '../../components/LayerDropdown.tsx'
-import { MemoryContext } from '../../context/MemoryContext.tsx';
-import { StoreContext } from '../../context/StoreContext.tsx';
-import { LayoutModes, ThemeModes } from '../../data/interface.ts';
-import { resetAllValues } from '../../services/local/index.ts'
-import { TARGET_ENV } from '../../data/constants.tsx'
+import { LayoutModes, ThemeModes } from 'data/interface'
+import { TARGET_ENV } from 'data/constants'
+
+import { resetAllValues } from 'services/local'
+
+import { SecretContext } from 'context/SecretContext'
+import { MemoryContext } from 'context/MemoryContext'
+import { StoreContext } from 'context/StoreContext'
+
+import ModalHeader from 'components/ModalHeader'
+import { LayerDropdown } from 'components/LayerDropdown'
+
+import { ButtonFull, RowCheckBox } from './Forms'
+
 
 interface SettingModalProps {
     onClose:()=>void

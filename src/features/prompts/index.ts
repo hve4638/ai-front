@@ -1,4 +1,3 @@
-//export { IPromptList } from './ipromptList.ts'
-export { PromptList } from './promptList.ts'
-export { EmptyPromptList } from './emptyPromptList.ts'
-export { PromptInfomation } from './promptInfomation.ts'
+export { PromptList } from './promptList'
+export { EmptyPromptList } from './emptyPromptList'
+export { PromptInfomation } from './promptInfomation'

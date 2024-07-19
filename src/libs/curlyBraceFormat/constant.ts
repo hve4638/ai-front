@@ -1,4 +1,4 @@
-import { CurlyBraceFormatItem } from "./interface";
+import { CurlyBraceFormatItem } from './interface'
 
 export class Constant implements CurlyBraceFormatItem {
     value:any;

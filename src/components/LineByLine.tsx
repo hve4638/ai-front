@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export function LineByLineRenderer({content}) {
     const [ parsed, setParesed ] = useState([]);

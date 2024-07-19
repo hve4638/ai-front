@@ -1,4 +1,4 @@
-import { Promptlist } from "./interface";
+import { Promptlist } from './interface';
 
 const electron:any = window.electron;
 

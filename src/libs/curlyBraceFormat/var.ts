@@ -1,4 +1,4 @@
-import { CurlyBraceFormatBuildArgs, CurlyBraceFormatItem } from "./interface";
+import { CurlyBraceFormatBuildArgs, CurlyBraceFormatItem } from './interface';
 
 export class Var implements CurlyBraceFormatItem {
     name: string;

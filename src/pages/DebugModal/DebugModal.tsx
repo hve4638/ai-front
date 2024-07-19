@@ -1,5 +1,5 @@
 import React from 'react'
-import ModalHeader from '../../components/ModalHeader.tsx'
+import ModalHeader from 'components/ModalHeader'
 
 interface DebugModalProps {
     onClose:()=>void
@@ -21,6 +21,7 @@ function DebugModal(props:DebugModalProps) {
             <button
                 style={{margin: '8px 0px'}}
                 onClick={async ()=>{
+                    //@ts-ignore
                     const value = await window.electron.echo('[DEBUG] ECHO TEST');
                     console.log(value);
                 }}
@@ -28,12 +29,14 @@ function DebugModal(props:DebugModalProps) {
             <button
                 style={{margin: '8px 0px'}}
                 onClick={async ()=>{
+                    //@ts-ignore
                     window.electron.openPromptFolder();
                 }}
             >Open Prompt Folder</button>
             <button
                 style={{margin: '8px 0px'}}
                 onClick={async ()=>{
+                    //@ts-ignore
                     const value = await window.electron.loadPromptList();
                     console.log(value);
                 }}
@@ -41,6 +44,7 @@ function DebugModal(props:DebugModalProps) {
             <button
                 style={{margin: '8px 0px'}}
                 onClick={async ()=>{
+                    //@ts-ignore
                     const value = await window.electron.loadPrompt('template');
                     console.log(value);
                 }}

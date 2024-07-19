@@ -1,1 +1,1 @@
-export { HistoryManager } from './historyManager.ts';
+export { HistoryManager } from './historyManager';

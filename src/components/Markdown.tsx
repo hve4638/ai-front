@@ -1,15 +1,20 @@
 import React, { ReactNode } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
-import { splitByQuotes } from '../utils/splitByQuotes.tsx';
+import { splitByQuotes } from 'utils/splitByQuotes.tsx';
 
-const customRenderers = {
+
+const customRenderers:Partial<Components> = {
+  // @ts-ignore
   p({ children }) {
-    let input: ReactNode[];
+    let input: ReactNode[]|any;
 
-    if (typeof children === 'string') {
+    if (children == null) {
+        return ;
+    }
+    else if (typeof children === 'string') {
         input = [ children ];
     }
     else if (typeof children[Symbol.iterator] === 'function') {

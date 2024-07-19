@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { FileUploadForm, InputFull } from "../Forms.tsx";
+import React, { useEffect, useState } from 'react';
+import { FileUploadForm, InputFull } from '../Forms';
 
 export function GoogleVertexAIOptions({option, setOption}) {
-    const [message, setMessage] = useState("");
-    const [messageColor, setMessageColor] = useState("red");
+    const [message, setMessage] = useState('');
+    const [messageColor, setMessageColor] = useState('red');
 
     return (
         <>
@@ -20,11 +20,11 @@ export function GoogleVertexAIOptions({option, setOption}) {
                             const clientemail = obj.client_email;
 
                             if (!projectid || !privatekey || !clientemail) {
-                                throw new Error("Invalid File");
+                                throw new Error('Invalid File');
                             }
                             
-                            setMessage("파일을 불러왔습니다.")
-                            setMessageColor("green")
+                            setMessage('파일을 불러왔습니다.')
+                            setMessageColor('green')
                             const newOption = {
                                 ...option,
                                 projectid,
@@ -34,14 +34,14 @@ export function GoogleVertexAIOptions({option, setOption}) {
                             setOption(newOption);
                         }
                         catch(e) {
-                            setMessage("잘못된 파일입니다.")
-                            setMessageColor("red")
+                            setMessage('잘못된 파일입니다.')
+                            setMessageColor('red')
                         }
                     }
                     reader.readAsText(files[0]);
                 }}
             />
-            <span style={{fontSize:"0.8em", color: messageColor}}>{message}</span>
+            <span style={{fontSize:'0.8em', color: messageColor}}>{message}</span>
         </>
     )
 }

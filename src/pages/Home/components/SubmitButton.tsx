@@ -1,7 +1,5 @@
 import React from 'react';
-import ArrowIcon from '../../../assets/icons/arrow.svg'
-import LoadingIcon from '../../../assets/icons/loading.svg'
-import { GoogleFontIconButton } from '../../../components/GoogleFontIcon.tsx';
+import { GoogleFontIconButton } from 'components/GoogleFontIcon.tsx';
 
 interface SubmitButtonProps {
     submitIcon?:string;

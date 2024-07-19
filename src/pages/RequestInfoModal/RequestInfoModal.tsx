@@ -1,11 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react'
 
-import ModalHeader from '../../components/ModalHeader.tsx'
+import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat'
 
-import { StoreContext } from '../../context/StoreContext.tsx';
-import { CurlyBraceFormatParser } from '../../libs/curlyBraceFormat/index.ts';
-import { MemoryContext } from '../../context/MemoryContext.tsx';
-import { GoogleFontIconButton } from '../../components/GoogleFontIcon.tsx';
+import { StoreContext } from 'context/StoreContext'
+import { MemoryContext } from 'context/MemoryContext'
+
+import ModalHeader from 'components/ModalHeader'
+import { GoogleFontIconButton } from 'components/GoogleFontIcon'
+
+
 
 export default function RequestInfoModal({
     onClose

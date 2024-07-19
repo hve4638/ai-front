@@ -1,6 +1,5 @@
 import React from 'react';
-import { SubmitButton } from './component/SubmitButton.tsx';
-import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx';
+import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
 interface InputFieldProps {
     text:string;

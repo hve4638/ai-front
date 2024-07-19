@@ -1,6 +1,6 @@
 //type Dict<KEY, VALUE> = {[key]:KEY:VALUE};
 
-import { Note } from "../../../data/interface";
+import { APIResponse, Note } from "../../../data/interface";
 import { AIModels } from "../../chatAI/index.ts";
 
 interface RequestArgs {
@@ -72,7 +72,7 @@ export class AIModelFetchManager {
                     secretContext: args.secretContext,
                     storeContext : null
                 });
-                onFetchComplete(success, result);
+                onFetchComplete(success as boolean, result as APIResponse);
             }
         }
         catch(error) {

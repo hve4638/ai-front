@@ -1,1 +1,1 @@
-export { AIModels, MODELS } from './aimodels.ts'
+export { AIModels, MODELS } from './aimodels'

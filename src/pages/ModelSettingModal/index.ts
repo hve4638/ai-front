@@ -1,1 +1,1 @@
-export { ModelSettingModal } from "./ModelSettingModal.tsx";
+export { ModelSettingModal } from './ModelSettingModal'

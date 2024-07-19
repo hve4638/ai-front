@@ -1,4 +1,4 @@
-export function copyToClipboard(text:string) {
+export function copyToClipboard(text: string) {
     const tempTextArea = document.createElement('textarea');
     tempTextArea.value = text;
 

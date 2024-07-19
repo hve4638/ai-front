@@ -1,11 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { APIResponse } from '../../data/interface.js'
+import { APIResponse } from 'data/interface.js'
 
-import Markdown from '../../components/Markdown.tsx'
-import { StoreContext } from '../../context/StoreContext.tsx'
-import { LineByLineRenderer } from '../../components/LineByLine.tsx'
-import { GoogleFontIcon } from '../../components/GoogleFontIcon.tsx'
-import { copyToClipboard } from '../../utils/clipboard.tsx'
+import { StoreContext } from 'context/StoreContext.tsx'
+
+import { copyToClipboard } from 'utils/clipboard.tsx'
+
+import Markdown from 'components/Markdown.tsx'
+import { LineByLineRenderer } from 'components/LineByLine.tsx'
+import { GoogleFontIcon } from 'components/GoogleFontIcon.tsx'
+
+
 
 interface OutputFieldProps {
   className?:string,
