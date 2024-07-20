@@ -48,7 +48,10 @@ export class HistoryManager {
         cache.noFetched = false;
         if (!cache.allFetched && offset + limit >= cache.data.length) {
             const rows = await loadHistory(historyKey, offset, limit);
+            console.log('rows')
+            console.log(rows)
             const loaded = rows.map((row) => JSON.parse(row.data));
+            console.log(loaded)
 
             if (rows.length !== limit) {
                 cache.allFetched = true;

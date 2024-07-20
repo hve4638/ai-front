@@ -1,5 +1,5 @@
-//const Database = require('./betterSQLite3History');
-const Database = require('./jsonHistory');
+const Database = require('./betterSQLite3History');
+//const Database = require('./jsonHistory');
 const path = require('path');
 const fs = require('fs');
 
@@ -10,10 +10,12 @@ class HistoryManager {
     constructor(directoryPath) {
         this.#basePath = directoryPath;
         this.#databases = {};
+        
+        fs.mkdirSync(this.#basePath, { recursive: true });
     }
 
     #getPath(key) {
-        return path.join(this.#basePath, `history${key}.json`);
+        return path.join(this.#basePath, `history${key}`);
     }
     
     #openDBIfExists(key) {

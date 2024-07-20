@@ -34,7 +34,7 @@ class BetterSQLite3History {
         const insert = this.#db.prepare(
             "INSERT INTO history(data) VALUES($data)"
         );
-        insert.run({data:JSON.stringify(data)});
+        insert.run({data});
     }
 
     drop() {
