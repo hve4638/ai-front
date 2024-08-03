@@ -1,9 +1,16 @@
+export interface VarStruct {
+    value:string;
+    array:any
+    fields:{[key:string]:any};
+    functions:{[key:string]:any};
+}
+
 export interface CurlyBraceFormatItem {
-    build:(x:CurlyBraceFormatBuildArgs)=>any
+    //build:(x:CurlyBraceFormatBuildArgs)=>any
 }
 
 export interface VarNote {
-    [key:string] : string
+    [key:string] : VarStruct
 }
 
 export interface CurlyBraceFormatBuildArgs {
@@ -11,4 +18,4 @@ export interface CurlyBraceFormatBuildArgs {
     reservedVars : VarNote,
     role? : (rawrole:string)=>string,
     map? : (text:string, role:string)=>any
-}
+}z

@@ -6,6 +6,7 @@ import { Initializer, EffectHandler } from './features/stateManagement'
 import { CleanUp } from './features/stateManagement/CleanUp';
 import { StoreContext } from './context/StoreContext';
 import { LayoutModes, ThemeModes } from './data/interface';
+import { ExceptionHandler } from 'features/stateManagement/ExceptionHandler.tsx';
 
 function App({historyManager}) {
     const storeContext = useContext(StoreContext);
@@ -17,7 +18,7 @@ function App({historyManager}) {
         layoutMode,
         themeMode,
     } = storeContext;
-    
+
     return (
         <div
             id="app"
