@@ -1,4 +1,5 @@
-import { Note } from "../interface";
+import { Note } from '../interface';
+import { CurlyBraceFormatBuildArgs } from 'libs/curlyBraceFormat';
 
 export interface AIModelRequest {
     contents: string;
@@ -6,6 +7,7 @@ export interface AIModelRequest {
     note: Note;
     modelCategory: string;
     modelName : string;
+    curlyBraceFormatArgs: Omit<CurlyBraceFormatBuildArgs, 'map'|'role'>;
 }
   
 export interface AIModelConfig {

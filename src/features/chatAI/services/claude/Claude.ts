@@ -28,34 +28,27 @@ export class Claude implements AIModel {
         
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         promptParser.build({
-            vars : { 
-                ...request.note,
-            },
-            reservedVars : {
-                input : request.contents,
-            },
-            role(x:string) {
-                return ROLE[x];
-            },
-            map(text, role) {
+            ...request.curlyBraceFormatArgs,
+            role : (x: string) => ROLE[x],
+            map : (text, role) => {
                 if (role === 'system') {
                     if (messages.length === 0) {
                         systemPrompt += text;
                     }
                     else {
                         messages.push({
-                            role : 'assistant',
-                            content : 'system: ' + text
-                        })
+                            role: 'assistant',
+                            content: 'system: ' + text
+                        });
                     }
                 }
                 else {
                     messages.push({
-                        role : role,
-                        content : text
-                    })
+                        role: role,
+                        content: text
+                    });
                 }
-            }
+            },
         });
 
         const body = {

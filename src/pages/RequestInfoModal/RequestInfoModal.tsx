@@ -7,6 +7,7 @@ import { MemoryContext } from 'context/MemoryContext'
 
 import ModalHeader from 'components/ModalHeader'
 import { GoogleFontIconButton } from 'components/GoogleFontIcon'
+import { AIModels } from 'features/chatAI'
 
 
 
@@ -124,23 +125,13 @@ const noteformat = (value:any) => {
 }
 
 const parsePromptContent = ({promptContents, note}) => {
-    const promptParser = new CurlyBraceFormatParser(promptContents);
-    const contents:{content:string, role:string}[] = []
-
-    promptParser.build({
-        vars : { 
-            ...note,
-        },
-        reservedVars : {
-            input : "<USER_INPUT_HERE>",
-        },
-        role : (x:string) => x,
-        map(text, role) {
-            contents.push({
-                role : role,
-                content : text
-            });
-        }
+    const interpretedPrompt = AIModels.interpretePrompt({
+        contents : "<USER_INPUT_HERE>",
+        note : note,
+        prompt : promptContents,
+        modelCategory : "NONE",
+        modelName : "NONE",
     });
-    return contents;
+
+    return interpretedPrompt;
 }

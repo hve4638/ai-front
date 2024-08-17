@@ -11,34 +11,36 @@ export const ExpressionTokenType = {
 } as const;
 export const ExpressionType = ExpressionTokenType;
 
-interface BaseExpression {
-    readonly type: 'CALL' | 'PARAM' | 'LITERAL' | 'IDENTIFIER' | 'OBJECT';
-}
+type AnyExpression = EvaluatableExpression | UnevaluatableExpression;
+type EvaluatableExpression = CallExpression | LiteralExpression |  ObjectExpression;
+type UnevaluatableExpression = IdentifierExpression | ParamExpression;
 
-interface CallExpression extends BaseExpression {
+interface CallExpression {
     readonly type : 'CALL';
     readonly value : string;
-    readonly operands : BaseExpression[];
+    readonly operands : AnyExpression[];
 }
-interface ParamExpression extends BaseExpression {
-    readonly type : 'PARAM';
-    readonly args :  BaseExpression[];
-}
-interface LiteralExpression extends BaseExpression {
+interface LiteralExpression {
     readonly type : 'LITERAL';
     readonly value : string|number|boolean;
 }
-interface IdentifierExpression extends BaseExpression {
-    readonly type : 'IDENTIFIER';
-    readonly value : string;
-}
-interface ObjectExpression extends BaseExpression {
+interface ObjectExpression {
     readonly type : 'OBJECT';
     readonly value : any;
 }
+interface IdentifierExpression {
+    readonly type : 'IDENTIFIER';
+    readonly value : string;
+}
+interface ParamExpression {
+    readonly type : 'PARAM';
+    readonly args : EvaluatableExpression[];
+}
 
 export type {
-    BaseExpression,
+    AnyExpression,
+    EvaluatableExpression,
+    UnevaluatableExpression,
     CallExpression,
     ParamExpression,
     LiteralExpression,

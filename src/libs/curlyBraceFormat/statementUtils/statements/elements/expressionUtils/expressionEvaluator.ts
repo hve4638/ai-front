@@ -1,71 +1,87 @@
-import { SyntaxToken, ExpressionType, BaseExpression, IdentifierExpression, LiteralExpression, ObjectExpression, CallExpression, ParamExpression } from './expressionParser';
+import { ExpressionArgs, ExpressionEventHooks, OPERATOR_HOOKS, Vars } from './interface';
+import { SyntaxToken, ExpressionType, EvaluatableExpression, IdentifierExpression, LiteralExpression, ObjectExpression, CallExpression, ParamExpression } from './expressionParser';
+import { AnyExpression } from './expressionParser/expressionInterface';
 
 const LITERAL_ACTIONS = {
-    '+' : (a, b)=>a+b,
-    '-' : (a, b)=>a-b,
-    '*' : (a, b)=>a*b,
-    '/' : (a, b)=>a/b,
-    '%' : (a, b)=>a%b,
-    '>=' : (a, b)=>a>=b,
-    '<=' : (a, b)=>a<=b,
-    '>' : (a, b)=>a>b,
-    '<' : (a, b)=>a<b,
-    '!=' : (a, b)=>a!=b,
-    '==' : (a, b)=>a==b,
-    '&&' : (a, b)=>a&&b,
-    '||' : (a, b)=>a||b,
-    '[]' : (a, b)=>a[b],
-}
-const HOOK_NAMES = {
-    '+' : 'add',
-    '-' : 'subtract',
-    '*' : 'multiply',
-    '/' : 'divide',
-    '%' : 'modulo',
-    '>=' : 'greaterOrEqual',
-    '<=' : 'lessOrEqual',
-    '>' : 'greater',
-    '<' : 'less',
-    '!=' : 'notEqual',
-    '==' : 'equal',
-    '&&' : 'logicalAnd',
-    '||' : 'logicalOr',
-    '.' : 'access',
-    '[]' : 'indexor',
-    '()' : 'call',
-    'TOSTRING' : 'toString'
-}
+    add(a, b) { return a + b },
+    substract(a, b) { return a - b },
+    multiply(a, b) { return a * b },
+    divide(a, b) { return a / b },
+    module(a, b) { return a % b },
+    greaterOrEqual(a, b) { return a >= b },
+    lessOrEqual(a, b) { return a <= b },
+    greater(a, b) { return a > b },
+    less(a, b) { return a < b },
+    notEqual(a, b) { return a != b },
+    equal(a, b) { return a == b },
+    logicalAnd(a, b) { return a && b },
+    logicalOr(a, b) { return a || b },
+    indexor(a, b) { return a[b] },
+    stringify(literal:number|string) { return literal.toString() }
+} as const;
 
 export class ExpressionEvaluator {
-    #vars;
-    #builtInVars;
-    #expressionEventHooks;
+    #vars:Vars;
+    #builtInVars:Vars;
+    #currentScope:Vars;
+    #expressionEventHooks:Partial<ExpressionEventHooks>;
     
-    constructor({expressionEventHooks, vars, builtInVars}) {
-        this.#expressionEventHooks = expressionEventHooks;
-        this.#vars = vars;
-        this.#builtInVars = builtInVars;
+    constructor(args:ExpressionArgs) {
+        const {expressionEventHooks, vars, builtInVars, currentScope} = args;
+        this.#expressionEventHooks = expressionEventHooks ?? {};
+        this.#vars = vars ?? {};
+        this.#currentScope = currentScope ?? {};
+        this.#builtInVars = builtInVars ?? {};
     }
 
-    evaluate(expression) {
+    evaluateAndStringify(expression:EvaluatableExpression) {
+        const result = this.#evaluateExpr(expression) as EvaluatableExpression;
+
+        if (this.#isLiteral(result)) {
+            return result.value.toString();
+        }
+        else {
+            const hookName = OPERATOR_HOOKS['STRINGIFY'];
+            const hook = this.#expressionEventHooks[hookName];
+            if (hook) {
+                return hook(result).toString();
+            }
+            else {
+                throw this.#error('No hook available to stringify the expression');
+            }
+        }
+    }
+
+    evaluate(expression:EvaluatableExpression) {
         const result = this.#evaluateExpr(expression);
 
         if (this.#isLiteral(result)) {
             return result.value;
         }
         else {
-            const hookName = HOOK_NAMES['TOSTRING'];
+            return result;
+        }
+    }
+
+    evaluateAndIterate(expression:EvaluatableExpression) {
+        const expr = this.evaluate(expression) as EvaluatableExpression;
+
+        if (this.#isLiteral(expr)) {
+            throw new Error('Cannot iterate literal value');
+        }
+        else {
+            const hookName = OPERATOR_HOOKS['ITERATE'];
             const hook = this.#expressionEventHooks[hookName];
             if (hook) {
-                return hook(result);
+                return hook(expr);
             }
             else {
-                throw this.#error('No hook available to convert the expression to a string');
+                throw this.#error('No hook available to iterate the expression');
             }
         }
     }
 
-    #evaluateExpr(expr):BaseExpression {
+    #evaluateExpr(expr):AnyExpression {
         switch(expr.type) {
             case ExpressionType.CALL:
                 return this.#evaluateCallExpr(expr);
@@ -86,14 +102,17 @@ export class ExpressionEvaluator {
         if (identifier.at(0) === ':') {
             const sliced = identifier.slice(1);
             if (sliced in this.#builtInVars) {
-                data = this.#vars[sliced];
+                data = this.#builtInVars[sliced];
             }
             else {
                 throw this.#error(`Invalid keyword : ${identifier}`);
             }
         }
         else {
-            if (identifier in this.#vars) {
+            if (identifier in this.#currentScope) {
+                data = this.#currentScope[identifier];
+            }
+            else if (identifier in this.#vars) {
                 data = this.#vars[identifier];
             }
             else {
@@ -118,11 +137,14 @@ export class ExpressionEvaluator {
         const operand1 = this.#evaluateExpr(expr.operands[0]);
         const operand2 = this.#evaluateExpr(expr.operands[1]);
         
+        const hookName = OPERATOR_HOOKS[operator]
+        
         // 문자열, 숫자의 경우 외부 hook를 사용하지 않음
         if (this.#isLiteral(operand1) && this.#isLiteral(operand2)) {
-            if (operator in LITERAL_ACTIONS) {
-                const caller = LITERAL_ACTIONS[operator]
+            if (hookName in LITERAL_ACTIONS) {
+                const caller = LITERAL_ACTIONS[hookName];
                 const result = caller(operand1.value, operand2.value);
+
                 return SyntaxToken.literal(result);
             }
             else {
@@ -130,8 +152,8 @@ export class ExpressionEvaluator {
             }
         }
         else {
-            if (operator in HOOK_NAMES) {
-                const hookName = HOOK_NAMES[operator]
+            if (operator in OPERATOR_HOOKS) {
+                const hookName = OPERATOR_HOOKS[operator]
                 const hook = this.#expressionEventHooks[hookName];
                 
                 if (hook == null) {
@@ -149,7 +171,7 @@ export class ExpressionEvaluator {
                     result = hook(operand1, operand2);
                 }
 
-                if (typeof result === 'number' || typeof result === 'string') {
+                if (typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean') {
                     return SyntaxToken.literal(result);
                 }
                 else {

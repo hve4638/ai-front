@@ -1,71 +1,17 @@
 import { AIModel, AIModelConfig, AIModelRequest, AIModelResponse, AIModelReturns } from "data/aimodel/interfaces"
 import { DEBUG_MODE, DEFAULT_MAXTOKEN, DEFAULT_TEMPERATURE, DEFAULT_TOPP, TARGET_ENV } from "data/constants"
+import { MODELS, MODEL_CATEGORY } from './models'
 
 import { MockAIModel } from "./services/mockAIModel"
 import { Claude } from "./services/claude/Claude"
 import { GoogleGemini } from "./services/googleGemini"
 import { GoogleVertexAI } from "./services/googleVertexAI/googleVertexAI"
 import { OpenAIGPT } from "./services/openaiGPT/openaiGPT"
-
-export const MODELS = {
-    GOOGLE_GEMINI : "GOOGLE_GEMINI",
-    OPENAI_GPT : "OPENAI_GPT",
-    CLAUDE : "CLAUDE",
-    GOOGLE_VERTEXAI : "GOOGLE_VERTEXAI",
-    DEBUG_MODE : "DEBUG"
-}
-
-const modelCategory = {
-    [MODELS.GOOGLE_GEMINI] : {
-        name : "Google Gemini",
-        models : [
-            { name : "Gemini 1.5 Pro ", value: "gemini-1.5-pro-latest" },
-            { name : "Gemini 1.5 Flash", value: "gemini-1.5-flash" },
-            { name : "Gemini 1.0 Pro", value: "gemini-1.0-pro" },
-        ]
-    },
-    [MODELS.OPENAI_GPT] : {
-        name: "OpenAI GPT",
-        models : [
-            { name : "GPT-4o", value: "gpt-4o" },
-            { name : "GPT-4o mini", value: "gpt-4o-mini" },
-            { name : "GPT-4 Turbo", value: "gpt-4-turbo" },
-        ]
-    },
-}
-
-if (TARGET_ENV === "WINDOWS") {
-    // CORS 정책으로 WEB에서 사용할 수 없는 모델 목록
-
-    modelCategory[MODELS.CLAUDE] = {
-        "name" : "Anthropic Claude",
-        "models" : [
-            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet-20240620" },
-            { name : "Claude 3 Opus", value: "claude-3-opus-20240229" },
-            { name : "Claude 3 Haiku", value: "claude-3-haiku-20240307" },
-        ]
-    };
-    modelCategory[MODELS.GOOGLE_VERTEXAI] = {
-        name : "Google VertexAI",
-        models : [
-            { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet@20240620" },
-            { name : "Claude 3 Opus", value: "claude-3-opus@20240229" },
-            { name : "Claude 3 Haiku", value: "claude-3-haiku@20240307" },
-        ]
-    }
-}
-
-if (DEBUG_MODE) {
-    modelCategory[MODELS.DEBUG_MODE] = {
-        "name" : "Debug Mode",
-        "models" : [
-            { name : "DEBUG : ECHO", value: "debug-mode" }
-        ]
-    };
-}
+import { DEFAULT_BUILTIN_VARS, DEFAULT_EXPRESSION_EVENT_HOOKS } from "./defaultBuildArgs"
+import { CurlyBraceFormatBuildArgs, CurlyBraceFormatParser } from "libs/curlyBraceFormat"
 
 export class AIModels {
-    static #models = modelCategory;
+    static #models = MODEL_CATEGORY;
     
     static getCategories() {
         const categories:{name:string, value:string}[] = []
@@ -80,7 +26,34 @@ export class AIModels {
         return models;
     }
 
-    static async request(request:AIModelRequest, {secretContext}):Promise<AIModelResponse> {
+    static interpretePrompt(request:Omit<AIModelRequest, 'curlyBraceFormatArgs'>) {
+        let buildArgs =  {
+            expressionEventHooks : DEFAULT_EXPRESSION_EVENT_HOOKS,
+            vars : {
+                ...request.note,
+            },
+            builtInVars : {
+                ...DEFAULT_BUILTIN_VARS,
+                input : request.contents,
+            },
+            currentScope : {},
+        }
+
+        const promptParser = new CurlyBraceFormatParser(request.prompt);
+        
+        return promptParser.build({
+            ...buildArgs,
+            role : (x:string) => x,
+            map : (text, role) => {
+                return {
+                    role : role,
+                    content : text
+                }
+            }
+        });
+    }
+
+    static async request(request:Omit<AIModelRequest, 'curlyBraceFormatArgs'>, {secretContext}):Promise<AIModelResponse> {
         const category = request.modelCategory;
         const model = request.modelName;
         const options = secretContext.modelInfo.modelOptions[category] ?? {};
@@ -102,7 +75,7 @@ export class AIModels {
             aimodel = new MockAIModel();
         }
         else {
-            throw new Error("Not implement");
+            throw new Error('Invalid Model Category');
         }
 
         options.topp ??= DEFAULT_TOPP;
@@ -115,9 +88,24 @@ export class AIModels {
             maxtoken : secretContext.maxtoken,
             modelname : model
         }
+
+        let newRequest:AIModelRequest = {
+            ...request,
+            curlyBraceFormatArgs : {
+                vars : {
+                    ...request.note,
+                },
+                builtInVars : {
+                    ...DEFAULT_BUILTIN_VARS,
+                    input : request.contents,
+                },
+                expressionEventHooks : DEFAULT_EXPRESSION_EVENT_HOOKS,
+                currentScope : {},
+            }
+        };
         
         await aimodel.preprocess();
-        const requestdata = await aimodel.makeRequestData(request, config, options);
+        const requestdata = await aimodel.makeRequestData(newRequest, config, options);
         
         console.log("AIModel RequestData");
         console.log(requestdata);

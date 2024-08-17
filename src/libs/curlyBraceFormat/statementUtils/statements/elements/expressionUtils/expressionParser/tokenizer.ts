@@ -1,7 +1,7 @@
 const TOKEN_TYPES = {
     NUMBER: /\d+(\.\d+)?/,
     STRING: /(["'])(?:(?=(\\?))\2.)*?\1/,
-    OPERATOR: /(\+|-|\*|\/|%|==|<=|>=|<|>|&&|\|\||\.)/,
+    OPERATOR: /(\+|-|\*|\/|%|==|=|<=|>=|<|>|&&|\|\||\.)/,
     IDENTIFIER: /\:?[a-zA-Z_]\w*/,
     PAREN : /(\(|\))/,
     SPACE: /\s+/,
@@ -31,6 +31,11 @@ export class Tokenizer {
                 if (match) {
                     if (tokenType === 'SPACE') {
                         // nothing to do
+                    }
+                    else if (match[0] === '=') {
+                        // 이전 버전 문법 호환
+                        // 추후 제거 예정
+                        tokens.push({ type: tokenType, value: '==' });
                     }
                     else {
                         tokens.push({ type: tokenType, value: match[0] });

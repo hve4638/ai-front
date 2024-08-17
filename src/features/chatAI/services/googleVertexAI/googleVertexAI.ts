@@ -62,16 +62,9 @@ export class GoogleVertexAI implements AIModel {
         
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         promptParser.build({
-            vars : { 
-                ...request.note,
-            },
-            reservedVars : {
-                input : request.contents,
-            },
-            role(x:string) {
-                return ROLE[x];
-            },
-            map(text, role) {
+            ...request.curlyBraceFormatArgs,
+            role : (x:string) => ROLE[x],
+            map : (text, role) => {
                 if (role === "system") {
                     if (messages.length === 0) {
                         systemPrompt += text;

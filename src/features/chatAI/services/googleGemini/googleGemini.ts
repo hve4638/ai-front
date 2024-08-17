@@ -1,7 +1,7 @@
 import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse, AIModelReturns } from 'data/aimodel/interfaces';
 import { AIModel } from 'data/aimodel/interfaces';
 import { APIResponse } from 'data/interface';
-import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
+import { CurlyBraceFormatBuildArgs, CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
 import { bracketFormat } from 'utils/format';
 
 import { proxyFetch } from 'services/local';
@@ -67,16 +67,9 @@ export class GoogleGemini implements AIModel {
         });
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         const result = promptParser.build({
-            vars : { 
-                ...request.note,
-            },
-            reservedVars : {
-                input : request.contents,
-            },
-            role(x:string) {
-                return GENIMI_ROLE[x];
-            },
-            map(text, role) {
+            ...request.curlyBraceFormatArgs,
+            role : (x:string) => GENIMI_ROLE[x],
+            map : (text, role) => {
                 return {
                     role : role,
                     parts : [

@@ -1,16 +1,16 @@
 import { SyntaxTokenType } from "./syntaxToken";
-import { ExpressionType, BaseExpression, ParamExpression, LiteralExpression, IdentifierExpression } from './expressionInterface'
+import { ExpressionType, EvaluatableExpression, ParamExpression, LiteralExpression, IdentifierExpression, AnyExpression, CallExpression } from './expressionInterface'
 
 export class ExpressionParser {
     #tokens;
-    #output:BaseExpression[];
+    #output:AnyExpression[];
 
     constructor(syntaxTokens) {
         this.#tokens = syntaxTokens;
         this.#output = [];
     }
 
-    parse() {
+    parse():EvaluatableExpression {
         this.#output = [];
 
         for(const token of this.#tokens) {
@@ -28,7 +28,7 @@ export class ExpressionParser {
         }
 
         if (this.#output.length === 1) {
-            return this.#output[0];
+            return this.#output[0] as EvaluatableExpression;
         }
         else if (this.#output.length === 1) {
             throw this.#error('Empty');
@@ -40,8 +40,8 @@ export class ExpressionParser {
 
     #parseBinaryOperator(token) {
         // [operand1, operand2, operator] 형태
-        let operand2 = this.#output.pop() as BaseExpression;
-        const operand1 = this.#output.pop() as BaseExpression;
+        let operand2 = this.#output.pop() as AnyExpression;
+        const operand1 = this.#output.pop() as EvaluatableExpression;
         
         if (operand1 == null || operand2 == null) {
             throw this.#error(`Invalid operand (${token.value})`);
@@ -65,10 +65,10 @@ export class ExpressionParser {
 
     #parseCallOperator(token) {
         // [caller, [PARAM], param1, param2, ..., ()] 형태
-        const args:BaseExpression[] = [];
+        const args:EvaluatableExpression[] = [];
         
         while(this.#output.length > 0 && this.#output.at(-1)?.type !== SyntaxTokenType.PARAM) {
-            args.unshift(this.#output.pop() as BaseExpression);
+            args.unshift(this.#output.pop() as EvaluatableExpression);
         }
 
         if (this.#output.length == 0) {
@@ -76,7 +76,7 @@ export class ExpressionParser {
         }
         this.#output.pop(); // PARAM 토큰
 
-        const caller = this.#output.pop() as BaseExpression;
+        const caller = this.#output.pop() as EvaluatableExpression;
         this.#output.push(
             this.#getOperatorExpression(token.value,
                 [
@@ -90,7 +90,7 @@ export class ExpressionParser {
         )
     }
 
-    #getOperatorExpression(value:string, operands:BaseExpression[]) {
+    #getOperatorExpression(value:string, operands:AnyExpression[]):CallExpression {
         return {
             type: ExpressionType.CALL,
             value: value,
@@ -98,7 +98,7 @@ export class ExpressionParser {
         };
     }
 
-    #isIdentifierExpression(expr:BaseExpression):expr is IdentifierExpression {
+    #isIdentifierExpression(expr:AnyExpression):expr is IdentifierExpression {
         return expr.type === 'IDENTIFIER';
     }
 

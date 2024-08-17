@@ -1,13 +1,13 @@
-import { CurlyBraceFormatBuildArgs, CurlyBraceFormatItem } from "./interface";
+import { CurlyBraceFormatElement } from "./interface";
 
-export class Role implements CurlyBraceFormatItem {
+export class Role implements CurlyBraceFormatElement {
     #role:string;
 
     constructor(role:string) {
         this.#role = role;
     }
 
-    build(args:CurlyBraceFormatBuildArgs) {
+    build(args) {
         const {
             role = (x)=>x
         } = args;

@@ -27,16 +27,9 @@ export class OpenAIGPT implements AIModel {
     async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         const messages = promptParser.build({
-            vars : { 
-                ...request.note,
-            },
-            reservedVars : {
-                input : request.contents,
-            },
-            role(x:string) {
-                return ROLE[x];
-            },
-            map(text, role) {
+            ...request.curlyBraceFormatArgs,
+            role : (x:string) => ROLE[x],
+            map : (text, role) => {
                 return {
                     role : role,
                     content : text

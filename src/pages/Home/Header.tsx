@@ -7,7 +7,7 @@ import { StoreContext } from 'context/StoreContext';
 import { MemoryContext } from 'context/MemoryContext';
 import { ChatSession } from 'context/interface';
 
-import { AIModels, MODELS } from 'features/chatAI/aimodels';
+import { AIModels, MODELS } from 'features/chatAI';
 import { PromptInfomation } from 'features/prompts/promptInfomation';
 import { PromptSublist } from 'features/prompts/promptSublist';
 
@@ -15,8 +15,6 @@ import Dropdown from 'components/Dropdown';
 import { GoogleFontIconButton } from 'components/GoogleFontIcon';
 import { LayerDropdown } from 'components/LayerDropdown';
 import { AnthropicIcon, GoogleIcon, OpenAIIcon, GoogleVertexAIIcon } from 'components/Icons'
-
-
 
 interface HeaderProps {
   onOpenSetting : () => void,

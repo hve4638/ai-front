@@ -1,52 +1,61 @@
-import { Expression } from '../';
-import { ExpressionType, IdentifierExpression, LiteralExpression, ObjectExpression, ParamExpression } from '../expressionParser';
+import { ExpressionEvaluator } from '../expressionEvaluator';
+import { ExpressionParser, ExpressionType, IdentifierExpression, LiteralExpression, ObjectExpression, ParamExpression, SyntaxTransformer, Tokenizer } from '../expressionParser';
+import type { ExpressionArgs } from '../interface';
 
-const notest = (a, b) => {}
+const EMPTY_ARGS = {
+    vars : {},
+    expressionEventHooks : {},
+    builtInVars:{},
+    currentScope : {}
+} as ExpressionArgs;
 
-describe('Expression Test', () => {
-    const EMPTY_ARGS = { vars : {}, expressionEventHooks : {}, builtInVars:{} }
-    test('numberliteral', ()=>{
-        const expression = new Expression('10');
-        const actual = expression.evaluate(EMPTY_ARGS);
+describe('Evaluate Test', () => {
+    const evaluate = (expressionText, exprArgs:ExpressionArgs) => {
+        const tokenizer = new Tokenizer(expressionText);
+        const transformer = new SyntaxTransformer(tokenizer.tokenize());
+        const expressionParser = new ExpressionParser(transformer.transform());
+        const evaluator = new ExpressionEvaluator(exprArgs);
+        
+        return evaluator.evaluate(expressionParser.parse());
+    }
+
+    test('number literal', ()=>{
+        const actual = evaluate('10', EMPTY_ARGS);
+        
         expect(actual).toEqual(10);
     });
     test('string literal', ()=>{
-        const expression = new Expression('"hello world"');
-        const actual = expression.evaluate(EMPTY_ARGS);
+        const actual = evaluate('"hello world"', EMPTY_ARGS);
+
         expect(actual).toEqual('hello world');
     });
     test('operation', ()=>{
-        const expression = new Expression('1 + 2');
-
-        const actual = expression.evaluate(EMPTY_ARGS);
+        const actual = evaluate('1 + 2', EMPTY_ARGS);
+        
         expect(actual).toEqual(3);
     });
     test('variable', ()=>{
-        const expression = new Expression('num');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('num', {
             ...EMPTY_ARGS,
             vars : {
                 'num' : 5
             }
         });
+        
         expect(actual).toEqual(5);
     });
     test('variable + literal sum', ()=>{
-        const expression = new Expression('num + 5');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('num + 5', {
             ...EMPTY_ARGS,
             vars : {
                 'num' : 5
             }
-        });
+        })
+
         expect(actual).toEqual(10);
     });
     test('indexor', ()=>{
-        const expression = new Expression('array[1]');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('array[1]', {
             ...EMPTY_ARGS,
             vars : {
                 'array' : {
@@ -54,17 +63,16 @@ describe('Expression Test', () => {
                 }
             },
             expressionEventHooks : {
-                'indexor' : function(array, index) {
+                indexor(array, index) {
                     return array.value.raw.at(index.value);
                 }
             }
         });
+
         expect(actual).toEqual(1);
     });
     test('function', ()=>{
-        const expression = new Expression('print()');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('print()', {
             ...EMPTY_ARGS,
             vars : {
                 'print' : {
@@ -80,12 +88,11 @@ describe('Expression Test', () => {
                 }
             }
         });
+
         expect(actual).toEqual('hello world');
     });
     test('function with args', ()=>{
-        const expression = new Expression('sum(1, 2+3, 4*5)');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('sum(1, 2+3, 4*5)', {
             ...EMPTY_ARGS,
             vars : {
                 'sum' : {
@@ -100,12 +107,11 @@ describe('Expression Test', () => {
                 }
             }
         });
+
         expect(actual).toEqual(1 + 2 + 3 + 4*5);
     });
     test('access', ()=>{
-        const expression = new Expression('data.size');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('data.size', {
             ...EMPTY_ARGS,
             vars : {
                 'data' : {
@@ -126,9 +132,7 @@ describe('Expression Test', () => {
         expect(actual).toEqual(10);
     })
     test('identifier in indexor', ()=>{
-        const expression = new Expression('data[value]');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('data[value]', {
             ...EMPTY_ARGS,
             vars : {
                 'data' : {
@@ -153,9 +157,7 @@ describe('Expression Test', () => {
         expect(actual).toEqual(3);
     })
     test('chain 1', ()=>{
-        const expression = new Expression('data.get()');
-
-        const actual = expression.evaluate({
+        const actual = evaluate('data.get()', {
             ...EMPTY_ARGS,
             vars : {
                 'data' : {
@@ -176,19 +178,18 @@ describe('Expression Test', () => {
                     const caller = callerExpr.value.call;
                     const args = argsExpr.args;
                     return caller.apply(callerExpr.value, args);
-                }
+                } as any
             }
         });
         expect(actual).toEqual(2);
     })
     
     test('chain 2', ()=>{
-        const expression = new Expression('data.get()[1][2]');
         const array = (rawarray)=>{
             return { array : rawarray }
         }
 
-        const actual = expression.evaluate({
+        const actual = evaluate('data.get()[1][2]', {
             ...EMPTY_ARGS,
             vars : {
                 'data' : {
@@ -211,15 +212,43 @@ describe('Expression Test', () => {
                     return objExpr.value.field[keyExpr.value];
                 },
                 'indexor' : function(arrayExpr, indexExpr) {
-                    return arrayExpr.value.array[indexExpr.value];
+                    return arrayExpr.value.array[indexExpr.value as number|string];
                 },
                 'call' : function(callerExpr:ObjectExpression, argsExpr:ParamExpression) {
                     const caller = callerExpr.value.call;
                     const args = argsExpr.args;
                     return caller.apply(callerExpr.value, args);
-                }
+                } as any
             }
         });
         expect(actual).toEqual(5);
     })
+});
+
+describe('Iterate Test', () => {
+    const iterate = (expressionText, exprArgs:ExpressionArgs) => {
+        const tokenizer = new Tokenizer(expressionText);
+        const transformer = new SyntaxTransformer(tokenizer.tokenize());
+        const expressionParser = new ExpressionParser(transformer.transform());
+        const evaluator = new ExpressionEvaluator(exprArgs);
+        
+        return evaluator.evaluateAndIterate(expressionParser.parse());
+    }
+
+    test('array', ()=>{
+        const actual = iterate('array', {
+            ...EMPTY_ARGS,
+            vars : {
+                'array' : {
+                    raw : [0, 1, 2, 3]
+                }
+            },
+            expressionEventHooks : {
+                'iterate' : function(array) {
+                    return array.value.raw;
+                }
+            }
+        });
+        expect(actual).toEqual([0, 1, 2, 3]);
+    });
 });

@@ -3,7 +3,7 @@ export { SyntaxTransformer } from './syntaxTransformer';
 export { SyntaxToken, SyntaxTokenType } from './syntaxToken';
 export { ExpressionType } from './expressionInterface';
 export type { 
-    BaseExpression,
+    EvaluatableExpression,
     CallExpression,
     ParamExpression,
     LiteralExpression,

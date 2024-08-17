@@ -30,3 +30,5 @@ apikey
 out/
 dist/
 /electron/temp.js
+
+.vscode/

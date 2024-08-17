@@ -1,1 +1,2 @@
-export { AIModels, MODELS } from './aimodels'
+export { AIModels } from './aimodels'
+export { MODELS } from './models'
