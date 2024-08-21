@@ -26,7 +26,7 @@ export class StatementForeach extends Statement {
                     throw new Error('Role is not premitted without top-level statement.');
                 }
                 else {
-                    result.push(element.build(args));
+                    result.push(element!.data.build(args));
                 }
             }
             return result.join('');

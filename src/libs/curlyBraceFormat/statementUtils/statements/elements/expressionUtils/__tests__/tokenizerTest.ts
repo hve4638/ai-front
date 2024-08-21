@@ -95,7 +95,7 @@ describe('Tokenizer Test', () => {
 });
 
 
-describe('Tokenizer BuiltInVar Test', () => {
+describe('Tokenizer builtInVar Test', () => {
     test('var', ()=>{
         const actual = tokenize(':var');
         const expected = [

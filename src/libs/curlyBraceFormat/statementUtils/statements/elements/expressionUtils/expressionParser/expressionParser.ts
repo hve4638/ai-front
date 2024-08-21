@@ -1,5 +1,6 @@
 import { SyntaxTokenType } from "./syntaxToken";
 import { ExpressionType, EvaluatableExpression, ParamExpression, LiteralExpression, IdentifierExpression, AnyExpression, CallExpression } from './expressionInterface'
+import { ExpressionParseFailError } from "./error";
 
 export class ExpressionParser {
     #tokens;
@@ -30,11 +31,11 @@ export class ExpressionParser {
         if (this.#output.length === 1) {
             return this.#output[0] as EvaluatableExpression;
         }
-        else if (this.#output.length === 1) {
-            throw this.#error('Empty');
+        else if (this.#output.length === 0) {
+            throw new ExpressionParseFailError('Invalid expression');
         }
         else {
-            throw this.#error('Unhandle token remaining');
+            throw new ExpressionParseFailError('Unhandle token remaining');
         }
     }
 
@@ -44,7 +45,7 @@ export class ExpressionParser {
         const operand1 = this.#output.pop() as EvaluatableExpression;
         
         if (operand1 == null || operand2 == null) {
-            throw this.#error(`Invalid operand (${token.value})`);
+            throw new ExpressionParseFailError(`Invalid operand '${token.value}'`);
         }
         if (token.value === '.') {
             // access 연산의 operand2는 토크나이저에서 IDENTIFIER로 분류하지만, 실제로는 문자열을 통해 엑세스하므로 LITERAL로 변환 필요
@@ -55,7 +56,7 @@ export class ExpressionParser {
                 } as LiteralExpression;
             }
             else {
-                throw this.#error(`Invalid operand (${token.value}) - Invalid accessor`)
+                throw new ExpressionParseFailError(`Invalid operand '${token.value}' : Invalid accessor`);
             }
         }
 
@@ -72,7 +73,7 @@ export class ExpressionParser {
         }
 
         if (this.#output.length == 0) {
-            throw this.#error('Invalid CallExpression format');
+            throw new ExpressionParseFailError(`Invalid CallExpression format`);
         }
         this.#output.pop(); // PARAM 토큰
 
@@ -100,14 +101,5 @@ export class ExpressionParser {
 
     #isIdentifierExpression(expr:AnyExpression):expr is IdentifierExpression {
         return expr.type === 'IDENTIFIER';
-    }
-
-    #error(message, reason='') {
-        if (reason.length > 0) {
-            return new Error(`Expression Parse Failed : ${message}\n${reason}`)
-        }
-        else {
-            return new Error(`Expression Parse Failed : ${message}\n${JSON.stringify(this.#tokens)}`)
-        }
     }
 }

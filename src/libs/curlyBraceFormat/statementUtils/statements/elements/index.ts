@@ -1,3 +1,5 @@
+export { CBFInternalErrors } from './expressionUtils'
+
 export { Role } from './role';
 export { Expression } from './expression'
 export { Constant } from './constant'

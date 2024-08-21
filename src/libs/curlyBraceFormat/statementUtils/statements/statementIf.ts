@@ -1,16 +1,24 @@
 import { BranchError } from '../errors'
-import { Statement, StatementType } from './interface'
+import {
+    Statement,
+    StatementType,
+    StatementElement,
+    StatementElementHint
+} from './interface'
 import { StatementBuilder } from './statementBuilder'
 import { Expression, Role } from './elements'
+import { StatementError } from './errors';
 
 interface Branch {
     condition:Expression;
     statementBuilder:StatementBuilder;
+    hint?:StatementElementHint;
 }
 
 export class StatementIf extends Statement {
     #branches:Branch[];
     #defaultBranchStatement:StatementBuilder|null;
+    #defaultBranchStatementHint?:StatementElementHint;
 
     constructor() {
         super();
@@ -22,26 +30,42 @@ export class StatementIf extends Statement {
         return StatementType.IF;
     }
 
-    addBranch(expressionText:string, statementBuilder:StatementBuilder) {
+    addBranch(expressionText:string, statementBuilder:StatementBuilder, hint?:StatementElementHint) {
         if (this.#defaultBranchStatement) {
             throw new BranchError('Cannot add a branch after the default branch has been set.');
         }
         
         this.#branches.push({
             condition : new Expression(expressionText),
-            statementBuilder : statementBuilder
+            statementBuilder : statementBuilder,
+            hint : hint
         });
     }
     
-    addDefaultBranch(statementBuilder:StatementBuilder) {
+    addDefaultBranch(statementBuilder:StatementBuilder, hint?:StatementElementHint) {
         if (this.#defaultBranchStatement) {
             throw new BranchError('A default branch has already been set.');
         }
 
         this.#defaultBranchStatement = statementBuilder;
+        this.#defaultBranchStatementHint = hint;
     }
 
     build(buildArgs) {
+        const evaluateBranch = (branch:Branch) => {
+            try {
+                const result = branch.condition.evaluate(buildArgs);
+
+                if (typeof result !== 'number' && typeof result !== 'boolean') {
+                    throw new Error(`Invalid type ${typeof result}`)
+                }
+
+                return Boolean(result);
+            }
+            catch(error:any) {
+                throw new StatementError(error, branch.hint);
+            }
+        }
         const build = (statementBuilder:StatementBuilder)=> {
             const result:any[] = [];
             for (const element of statementBuilder) {
@@ -49,22 +73,22 @@ export class StatementIf extends Statement {
                     throw new Error('Role is not premitted without top-level statement.');
                 }
                 else {
-                    result.push(element.build(buildArgs));
+                    try {
+                        result.push(element!.data.build(buildArgs));
+                    }
+                    catch (error:any) {
+                        throw new StatementError(error, element!.hint);
+                    }
                 }
             }
             return result.join('');
         }
 
         for(const branch of this.#branches) {
-            const result = branch.condition.evaluate(buildArgs);
-            if (typeof result !== 'number' && typeof result !== 'boolean') {
-                throw new Error(`Invalid type ${typeof result}`)
-            }
-            else if (Number(result)) {
+            if (evaluateBranch(branch)) {
                 return build(branch.statementBuilder)
             }
         }
-
         if (this.#defaultBranchStatement) {
             return build(this.#defaultBranchStatement)
         }

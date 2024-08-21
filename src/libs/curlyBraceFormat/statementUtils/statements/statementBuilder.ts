@@ -1,8 +1,13 @@
 import { Constant, Expression, Role } from './elements'
-import { Statement, StatementBuilderType } from './interface'
+import {
+    Statement,
+    StatementBuilderType,
+    StatementElement,
+    StatementElementHint
+} from './interface'
 
 export class StatementBuilder {
-    #array;
+    #array:StatementElement[];
     #builderType:StatementBuilderType;
 
     constructor(builderType:StatementBuilderType) {
@@ -14,20 +19,32 @@ export class StatementBuilder {
         return this.#builderType;
     }
     
-    addRole(role) {
-        this.#array.push(new Role(role));
+    addRole(role, hint?:StatementElementHint) {
+        this.#array.push({
+            data : new Role(role),
+            hint
+        });
     }
 
-    addConstant(text) {
-        this.#array.push(new Constant(text));
+    addConstant(text, hint?:StatementElementHint) {
+        this.#array.push({
+            data : new Constant(text),
+            hint
+        });
     }
 
-    addExpression(expression:string) {
-        this.#array.push(new Expression(expression));
+    addExpression(expression:string, hint?:StatementElementHint) {
+        this.#array.push({
+            data : new Expression(expression),
+            hint,
+        });
     }
 
-    addStatement(statement:Statement) {
-        this.#array.push(statement);
+    addStatement(statement:Statement, hint?:StatementElementHint) {
+        this.#array.push({
+            data : statement,
+            hint,
+        });
     }
 
     [Symbol.iterator]() {
@@ -37,7 +54,7 @@ export class StatementBuilder {
             next() {
                 if (this.index < this.array.length) {
                     return {
-                        value : this.array[this.index++],
+                        value : this.array[this.index++] as StatementElement,
                         done : false,
                     }
                 }

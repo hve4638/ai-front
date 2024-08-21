@@ -1,7 +1,8 @@
 import { StatementForeach, StatementIf } from './statements';
-import { Statement, StatementBuilderType, StatementType } from './statements/interface';
+import { Statement, StatementBuilderType, StatementElementHint, StatementType } from './statements/interface';
 import { StatementBuilder } from './statements/statementBuilder';
 import { BranchError, UnexpectedEndError } from './errors';
+import { CBFRawErrorWarper } from '../cbfRawErrorWarper';
 
 const RE_FOREACH_FIELD = /(\S+)\s+in\s+(\S+)/
 
@@ -64,67 +65,67 @@ export class PromptBuilder {
         return statement;
     }
     
-    addRole(role:string) {
+    addRole(role:string, hint?:StatementElementHint) {
         const builder = this.#getBuilder();
 
         if (builder.builderType == StatementBuilderType.ROOT) {
-            builder.addRole(role);
+            builder.addRole(role, hint);
         }
         else {
             throw new Error('Role change are only permitted at the top-level block.')
         }
     }
 
-    addConstant(text:string) {
+    addConstant(text:string, hint?:StatementElementHint) {
         const builder = this.#getBuilder();
 
-        builder.addConstant(text);
+        builder.addConstant(text, hint);
     }
 
-    addExpression(expressionText:string) {
+    addExpression(expressionText:string, hint?:StatementElementHint) {
         const builder = this.#getBuilder();
 
-        builder.addExpression(expressionText);
+        builder.addExpression(expressionText, hint);
     }
 
-    beginIf(expressionText:string) {
+    beginIf(expressionText:string, hint?:StatementElementHint) {
         const builder = this.#getBuilder();
         const statement = new StatementIf();
         const newBuilder = new StatementBuilder(StatementBuilderType.BRANCH);
 
         builder.addStatement(statement);
-        statement.addBranch(expressionText, newBuilder);
+        statement.addBranch(expressionText, newBuilder, hint);
 
         this.#pushStatement(statement);
         this.#pushBuilder(newBuilder);
     }
 
-    beginElseIf(expression) {
+    beginElseIf(expression, hint?:StatementElementHint) {
         const statement = this.#getStatement(StatementType.IF) as StatementIf;
         const newBuilder = new StatementBuilder(StatementBuilderType.BRANCH);
         
-        statement.addBranch(expression, newBuilder);
+        statement.addBranch(expression, newBuilder, hint);
 
         this.#popBuilder();
         this.#pushBuilder(newBuilder);
     }
 
-    beginElse() {
+    beginElse(hint?:StatementElementHint) {
         const statement = this.#getStatement(StatementType.IF) as StatementIf;
         const newBuilder = new StatementBuilder(StatementBuilderType.BRANCH);
         
-        statement.addDefaultBranch(newBuilder);
+        statement.addDefaultBranch(newBuilder, hint);
 
         this.#popBuilder();
         this.#pushBuilder(newBuilder);
     }
 
-    endIf() {
+    endIf(hint?:StatementElementHint) {
         this.#popBuilder();
         this.#popStatement(StatementType.IF);
     }
 
-    beginForeach(field) {
+    beginForeach(field, hint?:StatementElementHint) {
         const group = field.match(RE_FOREACH_FIELD);
         if (group == null) {
             throw new Error('Error')
@@ -142,7 +143,7 @@ export class PromptBuilder {
         this.#pushBuilder(newBuilder);
     }
 
-    endForeach() {
+    endForeach(hint?:StatementElementHint) {
         this.#popBuilder();
         this.#popStatement(StatementType.FOREACH);
     }
@@ -159,7 +160,10 @@ export class PromptBuilder {
             return;
         }
         else {
-            throw new UnexpectedEndError('Unexpected End of Prompt');
+            const wrapper = new CBFRawErrorWarper();
+            const error = new UnexpectedEndError('Unexpected end of prompt');
+            
+            throw wrapper.warp(error);
         }
     }
 
@@ -196,13 +200,6 @@ export class PromptBuilder {
                     this.iteratorStack.pop();
                     return this.next();
                 }
-                /*
-                else if (current.value instanceof Statement) {
-                    const newIter = current.value.exec(buildArgs);//[Symbol.iterator]();
-                    this.iteratorStack.push(newIter);
-
-                    return this.next();
-                }/* */
                 else {
                     return current;
                 }

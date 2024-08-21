@@ -2,6 +2,7 @@ export { Tokenizer } from './tokenizer';
 export { SyntaxTransformer } from './syntaxTransformer';
 export { SyntaxToken, SyntaxTokenType } from './syntaxToken';
 export { ExpressionType } from './expressionInterface';
+
 export type { 
     EvaluatableExpression,
     CallExpression,
@@ -11,3 +12,9 @@ export type {
     ObjectExpression,
 } from './expressionInterface';
 export { ExpressionParser } from './expressionParser';
+
+export {
+    TokenizeFailError,
+    SyntaxTransformFailError,
+    ExpressionParseFailError,
+} from './error';

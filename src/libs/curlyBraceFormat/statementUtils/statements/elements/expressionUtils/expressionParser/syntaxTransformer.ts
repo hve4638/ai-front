@@ -1,3 +1,4 @@
+import { SyntaxTransformFailError } from './error';
 import { SyntaxToken } from './syntaxToken';
 
 type Token = {
@@ -22,7 +23,7 @@ const OPERATOR_PRECEDENCE = {
     '&&' : 2,
     '||' : 1,
     ',' : 0,
-    // 아니라 특수 처리되므로 precedence 비교에서 제외되는 연산자
+    
     '[' : EXCEPT_PRECEDENCE,
     '(' : EXCEPT_PRECEDENCE,
 } as const;
@@ -34,14 +35,13 @@ export class SyntaxTransformer {
         this.#tokens = tokens;
     }
 
+    // Shunting Yard 알고리즘의 변형
     transform() {
-        // Shunting Yard 알고리즘의 변형
-        const stacks = new SyntaxTokenStacks({
-            errorHandler : (message)=>this.#error(`${message}\nstack: ${JSON.stringify(stacks.result)}`)
-        });
+        const stacks = new SyntaxTokenStacks(this.#tokens);
 
         // ()이 함수 호출인지, 우선순위 처리인지 확인
         let isLastTokenExpression = false;
+
         for (const token of this.#tokens) {
             switch(token.type) {
             case 'NUMBER':
@@ -71,8 +71,9 @@ export class SyntaxTransformer {
                 isLastTokenExpression = false;
                 break;
             case 'DELIMITER':
+                // ',' 는 함수 인자 구분자로만 사용
                 if (stacks.lastParenType !== ParenType.FUNCTION) {
-                    throw this.#error(`Cannot have results of two expressions in a single expression`);
+                    throw new SyntaxTransformFailError('Multiple value in a single expression are not allowed', { tokens: this.#tokens, token: token });
                 }
                 break;
             case 'PAREN':
@@ -90,34 +91,24 @@ export class SyntaxTransformer {
                 isLastTokenExpression = false;
                 break;
             default:
-                throw this.#error(`Invalid Expression Format (Invalid TokenType: ${token.type})`);
+                throw new SyntaxTransformFailError(`Invalid Token`, { tokens: this.#tokens, token });
             }
         }
 
         stacks.moveOperatorAll();
         return stacks.result;
     }
-
-    #error(message) {
-        return new Error(`Transform Error : ${message}\n`)
-    }
 }
 
 
 class SyntaxTokenStacks {
+    #tokens:Token[];
     #result:any[] = [];
     #operatorStack:string[] = [];
     #parenStack:ParenType[] = [];
-    #errorHandler:(messsage:string)=>void;
 
-    constructor({errorHandler}) {
-        if (errorHandler == null) {
-            this.#errorHandler = (message)=>new Error(message);
-        }
-        else {
-            this.#errorHandler = errorHandler;
-        }
-
+    constructor(tokens) {
+        this.#tokens = tokens;
     }
 
     get result() {
@@ -192,14 +183,16 @@ class SyntaxTokenStacks {
         }
     }
 
-    moveOperatorUntilChar(char) {
-        while (!this.#isOperatorStackEmpty() && this.#topOperatorStack() !== char) {
+    // 특정 operator를 찾을 때까지 operatorStack -> resultStack으로 이동
+    // 이후 특정 operator는 버려짐
+    moveOperatorUntilChar(op) {
+        while (!this.#isOperatorStackEmpty() && this.#topOperatorStack() !== op) {
             this.#moveOperator();
         }
 
         if (this.#isOperatorStackEmpty()) {
             // char를 찾지 못한 경우
-            throw this.#error(`Invalid Expression Format - '${char}' not found`);
+            throw new SyntaxTransformFailError(`Token '${op}' not found`, { tokens: this.#tokens });
         }
         else {
             this.#popOperatorStack();
@@ -220,9 +213,5 @@ class SyntaxTokenStacks {
 
     #popOperatorStack() {
         return this.#operatorStack.pop() as string;
-    }
-
-    #error(message) {
-        return this.#errorHandler(message)
     }
 }

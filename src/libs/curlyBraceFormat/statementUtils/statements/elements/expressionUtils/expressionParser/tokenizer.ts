@@ -1,3 +1,5 @@
+import { TokenizeFailError } from "./error";
+
 const TOKEN_TYPES = {
     NUMBER: /\d+(\.\d+)?/,
     STRING: /(["'])(?:(?=(\\?))\2.)*?\1/,
@@ -8,6 +10,10 @@ const TOKEN_TYPES = {
     INDEXOR : /(\[|\])/,
     DELIMITER : /\,/,
 };
+
+const INVALID_TOKEN_PATTERNS = {
+    IDENTIFIER : /\:?\d+(?:\.\d+)?[a-zA-Z_]\w*/
+}
 
 export class Tokenizer {
     #expression:string;
@@ -24,6 +30,21 @@ export class Tokenizer {
             let match:RegExpMatchArray|null = null;
             
             const part = this.#expression.slice(position);
+            for (const [tokenType, pattern] of Object.entries(INVALID_TOKEN_PATTERNS)) {
+                const regex = new RegExp(`^${pattern.source}`);
+                match = part.match(regex);
+
+                if (match) {
+                    throw new TokenizeFailError(
+                        'Invalid token',
+                        {
+                            expressionText : this.#expression,
+                            position : position
+                        }
+                    );
+                }
+            }
+
             for (const [tokenType, pattern] of Object.entries(TOKEN_TYPES)) {
                 const regex = new RegExp(`^${pattern.source}`);
                 match = part.match(regex);
@@ -47,11 +68,13 @@ export class Tokenizer {
             }
             
             if (!match) {
-                let text = '';
-                text += `Tokenize Failed : Unexpected Character (${this.#expression[position]})\n`
-                text += `    ${this.#expression}\n`
-                text += `    ${' '.repeat(position)}^`
-                throw new Error(text);
+                throw new TokenizeFailError(
+                    'Invalid token',
+                    {
+                        expressionText : this.#expression,
+                        position : position
+                    }
+                );
             }
         }
 

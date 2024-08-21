@@ -1,6 +1,8 @@
 import { ExpressionArgs, ExpressionEventHooks, OPERATOR_HOOKS, Vars } from './interface';
 import { SyntaxToken, ExpressionType, EvaluatableExpression, IdentifierExpression, LiteralExpression, ObjectExpression, CallExpression, ParamExpression } from './expressionParser';
 import { AnyExpression } from './expressionParser/expressionInterface';
+import { IdentifierError, InvalidExpressionError, NoHookError, UnsupportedOperator } from './error';
+import { LogicError } from 'features/errors';
 
 const LITERAL_ACTIONS = {
     add(a, b) { return a + b },
@@ -47,7 +49,7 @@ export class ExpressionEvaluator {
                 return hook(result).toString();
             }
             else {
-                throw this.#error('No hook available to stringify the expression');
+                throw new NoHookError(hookName, result);
             }
         }
     }
@@ -64,19 +66,19 @@ export class ExpressionEvaluator {
     }
 
     evaluateAndIterate(expression:EvaluatableExpression) {
-        const expr = this.evaluate(expression) as EvaluatableExpression;
+        const expr = this.#evaluateExpr(expression) as EvaluatableExpression;
+        const hookName = OPERATOR_HOOKS['ITERATE'];
 
         if (this.#isLiteral(expr)) {
-            throw new Error('Cannot iterate literal value');
+            throw new UnsupportedOperator('iterate', expr);
         }
         else {
-            const hookName = OPERATOR_HOOKS['ITERATE'];
             const hook = this.#expressionEventHooks[hookName];
             if (hook) {
                 return hook(expr);
             }
             else {
-                throw this.#error('No hook available to iterate the expression');
+                throw new NoHookError(hookName, expr);
             }
         }
     }
@@ -95,7 +97,7 @@ export class ExpressionEvaluator {
     }
     
     #evaluateIdentifier(expr):ObjectExpression|LiteralExpression {
-        if (!this.#isIdentifier(expr)) throw this.#error('Logic Error (evaluateIdentifier)')
+        if (!this.#isIdentifier(expr)) throw new LogicError();
         const identifier = expr.value;
 
         let data;
@@ -105,7 +107,7 @@ export class ExpressionEvaluator {
                 data = this.#builtInVars[sliced];
             }
             else {
-                throw this.#error(`Invalid keyword : ${identifier}`);
+                throw new IdentifierError('Invalid built-in variable', expr);
             }
         }
         else {
@@ -116,7 +118,7 @@ export class ExpressionEvaluator {
                 data = this.#vars[identifier];
             }
             else {
-                throw this.#error(`Variable is not defined : ${identifier}`);
+                throw new IdentifierError('Variable is not defined', expr);
             }
         }
         switch(typeof data) {
@@ -127,19 +129,19 @@ export class ExpressionEvaluator {
             case 'object':
                 return SyntaxToken.object(data);
             default:
-                throw this.#error(`Invalid variable type : ${identifier} (${typeof data})`)
+                throw new IdentifierError(`Invalid variable type '${typeof data}'`, expr);
         }
     }
 
     #evaluateCallExpr(expr):ObjectExpression|LiteralExpression {
-        if (!this.#isCall(expr)) throw this.#error('Logic Error (evaluateCallExpr)');
+        if (!this.#isCall(expr)) throw new LogicError();
         const operator = expr.value;
         const operand1 = this.#evaluateExpr(expr.operands[0]);
         const operand2 = this.#evaluateExpr(expr.operands[1]);
         
         const hookName = OPERATOR_HOOKS[operator]
         
-        // 문자열, 숫자의 경우 외부 hook를 사용하지 않음
+        // 리터럴끼리의 연산은 외부 hook를 사용하지 않음
         if (this.#isLiteral(operand1) && this.#isLiteral(operand2)) {
             if (hookName in LITERAL_ACTIONS) {
                 const caller = LITERAL_ACTIONS[hookName];
@@ -148,7 +150,7 @@ export class ExpressionEvaluator {
                 return SyntaxToken.literal(result);
             }
             else {
-                throw this.#error(`Operation '${operator}' between literal values is not supported.`);
+                throw new UnsupportedOperator(operator, expr);
             }
         }
         else {
@@ -157,13 +159,13 @@ export class ExpressionEvaluator {
                 const hook = this.#expressionEventHooks[hookName];
                 
                 if (hook == null) {
-                    throw this.#error(`Hook not found '${operator}' (${hookName})`)
+                    throw new NoHookError(hookName, expr);
                 }
 
                 let result;
                 if (operator === '()') {
                     if (!this.#isParam(operand2)) {
-                        throw this.#error(`Unexpected Expression (no param)`)
+                        throw new InvalidExpressionError('No ParamExpression found', expr);
                     }
                     result = hook(operand1, operand2.args);
                 }
@@ -179,13 +181,13 @@ export class ExpressionEvaluator {
                 }
             }
             else {
-                throw this.#error(`Invalid Operator '${operator}'`);
+                throw new InvalidExpressionError('Invalid Operator', expr);
             }
         }
     }
 
     #evaluateParamExpr(expr):ParamExpression {
-        if (!this.#isParam(expr)) throw this.#error('Logic Error (evaluateParamExpr)');
+        if (!this.#isParam(expr)) throw new LogicError();
 
         const args:any[] = [];
         for(const child of expr.args) {
