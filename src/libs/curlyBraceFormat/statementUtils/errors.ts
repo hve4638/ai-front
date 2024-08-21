@@ -1,4 +1,9 @@
-
+export class BuildError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'BuildError';
+    }
+}
 
 export class BranchError extends Error {
     constructor(message: string) {

@@ -1,4 +1,4 @@
-import { BranchError } from '../errors'
+import { BranchError, BuildError } from '../errors'
 import {
     Statement,
     StatementType,
@@ -57,7 +57,8 @@ export class StatementIf extends Statement {
                 const result = branch.condition.evaluate(buildArgs);
 
                 if (typeof result !== 'number' && typeof result !== 'boolean') {
-                    throw new Error(`Invalid type ${typeof result}`)
+                    // @TODO : 적절한 에러 클래스 변경 필요
+                    throw new BuildError(`Invalid type ${typeof result}`)
                 }
 
                 return Boolean(result);
@@ -70,7 +71,8 @@ export class StatementIf extends Statement {
             const result:any[] = [];
             for (const element of statementBuilder) {
                 if (element instanceof Role) {
-                    throw new Error('Role is not premitted without top-level statement.');
+                    // @TODO : 적절한 에러 클래스 변경 필요
+                    throw new BuildError('Role is not premitted without top-level statement.');
                 }
                 else {
                     try {
