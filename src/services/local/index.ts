@@ -1,3 +1,4 @@
+import { RootPromptMetadata } from 'features/prompts/types';
 import { TARGET_ENV, VERSION } from '../../data/constants'
 import { Promptlist } from './interface';
 import { IPCInteractive } from './ipcInteractive';
@@ -5,12 +6,45 @@ import { WebInteractive } from './webInteractive';
 
 const errorNotAvailable = () => new Error('This feature is not available on this platform.');
 
+export class LocalInteractive {
+    static loadPromptMetadata():Promise<RootPromptMetadata> {
+        switch(TARGET_ENV) {
+            case 'WEB':
+                return WebInteractive.loadPromptMetadata();
+            case 'WINDOWS':
+                return IPCInteractive.loadPromptMetadata();
+            default:
+                throw errorNotAvailable();
+        }
+    }
+    static loadPromptTemplate(filename:string, basePath:string=''):Promise<string> {
+        let fullPath:string;
+        if (basePath === '') {
+            fullPath = filename;
+        }
+        else {
+            fullPath = basePath + '/' + filename;
+        }
+        
+        /// @TODO : path traversal attack 체크 코드 추가
+
+        switch(TARGET_ENV) {
+            case 'WEB':
+                return WebInteractive.loadPrompt(fullPath);
+            case 'WINDOWS':
+                return IPCInteractive.loadPrompt(fullPath);
+            default:
+                throw errorNotAvailable();
+        }
+    }
+}
+
 export function loadPromptList():Promise<Promptlist> {
     switch(TARGET_ENV) {
     case 'WEB':
-        return WebInteractive.loadPromptlist();
+        return WebInteractive.loadPromptMetadata() as any;
     case 'WINDOWS':
-        return IPCInteractive.loadPromptlist();
+        return IPCInteractive.loadPromptMetadata() as any;
     default:
         throw errorNotAvailable();
     }

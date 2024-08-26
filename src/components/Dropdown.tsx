@@ -11,7 +11,12 @@ interface DropdownProps {
     titleMapper?: (value: any, items: any) => string
 }
 
-const Dropdown = ({
+/**
+ * Dropdown 컴포넌트
+ * @param itemClas
+ * @returns 
+ */
+function Dropdown({
     className = '',
     itemClassName = '',
     style = {},
@@ -19,7 +24,7 @@ const Dropdown = ({
     items,
     onChange,
     titleMapper = (value, items) => value
-}: DropdownProps) => {
+}: DropdownProps) {
     const dropdownRef: any = useRef(null);
     //const [rect, setRect] = useState({bottom:0,height:0,left:0,right:0,top:0,width:0,x:0,y:0});
     const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +38,6 @@ const Dropdown = ({
     if (dropdownRef.current) {
         rect = dropdownRef.current.getBoundingClientRect();
     }
-
 
     // 전역마우스 클릭을 체크
     // Dropdown의 외부를 클릭했다면 펼쳐진 Dropdown을 다시 접는 역할
@@ -81,22 +85,5 @@ const Dropdown = ({
         </div>
     );
 };
-
-const isEqualObj = (obj1, obj2) => {
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-
-    if (keys1.length !== keys2.length) {
-        return false;
-    }
-
-    for (let key of keys1) {
-        if (obj1[key] !== obj2[key]) {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 export default Dropdown;

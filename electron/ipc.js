@@ -13,4 +13,5 @@ module.exports = {
     LOAD_HISTORY : 'load-history',
     STORE_HISTORY : 'store-history',
     DELETE_HISTORY : 'delete-history',
+    EXECUTE_PLUGIN : 'execute-plugin',
 }

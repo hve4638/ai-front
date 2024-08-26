@@ -1,9 +1,10 @@
+import { RootPromptMetadata } from 'features/prompts';
 import { Promptlist } from './interface';
 
 const electron:any = window.electron;
 
 export class IPCInteractive {
-    static loadPromptlist():Promise<Promptlist> {
+    static loadPromptMetadata():Promise<RootPromptMetadata> {
       return new Promise((resolve, reject)=>{
         electron.loadPromptList()
         .then((data)=>{

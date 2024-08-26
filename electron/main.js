@@ -8,6 +8,7 @@ const utils = require('./utils');
 const prompttemplate = require('./prompt-template');
 const store = require('./store');
 const { HistoryManager } = require('./history');
+const vmplugin = require('./vmplugin');
 
 let plainDataThrottle = utils.throttle(500);
 let secretDataThrottle = utils.throttle(500);
@@ -119,18 +120,20 @@ ipcMain.handle(ipcping.LOAD_SECRET_VALUE, (event, name) => {
 ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
     try {
         const res = await fetch(url, init);
+        const data = await res.json();
 
         if (!res.ok) {
             return {
                 ok: false,
-                reason: "HTTP Error",
+                type: "http",
+                reason: JSON.stringify(data),
                 status: res.status
             }
         }
         else {
-            const data = await res.json();
             return {
                 ok: true,
+                type: "normal",
                 data: data
             }
         }
@@ -138,6 +141,7 @@ ipcMain.handle(ipcping.FETCH, async (event, url, init) => {
     catch (error) {
         return {
             ok: false,
+            type: "other",
             reason: "Unexpected Error",
             error: `${error}`
         }

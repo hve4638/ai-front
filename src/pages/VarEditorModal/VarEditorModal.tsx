@@ -8,6 +8,9 @@ import { MemoryContext } from 'context/MemoryContext'
 import ModalHeader from 'components/ModalHeader'
 import Dropdown from 'components/Dropdown'
 
+import { PROMPT_VAR_TYPE } from 'features/prompts'
+import { NotImplementedError } from 'features/errors'
+
 interface VarEditorModalProps {
     onClose:()=>void
 }
@@ -20,7 +23,6 @@ function VarEditorModal({onClose}:VarEditorModalProps) {
     const {
         currentSession,
         setCurrentSession,
-        promptInfomation,
     } = memoryContext;
 
     const modalRef:any = useRef(null);
@@ -47,13 +49,13 @@ function VarEditorModal({onClose}:VarEditorModalProps) {
         >
             <ModalHeader
                 name='변수'
-                onClose = {()=>onClose()}
+                onClose = { ()=>onClose() }
             />
             <div
                 className='contents scrollbar'
             >
                 {
-                promptInfomation.allVars.map((item, index)=>(
+                memoryContext.promptMetadata.vars.map((item, index)=>(
                     <VarEditor
                         key={index}
                         item={item}
@@ -76,7 +78,8 @@ function VarEditorModal({onClose}:VarEditorModalProps) {
 const VarEditor = ({item, value, onChange}) => {
     const [input, setInput] = useDebouncing(value, (value)=>onChange(value), 100);
 
-    if (item.type === "select") {
+    switch (item.type) {
+    case PROMPT_VAR_TYPE.SELECT:
         return (
             <div className='vareditor row main-spacebetween'>
                 <div className='bold'>{item.display_name}</div>
@@ -87,9 +90,8 @@ const VarEditor = ({item, value, onChange}) => {
                     titleMapper={dropdownValueFinder}
                 />
             </div>
-        )
-    }
-    else if (item.type === "text") {
+        );
+    case PROMPT_VAR_TYPE.TEXT:
         return (
             <div className='vareditor column'>
                 <div className='bold' style={{marginBottom: '8px'}}>{item.display_name}</div>
@@ -100,9 +102,8 @@ const VarEditor = ({item, value, onChange}) => {
                     onChange={(e)=>setInput(e.target.value)}
                 />
             </div>
-        )
-    }
-    else if (item.type === "text-multiline") {
+        );
+    case PROMPT_VAR_TYPE.TEXT_MULTILINE:
         return (
             <div className='vareditor column'>
                 <div className='bold' style={{marginBottom: '8px'}}>{item.display_name}</div>
@@ -116,7 +117,14 @@ const VarEditor = ({item, value, onChange}) => {
                     onChange={(e)=>setInput(e.target.value)}
                 />
             </div>
-        )
+        );
+    case PROMPT_VAR_TYPE.ARRAY:
+    case PROMPT_VAR_TYPE.BOOLEAN:
+    case PROMPT_VAR_TYPE.IMAGE:
+    case PROMPT_VAR_TYPE.TUPLE:
+    case PROMPT_VAR_TYPE.NUMBER:
+    default:
+        throw new NotImplementedError();
     }
 }
 

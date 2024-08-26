@@ -35,7 +35,6 @@ export class UnsupportedOperator extends ExpressionEvaluateFailError {
     }
 }
 
-// 방어적 프로그래밍을 위한 코드
 // 코드 로직이 정상이라면 사용자 입력과 관계없이 발생하지 않음
 // 외부 인자에 의해 발생할 수 있으므로 LogicError와 구분됨
 export class InvalidExpressionError extends ExpressionEvaluateFailError {

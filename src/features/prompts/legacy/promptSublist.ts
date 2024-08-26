@@ -1,5 +1,7 @@
 import { RawPromptSublist } from 'data/interface';
-import { IPromptSubList } from "./interface.ts";
+import type {
+    IPromptSubList,
+} from "../types/index.ts";
 import { PromptInfomation } from './promptInfomation.ts';
 
 export class PromptSublist implements IPromptSubList {

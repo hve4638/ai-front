@@ -1,4 +1,4 @@
-import React, {memo, useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Note } from 'data/interface';
 
@@ -8,13 +8,12 @@ import { MemoryContext } from 'context/MemoryContext';
 import { ChatSession } from 'context/interface';
 
 import { AIModels, MODELS } from 'features/chatAI';
-import { PromptInfomation } from 'features/prompts/promptInfomation';
-import { PromptSublist } from 'features/prompts/promptSublist';
 
 import Dropdown from 'components/Dropdown';
 import { GoogleFontIconButton } from 'components/GoogleFontIcon';
 import { LayerDropdown } from 'components/LayerDropdown';
 import { AnthropicIcon, GoogleIcon, OpenAIIcon, GoogleVertexAIIcon } from 'components/Icons'
+import { PromptMetadata, PromptMetadataSublist } from "features/prompts";
 
 interface HeaderProps {
   onOpenSetting : () => void,
@@ -35,15 +34,10 @@ export default function Header(props:HeaderProps) {
     const [dropdownItem, setDropdownItem] = useState<any>([]);
 
     const {
-      promptList
-    } = promptContext;
-    const {
-      promptSubList,
-      promptIndex,
-      promptInfomation,
       currentSession,
       setCurrentSession
     } = memoryContext;
+    const promptIndex = memoryContext.promptMetadata.indexes;
 
     useEffect(()=>{
         const dropdownItems:any[] = [];
@@ -89,9 +83,9 @@ export default function Header(props:HeaderProps) {
         setDropdownItem(dropdownItems);
     }, []);
 
-    const onChangePromptKey = (target:PromptInfomation|PromptSublist) => {
-      let pl:PromptInfomation;
-      if (target instanceof PromptSublist) {
+    const onChangePromptKey = (target:PromptMetadata|PromptMetadataSublist) => {
+      let pl:PromptMetadata;
+      if (target instanceof PromptMetadataSublist) {
         pl = target.firstPrompt();
       }
       else {
@@ -106,9 +100,9 @@ export default function Header(props:HeaderProps) {
       setCurrentSession(newSession);
     }
 
-    const getNewNote = (promptinfo:PromptInfomation, note:Note) => {
+    const getNewNote = (promptinfo:PromptMetadata, note:Note) => {
       const newNote = {};
-      for (const item of promptinfo.allVars) {
+      for (const item of promptinfo.vars) {
         let value: string;
         if (note != null && item.name in note) {
           value = note[item.name];
@@ -171,20 +165,20 @@ export default function Header(props:HeaderProps) {
                 className='responsive'
                 itemClassName='responsive'
                 value={ promptIndex[0] }
-                items={[...promptList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+                items={[...memoryContext.promptMetadataTree.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
                 onChange={(item)=>onChangePromptKey((item))}
                 titleMapper={dropdownIndexFinder}
               />
             </>
             {
-              promptSubList != null &&
+              memoryContext.promptMetadataSublist != null &&
               <>
                 <div className="dropdown-pad"/>
                 <Dropdown
                   className='responsive'
                   itemClassName='responsive'
                   value={ promptIndex[1] }
-                  items={[...promptSubList.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
+                  items={[...memoryContext.promptMetadataSublist.list.map((item, index)=>{return {name:item.name, value:item, index:index}})]}
                   onChange={(item)=>onChangePromptKey((item))}
                   titleMapper={dropdownIndexFinder}
                 />
@@ -195,12 +189,13 @@ export default function Header(props:HeaderProps) {
           <div className='expanded row'>
             <div className='largewidth-only'>
             {
-                (promptInfomation.headerExposuredVars?.length ?? 0) !== 0 &&
-                promptInfomation.headerExposuredVars.map((item, index) => {
+                (memoryContext.promptMetadata.showInHeaderVars?.length ?? 0) !== 0 &&
+                memoryContext.promptMetadata.showInHeaderVars.map((item, index) => {
                   const value = (item.name in currentSession.note) ? currentSession.note[item.name] : null;
                   return (
                     <Dropdown
                       key={index}
+                      // @ts-ignore
                       items={item.options}
                       value={value}
                       style={{marginRight:"8px"}}
@@ -220,7 +215,7 @@ export default function Header(props:HeaderProps) {
             </div>
             <div className='flex'></div>
             {
-              (promptInfomation?.allVars?.length ?? 0) !== 0 &&
+              memoryContext.promptMetadata.vars.length !== 0 &&
               <>
                 <GoogleFontIconButton
                   value="edit_note"
@@ -276,14 +271,14 @@ const IconButton = ({value, style, onClick}) => {
 
 const dropdownIndexFinder = (value, items) => {
   for (const item of items) {
-    if (value == item.index) {
+    if (value === item.index) {
       return item.name;
     }
   }
 }
 const dropdownkeyFinder = (value, items) => {
   for (const item of items) {
-    if (value == item.key) {
+    if (value === item.key) {
       return item.name;
     }
   }
@@ -291,7 +286,7 @@ const dropdownkeyFinder = (value, items) => {
 
 const dropdownValueFinder = (value, items) => {
   for (const item of items) {
-    if (value == item.value) {
+    if (value === item.value) {
       return item.name;
     }
   }

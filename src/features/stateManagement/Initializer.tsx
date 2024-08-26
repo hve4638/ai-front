@@ -2,9 +2,9 @@ import React, { memo, useContext, useEffect, useState } from 'react';
 
 import { APIRESPONSE_TEMPLATE, NOSESSION_KEY, SESSION_TEMPLATE } from 'data/constants';
 import { StoreContext, MemoryContext, PromptContext } from 'context';
-import { loadPromptList } from 'services/local';
+import { LocalInteractive, loadPromptList } from 'services/local';
 
-import { PromptList } from 'features/prompts';
+import { PromptMetadataTree } from 'features/prompts';
 import { AIModels } from 'features/chatAI';
 
 export function Initializer({ onLoad, historyManager }) {
@@ -40,10 +40,8 @@ export function Initializer({ onLoad, historyManager }) {
     } = promptContext;
     const {
         currentSession,
-        setPromptIndex,
         setCurrentSession,
-        setPromptInfomation,
-        currentChat, setCurrentChat,
+        setCurrentChat,
         setHistoryManager
     } = memoryContext;
 
@@ -64,10 +62,13 @@ export function Initializer({ onLoad, historyManager }) {
     }, [])
     
     useEffect(()=>{
-        loadPromptList()
+        LocalInteractive.loadPromptMetadata()
         .then(data => {
-            const pl = new PromptList(data);
-            promptContext.setPromptList(pl);
+            const tree = new PromptMetadataTree(data);
+            memoryContext.setPromptMetadataTree(tree);
+            
+            // @LEGACY
+            promptContext.setPromptList(tree);
             setPromptsLoaded(true);
         })
         .catch(err => {
@@ -175,17 +176,15 @@ export function Initializer({ onLoad, historyManager }) {
 
     useEffect(()=>{
         if (promptsLoaded && sessionLoaded) {
-            const prompt = promptList.getPrompt(currentSession.promptKey);
+            const prompt = memoryContext.promptMetadataTree.getPrompt(currentSession.promptKey);
+            
             if (prompt) {
-                const index = promptList.getPromptIndex(currentSession.promptKey) ?? [0];
-                setPromptInfomation(prompt);
-                setPromptIndex(index);
+                memoryContext.setPromptMetadata(prompt);
             }
             else {
-                const firstPrompt = promptList.firstPrompt();
-                const index = promptList.getPromptIndex(firstPrompt.key) ?? [0];
-                setPromptInfomation(firstPrompt);
-                setPromptIndex(index);
+                const firstPrompt = memoryContext.promptMetadataTree.firstPrompt();
+
+                memoryContext.setPromptMetadata(firstPrompt);
             }
             setPromptLoaded(true);
         }

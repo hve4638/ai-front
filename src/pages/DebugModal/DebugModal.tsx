@@ -49,6 +49,13 @@ function DebugModal(props:DebugModalProps) {
                     console.log(value);
                 }}
             >Load template prompt</button>
+            <button
+                style={{margin: '8px 0px'}}
+                onClick={async ()=>{
+                    const value = await window.electron.loadPrompt('template');
+                    console.log(value);
+                }}
+            >Plugin Test</button>
         </div>
     )
 }

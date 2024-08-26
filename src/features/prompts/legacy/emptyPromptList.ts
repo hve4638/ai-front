@@ -1,4 +1,4 @@
-import { IPromptList, IPromptInfomation } from './interface'
+import { IPromptList, IPromptInfomation } from '../types'
 
 export class EmptyPromptList implements IPromptList {
     getPromptIndex(prompt1Key: string, prompt2Key?: string): number[] | null {

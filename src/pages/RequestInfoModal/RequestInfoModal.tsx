@@ -1,6 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'
-
-import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat'
+import React, {memo, useContext, useEffect, useState} from 'react'
 
 import { StoreContext } from 'context/StoreContext'
 import { MemoryContext } from 'context/MemoryContext'
@@ -8,8 +6,6 @@ import { MemoryContext } from 'context/MemoryContext'
 import ModalHeader from 'components/ModalHeader'
 import { GoogleFontIconButton } from 'components/GoogleFontIcon'
 import { AIModels } from 'features/chatAI'
-
-
 
 export default function RequestInfoModal({
     onClose
@@ -23,9 +19,12 @@ export default function RequestInfoModal({
     const [promptPreviewContents, setPromptPreviewContents] = useState<React.JSX.Element[]>([]);
     
     const {
-        promptText,
         currentSession
     } = memoryContext;
+    const promptText = memoryContext.promptMetadata.promptTemplate ?? '';
+
+    console.log('promptText')
+    console.log(promptText)
 
     useEffect(()=>{
         const results = parsePromptContent({promptContents:promptText, note:currentSession.note});
@@ -55,7 +54,7 @@ export default function RequestInfoModal({
         window.addEventListener('keydown', handleKeyDown);
     
         return () => {
-          window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keydown', handleKeyDown);
         };
     }, [onClose]);
     

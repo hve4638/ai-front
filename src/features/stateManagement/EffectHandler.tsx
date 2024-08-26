@@ -1,15 +1,15 @@
 import { useContext, useEffect, useState } from 'react'
 import { NOSESSION_KEY } from 'data/constants'
 import { FetchStatus } from 'data/interface'
-import { loadPrompt } from 'services/local'
+import { loadPrompt, LocalInteractive } from 'services/local'
 import { StoreContext } from 'context/StoreContext'
 import { PromptContext } from 'context/PromptContext'
 import { MemoryContext } from 'context/MemoryContext'
 import { EventContext } from 'context/EventContext'
 import { SecretContext } from 'context/SecretContext'
 import { ChatSession } from 'context/interface'
-import { PromptSublist } from 'features/prompts/promptSublist'
 import { AIModelFetchManager } from './aiModelFetchManager'
+import { PromptMetadataSublist } from 'features/prompts/promptMetadataSublist'
 
 const ANY:any = {};
 
@@ -40,11 +40,7 @@ export function EffectHandler() {
     } = promptContext;
     const {
         currentSession,
-        promptInfomation,
-        setPromptIndex,
-        setPromptInfomation,
         setPromptText,
-        setPromptSubList,
         setApiSubmitPing,
         apiFetchQueue, setApiFetchQueue,
         apiFetchResponse, setApiFetchResponse,
@@ -160,25 +156,18 @@ export function EffectHandler() {
     // 선택된 prompt가 속한 sublist 찾기
     useEffect(()=>{
         if (currentSession.promptKey !== previousSession.promptKey) {
-            const pl = promptList.getPrompt(currentSession.promptKey);
-            const index = promptList.getPromptIndex(currentSession.promptKey);
+            const metadata = memoryContext.promptMetadataTree.getPrompt(currentSession.promptKey);
 
-            if (pl && index) {
-                setPromptInfomation(pl);
-                setPromptIndex(index);
-                if (index.length > 1) {
-                    const sublist = promptList.list[index[0]];
-                    if (sublist instanceof PromptSublist) {
-                        setPromptSubList(sublist);
-                    }
-                    else {
-                        // 논리상 올 수 없음
-                        console.error("Logic error")
-                        setPromptSubList(null);
-                    }
+            if (metadata) {
+                const indexes = metadata.indexes;
+
+                memoryContext.setPromptMetadata(metadata);
+                const sublist = memoryContext.promptMetadataTree.list[indexes[0]];
+                if (sublist instanceof PromptMetadataSublist) {
+                    memoryContext.setPromptMetadataSublist(sublist);
                 }
                 else {
-                    setPromptSubList(null);
+                    memoryContext.setPromptMetadataSublist(null);
                 }
             }
         }
@@ -192,16 +181,10 @@ export function EffectHandler() {
 
     // 프롬프트 컨텐츠 로드
     useEffect(()=>{
-        if (promptInfomation) {
-            loadPrompt(promptInfomation.value)
-            .then((data)=>{
-                setPromptText(data);
-            })
-            .catch((error)=>{
-                console.error(error);
-            })
+        if (memoryContext.promptMetadata) {
+            memoryContext.promptMetadata.loadPromptTemplate();
         }
-    }, [promptInfomation])
+    }, [ memoryContext.promptMetadata ])
 
     // 휘발 세션이 아닌 현재 세션 정보를 sessions에 갱신
     useEffect(()=>{

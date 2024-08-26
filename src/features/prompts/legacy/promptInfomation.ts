@@ -1,13 +1,13 @@
 import { Vars } from 'context/interface/promptInterface';
-import { RawPrompt } from '../../data/interface';
-import { IPromptInfomation } from './interface';
+import { RawPrompt } from 'data/interface';
+import { IPromptInfomation } from '../types';
 
 export class PromptInfomation implements IPromptInfomation {
     #raw:RawPrompt;
     #selects:Vars;
     #headerExposureVars;
     #allVars;
-
+    
     constructor(data:RawPrompt, {selects}) {
         this.#raw = data;
         this.#selects = selects;

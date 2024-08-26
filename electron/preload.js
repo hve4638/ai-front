@@ -16,4 +16,5 @@ contextBridge.exposeInMainWorld('electron', {
   loadHistory : (sessionid, offset, limit) => ipcRenderer.invoke(ipcping.LOAD_HISTORY, sessionid, offset, limit),
   storeHistory : (sessionid, history) => ipcRenderer.invoke(ipcping.STORE_HISTORY, sessionid, history),
   deleteHistory : (sessionid) => ipcRenderer.invoke(ipcping.DELETE_HISTORY, sessionid),
+  executePlugin : (pluginPath) => ipcRenderer.invoke(ipcping.DELETE_HISTORY, sessionid),
 });

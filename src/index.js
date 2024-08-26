@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 import App from './App';
-import analytics from './analytics.ts';
+//import analytics from './analytics.ts';
 import reportWebVitals from './reportWebVitals';
 
 import { CookiesProvider } from 'react-cookie';
@@ -19,7 +19,7 @@ import { HistoryManager } from './features/historyManager';
 
 const historyManager = new HistoryManager();
 
-if (TARGET_ENV == "WEB" || TARGET_ENV == "WINDOWS") {
+if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
     <CookiesProvider>

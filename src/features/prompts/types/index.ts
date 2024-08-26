@@ -1,3 +1,15 @@
+export type {
+    RootPromptMetadata,
+    RawPromptMetadata,
+    RawPromptMetadataSublist,
+} from './promptFormat';
+
+export type {
+    VarMetadata,
+    SelectRef,
+    SelectItem,
+} from './promptMetadataElements';
+
 export interface IPromptList {
     getPrompt(prompt1Key:string, prompt2Key?:string):IPromptInfomation|null;
     getPromptIndex(prompt1Key:string, prompt2Key?:string):number[]|null;
@@ -20,3 +32,6 @@ export interface IPromptInfomation {
     get headerExposuredVars();
 }
 
+export type {
+    IPromptMetadataFormatParser
+} from './interfaces'

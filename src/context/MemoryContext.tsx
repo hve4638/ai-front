@@ -2,23 +2,28 @@ import React, { useState, createContext } from "react";
 
 import { APIResponse } from 'data/interface'
 
-import { IPromptInfomation, IPromptSubList } from "features/prompts/interface";
 import { HistoryManager } from "features/historyManager";
 import { ChatSession, useStateCallback } from "./interface";
+import {
+    PromptMetadataTree,
+    PromptMetadata,
+    PromptMetadataSublist
+} from "features/prompts";
 
 interface MemoryContextType {
+    promptMetadataTree:PromptMetadataTree;
+    setPromptMetadataTree:(x:PromptMetadataTree)=>void;
+    promptMetadata:PromptMetadata;
+    setPromptMetadata:(x:PromptMetadata)=>void;
+    promptMetadataSublist:PromptMetadataSublist|null;
+    setPromptMetadataSublist:(x:PromptMetadataSublist|null)=>void;
+    
     nextSessionID:number;
     setNextSessionID:(x:number)=>void;
-    promptIndex:number[];
-    setPromptIndex:(x:number[])=>void;
-    promptInfomation:IPromptInfomation;
-    setPromptInfomation:(x:IPromptInfomation)=>void;
     promptText:string;
     setPromptText:(x:string)=>void;
     currentSession:ChatSession;
     setCurrentSession:(x:ChatSession)=>void;
-    promptSubList : IPromptSubList|null;
-    setPromptSubList : (x:IPromptSubList|null)=>void;
     currentHistory:APIResponse[];
     setCurrentHistory:useStateCallback<APIResponse[]>;
     currentChat:APIResponse;
@@ -63,11 +68,16 @@ interface SessionFetchStatus {
 export const MemoryContext = createContext<MemoryContextType|null>(null);
 
 export default function MemoryContextProvider({children}) {
-    const [promptInfomation, setPromptInfomation] = useState<IPromptInfomation>(ANY);
-    const [promptIndex, setPromptIndex] = useState([0, 0]);
+    const [promptMetadataTree, setPromptMetadataTree] = useState<PromptMetadataTree>(ANY);
+    const [promptMetadata, setPromptMetadata] = useState<PromptMetadata>(ANY);
+    const [promptMetadataSublist, setPromptMetadataSublist] = useState<PromptMetadataSublist|null>(ANY);
+    
+    // const [promptInfomation, setPromptInfomation] = useState<IPromptInfomation>(ANY);
+    // const [promptSubList, setPromptSubList] = useState<IPromptSubList|null>(null);
+    // const [promptIndex, setPromptIndex] = useState([0, 0]);
     const [promptText, setPromptText] = useState('');
+
     const [currentSession, setCurrentSession] = useState<ChatSession>(ANY);
-    const [promptSubList, setPromptSubList] = useState<IPromptSubList|null>(null);
     const [nextSessionID, setNextSessionID] = useState<number>(0);
 
     const [apiFetchQueue, setApiFetchQueue] = useState<any>([]);
@@ -86,11 +96,16 @@ export default function MemoryContextProvider({children}) {
     return (
         <MemoryContext.Provider
             value={{
-                promptIndex, setPromptIndex,
-                promptInfomation, setPromptInfomation,
+                promptMetadataTree, setPromptMetadataTree,
+                promptMetadata, setPromptMetadata,
+                promptMetadataSublist, setPromptMetadataSublist,
+
+                // promptIndex, setPromptIndex,
+                // promptInfomation, setPromptInfomation,
+                // promptSubList, setPromptSubList,
+
                 promptText, setPromptText,
                 currentSession, setCurrentSession,
-                promptSubList, setPromptSubList,
                 nextSessionID, setNextSessionID,
                 currentHistory, setCurrentHistory,
                 currentChat, setCurrentChat,

@@ -11,6 +11,9 @@ export function handleAndGetError(callback) {
         throw new ExpectedButNotThrownError();
     }
     catch(e:any) {
+        if (e instanceof ExpectedButNotThrownError) {
+            throw e;
+        }
         return e;
     }
 }

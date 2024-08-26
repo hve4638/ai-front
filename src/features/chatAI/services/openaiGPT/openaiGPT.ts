@@ -7,22 +7,14 @@ import { proxyFetch } from "services/local";
 
 import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant"
 
-export class OpenAIGPT implements AIModel {
+import { BaseAIModel } from "../baseAIModel";
+
+export class OpenAIGPT extends BaseAIModel {
     async preprocess() {
 
     }
     async postprocess() {
         
-    }
-    async request(requestdata:AIModelRequestData) {
-        const data = requestdata.data;
-        const res =  await proxyFetch(requestdata.url, data);
-        if (res.ok) {
-            return res.data;
-        }
-        else {
-            throw new Error(`${res.reaseon} (${res.status})`)
-        }
     }
     async makeRequestData(request: AIModelRequest, config: AIModelConfig, options: any):Promise<AIModelRequestData> {
         const promptParser = new CurlyBraceFormatParser(request.prompt);

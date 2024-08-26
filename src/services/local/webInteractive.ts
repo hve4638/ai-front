@@ -2,10 +2,10 @@ import { HOMEPAGE } from 'data/constants.tsx'
 import { COOKIE_OPTION_NOEXPIRE } from 'data/constants.tsx'
 import { getCookie, setCookie } from 'libs/cookies.tsx'
 import { getCookies, removeCookie } from 'libs/cookies.tsx'
-import { Promptlist } from './interface'
+import { RootPromptMetadata } from 'features/prompts'
 
 export class WebInteractive {
-    static loadPromptlist():Promise<Promptlist> {
+    static loadPromptMetadata():Promise<RootPromptMetadata> {
       return fetch(`${HOMEPAGE}/prompts/list.json`, {
           method: 'GET',
           headers: {
