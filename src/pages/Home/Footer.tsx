@@ -5,7 +5,13 @@ import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from 'data/constants'
 import { isNewVersionAvailable, openBrowser, openPromptFolder } from 'services/local';
 import { SessionSlot, SessionSlotAdder } from 'features/chatSession';
 
-import { StoreContext, PromptContext, DebugContext, MemoryContext, EventContext } from 'context';
+import {
+    useContextForce,
+    StoreContext,
+    DebugContext,
+    MemoryContext,
+    EventContext
+} from 'context';
 
 import { GoogleFontIconButton } from 'components/GoogleFontIcon.tsx';
 import { HoverTooltip } from 'components/HoverTooltip.tsx';
@@ -16,24 +22,18 @@ interface FooterProps {
 
 export default function Footer({ onOpenDebug }:FooterProps) {
     const [existsNewVersion, setExistsNewVersion] = useState(false);
-    const promptContext = useContext(PromptContext);
-    const storeContext = useContext(StoreContext);
-    const memoryContext = useContext(MemoryContext);
-    const debugContext = useContext(DebugContext);
-    const eventContext = useContext(EventContext);
-    if (!promptContext) throw new Error('Footer must be used in StoreContextProvider');
-    if (!storeContext) throw new Error('Footer must be used in StoreContextProvider');
-    if (!debugContext) throw new Error('Footer must be used in DebugContextProvider');
-    if (!memoryContext) throw new Error('Footer must be used in MemoryContextProvider');
-    if (!eventContext) throw new Error('Footer must be used in EventContextProvider');
+    const storeContext = useContextForce(StoreContext);
+    const memoryContext = useContextForce(MemoryContext);
+    const debugContext = useContextForce(DebugContext);
+    const eventContext = useContextForce(EventContext);
+    
     const {
-        sessions, setSessions,
+        sessions,
         markdownMode, setMarkdownMode,
         lineByLineMode, setLineByLineMode
     } = storeContext;
     const {
         currentSession,
-        setCurrentSession,
     } = memoryContext;
     const {
         createSession,
@@ -43,14 +43,14 @@ export default function Footer({ onOpenDebug }:FooterProps) {
     
     const onSessionChange = (session) => {
         if (currentSession.id === session.id) {
-            setCurrentSession(session);
+            memoryContext.setCurrentSession(session);
         }
         else {
             for (const i in sessions) {
                 if (sessions[i].id === session.id) {
                     const newSessions = [...sessions];
                     newSessions[i] = session;
-                    setSessions(newSessions);
+                    storeContext.setSessions(newSessions);
                     break;
                 }
             }

@@ -1,1 +1,1 @@
-export { default as VarEditorModal } from './VarEditorModal';
+export { VarEditorModal } from './VarEditorModal';

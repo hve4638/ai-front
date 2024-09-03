@@ -1,6 +1,10 @@
 module.exports = {
     ECHO : 'echo',
+    /**
+     * @deprecated
+     */
     LOAD_PROMPTLIST : 'load-promptlist',
+    LOAD_PROMPTMETADATA : 'load-promptmetadata',
     LOAD_PROMPT : 'load-prompt',
     OPEN_PROMPT_FOLDER : 'open-prompt-folder',
     STORE_VALUE : 'store-value',

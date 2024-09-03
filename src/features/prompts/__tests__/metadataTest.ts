@@ -1,16 +1,16 @@
-import { PromptMetadataTreeError } from '../errors';
+import { PromptMetadataParseError } from '../errors';
 import { PromptMetadata } from '../';
 
 import { handleAndGetError } from 'features/testUtils';
 
 const args = {
     basePath : '',
-    selectRef : {},
+    selects : {},
 }
 
 describe('PromptMetadata', () => {
     test('Valid Metadata', () => {
-        const metadata = new PromptMetadata({
+        const metadata = PromptMetadata.parse({
             name : 'name',
             key : 'key',
             path : 'path',
@@ -18,7 +18,7 @@ describe('PromptMetadata', () => {
     });
 
     test('Valid Metadata', () => {
-        const metadata = new PromptMetadata({
+        const metadata = PromptMetadata.parse({
             name : 'name',
             key : 'key',
             path : 'path',
@@ -36,7 +36,7 @@ describe('PromptMetadata variable', () => {
     const varNum = function(name, show_in_header=false):any { return { name : name, type : 'number', show_in_header } }
     const varNumDetail = function(name, show_in_header=false):any { return { name : name, type : 'number', display_name: name, default_value: 0, show_in_header } }
     test('Variable', () => {
-        const metadata = new PromptMetadata({
+        const metadata = PromptMetadata.parse({
             name : 'name',
             key : 'key',
             path : 'path',
@@ -55,7 +55,7 @@ describe('PromptMetadata variable', () => {
     });
     
     test('show in header variable', () => {
-        const metadata = new PromptMetadata({
+        const metadata = PromptMetadata.parse({
             name : 'name',
             key : 'key',
             path : 'path',

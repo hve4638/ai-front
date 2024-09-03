@@ -1,21 +1,21 @@
 import { LocalInteractive } from 'services/local';
 import { PROMPT_VAR_TYPE } from './data';
-import { PromptMetadataError, PromptTemplateLoadError, StructVerifyFailedError } from './errors';
+import { PromptMetadataInternalError, PromptTemplateLoadError, StructVerifyFailedError } from './errors';
 import type {
+    IPromptMetadata,
     RawPromptMetadata,
-    SelectRef,
+    Selects,
     VarMetadata
 } from './types'
+import { CopiedPromptMetadata } from './copiedPromptMetadata';
+import { VarMetadataParser } from './varMetadataParser';
 
 type PromptMetadataArgs = {
     basePath:string;
-    selectRef:SelectRef;
-    //bantype:typeof PROMPT_VAR_TYPE[keyof typeof PROMPT_VAR_TYPE][];
-    //bantypeReason:string;
+    selects:Selects;
 }
-
-export class PromptMetadata {
-    #raw:RawPromptMetadata;
+export class PromptMetadata implements IPromptMetadata {
+    #raw:RawPromptMetadata = {} as any;
     #promptTemplate?:string = undefined;
     #name:string = '';
     #display_name:string = '';
@@ -25,49 +25,52 @@ export class PromptMetadata {
     #varMetadata:VarMetadata[] = [];
     #showInHeaderVarMetadata:VarMetadata[] = [];
     #vars:{[key:string]:any} = {};
-    #parentScopeSelectRef:SelectRef;
-    #externalIndex:[number, number] = [-1, -1];
+    #externalIndex:[number, number|null] = [-1, null];
 
-    constructor(
-        raw: RawPromptMetadata,
-        { basePath, selectRef }: PromptMetadataArgs,
-    ) {
+    static parse(raw: RawPromptMetadata, { basePath, selects }: PromptMetadataArgs):PromptMetadata {
+        const metadata = new PromptMetadata();
+        metadata.#parse(raw, { basePath, selects });
+        return metadata;
+    }
+
+    #parse(raw: RawPromptMetadata, { basePath, selects }: PromptMetadataArgs) {
         this.#verify(raw);
         
         this.#raw = raw;
         this.#basePath = basePath;
-        this.#parentScopeSelectRef = selectRef;
 
         this.#name = raw.name;
         this.#display_name = raw.display_name ?? raw.name;
         this.#key = raw.key;
-        this.#path = raw.path ?? raw.value ?? '';
-        if (this.#path === '') {
-            throw new PromptMetadataError('PromptMetadata: path is required', raw);
-        }
+        this.#path = raw.path;
 
         if (raw.vars != null) {
+            const localSelectRef = raw.selects;
+            const currentScopeSelects = {
+                ...selects,
+                ...localSelectRef
+            }
+            const varMetadataParser = new VarMetadataParser(currentScopeSelects);
             for (const data of raw.vars) {
                 let varMetadata:VarMetadata;
-
-                if (typeof data === 'string') { // 과거 프롬프트 포맷 호환성
-                    varMetadata = {
+                if (typeof data === 'string') {
+                    varMetadata = varMetadataParser.parse({
                         type: 'select',
                         name: data,
                         display_name: data,
-                        default_value: '',
-                        selectref: data,
-                    };
+                        show_in_header: true,
+                        select_ref: data,
+                    });
                 }
                 else {
-                    varMetadata = data;
+                    varMetadata = varMetadataParser.parse(data);
                 }
-                varMetadata = this.#processVarMetadata(varMetadata);
+                
                 if (varMetadata.show_in_header) {
                     this.#showInHeaderVarMetadata.push(varMetadata);
                 }
-                this.#varMetadata.push(varMetadata);
                 
+                this.#varMetadata.push(varMetadata);
                 this.#vars[varMetadata.name] = varMetadata.default_value;
             }
         }
@@ -78,80 +81,29 @@ export class PromptMetadata {
             return new StructVerifyFailedError(`missing field : ${field}`, data);
         }
 
-        if (!('key' in data)) throw missing('key');
-        if (!('name' in data)) throw missing('name');
-        if (!('path' in data || 'value' in data)) throw missing('path');
-    }
-
-    #processVarMetadata(varMetadata:VarMetadata) {
-        const result:VarMetadata = { ...varMetadata };
-
-        if (varMetadata.type === PROMPT_VAR_TYPE.SELECT && varMetadata.selectref && !varMetadata.options) {
-            if (varMetadata.options != null) {
-                throw new PromptMetadataError(
-                    "'selectref' and 'options' cannot both be specified",
-                    this.#raw
-                );
-            }
-
-            // @ts-ignore
-            result.options = this.#derefSelectRef(varMetadata.selectref);
-        }
-        result.show_in_header ??= false;
-        result.display_name = varMetadata.display_name ?? varMetadata.name;
-        result.default_value = varMetadata.default_value ?? this.#getDefaultValue(varMetadata);
-
-        return result;
+        if (!data.key) throw missing('key');
+        if (!data.name) throw missing('name');
+        if (!data.path) throw missing('path');
     }
     
-    #derefSelectRef(refname:string) {
-        if (this.#raw.selectref != null) {
-            for (const key in this.#raw.selectref) {
-                if (key === refname) {
-                    return this.#raw.selectref[refname];
-                }
-            }
-        }
-        else {
-            for (const key in this.#parentScopeSelectRef) {
-                if (key === refname) {
-                    return this.#parentScopeSelectRef[refname];
-                }
-            }
-        }
-        
-        throw new PromptMetadataError(`Invalid selectref: ${refname}`, this.#raw);
-    }
-
-    #getDefaultValue(varMetadta:VarMetadata):any {
-        switch (varMetadta.type) {
-            case PROMPT_VAR_TYPE.SELECT:
-                return varMetadta.options?.[0]?.value ?? '';
-            case PROMPT_VAR_TYPE.TEXT:
-            case PROMPT_VAR_TYPE.TEXT_MULTILINE:
-                return '';
-            case PROMPT_VAR_TYPE.ARRAY:
-                return [];
-            case PROMPT_VAR_TYPE.IMAGE:
-                return null;
-            case PROMPT_VAR_TYPE.BOOLEAN:
-                return false;
-            case PROMPT_VAR_TYPE.NUMBER:
-                return 0;
-            case PROMPT_VAR_TYPE.TUPLE:
-                return [];
-        }
-    }
-
-    async loadPromptTemplate() {
+    async loadPromptTemplate({onFail}) {
         if (this.#promptTemplate != null) return;
 
         try {
             const template = await LocalInteractive.loadPromptTemplate(this.#path, this.#basePath);
-            this.#promptTemplate = template;
+            if (template.startsWith("@FAIL")) {
+                onFail(
+                    new PromptTemplateLoadError(
+                        `Fail to load prompt template : ${this.#path}\n\n${template}`
+                    )
+                );
+            }
+            else {
+                this.#promptTemplate = template;
+            }
         }
         catch (e:any) {
-            throw new PromptTemplateLoadError(e.message ?? '');
+            onFail(e);
         }
     }
 
@@ -176,24 +128,47 @@ export class PromptMetadata {
     get raw() {
         return this.#raw;
     }
-    setVar(varname:string, value:any) {
+    setVarValue(varname:string, value:any) {
         this.#vars[varname] = value;
     }
-    getVar(varname:string) {
+    getVarValue(varname:string) {
         return this.#vars[varname];
+    }
+    setVarValues(vars:{[key:string]:any}) {
+        for (const key in vars) {
+            this.#vars[key] = vars[key];
+        }
+    }
+    getVarValues() {
+        return { ...this.#vars };
     }
     /**
      * @param index1 - 상위 리스트에 정의된 인덱스 1
      * @param index2 - 상위 리스트에 정의된 인덱스 2
      */
-    setIndexes(index1:number, index2:number) {
+    setIndexes(index1:number, index2:number|null) {
         this.#externalIndex = [index1, index2];
     }
     get indexes() {
-        return [...this.#externalIndex];
+        return [...this.#externalIndex] as [number, number|null];
     }
     get promptTemplate() {
+        if (this.#promptTemplate == null) {
+            throw new PromptTemplateLoadError('Prompt template is not loaded');
+        }
         return this.#promptTemplate;
+    }
+    getAllVarValue(): { [key: string]: any; } {
+        return { ...this.#vars };
+    }
+    
+    commitCurrentVarValue():void {
+        // CopiedPromptMetadata 에서 호출시 var 값을 원본에 복사
+        // 원본이 호출시 아무것도 하지않음
+    }
+
+    copy() {
+        return new CopiedPromptMetadata(this);
     }
 }
 

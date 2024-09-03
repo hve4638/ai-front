@@ -34,11 +34,13 @@
 }
 
 .theme-dark {
+    /**/
     background-color: rgb(23, 23, 23);
-    --background-color: rgb(23, 23, 23);
     --border-color: rgb(118, 118, 118);
     
-    --text-color: white;
+    --text-color: white; /* 범용 텍스트 색상 */
+    --subtext-color: rgb(180, 180, 172);
+    
     --title-color: rgb(180, 180, 172);
 
     --field-color: rgb(47, 47, 47);
@@ -65,6 +67,10 @@
     --tooltip-background-color : rgb(47, 47, 47);
     --tooltip-border-color : rgb(68, 68, 68);
 
+    
+    --background-color: rgb(23, 23, 23); /* */
+
+    /* 그라데이션 세션 배경 색상 */
     --background-red : rgba(255, 0, 0, 0.1);
     --background-orange : rgba(255, 77, 0, 0.1);
     --background-yellow : rgba(255, 255, 0, 0.1);

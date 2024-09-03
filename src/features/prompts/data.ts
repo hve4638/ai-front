@@ -2,7 +2,7 @@ export const PROMPT_VAR_TYPE = {
     TEXT: 'text',
     TEXT_MULTILINE: 'text-multiline',
     SELECT: 'select',
-    TUPLE : 'tuple',
+    STRUCT : 'struct',
     BOOLEAN : 'boolean',
     ARRAY : 'array',
     IMAGE : 'image',

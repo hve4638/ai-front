@@ -4,6 +4,7 @@ interface GoogleFontIconProps {
     className?:string;
     value:string;
     selected?:boolean;
+    style?:React.CSSProperties;
     onClick?:()=>void;
 }
 
@@ -24,12 +25,14 @@ export function GoogleFontIcon({
 }
 
 export function GoogleFontIconButton({
-    className='', value, selected=false, onClick = ()=>{}
+    className='', value, selected=false, onClick = ()=>{},
+    style = {}
 }:GoogleFontIconProps) {
     return (
         <label
             className={`font-button-container undraggable center ${className}`}
             onClick={(e)=>onClick()}
+            style={style}
         >
             <span className={`material-symbols-outlined font-button${selected ? ' selected' : ''}`}>
                 {value}

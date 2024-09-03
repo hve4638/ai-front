@@ -1,55 +1,15 @@
-import { RootPromptMetadata } from 'features/prompts/types';
+import { RawPromptMetadataTree } from 'features/prompts/types';
 import { TARGET_ENV, VERSION } from '../../data/constants'
 import { Promptlist } from './interface';
 import { IPCInteractive } from './ipcInteractive';
 import { WebInteractive } from './webInteractive';
+export { LocalInteractive } from './localInteractive';
 
 const errorNotAvailable = () => new Error('This feature is not available on this platform.');
 
-export class LocalInteractive {
-    static loadPromptMetadata():Promise<RootPromptMetadata> {
-        switch(TARGET_ENV) {
-            case 'WEB':
-                return WebInteractive.loadPromptMetadata();
-            case 'WINDOWS':
-                return IPCInteractive.loadPromptMetadata();
-            default:
-                throw errorNotAvailable();
-        }
-    }
-    static loadPromptTemplate(filename:string, basePath:string=''):Promise<string> {
-        let fullPath:string;
-        if (basePath === '') {
-            fullPath = filename;
-        }
-        else {
-            fullPath = basePath + '/' + filename;
-        }
-        
-        /// @TODO : path traversal attack 체크 코드 추가
-
-        switch(TARGET_ENV) {
-            case 'WEB':
-                return WebInteractive.loadPrompt(fullPath);
-            case 'WINDOWS':
-                return IPCInteractive.loadPrompt(fullPath);
-            default:
-                throw errorNotAvailable();
-        }
-    }
-}
-
-export function loadPromptList():Promise<Promptlist> {
-    switch(TARGET_ENV) {
-    case 'WEB':
-        return WebInteractive.loadPromptMetadata() as any;
-    case 'WINDOWS':
-        return IPCInteractive.loadPromptMetadata() as any;
-    default:
-        throw errorNotAvailable();
-    }
-}
-
+/**
+ * @deprecated
+ */
 export function loadPrompt(filename:string):Promise<string> {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -61,6 +21,9 @@ export function loadPrompt(filename:string):Promise<string> {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function openPromptFolder() {
     switch(TARGET_ENV) {
     case 'WINDOWS':
@@ -70,6 +33,9 @@ export function openPromptFolder() {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function storeValue(name:string, value:any) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -81,6 +47,9 @@ export function storeValue(name:string, value:any) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function loadValue(name:string) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -92,6 +61,9 @@ export function loadValue(name:string) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function storeSecretValue(name:string, value:any) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -103,6 +75,9 @@ export function storeSecretValue(name:string, value:any) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function loadSecretValue(name:string) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -114,6 +89,9 @@ export function loadSecretValue(name:string) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function proxyFetch(url:string, init:RequestInit) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -125,6 +103,9 @@ export function proxyFetch(url:string, init:RequestInit) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function openBrowser(url:string) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -136,6 +117,9 @@ export function openBrowser(url:string) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function isNewVersionAvailable() {
     const isLastGreater = (currenVersion, newVersion) => {
         const compare = (current:number, last:number) => {
@@ -179,6 +163,9 @@ export async function isNewVersionAvailable() {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function fetchLastVersion() {
     try {
         const url = 'https://api.github.com/repos/hve4638/ai-front/releases/latest';
@@ -194,6 +181,9 @@ export async function fetchLastVersion() {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function resetAllValues() {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -205,6 +195,9 @@ export async function resetAllValues() {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function storeHistory(key:any, data:any) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -217,6 +210,9 @@ export async function storeHistory(key:any, data:any) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function loadHistory(key:any, offset:number=0, limit:number=1000) {
     switch(TARGET_ENV) {
     case 'WEB':
@@ -228,6 +224,9 @@ export async function loadHistory(key:any, offset:number=0, limit:number=1000) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export async function deleteHistory(key:any) {
     switch(TARGET_ENV) {
     case 'WEB':

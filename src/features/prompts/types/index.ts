@@ -1,37 +1,40 @@
 export type {
-    RootPromptMetadata,
+    LegacyPromptMetadataTree,
+    LegacyPromptMetadataElement,
+    LegacyPromptMetadata,
+    LegacyPromptMetadataList,
+    LegacyImportPromptMetadata,
+    LegacyVarMetadata,
+    LegacyArrayElementMetadata,
+} from "./legacyMetadataTypes";
+
+export type {
+    RawPromptMetadataTree,
+    RawPromptMetadataElement,
     RawPromptMetadata,
-    RawPromptMetadataSublist,
-} from './promptFormat';
+    RawPromptMetadataList,
+    RawImportPromptMetadata,
+    RawVarMetadata,
+    RawArrayElementMetadata,
+} from "./rawMetadataTypes";
 
 export type {
+    BaseVarMetadata,
+    SelectVarMetadata,
+    LiteralVarMetadata,
+    ArrayVarMetadata,
+    StructVarMetadata,
+    ImageVarMetadata,
+    
     VarMetadata,
-    SelectRef,
+    NestableVarMetadata,
+
+    ArrayElementMetadata,
+    Selects as Selects,
     SelectItem,
-} from './promptMetadataElements';
+} from "./varMetadataType";
 
-export interface IPromptList {
-    getPrompt(prompt1Key:string, prompt2Key?:string):IPromptInfomation|null;
-    getPromptIndex(prompt1Key:string, prompt2Key?:string):number[]|null;
-    get list():(IPromptInfomation|IPromptSubList)[];
-    firstPrompt():IPromptInfomation;
-}
-
-export interface IPromptSubList {
-    get name():string;
-    get list():IPromptInfomation[];
-    get key():string;
-    firstPrompt():IPromptInfomation;
-}
-
-export interface IPromptInfomation {
-    get name():string;
-    get value():string;
-    get key():string;
-    get allVars();
-    get headerExposuredVars();
-}
 
 export type {
-    IPromptMetadataFormatParser
-} from './interfaces'
+    IPromptMetadata,
+} from "./interfaces";

@@ -16,9 +16,12 @@ export interface SecretContextType {
     maxtoken:string
     setMaxtoken:(x:string)=>boolean
     modelInfo:ModelInfo,
-    setModelInfo:(x:ModelInfo)=>void,
+    setModelInfo:(x:ModelInfo)=>void,  
 }
 
+/**
+ * 쿠키 또는 파일시스템에 암호화되어 저장되는 상태값 컨텍스트
+ */
 export const SecretContext = createContext<SecretContextType|null>(null);
 
 export default function SecretContextProvider({children}) {

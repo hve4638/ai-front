@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { createContext } from 'react';
 
-import { IPromptMetadataFormatParser } from "features/prompts";
-
 interface PromptContextType {
-    promptList : IPromptMetadataFormatParser,
-    setPromptList: (x:IPromptMetadataFormatParser)=>void
+    promptList : any,
+    setPromptList: (x:any)=>void
 }
 
+/**
+ * 사용하지 않음
+ */
 export const PromptContext = createContext<PromptContextType|null>(null);
 
 export default function PromptContextProvider({children}) {
-    const [promptList, setPromptList] = useState<IPromptMetadataFormatParser>({} as any);
+    const [promptList, setPromptList] = useState<any>({} as any);
 
     return (
         <PromptContext.Provider

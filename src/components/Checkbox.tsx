@@ -8,6 +8,9 @@ interface CheckboxProps {
     onChange?:(checked:boolean)=>void;
 }
 
+/**
+ * 명시적으로 크기 지정 필요
+ */
 export function Checkbox({
     className='',
     style={},

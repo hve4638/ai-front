@@ -5,8 +5,18 @@ export { PromptMetadata } from './promptMetadata'
 export { PROMPT_VAR_TYPE } from './data';
 
 export type {
-    RootPromptMetadata,
+    RawPromptMetadataTree,
     RawPromptMetadata,
-    RawPromptMetadataSublist,
-    IPromptMetadataFormatParser
+    RawPromptMetadataList,
+    IPromptMetadata,
+    VarMetadata,
+    SelectVarMetadata,
+    LiteralVarMetadata,
+    ArrayVarMetadata,
+    StructVarMetadata,
+    ImageVarMetadata,
 } from './types'
+
+export {
+    PromptMetadataVerifier
+} from './promptMetadataVerifier';

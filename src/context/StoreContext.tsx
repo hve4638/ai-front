@@ -20,6 +20,8 @@ interface StoreContextType {
     setLayoutMode: (x:string)=>void;
     nextSessionID:number;
     setNextSessionID:(x:number)=>void;
+    lastvar: {[key:string]:any};
+    setLastvar:(x:{[key:string]:any})=>void;
     
     themeMode:ThemeModes;
     setThemeMode:(x:ThemeModes)=>void;
@@ -33,7 +35,10 @@ interface StoreContextType {
     setLineByLineMode : (x:boolean)=>void;
 }
 
-export const StoreContext = createContext<StoreContextType|undefined>(undefined);
+/**
+ * 쿠키 또는 파일시스템애 저장되는 상태값 컨텍스트
+ */
+export const StoreContext = createContext<StoreContextType|null>(null);
 
 export default function StoreContextProvider({children}) {
     const [currentSessionId, setCurrentSessionId] = usePlainCookie('currentSessionId', null);
@@ -45,6 +50,7 @@ export default function StoreContextProvider({children}) {
     const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', LayoutModes.AUTO);
     const [nextSessionID, setNextSessionID] = usePlainCookie('nextsessionid', 0);
     const [isGlobalHistoryVolatile, setIsGlobalHistoryVolatile] = usePlainCookie('isGlobalHistoryVolatile', false);
+    const [lastvar, setLastvar] = usePlainCookie('lastvar', {});
 
     const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
     const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
@@ -61,6 +67,7 @@ export default function StoreContextProvider({children}) {
                 nextSessionID, setNextSessionID,
                 themeMode, setThemeMode,
                 isGlobalHistoryVolatile, setIsGlobalHistoryVolatile,
+                lastvar, setLastvar,
 
                 markdownMode,
                 setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),

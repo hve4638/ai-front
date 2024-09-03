@@ -95,3 +95,31 @@
     font-size: var(--textarea-alert-font-size);
     color: grey;
 }
+
+#load-fail-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    h2 {
+        font-size: 1.5em;
+        color: var(--warn-color);
+    }
+    .reason {
+        font-size: 1.1em;
+        color: var(--text-color);
+        font-weight: bold;
+    }
+    .detail {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        margin: 4px;
+        line-height: 1.6;
+        color: var(--subtext-color);
+        font-size: 1em;
+        
+        resize: none;
+        outline: none;
+    }
+}
+

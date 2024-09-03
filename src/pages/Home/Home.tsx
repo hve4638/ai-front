@@ -2,12 +2,14 @@ import React, { useState, useEffect, useContext } from "react";
 
 import { APIResponse, FetchStatus } from "data/interface";
 
-import { PromptContext } from "context/PromptContext";
-import { StoreContext } from "context/StoreContext";
-import { SecretContext } from "context/SecretContext";
-import { DebugContext } from "context/DebugContext";
-import { MemoryContext } from "context/MemoryContext";
-import { EventContext } from "context/EventContext";
+import {
+    useContextForce,
+    StoreContext,
+    SecretContext,
+    DebugContext,
+    MemoryContext,
+    EventContext,
+} from "context";
 
 import ModalBackground from 'components/ModalBackground'
 import { SubmitButton } from "./components/SubmitButton";
@@ -15,7 +17,7 @@ import { SubmitButton } from "./components/SubmitButton";
 import RequestInfoModal from "pages/RequestInfoModal/RequestInfoModal";
 import HistoryModal from 'pages/HistoryModal/HistoryModal'
 import SettingModal from 'pages/SettingModal/SettingModal'
-import VarEditorModal from "pages/VarEditorModal/VarEditorModal";
+import {VarEditorModal} from "pages/VarEditorModal";
 import DebugModal from "pages/DebugModal/DebugModal";
 import { ModelSettingModal } from "pages/ModelSettingModal/ModelSettingModal";
 
@@ -23,8 +25,9 @@ import Header from './Header'
 import Footer from './Footer'
 import InputField from './InputField'
 import OutputField from './OutputField'
+import { ErrorLogModal } from "pages/ErrorLogModal";
 
-enum MODALS {
+const enum MODALS {
     SettingModal,
     RequestInfoModal,
     HistoryModal,
@@ -32,21 +35,14 @@ enum MODALS {
     DebugModal,
     MessageModal,
     ModelSettingModal,
+    ErrorLogModal,
 };
 
 export default function Home() {
-    const secretContext = useContext(SecretContext);
-    const promptContext = useContext(PromptContext);
-    const memoryContext = useContext(MemoryContext);
-    const storeContext = useContext(StoreContext);
-    const eventContext = useContext(EventContext);
-    const debugContext = useContext(DebugContext);
-    if (!promptContext) throw new Error('Home required PromptContextProvider');
-    if (!secretContext) throw new Error('Home required SecretContextProvider');
-    if (!storeContext) throw new Error('Home required StoreContextProvider');
-    if (!memoryContext) throw new Error('Home required MemoryContextProvider');
-    if (!eventContext) throw new Error('Home required EventContextProvider');
-    if (!debugContext) throw new Error('Home required DebugContextProvider');
+    const memoryContext = useContextForce(MemoryContext);
+    const storeContext = useContextForce(StoreContext);
+    const eventContext = useContextForce(EventContext); 
+    const debugContext = useContextForce(DebugContext);
 
     const [currentModal, setCurrentModal] = useState<MODALS|null>(null);
     const [submitLoading, setSubmitLoading] = useState(false);
@@ -56,10 +52,6 @@ export default function Home() {
         apiSubmitPing, setApiSubmitPing,
         sessionFetchStatus,
     } = memoryContext;
-    const {
-        enqueueApiRequest,
-        getFetchStatus
-    } = eventContext;
     const {
         setResponses, responses
     } = storeContext;
@@ -72,23 +64,28 @@ export default function Home() {
         }
     }, [apiSubmitPing]);
 
+    // 현 세션이 API요청 중인지 여부를 확인
     useEffect(()=>{
-        const status = getFetchStatus(currentSession);
+        const status = eventContext.getFetchStatus(currentSession);
+        
         setSubmitLoading(status === FetchStatus.PROCESSING || status === FetchStatus.QUEUED);
     }, [currentSession, sessionFetchStatus])
 
     const onSubmit = () => {
-        if (currentChat.input) {
-            enqueueApiRequest({
+        if (currentChat.input && !submitLoading) {
+            eventContext.enqueueApiRequest({
                 session:currentSession,
                 input:currentChat.input,
-                promptText:memoryContext.promptText
+                promptText:memoryContext.promptText,
+                promptMetadata:memoryContext.promptMetadata,
             })
         }
+
+        /// 이전 코드 호환성을 위해 존재함. 추후 삭제 필요
         return new AbortController();
     }
-
-    const loadHistory = (response:APIResponse) => {
+    
+    const loadChatFromHistory = (response:APIResponse) => {
         const newResponses = {...responses};
         newResponses[currentSession.id] = response;
         setResponses(newResponses);
@@ -115,6 +112,7 @@ export default function Home() {
                 onOpenModelSetting={()=>setCurrentModal(MODALS.ModelSettingModal)}
                 onOpenSetting={()=>setCurrentModal(MODALS.SettingModal)}
                 onOpenVarEditor={()=>setCurrentModal(MODALS.VarEditorModal)}
+                onOpenErrorLog={()=>setCurrentModal(MODALS.ErrorLogModal)}
             />
             <main id='app-main'>
                 <InputField
@@ -158,7 +156,7 @@ export default function Home() {
                     <HistoryModal
                         onClose = {()=>setCurrentModal(null)}
                         onClick = {(history)=>{
-                            loadHistory(history);
+                            loadChatFromHistory(history);
                             setCurrentModal(null);
                         }}
                     />
@@ -178,6 +176,12 @@ export default function Home() {
                 {
                     (currentModal === MODALS.ModelSettingModal) &&
                     <ModelSettingModal
+                        onClose = {()=>setCurrentModal(null)}
+                    />
+                }
+                {
+                    (currentModal === MODALS.ErrorLogModal) &&
+                    <ErrorLogModal
                         onClose = {()=>setCurrentModal(null)}
                     />
                 }

@@ -2,17 +2,17 @@ import { HOMEPAGE } from 'data/constants.tsx'
 import { COOKIE_OPTION_NOEXPIRE } from 'data/constants.tsx'
 import { getCookie, setCookie } from 'libs/cookies.tsx'
 import { getCookies, removeCookie } from 'libs/cookies.tsx'
-import { RootPromptMetadata } from 'features/prompts'
+import { RawPromptMetadataTree } from 'features/prompts'
 
 export class WebInteractive {
-    static loadPromptMetadata():Promise<RootPromptMetadata> {
-      return fetch(`${HOMEPAGE}/prompts/list.json`, {
+    static loadPromptMetadata(path:string):Promise<string> {
+      return fetch(`${HOMEPAGE}/prompts/${path}`, {
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
           }
-      }).then(res=>res.json());
+      }).then(res=>res.text());
     }
     
     static loadPrompt(value:string):Promise<string> {

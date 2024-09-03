@@ -135,14 +135,12 @@ function SlotTooltip({x, y, session}) {
     const targetRef = useRef<HTMLDivElement>(null);
     const [h, setH] = useState(0);
     const [texts, setTexts] = useState<string[]>([]);
-    const promptContext = useContext(PromptContext);
     const memoryContext = useContext(MemoryContext);
     
-    if (promptContext == null) throw new Error('SlotTooltip required PromptContext');
     if (memoryContext == null) throw new Error('SlotTooltip required MemoryContext');
     const {
-        promptList
-    } = promptContext;
+        promptMetadataTree
+    } = memoryContext;
 
     useEffect(()=>{
         if (targetRef.current) {
@@ -154,17 +152,20 @@ function SlotTooltip({x, y, session}) {
     useEffect(()=>{
         try {
             const arr:string[] = [];
-            const index = promptList.getPromptIndex(session.promptKey);
-            const pl = promptList.getPrompt(session.promptKey);
             
-            if (pl && index) {
-                if (index.length == 1) {
-                    arr.push(pl.name);
+            //const index = promptList.getPromptIndex(session.promptKey);
+            //const pl = promptList.getPromptMetadata(session.promptKey);
+            const metadata = promptMetadataTree.getPromptMetadata(session.promptKey);
+            
+            if (metadata) {
+                const indexes = metadata.indexes;
+                if (indexes[1] == null) {
+                    arr.push(metadata.name);
                 }
-                else if (index.length == 2) {
-                    const sublist = promptList.list[index[0]]
+                else {
+                    const sublist = promptMetadataTree.list[indexes[0]];
                     
-                    arr.push(`${sublist.name} (${pl.name})`);
+                    arr.push(`${sublist.name} (${metadata.name})`);
                 }
                 
                 for (const key in session.note)  {

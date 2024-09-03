@@ -1,4 +1,4 @@
-import { PromptMetadataTreeError } from '../errors';
+import { PromptMetadataParseError } from '../errors';
 import { PromptMetadataTree } from '../promptMetadataTree';
 
 import { handleAndGetError } from 'features/testUtils';
@@ -14,13 +14,13 @@ describe('Tree verification', () => {
         const gen = ()=>new PromptMetadataTree({} as any);
 
         const err = handleAndGetError(gen);
-        expect(err).toBeInstanceOf(PromptMetadataTreeError);
+        expect(err).toBeInstanceOf(PromptMetadataParseError);
     });
     test('Empty prompts', () => {
         const gen = () => new PromptMetadataTree({
             prompts: [],
         });
-        expect(gen).toThrow(PromptMetadataTreeError);
+        expect(gen).toThrow(PromptMetadataParseError);
     });
     test('Invalid prompts', () => {
         const gen = () => new PromptMetadataTree({
@@ -31,7 +31,7 @@ describe('Tree verification', () => {
                 }
             ],
         });
-        expect(gen).toThrow(PromptMetadataTreeError);
+        expect(gen).toThrow(PromptMetadataParseError);
     });
     test('Duplicate promptkey', () => {
         const gen = () => new PromptMetadataTree({
@@ -48,7 +48,7 @@ describe('Tree verification', () => {
                 }
             ],
         });
-        expect(gen).toThrow(PromptMetadataTreeError);
+        expect(gen).toThrow(PromptMetadataParseError);
     });
     test('Valid tree', () => {
         const gen = () => new PromptMetadataTree({
@@ -108,7 +108,7 @@ describe('Tree method', () => {
         ]
         expect(actual).toEqual(expected);
     });
-    test('getPrompt', () => {
+    test('getPromptMetadata', () => {
         const tree = new PromptMetadataTree({
             prompts : [
                 makePMD('1', '1', '1'),
@@ -117,11 +117,11 @@ describe('Tree method', () => {
             ]
         });
 
-        const actual = tree.getPrompt('2')?.raw;
+        const actual = tree.getPromptMetadata('2')?.raw;
         const expected = makePMD('2', '2', '2');
         expect(actual).toEqual(expected);
     });
-    test('getPrompt 2', () => {
+    test('getPromptMetadata 2', () => {
         const tree = new PromptMetadataTree({
             prompts : [
                 makePMD('1', '1', '1'),
@@ -130,7 +130,7 @@ describe('Tree method', () => {
             ]
         });
 
-        const actual = tree.getPrompt('5');
+        const actual = tree.getPromptMetadata('5');
         expect(actual).toEqual(null);
     });
 });

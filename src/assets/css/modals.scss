@@ -231,8 +231,17 @@
     }
     .vareditor {
         margin: 0px 4px 8px 4px;
-        
-        input[type=text] {
+        padding : 4px 0px;
+        .nested {
+            margin: 4px 0px;
+            padding : 0px;
+            font-size: 0.95em;
+        }
+        input {
+            cursor: auto;
+            padding: 8px;
+            border: 1px solid #ccc;
+            font-family: inherit;
             border-radius: 6px;
             background-color: var(--input-background-color);
         }
@@ -249,6 +258,58 @@
             }
         }
     }
+    .array-vareditor {
+        padding: 0px 6px 0px 0px;
+
+        .description {
+            font-size: 0.85em;
+            color: var(--subtext-color);
+            text-align: bottom;
+        }
+        
+        .add-button {
+            font-size: 34px;
+        }
+
+        .array-element {
+            margin: 0px 2px 2px 8px;
+        }
+
+        .delete-element-button {
+            font-size : 1.3em;
+        }
+    }
 }
 
+#errorlog-modal {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    min-height: 20%;
+    max-height: 70%;
 
+    .contents {
+        display: block;
+        margin: 24px 0px 12px 0px;
+        overflow-y: auto;
+    }
+
+    .error-box {
+        display: block;
+        margin: 0px 2px 8px 0px;
+        padding: 8px 8px 8px 8px;
+        transition: 0.2s background-color;
+        min-height: 50px;
+
+        .name {
+            font-weight: bold;
+            font-size : 1.1em;
+            color : var(--text-color);
+        }
+        .message {
+            color : var(--subtext-color);
+            font-size : 0.95em;
+            margin : 8px 0px 4px 4px;
+        }
+    }
+}

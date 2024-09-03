@@ -6,14 +6,13 @@ import { MemoryContext } from 'context/MemoryContext'
 import ModalHeader from 'components/ModalHeader'
 import { GoogleFontIconButton } from 'components/GoogleFontIcon'
 import { AIModels } from 'features/chatAI'
+import { useContextForce } from 'context'
 
 export default function RequestInfoModal({
     onClose
  }) {
-    const storeContext = useContext(StoreContext);
-    const memoryContext = useContext(MemoryContext);
-    if (!storeContext) throw new Error('<ModelConfig/> requiered StoreContextProvider');
-    if (!memoryContext) throw new Error('<ModelConfig/> requiered MemoryContextProvider');
+    const storeContext = useContextForce(StoreContext);
+    const memoryContext = useContextForce(MemoryContext);
     
     const [promptPreview, setPromptPreview] = useState(false);
     const [promptPreviewContents, setPromptPreviewContents] = useState<React.JSX.Element[]>([]);
@@ -22,9 +21,6 @@ export default function RequestInfoModal({
         currentSession
     } = memoryContext;
     const promptText = memoryContext.promptMetadata.promptTemplate ?? '';
-
-    console.log('promptText')
-    console.log(promptText)
 
     useEffect(()=>{
         const results = parsePromptContent({promptContents:promptText, note:currentSession.note});
@@ -119,7 +115,7 @@ const noteformat = (value:any) => {
         return value.replace(/\n/g, "\\n");
     }
     else {
-        return value;
+        return JSON.stringify(value);
     }
 }
 

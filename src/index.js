@@ -24,7 +24,6 @@ if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
   root.render(
     <CookiesProvider>
       <SecretContextProvider>
-        <PromptContextProvider>
           <StoreContextProvider>
             <MemoryContextProvider>
               <EventContextProvider>
@@ -36,7 +35,6 @@ if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
               </EventContextProvider>
             </MemoryContextProvider>
           </StoreContextProvider>
-        </PromptContextProvider>
       </SecretContextProvider>
     </CookiesProvider>
   );

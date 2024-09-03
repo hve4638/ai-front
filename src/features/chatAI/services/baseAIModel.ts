@@ -8,10 +8,10 @@ export class BaseAIModel {
     }
 
     preprocess() {
-
+        // do nothing
     }
     postprocess() {
-        
+        // do nothing
     }
     async request(requestdata:AIModelRequestData):Promise<any> {
         const data = requestdata.data;

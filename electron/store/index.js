@@ -35,13 +35,45 @@ function readSecretData() {
     }
     return null;
 }
-function readPromptContents(value) {
-    const targetPath = path.join(promptFolderPath, value);
-    return fs.readFileSync(targetPath, 'utf8');
+function readPromptContents(pathString) {
+    const banPatterns = ["../", "./", "..", "~", "//"];
+    for (const pattern of banPatterns) {
+        if (pathString.includes(pattern)) {
+            return "@FAIL - INVALID PATH";
+        }
+    }
+
+    const targetPath = path.join(promptFolderPath, pathString);
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).isFile()) {
+        return fs.readFileSync(targetPath, 'utf8');
+    }
+    else {
+        return "@FAIL - FILE NOT FOUND";
+    }
 }
+/**
+ * @legacy use readPromptMetadata instead
+ */
 function readPromptList() {
     const targetPath = path.join(promptFolderPath, "list.json");
     return fs.readFileSync(targetPath, 'utf8');
+}
+function readPromptMetadata(pathString) {
+    const banPatterns = ["../", "./", "..", "~", "//"];
+    for (const pattern of banPatterns) {
+        if (pathString.includes(pattern)) {
+            return "@FAIL - INVALID PATH";
+        }
+    }
+
+    const targetPath = path.join(promptFolderPath, pathString);
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).isFile()) {
+        return fs.readFileSync(targetPath, 'utf8');
+        //return fs.readFileSync(targetPath, 'utf8');
+    }
+    else {
+        return "@FAIL - FILE NOT FOUND";
+    }
 }
 function readHistory(key) {
     const targetPath = path.join(historyFolderPath, `history${key}.json`);
@@ -68,6 +100,7 @@ module.exports = {
 
     readPromptContents : readPromptContents,
     readPromptList : readPromptList,
+    readPromptMetadata : readPromptMetadata,
     promptDirectoryPath : promptFolderPath,
     historyDirectoryPath : historyFolderPath,
 }

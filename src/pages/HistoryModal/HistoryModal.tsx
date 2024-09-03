@@ -39,9 +39,6 @@ function HistoryModal({ onClose, onClick }:HistoryModalProps) {
           window.removeEventListener('keydown', handleKeyDown);
         };
     }, [onClose]);
-
-    console.log('history');
-    console.log(history);
     
     return (
         <div id='history-modal' className='modal undraggable'>

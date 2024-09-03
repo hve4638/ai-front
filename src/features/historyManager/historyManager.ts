@@ -1,4 +1,4 @@
-import { storeHistory, loadHistory, deleteHistory } from 'services/local/index'
+import { storeHistory, loadHistory, deleteHistory, LocalInteractive } from 'services/local/index'
 import { ChatSession } from 'context/interface';
 import { NOSESSION_KEY } from 'data/constants';
 import { APIResponse } from 'data/interface';
@@ -41,17 +41,14 @@ export class HistoryManager {
         return this.#volatiedKey[key] ?? false
     }
 
-    async load(session:ChatSession, offset=0, limit=10) {
+    async load(session:ChatSession, offset=0, limit=100) {
         const historyKey = this.#getKey(session);
         const cache = this.#getCache(historyKey);
 
         cache.noFetched = false;
-        if (!cache.allFetched && offset + limit >= cache.data.length) {
-            const rows = await loadHistory(historyKey, offset, limit);
-            console.log('rows')
-            console.log(rows)
+        while (!cache.allFetched && offset + limit >= cache.data.length) {
+            const rows = await LocalInteractive.loadHistory(historyKey, offset, limit);
             const loaded = rows.map((row) => JSON.parse(row.data));
-            console.log(loaded)
 
             if (rows.length !== limit) {
                 cache.allFetched = true;

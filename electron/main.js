@@ -66,7 +66,7 @@ app.on('window-all-closed', function () {
 })
 
 ipcMain.handle(ipcping.ECHO, (event, arg) => {
-    console.log('ECHO: ' + arg);
+    console.log(arg);
     return arg;
 });
 
@@ -159,7 +159,6 @@ ipcMain.handle(ipcping.RESET_ALL_VALUES, async (event) => {
     store.writeSecretData(secretData);
 })
 
-
 ipcMain.handle(ipcping.LOAD_HISTORY, async (event, key, offset, limit) => {
     const item = historyManager.get(key, offset, limit);
     return item;
@@ -171,4 +170,8 @@ ipcMain.handle(ipcping.STORE_HISTORY, async (event, key, data) => {
 
 ipcMain.handle(ipcping.DELETE_HISTORY, async (event, key) => {
     historyManager.drop(key);
+})
+
+ipcMain.handle(ipcping.LOAD_PROMPTMETADATA, async (event, path) => {
+    return store.readPromptMetadata(path);
 })

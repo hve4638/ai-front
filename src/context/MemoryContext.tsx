@@ -7,48 +7,11 @@ import { ChatSession, useStateCallback } from "./interface";
 import {
     PromptMetadataTree,
     PromptMetadata,
-    PromptMetadataSublist
+    PromptMetadataSublist,
+    IPromptMetadata
 } from "features/prompts";
 
-interface MemoryContextType {
-    promptMetadataTree:PromptMetadataTree;
-    setPromptMetadataTree:(x:PromptMetadataTree)=>void;
-    promptMetadata:PromptMetadata;
-    setPromptMetadata:(x:PromptMetadata)=>void;
-    promptMetadataSublist:PromptMetadataSublist|null;
-    setPromptMetadataSublist:(x:PromptMetadataSublist|null)=>void;
-    
-    nextSessionID:number;
-    setNextSessionID:(x:number)=>void;
-    promptText:string;
-    setPromptText:(x:string)=>void;
-    currentSession:ChatSession;
-    setCurrentSession:(x:ChatSession)=>void;
-    currentHistory:APIResponse[];
-    setCurrentHistory:useStateCallback<APIResponse[]>;
-    currentChat:APIResponse;
-    setCurrentChat:(x:APIResponse)=>void;
-    apiSubmitPing:boolean;
-    setApiSubmitPing:(x:boolean)=>void;
-    
-    apiFetchQueue:any[];
-    setApiFetchQueue:(x:any[]|((x:any)=>void))=>void;
-    apiFetchBlock:boolean;
-    setApiFetchBlock:(x:boolean)=>void;
-
-    apiFetchWaiting:ApiFetchWaiting;
-    setApiFetchWaiting:useStateCallback<ApiFetchWaiting>;
-
-    apiFetchResponse:ApiFetchResponse;
-    setApiFetchResponse:useStateCallback<ApiFetchResponse>;
-
-    sessionFetchStatus:SessionFetchStatus;
-    setSessionFetchStatus:useStateCallback<SessionFetchStatus>;
-
-    historyManager:HistoryManager
-    setHistoryManager:useStateCallback<HistoryManager>;
-}
-const ANY:any = null;
+type Dict<T> = { [key:string]:T };
 
 interface ApiFetchResponse {
     [key:string]:{
@@ -65,20 +28,94 @@ interface SessionFetchStatus {
     [key:string]:any;
 }
 
+type ApiFetchQueueElement = {
+    sessionid:number;
+    input:string;
+    promptText?:string;
+    promptMetadata:IPromptMetadata;
+};
+
+type ErrorLog = {
+    name: string;
+    message: string;
+}
+
+interface MemoryContextType {
+    promptMetadataTree:PromptMetadataTree;
+    setPromptMetadataTree:(x:PromptMetadataTree)=>void;
+    
+    /**
+     * @deprecated
+     */
+    promptMetadata:IPromptMetadata;
+    /**
+     * @deprecated
+     */
+    setPromptMetadata:(x:IPromptMetadata)=>void;
+
+    promptMetadataSublist:PromptMetadataSublist|null;
+    setPromptMetadataSublist:(x:PromptMetadataSublist|null)=>void;
+    
+    /**
+     * @deprecated
+     */
+    promptText:string;
+    /**
+     * @deprecated
+     */
+    setPromptText:(x:string)=>void;
+
+
+    currentSession:ChatSession;
+    setCurrentSession:(x:ChatSession)=>void;
+    currentHistory:APIResponse[];
+    setCurrentHistory:useStateCallback<APIResponse[]>;
+    currentChat:APIResponse;
+    setCurrentChat:(x:APIResponse)=>void;
+    apiSubmitPing:boolean;
+    setApiSubmitPing:(x:boolean)=>void;
+
+    currentPromptMetadata:IPromptMetadata;
+    setCurrentPromptMetadata:(x:IPromptMetadata)=>void;
+    
+    apiFetchQueue:ApiFetchQueueElement[];
+    setApiFetchQueue:useStateCallback<ApiFetchQueueElement[]>;
+    apiFetchBlock:boolean;
+    setApiFetchBlock:(x:boolean)=>void;
+
+    apiFetchWaiting:ApiFetchWaiting;
+    setApiFetchWaiting:useStateCallback<ApiFetchWaiting>;
+
+    apiFetchResponse:ApiFetchResponse;
+    setApiFetchResponse:useStateCallback<ApiFetchResponse>;
+
+    sessionFetchStatus:SessionFetchStatus;
+    setSessionFetchStatus:useStateCallback<SessionFetchStatus>;
+
+    historyManager:HistoryManager
+    setHistoryManager:useStateCallback<HistoryManager>;
+
+    errorLogs:ErrorLog[];
+    setErrorLogs:useStateCallback<ErrorLog[]>;
+}
+const ANY:any = null;
+
+/**
+ * 프로그램 실행 동안만 존재하는 휘발성 정보 저장 컨텍스트
+ */
 export const MemoryContext = createContext<MemoryContextType|null>(null);
 
 export default function MemoryContextProvider({children}) {
     const [promptMetadataTree, setPromptMetadataTree] = useState<PromptMetadataTree>(ANY);
-    const [promptMetadata, setPromptMetadata] = useState<PromptMetadata>(ANY);
     const [promptMetadataSublist, setPromptMetadataSublist] = useState<PromptMetadataSublist|null>(ANY);
     
-    // const [promptInfomation, setPromptInfomation] = useState<IPromptInfomation>(ANY);
-    // const [promptSubList, setPromptSubList] = useState<IPromptSubList|null>(null);
-    // const [promptIndex, setPromptIndex] = useState([0, 0]);
+    // @TODO 제거 예정
     const [promptText, setPromptText] = useState('');
 
+    const [errorLogs, setErrorLogs] = useState<ErrorLog[]>([]);
+
+    const [currentPromptMetadata, setCurrentPromptMetadata] = useState<IPromptMetadata>(ANY);
     const [currentSession, setCurrentSession] = useState<ChatSession>(ANY);
-    const [nextSessionID, setNextSessionID] = useState<number>(0);
 
     const [apiFetchQueue, setApiFetchQueue] = useState<any>([]);
     const [apiFetchResponse, setApiFetchResponse] = useState<any>([]);
@@ -97,18 +134,18 @@ export default function MemoryContextProvider({children}) {
         <MemoryContext.Provider
             value={{
                 promptMetadataTree, setPromptMetadataTree,
-                promptMetadata, setPromptMetadata,
                 promptMetadataSublist, setPromptMetadataSublist,
 
-                // promptIndex, setPromptIndex,
-                // promptInfomation, setPromptInfomation,
-                // promptSubList, setPromptSubList,
+                promptText, setPromptText, // @TODO : 제거 예정
 
-                promptText, setPromptText,
                 currentSession, setCurrentSession,
-                nextSessionID, setNextSessionID,
+                currentPromptMetadata, setCurrentPromptMetadata,
+                promptMetadata : currentPromptMetadata, // 과거 코드 호환성
+                setPromptMetadata : setCurrentPromptMetadata, // 과거 코드 호환성
+
                 currentHistory, setCurrentHistory,
                 currentChat, setCurrentChat,
+
                 apiSubmitPing, setApiSubmitPing,
                 
                 apiFetchQueue, setApiFetchQueue,
@@ -118,7 +155,9 @@ export default function MemoryContextProvider({children}) {
                 
                 sessionFetchStatus, setSessionFetchStatus,
 
-                historyManager, setHistoryManager
+                historyManager, setHistoryManager,
+
+                errorLogs, setErrorLogs
             }}
         >
             {children}
