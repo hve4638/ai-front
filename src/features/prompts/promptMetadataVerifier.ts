@@ -23,6 +23,10 @@ import {
     RawArrayElementMetadata
 } from "./types";
 
+type Hint = {
+    name : string;
+}
+
 export class PromptMetadataVerifier {
     modules: string[] = [];
 
@@ -33,7 +37,7 @@ export class PromptMetadataVerifier {
      * 
      * @returns RootPromptMetadata와 필요한 Metadata 모듈 이름을 튜플 형태로 반환
      */
-    parsePromptMetadataTree(promptMetadataTreeText:string):[RawPromptMetadataTree, string[]] {
+    parsePromptMetadataTree(promptMetadataTreeText:string, hint:Hint):[RawPromptMetadataTree, string[]] {
         this.modules = [];
         
         let rawRoot:LegacyPromptMetadataTree;
@@ -41,20 +45,14 @@ export class PromptMetadataVerifier {
             rawRoot = JSON.parse(promptMetadataTreeText);
         }
         catch(e:any) {
-            throw new PromptMetadataParseError(
-                "올바른 JSON 형식이 아닙니다",
-                {
-                    errorType: ErrorType.INVALID_FORMAT,
-                    target : e.message
-                }
-            )
+            throw this.#errorInvalidJson(hint.name, e);
         }
         const tree = this.#parsePromptMetadataTree(rawRoot);
 
         return [tree, this.modules];
     }
 
-    parseModulePromptMetadata(modulePromptMetadataText:string):RawPromptMetadataElement {
+    parseModulePromptMetadata(modulePromptMetadataText:string, hint:Hint):RawPromptMetadataElement {
         this.modules = [];
         // #parsePromptMetadata
         let rawModuleContent:LegacyPromptMetadata;
@@ -62,13 +60,7 @@ export class PromptMetadataVerifier {
             rawModuleContent = JSON.parse(modulePromptMetadataText);
         }
         catch(e:any) {
-            throw new PromptMetadataParseError(
-                "올바른 JSON 형식이 아닙니다",
-                {
-                    errorType: ErrorType.INVALID_FORMAT,
-                    target : e.message
-                }
-            )
+            throw this.#errorInvalidJson(hint.name, e);
         }
         const metadata = this.#parsePromptMetadata(rawModuleContent);
 
@@ -151,7 +143,6 @@ export class PromptMetadataVerifier {
             const result:RawPromptMetadata = {
                 key: element.key,
                 name: element.name,
-                display_name: element.display_name,
                 path : pathField,
                 vars: this.#parseVarMetadatas(element.vars),
                 selects: element.selects ?? element.selectref,
@@ -242,5 +233,15 @@ export class PromptMetadataVerifier {
                 target: JSON.stringify(target, null, 2),
             }
         );
+    }
+
+    #errorInvalidJson(filename, error:Error) {
+        return new PromptMetadataParseError(
+            `올바른 JSON 형식이 아닙니다 (${filename})`,
+            {
+                errorType: ErrorType.INVALID_FORMAT,
+                target : error.message
+            }
+        )
     }
 }

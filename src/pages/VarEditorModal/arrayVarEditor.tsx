@@ -68,6 +68,7 @@ export function ArrayVarEditor(props:ArrayVarEditorProps) {
                     elements.map((element, index)=>{
                         return (
                             <div
+                                key={index}
                                 className="row"
                                 style={{justifyContent: "center"}}
                             >

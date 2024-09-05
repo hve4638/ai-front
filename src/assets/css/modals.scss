@@ -219,13 +219,13 @@
 #vareditor-modal {
     width: 80%;
     border-radius: 8px;
-    padding: 12px;
+    padding: 12px 12px 12px 12px;
     z-index: 10;
 
     .contents {
         display: flex;
         flex-direction: column;
-        margin: 24px 0px 12px 0px;
+        margin: 24px 0px 0px 0px;
         overflow-y: auto;
         flex-wrap: 0;
     }

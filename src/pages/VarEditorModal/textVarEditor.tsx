@@ -32,25 +32,14 @@ export function NestedTextVarEditor(props:VarEditorsProps) {
     const [input, setInput] = useDebouncing(value, (x)=>onChange(x), 100);
 
     return (
-        <div
-            className={'vareditor nested row ' + className}
-            style={{
-                ...style,
-            }}
-        >
+        <div className={'vareditor nested column ' + className}>
             {
                 name != null &&
-                <>
-                    <div
-                        className="center noflex bold"
-                        style={{ paddingRight: "96px" }}
-                    >{name}</div>
-                </>
+                <div className='bold' style={{marginBottom: '8px'}}>{name}</div>
             }
             <input
                 type="text"
-                className="flex"
-                style={{ height:"5px" }}
+                style={{height:"5px"}}
                 value={input}
                 onChange={(e)=>setInput(e.target.value)}
             />

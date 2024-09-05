@@ -23,7 +23,7 @@ export class StatementForeach extends Statement {
             const result:any[] = [];
             for (const element of statementBuilder) {
                 if (element instanceof Role) {
-                    throw new Error('Role is not premitted without top-level statement.');
+                    throw new Error("Role is not premitted without top-level statement.");
                 }
                 else {
                     result.push(element!.data.build(args));

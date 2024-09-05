@@ -61,6 +61,13 @@ export class CBFRawErrorWarper {
                 hint ?? {}
             );
         }
+        else if (error instanceof CBFInternalErrors.Evaluation.HookEvaluationError) {
+            console.log(error);
+            return new CBFParseError(
+                `Hook Error : ${error.message} (${error.name})\n${JSON.stringify(error.expression)}`,
+                hint ?? {}
+            );
+        }
         else if (error instanceof CBFInternalErrors.Evaluation.InvalidExpressionError) {
             return new CBFParseError(
                 'Logic Error : ' + error.message,
@@ -68,6 +75,7 @@ export class CBFRawErrorWarper {
             );
         }
         else {
+            console.log("Unhandle Error", error);
             return new CBFUnhandleError(error);
         }
     }

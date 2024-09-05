@@ -35,8 +35,15 @@ export class UnsupportedOperator extends ExpressionEvaluateFailError {
     }
 }
 
+export class HookEvaluationError extends ExpressionEvaluateFailError {
+    constructor(message, expression: AnyExpression) {
+        super(message, expression);
+        this.name = 'HookEvaluationError';
+    }
+}
+
 // 코드 로직이 정상이라면 사용자 입력과 관계없이 발생하지 않음
-// 외부 인자에 의해 발생할 수 있으므로 LogicError와 구분됨
+// (사용자 입력을 가공한) 외부 인자에 의해 발생할 수 있으므로 LogicError와 구분됨
 export class InvalidExpressionError extends ExpressionEvaluateFailError {
     constructor(message:string, expression:AnyExpression) {
         super(message, expression);

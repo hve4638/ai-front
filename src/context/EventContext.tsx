@@ -229,12 +229,14 @@ export function EventContextProvider({children}) {
 
     const commitPromptMetdataVariable = (metadata:IPromptMetadata) => {
         metadata.commitCurrentVarValue();
+        /*
         const newLastvar = {
             ...storeContext.lastvar,
             [metadata.key] : metadata.getVarValues(),
         }
         storeContext.setLastvar(newLastvar);
         LocalInteractive.echo(`${JSON.stringify(metadata.getVarValues())}`);
+        */
     }
 
     // 현재 promptMetadata 변수 정보를 commit 후 새 metadata로 교체

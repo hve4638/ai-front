@@ -87,4 +87,8 @@ export class IPCInteractive {
     static deleteHistory(sessionid: number) {
         electron.deleteHistory(sessionid);
     }
+    
+    static logEvent(eventName: string, data: { [key: string]: any }) {
+        console.log(eventName, data);
+    }
 }

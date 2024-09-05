@@ -7,6 +7,7 @@ import ModalHeader from 'components/ModalHeader'
 import { GoogleFontIconButton } from 'components/GoogleFontIcon'
 import { AIModels } from 'features/chatAI'
 import { useContextForce } from 'context'
+import { CBFParseError } from 'libs/curlyBraceFormat/errors'
 
 export default function RequestInfoModal({
     onClose
@@ -23,7 +24,19 @@ export default function RequestInfoModal({
     const promptText = memoryContext.promptMetadata.promptTemplate ?? '';
 
     useEffect(()=>{
-        const results = parsePromptContent({promptContents:promptText, note:currentSession.note});
+        let results;
+        try {
+            results = parsePromptContent({promptContents:promptText, note:currentSession.note});
+        }
+        catch (e) {
+            const error = e as CBFParseError; 
+            setPromptPreviewContents([
+                <div key="1" className="warning">Prompt Parse Failed</div>,
+                <pre key="3">{error.message}</pre>,
+            ]);
+            return;
+        }
+        
         const newContents:React.JSX.Element[] = []
         let count = 0;
         for (const item of results) {

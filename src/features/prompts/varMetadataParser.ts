@@ -126,9 +126,9 @@ export class VarMetadataParser {
                     throw new LogicError();
                 }
                 
-                const result:any[] = [];
+                const result:{[key:string]:any} = {};
                 for (const field of target.fields) {
-                    result.push(this.#getDefaultValue(field));
+                    result[field.name] = this.#getDefaultValue(field);
                 }
                 return result;
             }

@@ -27,14 +27,10 @@ export function VarEditorModal({onClose}:VarEditorModalProps) {
     const storeContext = useContextForce(StoreContext);
     const memoryContext = useContextForce(MemoryContext);
     const {
-        currentSession,
         currentPromptMetadata
     } = memoryContext;
 
     const modalRef:any = useRef(null);
-
-    console.log('vem');
-    console.log(currentPromptMetadata.getVarValues());
 
     // ESC 핸들링
     useEffect(()=>{

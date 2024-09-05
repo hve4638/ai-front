@@ -3,7 +3,8 @@ import {
     IdentifierError,
     InvalidExpressionError,
     NoHookError,
-    UnsupportedOperator
+    UnsupportedOperator,
+    HookEvaluationError,
 } from './error'
 
 import {
@@ -28,6 +29,7 @@ export const CBFInternalErrors = {
         InvalidExpressionError,
         NoHookError,
         UnsupportedOperator,
+        HookEvaluationError,
     }
 }
 

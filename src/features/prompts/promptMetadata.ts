@@ -40,7 +40,7 @@ export class PromptMetadata implements IPromptMetadata {
         this.#basePath = basePath;
 
         this.#name = raw.name;
-        this.#display_name = raw.display_name ?? raw.name;
+        this.#display_name = raw.name;
         this.#key = raw.key;
         this.#path = raw.path;
 
@@ -143,8 +143,8 @@ export class PromptMetadata implements IPromptMetadata {
         return { ...this.#vars };
     }
     /**
-     * @param index1 - 상위 리스트에 정의된 인덱스 1
-     * @param index2 - 상위 리스트에 정의된 인덱스 2
+     * @param index1 - PromptMetadataTree에 정의된 인덱스 1
+     * @param index2 - PromptMetadataTree에 정의된 인덱스 2
      */
     setIndexes(index1:number, index2:number|null) {
         this.#externalIndex = [index1, index2];
@@ -154,6 +154,7 @@ export class PromptMetadata implements IPromptMetadata {
     }
     get promptTemplate() {
         if (this.#promptTemplate == null) {
+            return "";
             throw new PromptTemplateLoadError('Prompt template is not loaded');
         }
         return this.#promptTemplate;

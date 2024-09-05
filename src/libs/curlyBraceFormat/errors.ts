@@ -24,7 +24,7 @@ export class CBFUnhandleError extends Error {
     error;
 
     constructor(error:any) {
-        super('Unexpected Error');
+        super(`Unexpected Error : ${error.message}`);
         this.name = 'CBFUnhandleError';
         this.error = error;
     }

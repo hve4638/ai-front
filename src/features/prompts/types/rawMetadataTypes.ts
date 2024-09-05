@@ -15,7 +15,6 @@ export type RawPromptMetadataElement = RawPromptMetadata|RawPromptMetadataList|R
 export type RawPromptMetadata = {
     key:string;
     name:string;
-    display_name?:string;
     path:string;
 
     vars?:RawVarMetadata[];

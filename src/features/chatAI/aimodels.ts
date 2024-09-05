@@ -27,7 +27,7 @@ export class AIModels {
     }
 
     static interpretePrompt(request:Omit<AIModelRequest, 'curlyBraceFormatArgs'>) {
-        let buildArgs =  {
+        let buildArgs = {
             expressionEventHooks : DEFAULT_EXPRESSION_EVENT_HOOKS,
             vars : {
                 ...request.note,
@@ -37,10 +37,9 @@ export class AIModels {
                 input : request.contents,
             },
             currentScope : {},
-        }
+        } as CurlyBraceFormatBuildArgs;
 
         const promptParser = new CurlyBraceFormatParser(request.prompt);
-        
         return promptParser.build({
             ...buildArgs,
             role : (x:string) => x,

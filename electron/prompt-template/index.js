@@ -6,23 +6,23 @@ const defaultPromptList = {
         {
             "name" : "없음",
             "key" : "noprompt",
-            "value" : "noprompt"
+            "path" : "noprompt"
         },
         {
             "name" : "템플릿",
             "key" : "template",
-            "value" : "template",
+            "path" : "template",
             "vars" : [
                 {
                     "name" : "lang",
                     "display_name" : "언어",
                     "type" : "select",
-                    "selectref" : "lang"
+                    "select_ref" : "lang"
                 }
             ]
         }
     ],
-    "selectref" : {
+    "selects" : {
         "lang" : [
             { "name" : "한국어", "value" : "korean" },
             { "name" : "영어", "value" : "english" }

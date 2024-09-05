@@ -2,6 +2,7 @@ import { PromptBuilder, Role } from './statementUtils'
 import type { CurlyBraceFormatBuildArgs } from './interface'
 import { CBFRawErrorWarper } from './cbfRawErrorWarper'
 import { StatementError } from './statementUtils/statements/errors'
+import { HookEvaluationError } from './statementUtils/statements/elements/expressionUtils/error'
 
 export const RE_DIRECTIVE_MARKER = /(\{\{::.*?\}\})/ms
 export const RE_DIRECTIVE = /\{\{\s*::\s*(\S+)(?:\s+(.*?))?\s*\}\}/ms

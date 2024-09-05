@@ -24,7 +24,8 @@ export type ExpressionEventHooks = {
     'indexor' : (expr:EvaluatableExpression, index:LiteralExpression)=>AnyResult;
     'call' : (expr:EvaluatableExpression, args:EvaluatableExpression[])=>AnyResult;
     
-    'stringify' : (expr:EvaluatableExpression)=>LiteralExpression;
+    'objectify' : (obj:any)=>any;
+    'stringify' : (expr:EvaluatableExpression)=>string;
     'iterate' : (expr:EvaluatableExpression)=>Iterable<any>;
 }
 
@@ -47,6 +48,7 @@ export const OPERATOR_HOOKS = {
     '()' : 'call',
     'TOSTRING' : 'stringify',
     'STRINGIFY' : 'stringify',
+    'OBJECTIFY' : 'objectify',
     'ITERATE' : 'iterate'
 } as const;
 

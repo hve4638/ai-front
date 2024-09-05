@@ -29,7 +29,6 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
     const [storedValueLoaded, setStoredValueLoaded] = useState(false);
     const [nextSessionIDLoaded, setNextSessionIDLoaded] = useState(false);
     const [chatLoaded, setChatLoaded] = useState(false);
-    const [varLoaded, setVarLoaded] = useState(false);
 
     const {
         sessions,
@@ -39,7 +38,6 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
         fontSize,
         layoutMode,
         nextSessionID,
-        lastvar,
     } = storeContext;
     const {
         currentSession,
@@ -77,7 +75,12 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
             try {
                 const verifier = new PromptMetadataVerifier();
     
-                const [rawTree, modules] = verifier.parsePromptMetadataTree(rootContents);
+                const [rawTree, modules] = verifier.parsePromptMetadataTree(
+                    rootContents,
+                    {
+                        name : "root",
+                    }
+                );
                 
                 const externalPromptMetadata:{
                     [key:string]:RawPromptMetadataElement
@@ -105,7 +108,12 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
                         )
                     }
                     
-                    const metadata = verifier.parseModulePromptMetadata(moduleContent);
+                    const metadata = verifier.parseModulePromptMetadata(
+                        moduleContent,
+                        {
+                            name : moduleName,
+                        }
+                    );
                     externalPromptMetadata[moduleName] = metadata;
                 }
                 
@@ -147,14 +155,13 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
             && fontSize !== undefined
             && layoutMode !== undefined
             && nextSessionID !== undefined
-            && lastvar !== undefined
         ) {
             const rootElement = document.querySelector("html") ?? document.body;
             rootElement.style.fontSize = `${fontSize}px`;
 
             setStoredValueLoaded(true);
         }
-    }, [currentSessionId, sessions, history, responses, fontSize, layoutMode, nextSessionID, lastvar]);
+    }, [currentSessionId, sessions, history, responses, fontSize, layoutMode, nextSessionID]);
 
     // NextSessionID 초기화
     useEffect(()=>{
@@ -237,31 +244,16 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
         }
     }, [storedValueLoaded, sessionLoaded]);
 
-    // 각 PromptMetadata의 마지막 변수 값 로드
-    useEffect(()=>{
-        if (promptMetadataLoaded && storedValueLoaded) {
-            const tree = memoryContext.promptMetadataTree;
-
-            for (const key in lastvar) {
-                const prompt = tree.getPromptMetadata(key);
-                if (prompt) {
-                    prompt.setVarValues(lastvar[key]);
-                }
-            }
-            setVarLoaded(true);
-        }
-    }, [promptMetadataLoaded, storedValueLoaded]);
-
     // 현재 Session을 기반으로 PromptMetadata 지정
     useEffect(()=>{
-        if (!promptMetadataLoaded || !sessionLoaded || !varLoaded) return;
+        if (!promptMetadataLoaded || !sessionLoaded) return;
 
         let metadata = memoryContext.promptMetadataTree.getPromptMetadata(currentSession.promptKey);
         metadata ??= memoryContext.promptMetadataTree.firstPromptMetadata();
         eventContext.setCurrentPromptMetadata(metadata, true);
         
         setPromptLoaded(true);
-    }, [promptMetadataLoaded, sessionLoaded, varLoaded]);
+    }, [promptMetadataLoaded, sessionLoaded]);
 
     useEffect(()=>{
         if (initialized
@@ -271,14 +263,12 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
             && nextSessionIDLoaded
             && storedValueLoaded
             && chatLoaded
-            && varLoaded
         ) {
             onLoad();
         }
     }, [
         promptMetadataLoaded, sessionLoaded, promptLoaded,
         nextSessionIDLoaded, storedValueLoaded, chatLoaded,
-        varLoaded
     ]);
 
     return (
@@ -297,7 +287,6 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
                     <span className={nextSessionIDLoaded ? 'loaded' : 'loading'}>SessionID validation</span>
                     <span className={chatLoaded ? 'loaded' : 'loading'}>Chat load</span>
                     <span className={promptLoaded ? 'loaded' : 'loading'}>Prompt load</span>
-                    <span className={varLoaded ? 'loaded' : 'loading'}>Var load</span>
                 </div>
             }
         </div>

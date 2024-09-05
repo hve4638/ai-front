@@ -1,7 +1,7 @@
 import { ExpressionArgs, ExpressionEventHooks, OPERATOR_HOOKS, Vars } from './interface';
 import { SyntaxToken, ExpressionType, EvaluatableExpression, IdentifierExpression, LiteralExpression, ObjectExpression, CallExpression, ParamExpression } from './expressionParser';
 import { AnyExpression } from './expressionParser/expressionInterface';
-import { IdentifierError, InvalidExpressionError, NoHookError, UnsupportedOperator } from './error';
+import { HookEvaluationError, IdentifierError, InvalidExpressionError, NoHookError, UnsupportedOperator } from './error';
 import { LogicError } from 'features/errors';
 
 const LITERAL_ACTIONS = {
@@ -43,10 +43,10 @@ export class ExpressionEvaluator {
             return result.value.toString();
         }
         else {
-            const hookName = OPERATOR_HOOKS['STRINGIFY'];
+            const hookName = OPERATOR_HOOKS.STRINGIFY;
             const hook = this.#expressionEventHooks[hookName];
             if (hook) {
-                return hook(result).toString();
+                return hook(result);
             }
             else {
                 throw new NoHookError(hookName, result);
@@ -75,7 +75,12 @@ export class ExpressionEvaluator {
         else {
             const hook = this.#expressionEventHooks[hookName];
             if (hook) {
-                return hook(expr);
+                try {
+                    return hook(expr);
+                }
+                catch(e:any) {
+                    throw new HookEvaluationError(`${e.message}`, expr);
+                }
             }
             else {
                 throw new NoHookError(hookName, expr);
@@ -86,7 +91,12 @@ export class ExpressionEvaluator {
     #evaluateExpr(expr):AnyExpression {
         switch(expr.type) {
             case ExpressionType.CALL:
-                return this.#evaluateCallExpr(expr);
+                try {
+                    return this.#evaluateCallExpr(expr);
+                }
+                catch(e:any) {
+                    throw new HookEvaluationError(e.message, expr);
+                }
             case ExpressionType.IDENTIFIER:
                 return this.#evaluateIdentifier(expr);
             case ExpressionType.PARAM:
@@ -101,7 +111,7 @@ export class ExpressionEvaluator {
         const identifier = expr.value;
 
         let data;
-        if (identifier.at(0) === ':') {
+        if (identifier.at(0) === ':') { // 내장 변수 처리
             const sliced = identifier.slice(1);
             if (sliced in this.#builtInVars) {
                 data = this.#builtInVars[sliced];
@@ -122,12 +132,19 @@ export class ExpressionEvaluator {
             }
         }
         switch(typeof data) {
-            case 'string':
-            case 'number':
-            case 'boolean':
+            case "string":
+            case "number":
+            case "boolean":
                 return SyntaxToken.literal(data);
-            case 'object':
-                return SyntaxToken.object(data);
+            case "object":
+            {
+                const hookName = OPERATOR_HOOKS.OBJECTIFY;
+                const objectify = this.#expressionEventHooks[hookName];
+                if (objectify == null) {
+                    throw new NoHookError(hookName, expr);
+                }
+                return SyntaxToken.object(objectify(data));
+            }
             default:
                 throw new IdentifierError(`Invalid variable type '${typeof data}'`, expr);
         }
@@ -177,7 +194,12 @@ export class ExpressionEvaluator {
                     return SyntaxToken.literal(result);
                 }
                 else {
-                    return SyntaxToken.object(result);
+                    const hookName = OPERATOR_HOOKS.OBJECTIFY;
+                    const objectify = this.#expressionEventHooks[hookName];
+                    if (objectify == null) {
+                        throw new NoHookError(hookName, expr);
+                    }
+                    return SyntaxToken.object(objectify(result));
                 }
             }
             else {
