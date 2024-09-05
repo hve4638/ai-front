@@ -53,20 +53,9 @@ export class PromptMetadata implements IPromptMetadata {
             const varMetadataParser = new VarMetadataParser(currentScopeSelects);
             for (const data of raw.vars) {
                 let varMetadata:VarMetadata;
-                if (typeof data === 'string') {
-                    varMetadata = varMetadataParser.parse({
-                        type: 'select',
-                        name: data,
-                        display_name: data,
-                        show_in_header: true,
-                        select_ref: data,
-                    });
-                }
-                else {
-                    varMetadata = varMetadataParser.parse(data);
-                }
+                varMetadata = varMetadataParser.parse(data);
                 
-                if (varMetadata.show_in_header) {
+                if (varMetadata.type === "select" && varMetadata.show_in_header) {
                     this.#showInHeaderVarMetadata.push(varMetadata);
                 }
                 

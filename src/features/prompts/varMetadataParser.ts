@@ -111,7 +111,7 @@ export class VarMetadataParser {
                 return target.options[0].value;
             case PROMPT_VAR_TYPE.TEXT:
             case PROMPT_VAR_TYPE.TEXT_MULTILINE:
-                return '';
+                return "";
             case PROMPT_VAR_TYPE.ARRAY:
                 return [];
             case PROMPT_VAR_TYPE.IMAGE:
@@ -178,6 +178,7 @@ export class VarMetadataParser {
         
         return {
             element : this.#parseArrayElement(target.element),
+            default_value : [],
         } as ArrayVarMetadata;
     }
 

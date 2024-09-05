@@ -103,4 +103,8 @@ export class LocalInteractive {
             throw errorNotAvailable();
         }
     }
+    
+    static logEvent(eventName: string, data: { [key: string]: any }) {
+        console.log(eventName, data);
+    }
 }
