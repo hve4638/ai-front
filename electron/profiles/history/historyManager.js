@@ -1,5 +1,4 @@
 const Database = require('./betterSQLite3History');
-//const Database = require('./jsonHistory');
 const path = require('path');
 const fs = require('fs');
 
@@ -14,6 +13,11 @@ class HistoryManager {
         fs.mkdirSync(this.#basePath, { recursive: true });
     }
 
+    /**
+     * 히스토리 DB 파일 경로를 반환
+     * @param {string} key 
+     * @returns {string}
+     */
     #getPath(key) {
         return path.join(this.#basePath, `history${key}`);
     }
@@ -23,7 +27,7 @@ class HistoryManager {
 
         let db;
         if (key in this.#databases) {
-            db = this.#databases[key];
+            return this.#databases[key];
         }
         else if (fs.existsSync(target)) {
             const target = this.#getPath(key);
@@ -36,6 +40,9 @@ class HistoryManager {
         }
     }
 
+    /**
+     * @returns {Database}
+     */
     #openDB(key) {
         let db;
         if (key in this.#databases) {
@@ -50,6 +57,13 @@ class HistoryManager {
         return db;
     }
 
+    /**
+     * offset 부터 limit 만큼의 데이터를 내림차순 반환
+     * @param {*} key 
+     * @param {*} offset 
+     * @param {*} limit 
+     * @returns 
+     */
     get(key, offset=0, limit=1000) {
         const db = this.#openDB(key);
 
@@ -60,6 +74,12 @@ class HistoryManager {
         const db = this.#openDB(key);
 
         db.append(JSON.stringify(data));
+    }
+
+    delete(key, id) {
+        const db = this.#openDB(key);
+
+        db.delete(id);
     }
 
     drop(key) {
@@ -80,6 +100,5 @@ class HistoryManager {
         this.#databases = {};
     }
 }
-
 
 module.exports = HistoryManager;

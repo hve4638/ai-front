@@ -18,19 +18,18 @@ function openBrowser(url) {
 
     let command;
     switch (process.platform) {
-    case 'darwin': // macOS
+    case 'darwin':
         command = `open ${url}`;
         break;
-    case 'win32': // Windows
+    case 'win32':
         command = `start ${url}`;
         break;
-    case 'linux': // Linux
+    case 'linux':
         command = `xdg-open ${url}`;
         break;
     default:
         return;
     }
-    console.log("shell : " + command)
     exec(command);
 }
 

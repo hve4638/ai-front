@@ -36,8 +36,19 @@ class BetterSQLite3History {
         );
         insert.run({data});
     }
+    
+    delete(id) {
+        const query = this.#db.prepare(
+            "DELETE FROM history WHERE id = $id"
+        );
+        query.run({id});
+    }
 
     drop() {
+        const query = this.#db.prepare(
+            "DELETE FROM history"
+        );
+        query.run();
         this.#db.close();
 
         if (fs.existsSync(this.#path)) {
