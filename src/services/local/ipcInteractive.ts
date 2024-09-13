@@ -1,93 +1,117 @@
 import { RawPromptMetadataTree } from 'features/prompts';
 import { Promptlist } from './interface';
+import { deleteAllProfileHistory } from '../../../electron/ipcAPI';
 
 const electron: any = window.electron;
 
+class IPCError extends Error {
+    constructor(message:string) {
+        super(message);
+        this.name = 'IPCError';
+    }
+}
+
 export class IPCInteractive {
-    static echo(message:any) {
-        return electron.echo(message);
+    static echo(message:any):any {
+        const [_, data] = electron.echo(message);
+        return data;
     }
 
-    static loadPromptMetadata(path:string=''): Promise<string> {
-        return new Promise((resolve, reject) => {
-            electron.loadPromptMetadata(path)
-                .then((data) => {
-                    resolve(data)
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
-
-    static loadPrompt(value: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            electron.loadPrompt(value)
-                .then((data) => {
-                    resolve(data)
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
-
-    static openPromptFolder() {
-        electron.openPromptFolder();
-    }
-
-    static storeValue(name: string, value: any) {
-        return new Promise((resolve, reject) => {
-            electron.storeValue(name, value)
-        });
-    }
-
-    static loadValue(name: string): any | undefined {
-        return new Promise((resolve, reject) => {
-            electron.loadValue(name)
-                .then((data) => resolve(data))
-                .catch((err) => reject(err))
-        });
-    }
-
-    static storeSecretValue(name: string, value: any) {
-        return new Promise((resolve, reject) => {
-            electron.storeSecretValue(name, value)
-        });
-    }
-
-    static loadSecretValue(name: string): any | undefined {
-        return new Promise((resolve, reject) => {
-            electron.loadSecretValue(name)
-                .then((data) => resolve(data))
-                .catch((err) => reject(err))
-        });
-    }
-
-    static fetch(url, init) {
-        return electron.fetch(url, init);
-    }
-
-    static openBrowser(url) {
+    static openBrowser(url:string) {
         electron.openBrowser(url);
     }
 
-    static resetAllValues() {
-        electron.resetAllValues();
+    static openPromptDirectory() {
+        electron.openPromptDirectory();
     }
 
-    static storeHistory(sessionid: number, data: any) {
-        electron.storeHistory(sessionid, data);
+    /**
+     * @returns FetchId
+     */
+    static fetch(url:string, init:any):number {
+        const [err, id] = electron.fetch(url, init);
+        if (err) throw new IPCError(err.message);
+
+        return id;
     }
 
-    static async loadHistory(sessionid: number, offset: number, limit: number) {
-        return await electron.loadHistory(sessionid, offset, limit);
+    static abortFetch(fetchId:number) {
+        const [err] = electron.abortFetch(fetchId);
+
+        if (err) throw new IPCError(err.message);
     }
 
-    static deleteHistory(sessionid: number) {
-        electron.deleteHistory(sessionid);
+    static async getFetchResponse(fetchId:number):Promise<any> {
+        const [err, result] = await electron.getFetchResponse(fetchId);
+
+        if (err) throw new IPCError(err.message);
+
+        return result;
+    }
+
+    static loadRootPromptMetadata(profileName:string) {
+        return electron.loadRootPromptMetadata(profileName);
+    }
+
+    static loadModulePromptMetadata(profileName:string, moduleName:string) {
+        return electron.loadModulePromptMetadata(profileName, moduleName);
+    }
+
+    static loadPromptTemplate(profileName:string, basePath:string, filename:string) {
+        return electron.loadPromptTemplate(profileName, basePath, filename);
+    }
+
+    static getProfileNames():string[] {
+        const [err, names] = electron.getProfileNames();
+        if (err) throw new IPCError(err.message);
+
+        return names;
+    }
+
+    static createProfile(name:string) {
+        const [err] = electron.createProfile(name);
+        if (err) throw new IPCError(err.message);
+    }
+    static deleteProfile(name:string) {
+        const [err] = electron.deleteProfile(name);
+        if (err) throw new IPCError(err.message);
+    }
+
+    static loadProfileValue(profileName:string, filename:string, key:string) {
+        const [err, value] = electron.loadProfileValue(profileName, filename, key);
+        if (err) throw new IPCError(err.message);
+
+        return value;
+    }
+    static storeProfileValue(profileName:string, filename:string, key:string, value:any) {
+        const [err] = electron.storeProfileValue(profileName, filename, key, value);
+        if (err) throw new IPCError(err.message);
+    }
+
+    static loadProfileHistory(profileName:string, historyName:string, offset:number, limit:number) {
+        const [err, history] = electron.loadProfileHistory(profileName, historyName, offset, limit);
+        if (err) throw new IPCError(err.message);
+        return history;
+    }
+
+    static storeProfileHistory(profileName:string, historyName:string, data:any) {
+        const [err] = electron.storeProfileHistory(profileName, historyName, JSON.stringify(data));
+        if (err) throw new IPCError(err.message);
+    }
+
+    static deleteProfileHistory(profileName:string, historyName:string, id:number) {
+        const [err] = electron.deleteProfileHistory(profileName, historyName, id);
+        if (err) throw new IPCError(err.message);
+    }
+
+    static deleteAllProfileHistory(profileName:string, historyName:string) {
+        const [err] = electron.deleteAllProfileHistory(profileName, historyName);
+        if (err) throw new IPCError(err.message);
     }
     
+    /**
+     * @deprecated
+     */
     static logEvent(eventName: string, data: { [key: string]: any }) {
         console.log(eventName, data);
     }

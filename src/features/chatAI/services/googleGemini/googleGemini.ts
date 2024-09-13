@@ -4,7 +4,7 @@ import { APIResponse } from 'data/interface';
 import { CurlyBraceFormatBuildArgs, CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
 import { bracketFormat } from 'utils/format';
 
-import { proxyFetch } from 'services/local';
+import { LocalInteractive } from 'services/local';
 
 import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant'
 
@@ -51,7 +51,7 @@ export class GoogleGemini implements AIModel {
     }
     async request(requestdata:AIModelRequestData) {
         const data = requestdata.data;
-        const res =  await proxyFetch(requestdata.url, data);
+        const res =  await LocalInteractive.proxyFetch(requestdata.url, data);
         if (res.ok) {
             return res.data;
         }

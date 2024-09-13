@@ -4,7 +4,7 @@ import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse } fr
 
 import { bracketFormat } from 'utils/format'
 
-import { proxyFetch } from 'services/local'
+import { LocalInteractive } from 'services/local'
 
 import { SecretContextType } from 'context/SecretContext'
 
@@ -111,14 +111,14 @@ export class GoogleVertexAI implements AIModel {
 
     async request(requestdata:AIModelRequestData) {
         const data = requestdata.data;
-        const res =  await proxyFetch(requestdata.url, data);
+        const res =  await LocalInteractive.proxyFetch(requestdata.url, data);
         if (res.ok) {
             return res.data;
         }
         else if (res.status === 401) { // 토큰 만료시 재시도
             await this.#refreshToken();
             const newRequestdata = await this.#updateTokenInRequestData(requestdata);
-            const res =  await proxyFetch(newRequestdata.url, data);
+            const res =  await LocalInteractive.proxyFetch(newRequestdata.url, data);
             if (res.ok) {
                 return res.data;
             }

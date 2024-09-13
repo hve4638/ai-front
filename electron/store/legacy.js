@@ -6,6 +6,7 @@ const {
 } = require('./path');
 
 const guestProfilePath = path.join(profilesDirectoryPath, 'guest');
+const legacyPath = path.join(baseDirectoryPath, 'legacy');
 
 function migrateLegacyProfile() {
     if (isLegacyProfileDetected() && !fs.existsSync(guestProfilePath)) {
@@ -14,6 +15,7 @@ function migrateLegacyProfile() {
         copyBaseToGuestProfile('config.json', 'config.json');
         copyBaseToGuestProfile('secret.json', 'secret.json');
         copyBaseToGuestProfile('history', 'history');
+        copyBaseToGuestProfile('prompts', 'prompts');
     }
 }
 
@@ -21,11 +23,13 @@ function isLegacyProfileDetected() {
     const legacyConfigFilePath = path.join(baseDirectoryPath, 'config.json');
     const legacySecretFilePath = path.join(baseDirectoryPath, 'secret.json');
     const legacyHistoryDirectoryPath = path.join(baseDirectoryPath, 'history');
+    const legacyPromptsDirectoryPath = path.join(baseDirectoryPath, 'prompts');
     try {
         return (
             isFile(legacyConfigFilePath)
             || isFile(legacySecretFilePath)
             || isDir(legacyHistoryDirectoryPath)
+            || isDir(legacyPromptsDirectoryPath)
         );
     }
     catch (e) {
@@ -47,6 +51,14 @@ function copyBaseToGuestProfile(oldFileName, newFileName) {
 
     if (fs.existsSync(oldPath)) {
         fs.cpSync(oldPath, newPath, { recursive: true });
+    }
+}
+function moveBaseToLegacyDirectory(filename) {
+    const oldPath = path.join(baseDirectoryPath, filename);
+    const newPath = path.join(legacyPath, filename);
+
+    if (fs.existsSync(oldPath)) {
+        fs.renameSync(oldPath, newPath);
     }
 }
 

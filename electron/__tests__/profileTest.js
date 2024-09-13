@@ -65,9 +65,9 @@ describe('Profile Test', () => {
         profiles.createProfile('test1');
 
         const profile = profiles.getProfile('test1');
-        profile.set('config.json', 'value', 10);
+        profile.setValue('config.json', 'value', 10);
         
-        const value = profile.get('config.json', 'value');
+        const value = profile.getValue('config.json', 'value');
         expect(value).toBe(10);
     });
 

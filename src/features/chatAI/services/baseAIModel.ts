@@ -1,4 +1,4 @@
-import { proxyFetch } from "services/local";
+import { LocalInteractive } from "services/local";
 import { AIModelConfig, AIModelRequest, AIModelRequestData, AIModelResponse } from "../interface";
 import { NotImplementedError } from "features/errors";
 
@@ -15,13 +15,14 @@ export class BaseAIModel {
     }
     async request(requestdata:AIModelRequestData):Promise<any> {
         const data = requestdata.data;
+        const fetchId = await LocalInteractive.fetch(requestdata.url, data)
         const res:{
             ok:boolean,
             status:number,
             reason:string,
             data:any,
             type:string,
-        } = await proxyFetch(requestdata.url, data);
+        } = await LocalInteractive.getFetchResponse(fetchId);
         if (res.ok) {
             return res.data;
         }

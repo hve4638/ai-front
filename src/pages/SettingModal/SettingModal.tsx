@@ -3,7 +3,7 @@ import React, { useState, useContext, useRef, useEffect, memo } from 'react'
 import { LayoutModes, ThemeModes } from 'data/interface'
 import { TARGET_ENV } from 'data/constants'
 
-import { resetAllValues } from 'services/local'
+import { LocalInteractive } from 'services/local'
 
 import { SecretContext } from 'context/SecretContext'
 import { MemoryContext } from 'context/MemoryContext'
@@ -112,13 +112,6 @@ function SettingModal(props:SettingModalProps) {
                     </>
                 }
                 <div style={{height:'16px'}}/>
-                <ButtonFull
-                    name="데이터 초기화"
-                    onClick={async ()=>{
-                        await resetAllValues();
-                        window.location.reload();
-                    }}
-                />
             </div>
         </>
     )

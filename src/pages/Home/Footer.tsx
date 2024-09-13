@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import GithubIcon from 'assets/icons/github.png'
 import { DOWNLOAD_LINK, GITHUB_LINK, TARGET_ENV, VERSION } from 'data/constants';
 
-import { isNewVersionAvailable, openBrowser, openPromptFolder } from 'services/local';
+import { LocalInteractive } from 'services/local';
 import { SessionSlot, SessionSlotAdder } from 'features/chatSession';
 
 import {
@@ -58,7 +58,7 @@ export default function Footer({ onOpenDebug }:FooterProps) {
     }
 
     useEffect(()=>{
-        isNewVersionAvailable()
+        LocalInteractive.isNewVersionAvailable()
         .then(data=>{
             if (data) {
                 setExistsNewVersion(true);
@@ -74,7 +74,7 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                     className='browse-button'
                     src={GithubIcon}
                     alt='github-icon'
-                    onClick={()=> openBrowser(GITHUB_LINK)}
+                    onClick={()=> LocalInteractive.openBrowser(GITHUB_LINK)}
                 />
                 <div className='noflex'>
                     <div className='footer-version-container column'>
@@ -82,7 +82,7 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                             existsNewVersion &&
                             <div
                                 className='noflex footer-newversion-text clickable'
-                                onClick={()=>openBrowser(DOWNLOAD_LINK)}
+                                onClick={()=>LocalInteractive.openBrowser(DOWNLOAD_LINK)}
                             >
                                 New version available!
                             </div>
@@ -157,7 +157,7 @@ export default function Footer({ onOpenDebug }:FooterProps) {
                     <GoogleFontIconButton
                         className='font-icon'
                         value='folder_open'
-                        onClick={()=>openPromptFolder()}
+                        onClick={()=>LocalInteractive.openPromptDirectory()}
                     />
                 </>
             }

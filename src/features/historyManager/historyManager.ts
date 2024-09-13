@@ -1,4 +1,4 @@
-import { storeHistory, loadHistory, deleteHistory, LocalInteractive } from 'services/local/index'
+import { LocalInteractive } from 'services/local/index'
 import { ChatSession } from 'context/interface';
 import { NOSESSION_KEY } from 'data/constants';
 import { APIResponse } from 'data/interface';
@@ -30,7 +30,7 @@ export class HistoryManager {
             }
             if (this.#isVolatieHistory(key)) {
                 this.#caches[key].allFetched = true;
-                deleteHistory(key);
+                LocalInteractive.deleteHistory(key);
             }
         }
         
@@ -68,7 +68,7 @@ export class HistoryManager {
         }
 
         if (!this.#isVolatieHistory(historyKey)) {
-            storeHistory(historyKey, data);
+            LocalInteractive.storeHistory(historyKey, data);
         }
     }
 
@@ -79,7 +79,7 @@ export class HistoryManager {
     close() {
         for (const key in this.#volatiedKey) {
             if (this.#volatiedKey[key]) {
-                deleteHistory(key)
+                LocalInteractive.deleteHistory(key)
             }
         }
     }

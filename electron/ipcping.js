@@ -8,8 +8,8 @@ module.exports = {
     ABORT_FETCH : 'abort-fetch',
     GET_FETCH_RESPONSE : 'get-fetch-response',
     
-    LOAD_PROMPT_METADATA : 'load-prompt-metadata',
-    LOAD_PROMPT_ROOTMETADATA : 'load-prompt-root-metadata',
+    LOAD_MODULE_PROMPT_METADATA : 'load-module-prompt-metadata',
+    LOAD_ROOT_PROMPT_METADATA : 'load-root-prompt-metadata',
     LOAD_PROMPT_TEMPLATE : 'load-prompt-template',
 
     CREATE_PROFILE : 'create-profile',

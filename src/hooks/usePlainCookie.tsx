@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { storeValue, loadValue, LocalInteractive } from 'services/local';
+import { LocalInteractive } from 'services/local';
 
 /**
  * WEB 환경이라면 Cookie에 값이 저장된다.

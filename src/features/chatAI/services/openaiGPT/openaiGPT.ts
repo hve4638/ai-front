@@ -3,8 +3,6 @@ import { CurlyBraceFormatParser } from "libs/curlyBraceFormat";
 import { AIModel, AIModelRequestData, AIModelReturns } from "data/aimodel/interfaces";
 import { AIModelConfig, AIModelRequest, AIModelResponse } from "data/aimodel/interfaces";
 
-import { proxyFetch } from "services/local";
-
 import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from "./constant"
 
 import { BaseAIModel } from "../baseAIModel";
@@ -20,7 +18,7 @@ export class OpenAIGPT extends BaseAIModel {
         const promptParser = new CurlyBraceFormatParser(request.prompt);
         const messages = promptParser.build({
             ...request.curlyBraceFormatArgs,
-            role : (x:string) => ROLE[x],
+            role : (x:string) => ROLE[x] ?? ROLE_DEFAULT,
             map : (text, role) => {
                 return {
                     role : role,

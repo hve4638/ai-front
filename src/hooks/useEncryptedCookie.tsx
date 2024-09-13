@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import CryptoJS from 'crypto-js'
-import { storeSecretValue, loadSecretValue } from 'services/local'
+import { LocalInteractive } from 'services/local'
 
 const makeSalt = () => Math.floor(Math.random() * 1000000);
 
@@ -21,7 +21,7 @@ export const useEncryptedCookie: (cookieName: string, encryptionKey: string) => 
     }
 
     useEffect(() => {
-        loadSecretValue(cookieName)
+        LocalInteractive.loadSecretValue(cookieName)
             .then(encrypted => {
                 if (encrypted && !cached) {
                     try {
@@ -37,7 +37,7 @@ export const useEncryptedCookie: (cookieName: string, encryptionKey: string) => 
     const setEncryptedCookie = (value, options) => {
         try {
             const encryptedValue = encrypt(value);
-            storeSecretValue(cookieName, encryptedValue);
+            LocalInteractive.storeSecretValue(cookieName, encryptedValue);
             setCached(value);
         } catch (error) {
             console.error('Failed to encrypt cookie value:', error);

@@ -4,7 +4,7 @@ import { AIModelConfig, AIModelRequest, AIModelResponse } from 'data/aimodel/int
 import { CurlyBraceFormatParser } from 'libs/curlyBraceFormat';
 
 import { CLAUDE_URL, ROLE } from './constant'
-import { proxyFetch } from 'services/local';
+import { LocalInteractive } from 'services/local';
 
 export class Claude implements AIModel {
     async preprocess() {
@@ -14,7 +14,7 @@ export class Claude implements AIModel {
         
     }
     async request(requestdata:AIModelRequestData) {
-        const res =  await proxyFetch(requestdata.url, requestdata.data);
+        const res =  await LocalInteractive.proxyFetch(requestdata.url, requestdata.data);
         if (res.ok) {
             return res.data;
         }

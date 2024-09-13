@@ -16,19 +16,15 @@ function initIPC({ fetchContainer, profiles }) {
     const trottles = {};
     
     ipcMain.handle(ipcping.ECHO, (event, message) => {
+        console.log(message);
+        
         return [null, message];
     });
-
-    ipcMain.handle(ipcping.MESSAGE, (event, message) => {
-        console.log(message);
-
-        return [null, undefined];
-    });
-
+    
     ipcMain.handle(ipcping.OPEN_BROWSER, async (event, url) => {
         utils.openBrowser(url);
 
-        return [null, undefined];
+        return [null];
     });
     ipcMain.handle(ipcping.OPEN_PROMPT_DIRECTORY, (event) => {
         try {
@@ -49,50 +45,60 @@ function initIPC({ fetchContainer, profiles }) {
             return [null, fetchId];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     })
 
-    ipcMain.handle(ipcping.ABORT_FETCH, (event, fetchId) => {
-        fetchContainer.abort(fetchId);
-    });
-
-    ipcMain.handle(ipcping.GET_FETCH_RESPONSE, async (event, key) => {
+    ipcMain.handle(ipcping.ABORT_FETCH, async (event, fetchId) => {
         try {
-            return [null, await fetchContainer.get(key)];
+            fetchContainer.abort(fetchId);
+            return [null];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     });
 
-    ipcMain.handle(ipcping.LOAD_PROMPT_ROOTMETADATA, (event, args) => {
+    ipcMain.handle(ipcping.GET_FETCH_RESPONSE, async (event, fetchId) => {
         try {
-            const metadata = store.prompts.getRootMetadata();
+            return [null, await fetchContainer.get(fetchId)];
+        }
+        catch (error) {
+            return [makeErrorStruct(error)];
+        }
+    });
+
+
+    ipcMain.handle(ipcping.LOAD_ROOT_PROMPT_METADATA, (event, profileName) => {
+        try {
+            const profile = profiles.getProfile(profileName);
+            const metadata = profile.getRootPromptMetadata();
             return [null, metadata];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     })
 
-    ipcMain.handle(ipcping.LOAD_PROMPT_METADATA, (event, moduleName) => {
+    ipcMain.handle(ipcping.LOAD_MODULE_PROMPT_METADATA, (event, profileName, moduleName) => {
         try {
-            const metadata = store.prompts.getMetadata(moduleName);
+            const profile = profiles.getProfile(profileName);
+            const metadata = profile.getModulePromptMetdata(moduleName);
             return [null, metadata];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     });
 
-    ipcMain.handle(ipcping.LOAD_PROMPT_TEMPLATE, (event, basePath, data) => {
+    ipcMain.handle(ipcping.LOAD_PROMPT_TEMPLATE, (event, profileName, basePath, data) => {
         try {
-            const metadata = store.prompts.getFileAsString(basePath, data);
-            return [null, metadata];
+            const profile = profiles.getProfile(profileName);
+            const template = profile.getPromptTemplate(basePath, data);
+            return [null, template];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     });
 
@@ -120,16 +126,16 @@ function initIPC({ fetchContainer, profiles }) {
             return [null, profiles.getProfileNames()];
         }
         catch (error) {
-            return [makeErrorStruct(error), null];
+            return [makeErrorStruct(error)];
         }
     });
 
-    ipcMain.handle(ipcping.STORE_PROFILE_VALUE, (event, category, key, value) => {
+    ipcMain.handle(ipcping.STORE_PROFILE_VALUE, (event, profileName, category, key, value) => {
         trottles[category] ??= utils.throttle(500);
 
         try {
             const profile = profiles.getProfile(profileName);
-            profile.set(category, key, value);
+            profile.setValue(category, key, value);
 
             // 500ms throttle로 저장
             trottles[category](()=>{
@@ -141,30 +147,19 @@ function initIPC({ fetchContainer, profiles }) {
             return [makeErrorStruct(error)];
         }
     });
-    ipcMain.handle(ipcping.LOAD_PROFILE_VALUE, (event, category, key) => {
+    ipcMain.handle(ipcping.LOAD_PROFILE_VALUE, (event, profileName, category, key) => {
         try {
             const profile = profiles.getProfile(profileName);
-            const value = profile.get(category, key);
+            const value = profile.getValue(category, key);
             return [null, value];
-        }
-        catch (error) {
-            return [makeErrorStruct(error), null];
-        }
-    });
-
-    
-    ipcMain.handle(ipcping.STORE_PROFILE_HISTORY, (event, historyName, data) => {
-        try {
-            const profile = profiles.getProfile(profileName);
-            profile.history.append(historyName, data);
-
-            return [null];
         }
         catch (error) {
             return [makeErrorStruct(error)];
         }
     });
-    ipcMain.handle(ipcping.LOAD_PROFILE_HISTORY, (event, historyName, offset, limit) => {
+
+    
+    ipcMain.handle(ipcping.LOAD_PROFILE_HISTORY, (event, profileName, historyName, offset, limit) => {
         try {
             const profile = profiles.getProfile(profileName);
             const data = profile.history.get(historyName, offset, limit);
@@ -175,7 +170,18 @@ function initIPC({ fetchContainer, profiles }) {
             return [makeErrorStruct(error)];
         }
     });
-    ipcMain.handle(ipcping.DELETE_PROFILE_HISTORY, (event, historyName, id) => {
+    ipcMain.handle(ipcping.STORE_PROFILE_HISTORY, (event, profileName, historyName, data) => {
+        try {
+            const profile = profiles.getProfile(profileName);
+            profile.history.append(historyName, data);
+
+            return [null];
+        }
+        catch (error) {
+            return [makeErrorStruct(error)];
+        }
+    });
+    ipcMain.handle(ipcping.DELETE_PROFILE_HISTORY, (event, profileName, historyName, id) => {
         try {
             const profile = profiles.getProfile(profileName);
             profile.history.delete(historyName, id);
@@ -187,7 +193,7 @@ function initIPC({ fetchContainer, profiles }) {
         }
     });
     
-    ipcMain.handle(ipcping.DELETE_ALL_PROFILE_HISTORY, (event, historyName) => {
+    ipcMain.handle(ipcping.DELETE_ALL_PROFILE_HISTORY, (event, profileName, historyName) => {
         try {
             const profile = profiles.getProfile(profileName);
             profile.history.drop(historyName);
