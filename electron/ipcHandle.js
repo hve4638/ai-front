@@ -205,6 +205,25 @@ function initIPC({ fetchContainer, profiles }) {
         }
     });
 
+    ipcMain.handle(ipcping.LOAD_LAST_PRROFILE_NAME, (event) => {
+        try {
+            return [null, profiles.getLastProfileName()];
+        }
+        catch (error) {
+            return [makeErrorStruct(error)];
+        }
+    });
+
+    ipcMain.handle(ipcping.UPDATE_LAST_PROFILE_NAME, (event, profileName) => {
+        try {
+            profiles.setLastProfileName(profileName);
+            return [null];
+        }
+        catch (error) {
+            return [makeErrorStruct(error)];
+        }
+    });
+
     ipcMain.handle(ipcping.EXECUTE_PLUGIN, (event) => {
         try {
             throw new Error('Not implemented');

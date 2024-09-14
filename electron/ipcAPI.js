@@ -121,6 +121,10 @@ const api = {
      * @returns {[Error]}
      */
     deleteAllProfileHistory: (profileName, historyName) => ipcRenderer.invoke(ipcping.DELETE_ALL_PROFILE_HISTORY, profileName, historyName),
+
+    loadLastProfileName: () => ipcRenderer.invoke(ipcping.LOAD_LAST_PRROFILE_NAME),
+    
+    updateLastProfileName: (profileName) => ipcRenderer.invoke(ipcping.UPDATE_LAST_PROFILE_NAME, profileName),
 };
 
 module.exports = api;

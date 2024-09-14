@@ -1,7 +1,3 @@
-import { RawPromptMetadataTree } from 'features/prompts';
-import { Promptlist } from './interface';
-import { deleteAllProfileHistory } from '../../../electron/ipcAPI';
-
 const electron: any = window.electron;
 
 class IPCError extends Error {
@@ -106,6 +102,18 @@ export class IPCInteractive {
 
     static deleteAllProfileHistory(profileName:string, historyName:string) {
         const [err] = electron.deleteAllProfileHistory(profileName, historyName);
+        if (err) throw new IPCError(err.message);
+    }
+
+    static loadLastProfileName():string|null {
+        const [err, name] = electron.loadLastProfileName();
+        if (err) throw new IPCError(err.message);
+
+        return name;
+    }
+
+    static updateLastProfileName(name:string) {
+        const [err] = electron.updateLastProfileName(name);
         if (err) throw new IPCError(err.message);
     }
     

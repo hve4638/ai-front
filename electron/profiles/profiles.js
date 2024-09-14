@@ -1,3 +1,4 @@
+//@ts-check
 const fs = require('fs');
 const path = require('path');
 const { ProfileError } = require('./errors')
@@ -6,18 +7,24 @@ const Profile = require('./profile');
 class Profiles {
     #basePath;
     #metadataPath;
-
-    #metadata;
     /**
      * 메타데이터에서 불러온 프로필 이름 목록
+     * @type {string[]}
      */
     #profileNames = [];
     /**
-     * @type {Object.<string, Profile>}
      * 실제 로드된 프로필
+     * @type {Object.<string, Profile>}
      */
     #profiles = {};
+    /**
+     * @type {string|null}
+    */
+    #lastProfile = null;
 
+    /**
+     * @param {string} basePath
+     */
     constructor(basePath) {
         this.#basePath = basePath;
         this.#metadataPath = path.join(this.#basePath, 'profiles.json');
@@ -50,6 +57,7 @@ class Profiles {
     #importProfileMetadata(metadata) {
         if (Array.isArray(metadata.profiles)) {
             this.#profileNames = metadata.profiles;
+            this.#lastProfile = metadata.lastProfile;
         }
         else {
             throw new ProfileError('Invalid metadata');
@@ -69,6 +77,7 @@ class Profiles {
     #exportProfileMetadata() {
         const metadata = {
             profiles : this.#profileNames,
+            lastProfile : this.#lastProfile,
         }
         return metadata;
     }
@@ -148,15 +157,29 @@ class Profiles {
     }
 
     /**
-     * @param {string} 프로필 이름
+     * @param {string} profileName
      * @returns {Profile} 
      */
     getProfile(profileName) {
         if (profileName in this.#profiles) {
             return this.#profiles[profileName];
         }
-        else if (profileName in this.#metadata.profiles) {
-            return createProfile(profileName);
+        else if (this.#profileNames.includes(profileName)) {
+            return this.createProfile(profileName);
+        }
+        else {
+            throw new ProfileError('Profile not found');
+        }
+    }
+
+    getLastProfileName() {
+        return this.#lastProfile;
+    }
+
+    setLastProfileName(profileName) {
+        if (this.#profileNames.includes(profileName)) {
+            this.#lastProfile = profileName;
+            this.saveProfileMetadata();
         }
         else {
             throw new ProfileError('Profile not found');

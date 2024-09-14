@@ -16,6 +16,8 @@ module.exports = {
     DELETE_PROFILE : 'delete-profile',
     LOAD_PROFILE_LIST : 'load-profile-list',
     LOAD_PROFILE_INFOMATION : 'load-profile',
+    LOAD_LAST_PRROFILE_NAME : 'load-last-profile-name',
+    UPDATE_LAST_PROFILE_NAME : 'update-last-profile-name',
 
     STORE_PROFILE_VALUE : 'store-profile-value',
     LOAD_PROFILE_VALUE : 'load-profile-value',
