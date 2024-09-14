@@ -101,13 +101,16 @@ describe('CurlyBraceFormat Parse', ()=>{
                 },
             },
             expressionEventHooks : {
-                'indexor' : function(expr, index) {
+                indexor(expr, index) {
                     const arr = expr.value.array;
 
                     return arr.at(index.value as number);
                 },
-                'iterate' : function(expr) {
+                iterate(expr) {
                     return expr.value.array;
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         }

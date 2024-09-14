@@ -25,15 +25,17 @@ type ModulePromptMetadatas = {
  * @param root - RawPromptMetadataTree
  */
 export class PromptMetadataTree {
+    #profile:string;
     #raw:RawPromptMetadataTree;
     #selects:Selects;
     #promptTree:(PromptMetadata|PromptMetadataSublist)[];
     #promptCache:PromptCache;
     #externalMetadataElements:ModulePromptMetadatas;
     
-    constructor(root:RawPromptMetadataTree, externalMetadataElements:ModulePromptMetadatas = {}) {
+    constructor(profile:string, root:RawPromptMetadataTree, externalMetadataElements:ModulePromptMetadatas = {}) {
         this.#verify(root);
         
+        this.#profile = profile;
         this.#raw = root;
         this.#selects = root.selects;
         this.#promptCache = {};
@@ -74,6 +76,7 @@ export class PromptMetadataTree {
                 }
                 else {
                     const sublist = new PromptMetadataSublist(
+                        this.#profile,
                         element as RawPromptMetadataList,
                         metadataArgs
                     );
@@ -131,6 +134,7 @@ export class PromptMetadataTree {
     #tryMakePromptMetadata(rawMetadata:RawPromptMetadataElement, metadataArgs:{basePath:string, selects:Selects}):PromptMetadata|null {
         try {
             return PromptMetadata.parse(
+                this.#profile,
                 rawMetadata as RawPromptMetadata,
                 metadataArgs
             );

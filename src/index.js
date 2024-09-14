@@ -14,7 +14,7 @@ import DebugContextProvider from './context/DebugContext'
 import MemoryContextProvider from './context/MemoryContext'
 import { CookiesProvider } from 'react-cookie';
 import { EventContextProvider } from './context/EventContext'
-import { TARGET_ENV, DEBUG_MODE } from './data/constants.tsx'
+import { TARGET_ENV, DEBUG_MODE } from './data/constants'
 
 import { HistoryManager } from './features/historyManager';
 

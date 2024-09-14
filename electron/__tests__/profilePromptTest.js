@@ -4,7 +4,8 @@ const store = require('../store');
 const Profiles = require('../profiles');
 
 describe('Profile Prompt Test', () => {
-    const testPath = path.join(store.path.baseDirectoryPath, 'test', 'profiles');
+    // 각 테스트는 병렬적으로 실행되므로 각 TestSuite마다 다른 profile 이름을 사용해야 함
+    const testPath = path.join(store.path.baseDirectoryPath, 'prompt-profile-test', 'profiles');
     /**
      * @type {Profiles}
      */

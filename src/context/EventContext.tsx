@@ -1,5 +1,5 @@
 import React, { useContext, useState, createContext } from "react";
-import { NOSESSION_KEY, SESSION_TEMPLATE, APIRESPONSE_TEMPLATE } from "data/constants.tsx";
+import { NOSESSION_KEY, SESSION_TEMPLATE, APIRESPONSE_TEMPLATE } from "data/constants";
 import { FetchStatus } from "data/interface.ts";
 
 import { ChatSession } from "./interface.ts";

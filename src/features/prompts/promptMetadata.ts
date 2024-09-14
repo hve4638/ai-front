@@ -1,6 +1,4 @@
-import { LocalInteractive } from 'services/local';
-import { PROMPT_VAR_TYPE } from './data';
-import { PromptMetadataInternalError, PromptTemplateLoadError, StructVerifyFailedError } from './errors';
+import { PromptTemplateLoadError, StructVerifyFailedError } from './errors';
 import type {
     IPromptMetadata,
     RawPromptMetadata,
@@ -15,6 +13,8 @@ type PromptMetadataArgs = {
     selects:Selects;
 }
 export class PromptMetadata implements IPromptMetadata {
+    static #onLoadPromptTemplate?:(metadata:PromptMetadata)=>Promise<string>;
+    #profile:string = '';
     #raw:RawPromptMetadata = {} as any;
     #promptTemplate?:string = undefined;
     #name:string = '';
@@ -27,8 +27,13 @@ export class PromptMetadata implements IPromptMetadata {
     #vars:{[key:string]:any} = {};
     #externalIndex:[number, number|null] = [-1, null];
 
-    static parse(raw: RawPromptMetadata, { basePath, selects }: PromptMetadataArgs):PromptMetadata {
+    static setOnLoadPromptTemplate(callback:(metadata:PromptMetadata)=>Promise<string>) {
+        this.#onLoadPromptTemplate = callback;
+    }
+
+    static parse(profile:string, raw: RawPromptMetadata, { basePath, selects }: PromptMetadataArgs):PromptMetadata {
         const metadata = new PromptMetadata();
+        metadata.#profile = profile;
         metadata.#parse(raw, { basePath, selects });
         return metadata;
     }
@@ -79,7 +84,14 @@ export class PromptMetadata implements IPromptMetadata {
         if (this.#promptTemplate != null) return;
 
         try {
-            const template = await LocalInteractive.loadPromptTemplate(this.#path, this.#basePath);
+            const loadTemplate = PromptMetadata.#onLoadPromptTemplate;
+            if (!loadTemplate) {
+                onFail(new PromptTemplateLoadError("onLoadPromptTemplate 'callback' is not set"));
+                return;
+            }
+            
+            const template = await loadTemplate(this);
+            // @TODO: 레거시 코드
             if (template.startsWith("@FAIL")) {
                 onFail(
                     new PromptTemplateLoadError(
@@ -96,6 +108,15 @@ export class PromptMetadata implements IPromptMetadata {
         }
     }
 
+    get profile() {
+        return this.#profile;
+    }
+    /**
+     * 모듈일 경우 모듈의 경로, 아닐 경우 빈 문자열
+     */
+    get basePath() {
+        return this.#basePath;
+    }
     get name() {
         return this.#name;
     }
@@ -131,10 +152,7 @@ export class PromptMetadata implements IPromptMetadata {
     getVarValues() {
         return { ...this.#vars };
     }
-    /**
-     * @param index1 - PromptMetadataTree에 정의된 인덱스 1
-     * @param index2 - PromptMetadataTree에 정의된 인덱스 2
-     */
+    
     setIndexes(index1:number, index2:number|null) {
         this.#externalIndex = [index1, index2];
     }
@@ -153,7 +171,7 @@ export class PromptMetadata implements IPromptMetadata {
     }
     
     commitCurrentVarValue():void {
-        // CopiedPromptMetadata 에서 호출시 var 값을 원본에 복사
+        // CopiedPromptMetadata 에서 호출시 var 값을 원본으로 복사
         // 원본이 호출시 아무것도 하지않음
     }
 

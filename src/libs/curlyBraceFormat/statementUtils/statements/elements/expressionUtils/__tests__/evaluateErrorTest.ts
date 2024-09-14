@@ -1,4 +1,4 @@
-import { IdentifierError, NoHookError, UnsupportedOperator } from '../error';
+import { HookEvaluationError, IdentifierError, NoHookError, UnsupportedOperator } from '../error';
 import { ExpressionEvaluator } from '../expressionEvaluator';
 import { ExpressionParser, ExpressionType, IdentifierExpression, LiteralExpression, ObjectExpression, ParamExpression, CallExpression, SyntaxTransformer, Tokenizer } from '../expressionParser';
 import type { ExpressionArgs } from '../interface';
@@ -46,7 +46,7 @@ const handleAndGetError = (callback) => {
     }
 }
 
-describe('evaluateError', () => {
+describe('EvaluateError', () => {
     const identifierExpression = (value) => {
         return {
             type : ExpressionType.IDENTIFIER,
@@ -82,9 +82,7 @@ describe('evaluateError', () => {
     });
 
     test('No eventhook', () => {
-        const error = new NoHookError(
-            'call',
-        {
+        const expr = {
             type : ExpressionType.CALL,
             value : '()',
             operands : [
@@ -97,7 +95,12 @@ describe('evaluateError', () => {
                     args : []
                 } as ParamExpression,
             ]
-        } as CallExpression);
+        } as CallExpression;
+        const error = new NoHookError(
+            'call',
+            expr,
+        );
+        const errorWarper = new HookEvaluationError(error.message, expr);
 
         try {
             evaluate('num()', {
@@ -105,15 +108,19 @@ describe('evaluateError', () => {
                 vars : {
                     num : {}
                 },
+                expressionEventHooks : {
+                    objectify(value) {
+                        return value;
+                    }
+                }
             }); // expected error
             
             throw new Error('Expected error but not thrown');
         }
         catch(e:any) {
-            expect(e.name).toEqual(error.name);
-            expect(e.message).toEqual(error.message);
-            expect(e.hookName).toEqual(error.hookName);
-            expect(e.expression).toEqual(error.expression);
+            expect(e.name).toEqual(errorWarper.name);
+            expect(e.message).toEqual(errorWarper.message);
+            expect(e.expression).toEqual(errorWarper.expression);
         }
     });
 
@@ -131,6 +138,11 @@ describe('evaluateError', () => {
                 vars : {
                     num : {}
                 },
+                expressionEventHooks : {
+                    objectify(value) {
+                        return value;
+                    }
+                }
             })
         );
         

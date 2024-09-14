@@ -11,17 +11,18 @@ type PromptMetadataSublistArgs = {
 }
 
 export class PromptMetadataSublist {
+    #profile:string;
     #raw:RawPromptMetadataList;
     #list:PromptMetadata[];
 
-    constructor(data:RawPromptMetadataList, { selects, basePath }:PromptMetadataSublistArgs) {
+    constructor(profile:string, data:RawPromptMetadataList, { selects, basePath }:PromptMetadataSublistArgs) {
         this.#verify(data);
 
+        this.#profile = profile;
         this.#raw = data;
         this.#list = [];
         for (const item of this.#raw.list) {
-            //@ts-ignore
-            const metadata = PromptMetadata.parse(item, { selects, basePath });
+            const metadata = PromptMetadata.parse(this.#profile, item as any, { selects, basePath });
 
             this.#list.push(metadata);
         }

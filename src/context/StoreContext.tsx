@@ -1,9 +1,9 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext } from 'react';
 import { usePlainCookie } from 'hooks/usePlainCookie.tsx'
-import { LayoutModes, ThemeModes } from "data/interface.ts";
-import { COOKIE_OPTION_NOEXPIRE } from "data/constants.tsx";
+import { LayoutModes, ThemeModes } from 'data/interface.ts';
+import { COOKIE_OPTION_NOEXPIRE } from 'data/constants';
 
-import { ChatSession, SessionHistory, SessionResponse, useStateCallback } from "./interface.ts";
+import { ChatSession, SessionHistory, SessionResponse, useStateCallback } from './interface.ts';
 
 interface StoreContextType {
     sessions:ChatSession[];

@@ -57,6 +57,9 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
 
     useEffect(()=>{
         memoryContext.setHistoryManager(historyManager);
+        PromptMetadata.setOnLoadPromptTemplate(async (metadata:PromptMetadata) => {
+            return await LocalInteractive.loadPromptTemplate(metadata.profile, metadata.basePath, metadata.path);
+        });
 
         setInitialized(true);
     }, [])

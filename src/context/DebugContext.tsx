@@ -1,5 +1,5 @@
 import React, { useState, createContext } from "react";
-import { DEBUG_MODE } from "data/constants.tsx";
+import { DEBUG_MODE } from "data/constants";
 
 interface DebugContextType {
     mirror: boolean;

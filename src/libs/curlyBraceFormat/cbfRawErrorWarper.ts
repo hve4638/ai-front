@@ -62,7 +62,6 @@ export class CBFRawErrorWarper {
             );
         }
         else if (error instanceof CBFInternalErrors.Evaluation.HookEvaluationError) {
-            console.log(error);
             return new CBFParseError(
                 `Hook Error : ${error.message} (${error.name})\n${JSON.stringify(error.expression)}`,
                 hint ?? {}

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from "react";
 import { useEncryptedCookie } from 'hooks/useEncryptedCookie.tsx';
-import { ENCRYPT_KEY, COOKIE_OPTION_NOEXPIRE } from 'data/constants.tsx'
+import { ENCRYPT_KEY, COOKIE_OPTION_NOEXPIRE } from 'data/constants'
 
 export interface ModelInfo {
     category:string;

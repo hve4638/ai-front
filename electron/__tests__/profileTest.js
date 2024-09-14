@@ -11,7 +11,8 @@ const historyData = (id, data) => {
 }
 
 describe('Profile Test', () => {
-    const testPath = path.join(store.path.baseDirectoryPath, 'test', 'profiles');
+    // 각 테스트는 병렬적으로 실행되므로 각 TestSuite마다 다른 profile 이름을 사용해야 함
+    const testPath = path.join(store.path.baseDirectoryPath, 'profile-test', 'profiles');
     /**
      * @type {Profiles}
      */
@@ -21,13 +22,14 @@ describe('Profile Test', () => {
         fs.mkdirSync(testPath, { recursive: true });
     });
     beforeEach(() => {
+        delete profiles;
         profiles = new Profiles(testPath);
     });
     afterEach(() => {
         profiles.deleteProfiles();
     });
     afterAll(() => {
-        profiles.deleteProfiles();
+        fs.rmSync(testPath, { recursive: true, force: true });
     });
 
     test('Create Profile', () => {

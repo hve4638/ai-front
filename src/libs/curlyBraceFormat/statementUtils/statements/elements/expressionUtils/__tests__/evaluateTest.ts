@@ -65,6 +65,9 @@ describe('Evaluate Test', () => {
             expressionEventHooks : {
                 indexor(array, index) {
                     return array.value.raw.at(index.value);
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });
@@ -83,8 +86,11 @@ describe('Evaluate Test', () => {
                 }
             },
             expressionEventHooks : {
-                'call' : function(obj, args) {
+                call(obj, args) {
                     return obj.value.call([...args]);
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });
@@ -102,8 +108,11 @@ describe('Evaluate Test', () => {
                 }
             },
             expressionEventHooks : {
-                'call' : function(obj, args) {
+                call(obj, args) {
                     return obj.value.call.apply(obj.value, args);
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });
@@ -124,8 +133,11 @@ describe('Evaluate Test', () => {
                 }
             },
             expressionEventHooks : {
-                'access' : function(obj, index) {
+                access(obj, index) {
                     return obj.value.access.apply(obj.value, [index.value]);
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });
@@ -151,6 +163,9 @@ describe('Evaluate Test', () => {
                     else {
                         return arr.at((index.value as any).value as number);
                     }
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });
@@ -178,7 +193,10 @@ describe('Evaluate Test', () => {
                     const caller = callerExpr.value.call;
                     const args = argsExpr.args;
                     return caller.apply(callerExpr.value, args);
-                } as any
+                } as any,
+                objectify(value) {
+                    return value;
+                }
             }
         });
         expect(actual).toEqual(2);
@@ -218,7 +236,10 @@ describe('Evaluate Test', () => {
                     const caller = callerExpr.value.call;
                     const args = argsExpr.args;
                     return caller.apply(callerExpr.value, args);
-                } as any
+                } as any,
+                objectify(value) {
+                    return value;
+                }
             }
         });
         expect(actual).toEqual(5);
@@ -246,6 +267,9 @@ describe('Iterate Test', () => {
             expressionEventHooks : {
                 'iterate' : function(array) {
                     return array.value.raw;
+                },
+                objectify(value) {
+                    return value;
                 }
             }
         });

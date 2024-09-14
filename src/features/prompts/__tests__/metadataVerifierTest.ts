@@ -5,7 +5,7 @@ import { handleAndGetError } from "features/testUtils";
 const tryParseTree = (tree:any) => {
     const treeText = JSON.stringify(tree);
     const verifier = new PromptMetadataVerifier();
-    return verifier.parsePromptMetadataTree(treeText);
+    return verifier.parsePromptMetadataTree(treeText, {name:'test'});
 }
 describe('PromptMetadataVerifier Error', () => {
     const expectMetadataParseError = (error:PromptMetadataParseError, errorType:PROMPT_METADATA_PARSE_ERRORS) => {
@@ -14,7 +14,7 @@ describe('PromptMetadataVerifier Error', () => {
     }
     test('Invalid json format', () => {
         const verifier = new PromptMetadataVerifier();
-        const expected = handleAndGetError(() => verifier.parsePromptMetadataTree('invalid json'));
+        const expected = handleAndGetError(() => verifier.parsePromptMetadataTree('invalid json', {name:'test'}));
         expectMetadataParseError(expected, PROMPT_METADATA_PARSE_ERRORS.INVALID_FORMAT);
     })
     test('Empty prompt', () => {

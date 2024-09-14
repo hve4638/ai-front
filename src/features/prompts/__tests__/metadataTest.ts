@@ -1,4 +1,3 @@
-import { PromptMetadataParseError } from '../errors';
 import { PromptMetadata } from '../';
 
 import { handleAndGetError } from 'features/testUtils';
@@ -8,9 +7,11 @@ const args = {
     selects : {},
 }
 
+const TEST_PROFILE = 'test-profile';
+
 describe('PromptMetadata', () => {
     test('Valid Metadata', () => {
-        const metadata = PromptMetadata.parse({
+        PromptMetadata.parse(TEST_PROFILE, {
             name : 'name',
             key : 'key',
             path : 'path',
@@ -18,7 +19,7 @@ describe('PromptMetadata', () => {
     });
 
     test('Valid Metadata', () => {
-        const metadata = PromptMetadata.parse({
+        PromptMetadata.parse(TEST_PROFILE, {
             name : 'name',
             key : 'key',
             path : 'path',
@@ -35,8 +36,19 @@ describe('PromptMetadata', () => {
 describe('PromptMetadata variable', () => {
     const varNum = function(name, show_in_header=false):any { return { name : name, type : 'number', show_in_header } }
     const varNumDetail = function(name, show_in_header=false):any { return { name : name, type : 'number', display_name: name, default_value: 0, show_in_header } }
+    const varSelect = (name, show_in_header=false) => {
+        return {
+            name,
+            display_name: name,
+            type : 'select',
+            options: [{name: 'option1', value: 'option1'}, {name: 'option2', value: 'option2'}],
+            default_value: 'option1',
+            show_in_header
+        }
+    }
+
     test('Variable', () => {
-        const metadata = PromptMetadata.parse({
+        const metadata = PromptMetadata.parse(TEST_PROFILE, {
             name : 'name',
             key : 'key',
             path : 'path',
@@ -54,20 +66,25 @@ describe('PromptMetadata variable', () => {
         ]);
     });
     
+    /*
+        show_in_header 필드 작동 여부 확인
+        selects 타입이면서 show_in_header가 true인 var만 showInHeaderVars에 추가되어야 함
+    */
     test('show in header variable', () => {
-        const metadata = PromptMetadata.parse({
+        const metadata = PromptMetadata.parse(TEST_PROFILE, {
             name : 'name',
             key : 'key',
             path : 'path',
             vars : [
                 varNum('num1'),
-                varNum('num2'),
-                varNum('num3', true),
+                varNum('num2', true),
+                varSelect('select1'),
+                varSelect('select2', true),
             ],
         }, args);
 
         expect(metadata.showInHeaderVars).toEqual([
-            varNumDetail('num3', true),
+            varSelect('select2', true),
         ]);
     });
 });

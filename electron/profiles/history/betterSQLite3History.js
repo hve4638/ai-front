@@ -8,7 +8,13 @@ class BetterSQLite3History {
 
     constructor(path) {
         this.#path = path;
-        this.#db = new Database(path);
+        try {
+            this.#db = new Database(path);
+        }
+        catch(e) {
+            throw new Error(`Failed to open database '${path}' : ${e.message}`);
+        }
+        
             
         this.#db.exec(`CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY,

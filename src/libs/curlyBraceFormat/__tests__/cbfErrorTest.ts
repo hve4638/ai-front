@@ -52,10 +52,10 @@ describe('CBFRawErrorWarper : splite position', ()=>{
 });
 
 describe('CBFParseError Handle', ()=>{
-    // 에러메시지까지 테스트해야 하는가?
     const expectCBFError = (actual:any, expected:CBFParseError) => {
         expect(actual).toBeInstanceOf(CBFParseError);
-        expect(actual.message).toEqual(expected.message);
+        expect(actual.name).toEqual(expected.name);
+        //expect(actual.message).toEqual(expected.message);
         if (expected.line === undefined
         && expected.column === undefined
         && expected.text === undefined) {

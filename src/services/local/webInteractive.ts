@@ -1,5 +1,5 @@
-import { HOMEPAGE } from "data/constants.tsx"
-import { COOKIE_OPTION_NOEXPIRE } from "data/constants.tsx"
+import { HOMEPAGE } from "data/constants"
+import { COOKIE_OPTION_NOEXPIRE } from "data/constants"
 import { getCookie, setCookie } from "libs/cookies.tsx"
 import { getCookies, removeCookie } from "libs/cookies.tsx"
 import { RawPromptMetadataTree } from "features/prompts"
