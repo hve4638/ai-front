@@ -13,9 +13,10 @@ type InitializerProps = {
     onLoad:()=>void,
     onLoadFail:(reason:string, detail:string)=>void,
     historyManager:any,
+    profileName:string,
 }
 
-export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:InitializerProps) {
+export function Initializer({ profileName, onLoad=()=>{}, onLoadFail, historyManager }:InitializerProps) {
     const storeContext = useContextForce(StoreContext);
     const memoryContext = useContextForce(MemoryContext);
     const eventContext = useContextForce(EventContext);
@@ -68,7 +69,7 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
     useEffect(()=>{
         const initializePromptMetadata = async () => {
             let rootContents:string;
-            rootContents = await LocalInteractive.loadPromptMetadata("list.json");
+            rootContents = await LocalInteractive.loadRootPromptMetadata(profileName);
 
             if (rootContents.startsWith('@FAIL')) {
                 onLoadFail('프롬프트 로딩 실패 : list.json', rootContents);
@@ -100,7 +101,7 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
                         )
                     }
                     
-                    const moduleContent = await LocalInteractive.loadPromptMetadata(moduleName + "/index.json");
+                    const moduleContent = await LocalInteractive.loadModulePromptMetadata(profileName, moduleName);
                     if (moduleContent.startsWith('@FAIL')) {
                         throw new PromptMetadataParseError(
                             'PromptMetadata Load Failed',
@@ -120,7 +121,7 @@ export function Initializer({ onLoad=()=>{}, onLoadFail, historyManager }:Initia
                     externalPromptMetadata[moduleName] = metadata;
                 }
                 
-                const tree = new PromptMetadataTree(rawTree, externalPromptMetadata);
+                const tree = new PromptMetadataTree(profileName, rawTree, externalPromptMetadata);
                 memoryContext.setPromptMetadataTree(tree);
                 
                 setPromptMetadataLoaded(true);

@@ -60,7 +60,7 @@ export class PromptMetadata implements IPromptMetadata {
                 let varMetadata:VarMetadata;
                 varMetadata = varMetadataParser.parse(data);
                 
-                if (varMetadata.type === "select" && varMetadata.show_in_header) {
+                if (varMetadata.type === 'select' && varMetadata.show_in_header) {
                     this.#showInHeaderVarMetadata.push(varMetadata);
                 }
                 

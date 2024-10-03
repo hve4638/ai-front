@@ -140,7 +140,6 @@ class Profiles {
 
     /**
      * 프로필 전체 삭제 및 프로필 메타데이터 삭제
-     * @param {string} profileName
     */
     deleteProfiles() {
         const names = [...this.#profileNames];

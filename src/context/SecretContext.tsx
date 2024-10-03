@@ -24,7 +24,7 @@ export interface SecretContextType {
  */
 export const SecretContext = createContext<SecretContextType|null>(null);
 
-export default function SecretContextProvider({children}) {
+export default function SecretContextProvider({profile, children}) {
     const [modelInfo, setModelInfo] = useEncryptedCookie('model', ENCRYPT_KEY);
     const [topp, setRawTopp] = useEncryptedCookie('topp', ENCRYPT_KEY);
     const [temperature, setRawTemperature] = useEncryptedCookie('temperature', ENCRYPT_KEY);

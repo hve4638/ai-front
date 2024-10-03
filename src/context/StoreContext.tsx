@@ -1,7 +1,6 @@
 import React, { useState, createContext } from 'react';
-import { usePlainCookie } from 'hooks/usePlainCookie.tsx'
+import { useProfileValue } from 'hooks/profile'
 import { LayoutModes, ThemeModes } from 'data/interface.ts';
-import { COOKIE_OPTION_NOEXPIRE } from 'data/constants';
 
 import { ChatSession, SessionHistory, SessionResponse, useStateCallback } from './interface.ts';
 
@@ -40,20 +39,22 @@ interface StoreContextType {
  */
 export const StoreContext = createContext<StoreContextType|null>(null);
 
-export default function StoreContextProvider({children}) {
-    const [currentSessionId, setCurrentSessionId] = usePlainCookie('currentSessionId', null);
-    const [sessions, setSessions] = usePlainCookie('sessions', []);
-    const [history, setHistory] = useState({});
-    const [responses, setResponses] = usePlainCookie('responses', {});
-    const [fontSize, setFontSize] = usePlainCookie('fontsize', 18);
-    const [themeMode, setThemeMode] = usePlainCookie('themeMode', ThemeModes.SYSTEM_DEFAULT);
-    const [layoutMode, setLayoutMode] = usePlainCookie('layoutMode', LayoutModes.AUTO);
-    const [nextSessionID, setNextSessionID] = usePlainCookie('nextsessionid', 0);
-    const [isGlobalHistoryVolatile, setIsGlobalHistoryVolatile] = usePlainCookie('isGlobalHistoryVolatile', false);
-    const [lastvar, setLastvar] = usePlainCookie('lastvar', {});
+export default function StoreContextProvider({profile, children}) {
+    const CATEGORY_CONFIG = 'config.json';
 
-    const [markdownMode, setMarkdownMode] = usePlainCookie('markdown', false);
-    const [lineByLineMode, setLineByLineMode] = usePlainCookie('linebyline', false);
+    const [currentSessionId, setCurrentSessionId, refetchCurrentSessionId] = useProfileValue(profile, CATEGORY_CONFIG, 'currentSessionId', null);
+    const [sessions, setSessions, refetchSessions] = useProfileValue(profile, CATEGORY_CONFIG, 'sessions', []);
+    const [history, setHistory] = useState({});
+    const [responses, setResponses, refetchResponses] = useProfileValue(profile, CATEGORY_CONFIG, 'responses', {});
+    const [fontSize, setFontSize, refetchFontSize] = useProfileValue(profile, CATEGORY_CONFIG, 'fontsize', 18);
+    const [themeMode, setThemeMode, refetchThemeMode] = useProfileValue(profile, CATEGORY_CONFIG, 'themeMode', ThemeModes.SYSTEM_DEFAULT);
+    const [layoutMode, setLayoutMode, refetchLayoutMode] = useProfileValue(profile, CATEGORY_CONFIG, 'layoutMode', LayoutModes.AUTO);
+    const [nextSessionID, setNextSessionID, refetchNextSessionID] = useProfileValue(profile, CATEGORY_CONFIG, 'nextsessionid', 0);
+    const [isGlobalHistoryVolatile, setIsGlobalHistoryVolatile, refetchIsGlobalHistoryVolatile] = useProfileValue(profile, CATEGORY_CONFIG, 'isGlobalHistoryVolatile', false);
+    const [lastvar, setLastvar, refetchLastvar] = useProfileValue(profile, CATEGORY_CONFIG, 'lastvar', {});
+
+    const [markdownMode, setMarkdownMode, refetchMarkdownMode] = useProfileValue(profile, CATEGORY_CONFIG, 'markdown', false);
+    const [lineByLineMode, setLineByLineMode, refetchLineByLineMode] = useProfileValue(profile, CATEGORY_CONFIG, 'linebyline', false);
     
     return (
         <StoreContext.Provider
@@ -70,9 +71,9 @@ export default function StoreContextProvider({children}) {
                 lastvar, setLastvar,
 
                 markdownMode,
-                setMarkdownMode : (value)=>setMarkdownMode(value, COOKIE_OPTION_NOEXPIRE),
+                setMarkdownMode,
                 lineByLineMode,
-                setLineByLineMode : (value)=>setLineByLineMode(value, COOKIE_OPTION_NOEXPIRE),
+                setLineByLineMode,
             }}
         >
             {children}

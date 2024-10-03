@@ -41,6 +41,7 @@
         "web:start": "cross-env REACT_APP_TARGET_ENV=WEB yarn react-scripts start",
         "web:build": "cross-env REACT_APP_TARGET_ENV=WEB yarn build",
         "electron:start": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=TRUE BROWSER=none concurrently \"yarn react-scripts start\" \"yarn electron\"",
+        "electron:debug": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS REACT_APP_DEBUG=TRUE DEV=TRUE BROWSER=none concurrently \"yarn react-scripts start\" \"yarn electron\"",
         "electron:build": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=FALSE BROWSER=none yarn build && electron-builder -c.extraMetadata.main=./electron/main.js",
         "electron-builder:build": "cross-env TARGET_ENV=WINDOWS DEV=FALSE electron-builder -c.extraMetadata.main=./electron/main.js"
     },

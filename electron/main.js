@@ -1,9 +1,7 @@
 const path = require('path');
 
-const { app, BrowserWindow, Menu, shell } = require('electron');
+const { app, BrowserWindow, Menu, shel, Tray, Menu } = require('electron');
 const electronLocalshortcut = require('electron-localshortcut');
-
-//const prompttemplate = require('./prompt-template');
 
 const store = require('./store');
 
@@ -18,6 +16,8 @@ store.migrateLegacyProfile();
 const profiles = new Profiles(store.path.profilesDirectoryPath);
 const fetchContainer = new FetchContainer();
 
+const faviconPath = path.join(__dirname, '../build/favicon.ico');
+
 initIPC({
     fetchContainer,
     profiles
@@ -29,7 +29,7 @@ function createWindow() {
         height: 900,
         minWidth: 500,
         minHeight: 500,
-        icon: path.join(__dirname, '../build/favicon.ico'),
+        icon: faviconPath,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
@@ -53,7 +53,23 @@ function createWindow() {
     });
 }
 
+function createTrayIcon() {
+    const tray = new Tray(faviconPath);
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Quit',
+            click: () => {
+                app.quit();
+            }
+        }
+    ]);
+    tray.setContextMenu(contextMenu);
+    tray.setToolTip('Wordbook');
+    console.log('Tray icon created');
+}
+
 app.whenReady().then(() => {
+    createTrayIcon();
     createWindow();
 })
 

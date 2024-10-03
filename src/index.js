@@ -31,11 +31,9 @@ if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
                         <StoreContextProvider>
                             <MemoryContextProvider>
                                 <EventContextProvider>
-                                    <DebugContextProvider>
-                                        <App
-                                            historyManager={historyManager}
-                                        />
-                                    </DebugContextProvider>
+                                    <App
+                                        historyManager={historyManager}
+                                    />
                                 </EventContextProvider>
                             </MemoryContextProvider>
                         </StoreContextProvider>
