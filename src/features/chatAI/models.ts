@@ -12,6 +12,8 @@ export const MODEL_CATEGORY = {
     [MODELS.GOOGLE_GEMINI] : {
         name : "Google Gemini",
         models : [
+            { name : "Gemini 1.5 Pro Exp 0827", value: "gemini-1.5-pro-exp-0827" },
+            { name : "Gemini 1.5 Pro-002", value: "gemini-1.5-pro-002" },
             { name : "Gemini 1.5 Pro ", value: "gemini-1.5-pro-latest" },
             { name : "Gemini 1.5 Flash", value: "gemini-1.5-flash" },
             { name : "Gemini 1.0 Pro", value: "gemini-1.0-pro" },
