@@ -1,0 +1,7 @@
+{{::role user}}
+
+Your role is {{role}}. Create the appropriate response for your role.
+
+All responses are in {{lang}}.
+
+{{:input}}

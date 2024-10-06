@@ -1,0 +1,36 @@
+{
+  "name": "aifront",
+  "version": "0.6.1",
+  "repository": "https://github.com/hve4638/ai-front.git",
+  "author": "Hve <hve4638@gmail.com>",
+  "license": "MIT",
+  "main": "compiled/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "start:dev": "tsc && cross-env ELECTRON_DEV=TRUE electron .",
+    "start:release": "tsc && cross-env ELECTRON_DEV=FALSE electron .",
+    "test": "tsc && yarn jest",
+    "build": "tsc && cross-env ELECTRON_DEV=FALSE electron-builder",
+    "compile": "tsc",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-deb": "^7.5.0",
+    "@electron-forge/maker-rpm": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron/fuses": "^1.8.0",
+    "cross-env": "^7.0.3",
+    "electron": "^32.1.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}

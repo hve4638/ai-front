@@ -1,15 +1,12 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# 설정 파일
+.vscode/
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
+node_modules/
 
 # production
-/build
+build/
+dist/
 
 # misc
 .DS_Store
@@ -30,5 +27,3 @@ apikey
 out/
 dist/
 /electron/temp.js
-
-.vscode/
