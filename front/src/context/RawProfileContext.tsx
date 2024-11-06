@@ -20,27 +20,19 @@ interface RawProfileContextType {
     setThemeMode: SetState<ThemeModes>;
     layoutMode: LayoutModes;
     setLayoutMode: SetState<LayoutModes>;
-    
-    // 출력 마크다운 변환 여부
-    markdownMode: boolean;
-    setMarkdownMode: SetState<boolean>;
 
     sessions: ChatSession[];
     setSessions: SetState<ChatSession[]>;
-    lastSessionId: number|null;
-    setLastSessionId: SetState<number|null>;
 
-    
-    
-    /** 각 세션의 마지막 응답 */
+    // 각 세션의 마지막 응답
     lastChats: LastChats;
     setLastChats: SetState<LastChats>;
 
     // cache.json
-    nextSessionID: number;
-    setNextSessionID: SetState<number>;
-    lastvar: any;
-    setLastvar: SetState<any>;
+    promptVariables: any;
+    setPromptVariables: SetState<any>;
+    lastSessionId: number|null;
+    setLastSessionId: SetState<number|null>;
 }
 
 /**
@@ -61,25 +53,25 @@ export default function RawProfileContextProvider({profile, children}) {
     const useCacheStorage = <T,>(key:string, default_value:T) => {
         return useProfileStorage<T>(profile, STORAGE_CACHE, key, { default_value });
     }
+
+    /* config.json */
     // 입출력 폰트 크기
     const [fontSize, setFontSize, refetchFontSize] = useConfigStorage('fontsize', 18);
     // 테마 지정 (다크/라이트/시스템)
-    const [themeMode, setThemeMode, refetchThemeMode] = useConfigStorage('themeMode', ThemeModes.SYSTEM_DEFAULT);
+    const [themeMode, setThemeMode, refetchThemeMode] = useConfigStorage('theme_mode', ThemeModes.SYSTEM_DEFAULT);
     // 레이아웃 모드 (자동/모바일/데스크탑)
-    const [layoutMode, setLayoutMode, refetchLayoutMode] = useConfigStorage('layoutMode', LayoutModes.AUTO);
-    // const [isGlobalHistoryVolatile, setIsGlobalHistoryVolatile, refetchIsGlobalHistoryVolatile] = useConfigStorage('isGlobalHistoryVolatile', false);
-    //
-    const [overrideThemeMode, setOverrideThemeMode, refetchOverrideThemeMode] = useConfigStorage('overrideThemeMode', false);
-    const [overrideLayoutMode, setOverrideLayoutMode, refetchOverideLayoutMode] = useConfigStorage('overrideLayoutMode', false);
-    const [markdownMode, setMarkdownMode, refetchMarkdownMode] = useConfigStorage('legacy_markdown', false);
-    
+    const [layoutMode, setLayoutMode, refetchLayoutMode] = useConfigStorage('layout_mode', LayoutModes.AUTO);
+
+    /* data.json */
     const [sessions, setSessions, refetchSessions] = useDataStorage<ChatSession[]>('sessions', []);
+
+    /* cache.json */
+    // 새션 별 마지막 채팅 및 응답 기록
     const [lastChats, setLastChats, refetchLastChats] = useCacheStorage<LastChats>('lastchats', {});
+    // 마지막으로 선택한 프롬프트 변수
     const [promptVariables, setPromptVariables, refetchPromptVariables] = useCacheStorage('prompt_variables', {});
-    
-    const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('lastSessionId', null);
-    const [nextSessionID, setNextSessionID, refetchNextSessionID] = useCacheStorage('nextsessionid', 0);
-    const [lastvar, setLastvar, refetchLastvar] = useCacheStorage('lastvar', {});
+
+    const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('last_session_id', null);
     
     return (
         <RawProfileContext.Provider
@@ -88,14 +80,13 @@ export default function RawProfileContextProvider({profile, children}) {
                 themeMode, setThemeMode,
                 layoutMode, setLayoutMode,
                 //isGlobalHistoryVolatile, setIsGlobalHistoryVolatile,
-                overrideThemeMode, setOverrideThemeMode,
-                overrideLayoutMode, setOverrideLayoutMode,
-                markdownMode, setMarkdownMode,
+                // overrideThemeMode, setOverrideThemeMode,
+                // overrideLayoutMode, setOverrideLayoutMode,
                 sessions, setSessions,
                 lastSessionId, setLastSessionId,
                 lastChats, setLastChats,
-                nextSessionID, setNextSessionID,
-                lastvar, setLastvar
+                promptVariables, setPromptVariables,
+                // lastvar, setLastvar
             }}
         >
             {children}

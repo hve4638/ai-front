@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
  * @param delay 지연시간 (ms)
  * @returns 
  */
-const useDebouncing = (initialValue, callback, delay = 1000) => {
+function useDebouncing<T>(initialValue:T, callback:(value:T)=>void, delay:number = 1000) {
     const [value, setValue] = useState(initialValue);
     const [debouncedValue, setDebouncedValue] = useState(initialValue);
 

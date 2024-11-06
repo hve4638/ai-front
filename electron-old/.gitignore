@@ -1,7 +1,0 @@
-# 빌드 결과
-compiled/
-dist/
-static/
-
-# unused
-old/

@@ -3,9 +3,8 @@ import { NOSESSION_KEY, SESSION_TEMPLATE, APIRESPONSE_TEMPLATE } from 'data/cons
 import { FetchStatus } from 'data/interface.ts';
 
 import { ChatSession } from './interface.ts';
-import { StoreContext } from './StoreContext.tsx';
 import { MemoryContext } from './MemoryContext.tsx';
-import { ProfileContext } from './ProfileContext.tsx';
+import { RawProfileContext } from './RawProfileContext.tsx';
 import { IPromptMetadata } from 'features/prompts';
 import { useContextForce } from './index.ts';
 
@@ -14,7 +13,7 @@ import { SessionContext } from './SessionContext.tsx';
 import { defaultChatSession } from 'data/chat.ts';
 
 /**
- * EventContext는 MemeoryContext, StoreContext, ProfileContext의 상태를 변경하는 함수를 제공한다
+ * EventContext는 MemeoryContext, StoreContext, rawProfileContext의 상태를 변경하는 함수를 제공한다
  */
 
 
@@ -75,13 +74,7 @@ export const EventContext = createContext<EventContextType|null>(null);
 export function EventContextProvider({children}) {
     const memoryContext = useContextForce(MemoryContext);
     const sessionContext = useContextForce(SessionContext);
-    const profileContext = useContextForce(ProfileContext);
-
-    // const {
-    //     sessions, setSessions,
-    //     history,
-    //     responses, setResponses,
-    // } = storeContext;
+    const rawProfileContext = useContextForce(RawProfileContext);
     const {
         sessionFetchStatus,
     } = memoryContext;
@@ -96,11 +89,11 @@ export function EventContextProvider({children}) {
             color : lastSession.color,
             chatIsolation : true,
             historyIsolation : true,
-            id : profileContext.nextSessionID,
+            id : rawProfileContext.nextSessionID,
         };
-        profileContext.setNextSessionID(prev=>prev+1);
+        rawProfileContext.setNextSessionID(prev=>prev+1);
         return newSession;
-    }, [sessionContext, memoryContext, profileContext.nextSessionID])
+    }, [sessionContext, memoryContext, rawProfileContext.nextSessionID])
     const makeTemporaryChatSession:()=>ChatSession = useCallback(() => {
         const lastSession = sessionContext.exportSession();
         const newSession = {
@@ -126,28 +119,28 @@ export function EventContextProvider({children}) {
             const metadata = memoryContext.currentPromptMetadata.copy();
             newSession.note = metadata.getVarValues(),
             
-            profileContext.setLastSessionId(newSession.id); // 현 세션 지정
-            profileContext.setSessions(prev=>[...prev, newSession]); // 세션 목록 업데이트
+            rawProfileContext.setLastSessionId(newSession.id); // 현 세션 지정
+            rawProfileContext.setSessions(prev=>[...prev, newSession]); // 세션 목록 업데이트
         },
         deleteSession(session) {
             /*
                 영향을 받는 contextValue
-                - profileContext.sessions
-                - profileContext.responses
+                - rawProfileContext.sessions
+                - rawProfileContext.responses
             */
-            const prevSessions = profileContext.sessions;
+            const prevSessions = rawProfileContext.sessions;
 
             if (prevSessions.length === 0) return;
 
             // 현 세션이 제거된 sessions
             const newSessions = prevSessions.filter((s, index) => s.id !== session.id);
-            profileContext.setSessions(newSessions);
+            rawProfileContext.setSessions(newSessions);
             
             // 제거된 세션이 현 세션일 경우
             if (sessionContext.sessionId == session.id) {
                 // 마지막 입력&응답 정보 제거
-                if (session.id in profileContext.lastChats) {
-                    profileContext.setLastChats(prev=>{
+                if (session.id in rawProfileContext.lastChats) {
+                    rawProfileContext.setLastChats(prev=>{
                         const newChats = { ...prev };
                         delete newChats[session.id];
                         return newChats;
@@ -180,7 +173,7 @@ export function EventContextProvider({children}) {
         },
         changeCurrentSession(session:ChatSession, nocommit:boolean=false) {
             sessionContext.importSession(session);
-            profileContext.setLastSessionId(session.id);
+            rawProfileContext.setLastSessionId(session.id);
         },
         commitCurrentSession() {
             // Nothing to do
