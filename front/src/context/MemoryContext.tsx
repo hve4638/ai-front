@@ -1,15 +1,16 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext } from 'react';
 
 import { APIResponse } from 'data/interface'
 
-import { HistoryManager } from "features/historyManager";
-import { ChatSession, useStateCallback } from "./interface";
+import { HistoryManager } from 'features/historyManager';
+import { ChatSession, useStateCallback } from './interface';
 import {
     PromptMetadataTree,
     PromptMetadata,
     PromptMetadataSublist,
     IPromptMetadata
-} from "features/prompts";
+} from 'features/prompts';
+import { Profile } from 'features/profiles';
 
 type Dict<T> = { [key:string]:T };
 
@@ -41,37 +42,10 @@ type ErrorLog = {
 }
 
 interface MemoryContextType {
+    /** 현 Profile의 PromptMetadataTree */
     promptMetadataTree:PromptMetadataTree;
     setPromptMetadataTree:(x:PromptMetadataTree)=>void;
     
-    /**
-     * @deprecated
-     */
-    promptMetadata:IPromptMetadata;
-    /**
-     * @deprecated
-     */
-    setPromptMetadata:(x:IPromptMetadata)=>void;
-
-    promptMetadataSublist:PromptMetadataSublist|null;
-    setPromptMetadataSublist:(x:PromptMetadataSublist|null)=>void;
-    
-    /**
-     * @deprecated
-     */
-    promptText:string;
-    /**
-     * @deprecated
-     */
-    setPromptText:(x:string)=>void;
-
-
-    currentSession:ChatSession;
-    setCurrentSession:(x:ChatSession)=>void;
-    currentHistory:APIResponse[];
-    setCurrentHistory:useStateCallback<APIResponse[]>;
-    currentChat:APIResponse;
-    setCurrentChat:(x:APIResponse)=>void;
     apiSubmitPing:boolean;
     setApiSubmitPing:(x:boolean)=>void;
 
@@ -97,6 +71,9 @@ interface MemoryContextType {
 
     errorLogs:ErrorLog[];
     setErrorLogs:useStateCallback<ErrorLog[]>;
+
+    profile:Profile|null;
+    setProfile:useStateCallback<Profile|null>;
 }
 const ANY:any = null;
 
@@ -129,22 +106,15 @@ export default function MemoryContextProvider({children}) {
     const [sessionFetchStatus, setSessionFetchStatus] = useState({});
 
     const [historyManager, setHistoryManager] = useState<HistoryManager>(ANY);
+
+    const [profile, setProfile] = useState<Profile|null>(null);
     
     return (
         <MemoryContext.Provider
             value={{
                 promptMetadataTree, setPromptMetadataTree,
-                promptMetadataSublist, setPromptMetadataSublist,
 
-                promptText, setPromptText, // @TODO : 제거 예정
-
-                currentSession, setCurrentSession,
                 currentPromptMetadata, setCurrentPromptMetadata,
-                promptMetadata : currentPromptMetadata, // 과거 코드 호환성
-                setPromptMetadata : setCurrentPromptMetadata, // 과거 코드 호환성
-
-                currentHistory, setCurrentHistory,
-                currentChat, setCurrentChat,
 
                 apiSubmitPing, setApiSubmitPing,
                 
@@ -157,7 +127,9 @@ export default function MemoryContextProvider({children}) {
 
                 historyManager, setHistoryManager,
 
-                errorLogs, setErrorLogs
+                errorLogs, setErrorLogs,
+
+                profile, setProfile,
             }}
         >
             {children}

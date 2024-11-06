@@ -5,10 +5,11 @@
     "author": "Hve <hve4638@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "start": "yarn start:dev",
-        "start:dev": "concurrently \"yarn electron:start\" \"yarn front:start\"",
+        "start": "concurrently \"yarn electron:start\" \"yarn front:start\"",
+        "start:debug": "concurrently \"yarn electron:start\" \"yarn front:debug\"",
 
         "front:start": "cd front && yarn start:dev",
+        "front:debug": "cd front && yarn start:debug",
         "electron:start": "cd electron && wait-on http://localhost:3000 && yarn start:dev",
 
         "front:build": "cd front && yarn build:electron",

@@ -27,6 +27,7 @@
     "scripts": {
         "start:web": "cross-env REACT_APP_TARGET_ENV=WEB DEV=TRUE yarn react-scripts start",
         "start:dev": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=TRUE BROWSER=none yarn react-scripts start",
+        "start:debug": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS REACT_APP_DEBUG=TRUE BROWSER=none yarn react-scripts start",
         
         "build:web": "cross-env REACT_APP_TARGET_ENV=WEB yarn build",
         "build:electron": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=FALSE BROWSER=none yarn build",

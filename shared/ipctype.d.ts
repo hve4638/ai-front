@@ -19,9 +19,9 @@ type IPC_TYPES = {
     getFetchResponse : (fetchID:number) => ElectronResult<any>;
 
     /** 특정 Profile의 Root 프롬프트 메타데이터를 가져옴 */
-    loadRootPromptMetadata : (profileName:string) => ElectronResult<any>;
+    loadRootPromptMetadata : (profileName:string) => ElectronResult<string>;
     /** 특정 Profile의 Module 프롬프트 메타데이터를 가져옴 */
-    loadModulePromptMetadata : (profileName:string, moduleName:string) => ElectronResult<any>;
+    loadModulePromptMetadata : (profileName:string, moduleName:string) => ElectronResult<string>;
     /** 특정 Profile의 프롬프트 템플릿을 가져옴 */
     loadPromptTemplate: (profileName:string, moduleName:string, filename:string) => ElectronResult<string>;
 

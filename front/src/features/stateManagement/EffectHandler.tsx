@@ -26,11 +26,8 @@ export function EffectHandler() {
     const [aiModelFetchManager, setAIModelFetchManager] = useState(new AIModelFetchManager());
 
     const {
-        currentSession,
         apiFetchQueue, setApiFetchQueue,
         apiFetchResponse, setApiFetchResponse,
-        currentChat, setCurrentChat,
-        setCurrentHistory,
         historyManager
     } = memoryContext;
 

@@ -51,6 +51,7 @@ export default function Home() {
         currentChat, setCurrentChat,
         apiSubmitPing, setApiSubmitPing,
         sessionFetchStatus,
+        profile,
     } = memoryContext;
     const {
         setResponses, responses
@@ -116,7 +117,7 @@ export default function Home() {
             />
             <main id='app-main'>
                 <InputField
-                    text={currentChat.input ?? ""}
+                    text={currentChat.input ?? ''}
                     onChange={(value)=>onChanageInputField(value)}
                     onSubmit={()=>onSubmit()}
                     loading={submitLoading}

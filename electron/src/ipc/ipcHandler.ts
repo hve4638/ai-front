@@ -1,7 +1,3 @@
-import fs from 'fs';
-import { ipcMain, shell } from 'electron';
-import ipcping from './ipcping';
-import { aiFrontPath } from '../store';
 import * as utils from '../utils';
 
 import Profiles from '../profiles';

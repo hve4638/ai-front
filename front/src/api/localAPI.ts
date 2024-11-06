@@ -10,11 +10,9 @@ class LocalAPI {
     static async echo(message:any) {
         await TARGET_API.echo(message);
     }
-
     static async openBrowser(url:string) {
         await TARGET_API.openBrowser(url);
     }
-
     static async openPromptDirectory(profileName:string) {
         await TARGET_API.openPromptDirectory(profileName);
     }
@@ -76,6 +74,14 @@ class LocalAPI {
 
     static isNewVersionAvailable():any {
         throw new NotImplementedError();
+    }
+
+    static async getLastProfileName():Promise<string|null> {
+        return await IPCAPI.getLastProfileName();
+    }
+
+    static async setLastProfileName(profileName:string) {
+        return await IPCAPI.setLastProfileName(profileName);
     }
 
     static async writeLog(name:string, message:string, showDatetime:boolean=false) {

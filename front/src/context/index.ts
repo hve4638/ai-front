@@ -7,6 +7,7 @@ export { DebugContext } from './DebugContext'
 export { EventContext } from './EventContext'
 export { MemoryContext } from './MemoryContext'
 export { SecretContext } from './SecretContext'
+export { ProfileContext } from './ProfileContext'
 export type { ChatSession } from './interface'
 
 export function useContextForce<T>(context:React.Context<T | null>):T {

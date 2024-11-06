@@ -79,11 +79,8 @@ class IPCAPI {
     }
 
     static async loadProfileValue(profileName:string, filename:string, key:string) {
-        const data = await electron.loadProfileValue(profileName, filename, key);
-        console.log(data);
-        const [err, value] = data;
+        const [err, value] = await electron.loadProfileValue(profileName, filename, key);
         if (err) throw new IPCError(err.message);
-        console.log(value);
         return value;
     }
     static async storeProfileValue(profileName:string, filename:string, key:string, value:any) {
@@ -119,8 +116,8 @@ class IPCAPI {
         return name;
     }
 
-    static async setLastProfileName(name:string) {
-        const [err] = await electron.setLastProfileName(name);
+    static async setLastProfileName(profileName:string) {
+        const [err] = await electron.setLastProfileName(profileName);
         if (err) throw new IPCError(err.message);
     }
 

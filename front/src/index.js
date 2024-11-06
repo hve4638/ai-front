@@ -22,11 +22,12 @@ const historyManager = new HistoryManager();
 
 if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
     if (DEBUG_MODE) {
+        console.log('DEBUG_MODE');
         const root = ReactDOM.createRoot(document.getElementById('root'));
         
         root.render(
             <DebugPage>
-                <CookiesProvider>
+                {/* <CookiesProvider>
                     <SecretContextProvider>
                         <StoreContextProvider>
                             <MemoryContextProvider>
@@ -38,7 +39,7 @@ if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
                             </MemoryContextProvider>
                         </StoreContextProvider>
                     </SecretContextProvider>
-                </CookiesProvider>
+                </CookiesProvider> */}
             </DebugPage>
         );
     }
@@ -64,7 +65,7 @@ if (TARGET_ENV === "WEB" || TARGET_ENV === "WINDOWS") {
 }
 else {
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(`Invalid TARGET_ENV : '${TARGET_ENV}'`);
+    root.render(`Invalid Enviorment : '${TARGET_ENV}'`);
 }
 
 

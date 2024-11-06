@@ -1,30 +1,37 @@
-import React, { useContext, useState, createContext } from 'react';
+import React, { useContext, useState, createContext, useCallback } from 'react';
 import { NOSESSION_KEY, SESSION_TEMPLATE, APIRESPONSE_TEMPLATE } from 'data/constants';
 import { FetchStatus } from 'data/interface.ts';
 
 import { ChatSession } from './interface.ts';
 import { StoreContext } from './StoreContext.tsx';
 import { MemoryContext } from './MemoryContext.tsx';
+import { ProfileContext } from './ProfileContext.tsx';
 import { IPromptMetadata } from 'features/prompts';
 import { useContextForce } from './index.ts';
 
+import { LLMAPIResponse } from 'types/llmapi.ts';
+import { SessionContext } from './SessionContext.tsx';
+import { defaultChatSession } from 'data/chat.ts';
+
+/**
+ * EventContext는 MemeoryContext, StoreContext, ProfileContext의 상태를 변경하는 함수를 제공한다
+ */
+
+
 interface EventContextType {
-    /**
-     * 현 세션 기반으로 새 세션 생성
-     * 
-     * storeContext : nextSessionID, currentSessionID 갱신
-     * 
-     * memoryContext : currentSession, currentPromptMetadata, currentChat 갱신
-     */
+    /** 현 세션 기반으로 새 세션 생성 */
     createSession:()=>void;
-    /**
-     * 세션 삭제하고 대상이 현 세션일 경우 다른 세션 중 하나를 새로운 현 세션으로 지정
-     */
+    /** 세션 삭제, 대상이 현 세션일 경우 다른 세션 중 하나를 새로운 현 세션으로 지정 */
     deleteSession:(session:ChatSession)=>void;
+    /* 현재 세션 변경 */
     changeCurrentSession:(session:ChatSession)=>void;
+    /** @deprecated */
     commitCurrentSession:()=>void;
+    /** 언어모델 API 요청 */
     enqueueApiRequest:({session, input, promptText}:enqueueApiRequestArgs)=>void;
+    /** Session의 언어모델API 요청 Fetch 상태 지정 */
     changeFetchStatus:(session:ChatSession, status:FetchStatus)=>void;
+    /** Session의 언어모델API 요청 Fetch 상태 가져오기 */
     getFetchStatus:(session:ChatSession)=>FetchStatus;
     /**
      * 현재 promptMetadata를 변경 후 현 세션의 promptKey 갱신
@@ -48,13 +55,14 @@ interface enqueueApiRequestArgs {
     promptMetadata:IPromptMetadata;
 }
 
-const getDefaultAPIResponse = () => {
+
+function getEmptyAPIResponse():LLMAPIResponse {
     return {
         input : '',
         output : '',
         prompt : '',
-        note : '',
-        tokens : '',
+        note : {},
+        tokens : 0,
         finishreason : '',
         warning : '',
         normalresponse : true,
@@ -66,228 +74,160 @@ export const EventContext = createContext<EventContextType|null>(null);
 
 export function EventContextProvider({children}) {
     const memoryContext = useContextForce(MemoryContext);
-    const storeContext = useContextForce(StoreContext);
+    const sessionContext = useContextForce(SessionContext);
+    const profileContext = useContextForce(ProfileContext);
 
+    // const {
+    //     sessions, setSessions,
+    //     history,
+    //     responses, setResponses,
+    // } = storeContext;
     const {
-        sessions, setSessions,
-        history,
-        responses, setResponses,
-    } = storeContext;
-    const {
-        currentHistory, setCurrentHistory,
-        currentChat, setCurrentChat,
-        currentSession, setCurrentSession,
-        sessionFetchStatus, setSessionFetchStatus,
+        sessionFetchStatus,
     } = memoryContext;
 
-    const createSession = () => {
-        const { nextSessionID } = storeContext;
-        const metadata = memoryContext.currentPromptMetadata.copy();
-
-        const newSession:ChatSession = {
+    const makeChatSessionFromCurrent:()=>ChatSession = useCallback(() => {
+        const lastSession = sessionContext.exportSession();
+        const newSession = {
             ...SESSION_TEMPLATE,
-            promptKey : currentSession.promptKey,
-            modelName : currentSession.modelName,
-            modelCategory : currentSession.modelCategory,
-            color : currentSession.color,
-            note : metadata.getVarValues(),
-            chatIsolation : currentSession.chatIsolation,
-            historyIsolation : currentSession.historyIsolation,
-            id : nextSessionID,
+            promptKey : lastSession.promptKey,
+            modelName : lastSession.modelName,
+            modelCategory : lastSession.modelCategory,
+            color : lastSession.color,
+            chatIsolation : true,
+            historyIsolation : true,
+            id : profileContext.nextSessionID,
         };
-        
-        if (newSession.chatIsolation) {
-            memoryContext.setCurrentChat({...APIRESPONSE_TEMPLATE});
+        profileContext.setNextSessionID(prev=>prev+1);
+        return newSession;
+    }, [sessionContext, memoryContext, profileContext.nextSessionID])
+    const makeTemporaryChatSession:()=>ChatSession = useCallback(() => {
+        const lastSession = sessionContext.exportSession();
+        const newSession = {
+            ...defaultChatSession,
+            id : -1,
+            promptKey : lastSession.promptKey,
+            modelName : lastSession.modelName,
+            modelCategory : lastSession.modelCategory,
+            chatIsolation : false,
+            historyIsolation : false,
         }
+        return newSession;
+    }, [sessionContext]);
 
-        memoryContext.setCurrentSession(newSession);
-        memoryContext.setCurrentPromptMetadata(metadata);
-        storeContext.setNextSessionID(nextSessionID+1);
-        storeContext.setCurrentSessionId(newSession.id);
+    const contextValues:EventContextType = {
+        createSession() {
+            /*
+                storeContext : nextSessionID, currentSessionID
+                memoryContext : currentSession, currentPromptMetadata, currentChat 갱신
+            */
+            const newSession = makeChatSessionFromCurrent();
 
-        const newSessions:ChatSession[] = [...sessions, newSession];
-        storeContext.setSessions(newSessions);
-    }
-    const deleteSession = (session) => {
-        const newSessions = sessions.filter((s, index) => s.id !== session.id);
-        setSessions(newSessions);
-        
-        if (currentSession.id == session.id) {
-            let index:number|null = null;
-            for (const i in sessions) {
-                if (sessions[i].id == currentSession.id) {
-                    index = Number(i);
-                    if (index == sessions.length-1) {
-                        index -= 1;
-                    }
-                    break;
-                }
-            }
-
-            if (session.id in responses) {
-                const newResponses = {...responses}
-                delete newResponses[session.id];
-                setResponses(newResponses);
-            }
+            const metadata = memoryContext.currentPromptMetadata.copy();
+            newSession.note = metadata.getVarValues(),
             
-            let newSession;
-            if (index === null || newSessions.length === 0) {
-                newSession = {...currentSession}
-                newSession.id = -1;
-                newSession.chatIsolation = false;
-                newSession.historyIsolation = false;
+            profileContext.setLastSessionId(newSession.id); // 현 세션 지정
+            profileContext.setSessions(prev=>[...prev, newSession]); // 세션 목록 업데이트
+        },
+        deleteSession(session) {
+            /*
+                영향을 받는 contextValue
+                - profileContext.sessions
+                - profileContext.responses
+            */
+            const prevSessions = profileContext.sessions;
+
+            if (prevSessions.length === 0) return;
+
+            // 현 세션이 제거된 sessions
+            const newSessions = prevSessions.filter((s, index) => s.id !== session.id);
+            profileContext.setSessions(newSessions);
+            
+            // 제거된 세션이 현 세션일 경우
+            if (sessionContext.sessionId == session.id) {
+                // 마지막 입력&응답 정보 제거
+                if (session.id in profileContext.lastChats) {
+                    profileContext.setLastChats(prev=>{
+                        const newChats = { ...prev };
+                        delete newChats[session.id];
+                        return newChats;
+                    });
+                }
+                
+                let newSession: ChatSession;
+                // 남은 세션이 없다면 임시 세션 생성
+                if (newSessions.length === 0) {
+                    newSession = makeTemporaryChatSession();
+                }
+                // 삭제된 세션의 index가 가르키는 세션을 찾음
+                else {
+                    let nextIndex = 0;
+                    for (const i in prevSessions) {
+                        // 제거된 세션이 마지막 세션이라면, 가르키는 index를 하나 당김
+                        if (prevSessions[i].id === session.id) {
+                            nextIndex = Number(i);
+                            if (nextIndex === prevSessions.length-1) {
+                                nextIndex -= 1;
+                            }
+                            break;
+                        }
+                    }
+                    newSession = {...newSessions[nextIndex]}
+                }
+                
+                contextValues.changeCurrentSession(newSession);
+            }
+        },
+        changeCurrentSession(session:ChatSession, nocommit:boolean=false) {
+            sessionContext.importSession(session);
+            profileContext.setLastSessionId(session.id);
+        },
+        commitCurrentSession() {
+            // Nothing to do
+        },
+        enqueueApiRequest({session, input, promptText, promptMetadata}:enqueueApiRequestArgs) {
+            // @TODO : 구조 변경 예정
+
+            // ApiFetchQueue는 EffectHandler 에서 처리됨
+            memoryContext.setApiFetchQueue((queue)=>{
+                const newQueue = [...queue];
+                newQueue.push({
+                    sessionid : session.id,
+                    input: input,
+                    promptMetadata : promptMetadata,
+                    promptText : promptText,
+                });
+    
+                return newQueue;
+            })
+        },
+        changeFetchStatus(session:ChatSession, status:FetchStatus) {
+            const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
+            
+            memoryContext.setSessionFetchStatus((sessionStatus)=>{
+                const newSessionStatus = {...sessionStatus};
+                newSessionStatus[key] = status;
+                return newSessionStatus;
+            });
+        },
+        getFetchStatus(session:ChatSession) {
+            const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
+            
+            if (key in sessionFetchStatus) {
+                return sessionFetchStatus[key];
             }
             else {
-                newSession = {...newSessions[index]}
+                return FetchStatus.IDLE;
             }
+        },
 
-            changeCurrentSession(newSession);
-        }
-    }
-    const changeCurrentSession = (session:ChatSession, nocommit:boolean=false) => {
-        if (!nocommit) commitCurrentSession();
-        
-        if (session.chatIsolation) {
-            memoryContext.setCurrentChat(responses[session.id] ?? getDefaultAPIResponse());
-        }
-        else if (currentSession.chatIsolation) {
-            memoryContext.setCurrentChat(responses[NOSESSION_KEY] ?? getDefaultAPIResponse());
-        }
-        if (session.historyIsolation) {
-            memoryContext.setCurrentHistory(history[session.id] ?? []);
-        }
-        else if (currentSession.historyIsolation) {
-            memoryContext.setCurrentHistory(history[NOSESSION_KEY] ?? []);
-        }
-        
-        const tree = memoryContext.promptMetadataTree;
-        const metadata = tree.getPromptMetadata(session.promptKey)!.copy();
-        metadata.setVarValues(session.note);
-        
-        memoryContext.setCurrentPromptMetadata(metadata);
-        memoryContext.setCurrentSession(session);
-        storeContext.setCurrentSessionId(session.id);
-    }
-    /**
-     * 현 세션 정보를 history, responses에 반영
-     */
-    const commitCurrentSession = () => {
-        if (currentSession === null) return;
 
-        const newHistory = {...history};
-        if (currentSession.historyIsolation) {
-            newHistory[currentSession.id] = currentHistory;
-        }
-        else {
-            newHistory[NOSESSION_KEY] = currentHistory;
-        }
-        storeContext.setHistory(newHistory);
-
-        const newResponses = {...responses};
-        if (currentSession.chatIsolation) {
-            newResponses[currentSession.id] = currentChat;
-        }
-        else {
-            newResponses[NOSESSION_KEY] = currentChat;
-        }
-        storeContext.setResponses(newResponses);
-    }
-    const enqueueApiRequest = ({session, input, promptText, promptMetadata}:enqueueApiRequestArgs) => {
-        memoryContext.setApiFetchQueue((queue)=>{
-            const newQueue = [...queue];
-            newQueue.push({
-                sessionid : session.id,
-                input: input,
-                // note : session.note,
-                promptMetadata : promptMetadata,
-                promptText : promptText,
-            });
-
-            return newQueue;
-        })
-    }
-    const changeFetchStatus = (session, status) => {
-        const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
-        
-        setSessionFetchStatus((sessionStatus)=>{
-            const newSessionStatus = {...sessionStatus};
-            newSessionStatus[key] = status;
-            return newSessionStatus;
-        });
-    }
-    const getFetchStatus = (session) => {
-        const key = (session.id >= 0 && session.chatIsolation) ? session.id : NOSESSION_KEY;
-        
-        if (key in sessionFetchStatus) {
-            return sessionFetchStatus[key];
-        }
-        else {
-            return FetchStatus.IDLE;
-        }
-    }
-
-    const commitPromptMetdataVariable = (metadata:IPromptMetadata) => {
-        metadata.commitCurrentVarValue();
-        /*
-        const newLastvar = {
-            ...storeContext.lastvar,
-            [metadata.key] : metadata.getVarValues(),
-        }
-        storeContext.setLastvar(newLastvar);
-        LocalAPI.echo(`${JSON.stringify(metadata.getVarValues())}`);
-        */
-    }
-
-    // 현재 promptMetadata 변수 정보를 commit 후 새 metadata로 교체
-    const setCurrentPromptMetadata = (metadata:IPromptMetadata, nocommit:boolean=false) => {
-        if (!nocommit) {
-            commitPromptMetdataVariable(memoryContext.currentPromptMetadata);
-        }
-        
-        const newSession: ChatSession = {
-            ...currentSession,
-            promptKey: metadata.key,
-            note: metadata.getVarValues(),
-        }
-        memoryContext.setCurrentSession(newSession);
-        memoryContext.setCurrentPromptMetadata(metadata.copy());
-    }
-
-    const setCurrentPromptMetadataVar = (varname:string, value:any) => {
-        const {
-            currentSession,
-            currentPromptMetadata
-        } = memoryContext;
-        
-        currentPromptMetadata.setVarValue(varname, value);
-
-        const newSession = {
-            ...currentSession,
-            note : memoryContext.currentPromptMetadata.getVarValues(),
-        }
-        memoryContext.setCurrentSession(newSession);
-    }
-    const addErrorLog = (title:string, message:string) => {
-        const newErrorLogs = [...memoryContext.errorLogs];
-        newErrorLogs.push({name:title, message:message});
-        memoryContext.setErrorLogs(newErrorLogs);
+        ...([] as any)
     }
     
     return (
         <EventContext.Provider
-            value={{
-                createSession,
-                deleteSession,
-                changeCurrentSession,
-                commitCurrentSession,
-                enqueueApiRequest,
-                changeFetchStatus,
-                getFetchStatus,
-                setCurrentPromptMetadata,
-                setCurrentPromptMetadataVar,
-                commitPromptMetdataVariable,
-                addErrorLog,
-            }}
+            value={contextValues}
         >
             {children}
         </EventContext.Provider>

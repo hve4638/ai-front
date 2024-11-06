@@ -154,7 +154,7 @@ class Profiles {
             return this.createProfile(profileName);
         }
         else {
-            throw new ProfileError(`Profile not found : ${profileName}`);
+            throw new ProfileError(`Profile not found '${profileName}'`);
         }
     }
 
@@ -168,7 +168,7 @@ class Profiles {
             this.saveProfileMetadata();
         }
         else {
-            throw new ProfileError(`Profile not found : ${profileName}`);
+            throw new ProfileError(`Profile not found '${profileName}'`);
         }
     }
     

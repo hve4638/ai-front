@@ -64,9 +64,9 @@ export class PromptMetadataVerifier {
         }
         const metadata = this.#parsePromptMetadata(rawModuleContent);
 
-        if ("import" in metadata) {
+        if ('import' in metadata) {
             throw new PromptMetadataParseError(
-                "Nested PromptImportMetadata는 지원되지 않습니다",
+                'Nested PromptImportMetadata는 지원되지 않습니다',
                 {
                     errorType: ErrorType.INVALID_MODULE,
                     target: JSON.stringify(modulePromptMetadataText, null, 2),

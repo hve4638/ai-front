@@ -47,12 +47,13 @@ class Profile {
             const targetPath = this.#promptPath.rootMetadata;
             if (fs.existsSync(targetPath)) {
                 const data = fs.readFileSync(targetPath, 'utf8');
-                return JSON.parse(data);
+                return data;
             }
             else {
+                // Legacy : list.json 파일을 사용하는 경우
                 const legacyTargetPath = this.#promptPath.legacyRootMetadata;
                 const data = fs.readFileSync(legacyTargetPath, 'utf8');
-                return JSON.parse(data);
+                return data;
             }
         }
         catch (e) {
@@ -63,7 +64,7 @@ class Profile {
     getModulePromptMetdata(moduleName:string) {
         const targetPath = this.#promptPath.getModuleMetadata(moduleName);
         const data = fs.readFileSync(targetPath, 'utf8');
-        return JSON.parse(data);
+        return data;
     }
 
     getPromptTemplate(moduleName:string, filename:string) {

@@ -1,2 +1,2 @@
-export { useProfileEncryptedValue } from './useProfileEncryptedValue';
-export { useProfileValue } from './useProfileValue';
+export { useProfileStorage } from './useProfileStorage'
+export { useEncryptedProfileStorage } from './useEncryptedProfileStorage'

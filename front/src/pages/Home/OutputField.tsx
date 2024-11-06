@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { APIResponse } from 'data/interface.js'
 
-import { StoreContext } from 'context/StoreContext.tsx'
+import { StoreContext } from 'context'
 
 import { copyToClipboard } from 'utils/clipboard.tsx'
 

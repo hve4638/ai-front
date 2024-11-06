@@ -4,7 +4,7 @@ import './style.js'
 
 import { Initializer, EffectHandler, KeyInputHandler } from './features/stateManagement/index.ts'
 import { CleanUp } from './features/stateManagement/CleanUp.tsx';
-import { StoreContext } from './context/StoreContext.tsx';
+import { StoreContext } from './context';
 import { LayoutModes, ThemeModes } from './data/interface.ts';
 import { ExceptionHandler } from 'features/stateManagement/ExceptionHandler.tsx';
 import { useContextForce } from 'context';

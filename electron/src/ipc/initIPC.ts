@@ -6,12 +6,12 @@ import type { IPCDependencies } from './ipcHandler';
 type PINGS = typeof ipcping[keyof typeof ipcping];
 
 function ipcHandle(ping:PINGS, callback:any) {
-    ipcMain.handle(ping, (event: any, ...args: any) => {
+    ipcMain.handle(ping, async (event: any, ...args: any) => {
         try {
-            const result = callback(...args);
+            const result = await callback(...args);
             return result;
         }
-        catch (error) {
+        catch (error:any) {
             return [makeErrorStruct(error)];
         }
     });

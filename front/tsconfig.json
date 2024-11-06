@@ -29,7 +29,7 @@
             "utils/*": ["utils/*"],
             "pages/*": ["pages/*"],
             "api/*": ["api/*"],
-            "@shared/*": ["../shared/*"]
+            "types/*": ["types/*"]
         },
         "typeRoots": [
             "./node_modules/@types",

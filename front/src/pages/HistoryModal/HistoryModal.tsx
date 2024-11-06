@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import ModalHeader from 'components/ModalHeader.tsx'
 import { APIResponse } from 'data/interface.tsx';
 import { TARGET_ENV } from 'data/constants';
-import { MemoryContext } from 'context/MemoryContext.tsx';
+import { MemoryContext } from 'context';
 
 interface HistoryModalProps {
     onClose:()=>void;

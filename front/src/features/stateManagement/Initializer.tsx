@@ -8,6 +8,7 @@ import { IPromptMetadata, PromptMetadata, PromptMetadataTree, PromptMetadataVeri
 import { AIModels } from 'features/chatAI';
 import { PROMPT_METADATA_PARSE_ERRORS, PromptMetadataParseError } from 'features/prompts/errors';
 import { RawPromptMetadataElement } from 'features/prompts/types';
+import { Profile } from 'features/profiles';
 
 type InitializerProps = {
     onLoad:()=>void,
@@ -30,6 +31,7 @@ export function Initializer({ profileName, onLoad=()=>{}, onLoadFail, historyMan
     const [storedValueLoaded, setStoredValueLoaded] = useState(false);
     const [nextSessionIDLoaded, setNextSessionIDLoaded] = useState(false);
     const [chatLoaded, setChatLoaded] = useState(false);
+    const [profileLoaded, setProfileLoaded] = useState(false);
 
     const {
         sessions,
@@ -54,7 +56,22 @@ export function Initializer({ profileName, onLoad=()=>{}, onLoadFail, historyMan
         return ()=>{
             clearTimeout(timeout);
         }
-    })
+    });
+
+    // 마지막 Profile 로드
+    useEffect(()=>{
+        const call = async () => {
+            const lastProfileName = await LocalAPI.getLastProfileName();
+            if (lastProfileName) {
+                const profile = new Profile(lastProfileName);
+                memoryContext.setProfile(profile);
+            }
+
+            setProfileLoaded(true);
+        }
+
+        call();
+    }, []);
 
     useEffect(()=>{
         memoryContext.setHistoryManager(historyManager);
@@ -63,90 +80,6 @@ export function Initializer({ profileName, onLoad=()=>{}, onLoadFail, historyMan
         });
 
         setInitialized(true);
-    }, [])
-    
-    // PromptMetadataTree 로드 및 초기화
-    useEffect(()=>{
-        const initializePromptMetadata = async () => {
-            let rootContents:string;
-            rootContents = await LocalAPI.loadRootPromptMetadata(profileName);
-
-            if (rootContents.startsWith('@FAIL')) {
-                onLoadFail('프롬프트 로딩 실패 : list.json', rootContents);
-                return;
-            }
-
-            try {
-                const verifier = new PromptMetadataVerifier();
-    
-                const [rawTree, modules] = verifier.parsePromptMetadataTree(
-                    rootContents,
-                    {
-                        name : "root",
-                    }
-                );
-                
-                const externalPromptMetadata:{
-                    [key:string]:RawPromptMetadataElement
-                } = {};
-                
-                for (const moduleName of modules) {
-                    if (!moduleName.match(/\w+/)) {
-                        throw new PromptMetadataParseError(
-                            'Invalid Module Name',
-                            {
-                                errorType: PROMPT_METADATA_PARSE_ERRORS.INVALID_MODULE_NAME,
-                                target: `module name : ${moduleName}`,
-                            }
-                        )
-                    }
-                    
-                    const moduleContent = await LocalAPI.loadModulePromptMetadata(profileName, moduleName);
-                    if (moduleContent.startsWith('@FAIL')) {
-                        throw new PromptMetadataParseError(
-                            'PromptMetadata Load Failed',
-                            {
-                                errorType: PROMPT_METADATA_PARSE_ERRORS.INVALID_MODULE_NAME,
-                                target: `module name : ${moduleName}\n\n${moduleContent}`,
-                            }
-                        )
-                    }
-                    
-                    const metadata = verifier.parseModulePromptMetadata(
-                        moduleContent,
-                        {
-                            name : moduleName,
-                        }
-                    );
-                    externalPromptMetadata[moduleName] = metadata;
-                }
-                
-                const tree = new PromptMetadataTree(profileName, rawTree, externalPromptMetadata);
-                memoryContext.setPromptMetadataTree(tree);
-                
-                setPromptMetadataLoaded(true);
-            }
-            catch(e:unknown) {
-                if (e instanceof PromptMetadataParseError) {
-                    onLoadFail(
-                        `PromptMetadata Parse Failed :: ${e.extraInfomation?.errorType}`,
-                        `${e.message}\n\n${e.extraInfomation?.target ?? ''}`
-                    );
-                }
-                else if (e instanceof Error) {
-                    onLoadFail(
-                        `PromptMetadata Parse Failed (${e.name})`,
-                        `${e.message}\n\n${e.stack}`
-                    );
-                }
-                else {
-                    onLoadFail('PromptMetadata Parse Failed', (e as any).toString());
-                }
-                return;
-            }
-        }
-
-        initializePromptMetadata();
     }, []);
 
     // storeContext 값 로딩 대기
