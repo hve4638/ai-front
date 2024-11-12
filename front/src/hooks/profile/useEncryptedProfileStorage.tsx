@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
 import CryptoJS from 'crypto-js'
-import LocalAPI from 'api'
 import { useRawProfileStorage } from './useRawProfileStorage';
+import LocalAPI from 'api/local';
+import { useStorage } from 'hooks/useStorage';
 
 function makeSalt() {
     return Math.floor(Math.random() * 1000000);
@@ -38,5 +38,10 @@ export function useEncryptedProfileStorage(
         return data.value ?? default_value;
     }
     
-    return useRawProfileStorage(profileName, category, key, { encode, decode });
+    return useRawProfileStorage(
+        profileName,
+        category,
+        key,
+        { encode, decode }
+    );
 }

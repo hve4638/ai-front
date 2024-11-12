@@ -25,6 +25,11 @@ type IPC_TYPES = {
     /** 특정 Profile의 프롬프트 템플릿을 가져옴 */
     loadPromptTemplate: (profileName:string, moduleName:string, filename:string) => ElectronResult<string>;
 
+    /** Global 목록을 가져옴 */
+    loadGlobalValue: (storageName:string, key:string) => ElectronResult<any>;
+    /** Global에 값을 저장 */
+    storeGlobalValue: (storageName:string, key:string, value:any) => ElectronNoResult;
+
     /** Profile 목록을 가져옴 */
     getProfileNames: () => ElectronResult<string[]>;
     /** Profile 생성 */

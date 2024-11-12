@@ -1,17 +1,14 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useLayoutEffect } from 'react';
 import { useProfileStorage } from 'hooks/profile'
-import { LayoutModes, ThemeModes } from 'data/interface.ts';
-import { ChatSession } from './interface';
-import { SetState } from './types';
+import { SetState, ChatSession } from './types';
 
-import type { LLMAPIResponse } from 'types';
+import { LayoutModes, ThemeModes } from 'types/profile';
 import type { LastChats } from 'types/chat';
 
-type Responses = {
-    [key:number]: LLMAPIResponse;
-}
-
 interface RawProfileContextType {
+    profileName: string|null;
+    setProfileName: SetState<string|null>;
+
     // config.json
     fontSize: number;
     setFontSize: SetState<number>;
@@ -20,7 +17,8 @@ interface RawProfileContextType {
     setThemeMode: SetState<ThemeModes>;
     layoutMode: LayoutModes;
     setLayoutMode: SetState<LayoutModes>;
-
+    
+    // data.json
     sessions: ChatSession[];
     setSessions: SetState<ChatSession[]>;
 
@@ -43,15 +41,18 @@ export const RawProfileContext = createContext<RawProfileContextType|null>(null)
 const STORAGE_CONFIG = 'config.json';
 const STORAGE_DATA = 'data.json';
 const STORAGE_CACHE = 'cache.json';
-export default function RawProfileContextProvider({profile, children}) {
+
+export default function RawProfileContextProvider({children}: {children:React.ReactNode}) {
+    const [profileName, setProfileName] = useState<string|null>(null);
+
     const useConfigStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profile, STORAGE_CONFIG, key, { default_value });
+        return useProfileStorage<T>(profileName!, STORAGE_CONFIG, key, { default_value });
     }
     const useDataStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profile, STORAGE_DATA, key, { default_value });
+        return useProfileStorage<T>(profileName!, STORAGE_DATA, key, { default_value });
     }
     const useCacheStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profile, STORAGE_CACHE, key, { default_value });
+        return useProfileStorage<T>(profileName!, STORAGE_CACHE, key, { default_value });
     }
 
     /* config.json */
@@ -72,10 +73,21 @@ export default function RawProfileContextProvider({profile, children}) {
     const [promptVariables, setPromptVariables, refetchPromptVariables] = useCacheStorage('prompt_variables', {});
 
     const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('last_session_id', null);
+
+    useLayoutEffect(() => {
+        refetchFontSize();
+        refetchThemeMode();
+        refetchLayoutMode();
+        refetchSessions();
+        refetchLastChats();
+        refetchPromptVariables();
+        refetchLastSessionId();
+    }, [profileName]);
     
     return (
         <RawProfileContext.Provider
             value={{
+                profileName, setProfileName,
                 fontSize, setFontSize,
                 themeMode, setThemeMode,
                 layoutMode, setLayoutMode,

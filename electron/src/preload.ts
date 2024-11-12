@@ -21,6 +21,9 @@ const api:IPC_TYPES = {
     loadProfileValue: (profileName:string, storageName:string, key:string) => ipcRenderer.invoke(ipcping.LOAD_PROFILE_VALUE, profileName, storageName, key),
     storeProfileValue: (profileName:string, storageName:string, key:string, value:any) => ipcRenderer.invoke(ipcping.STORE_PROFILE_VALUE, profileName, storageName, key, value),
     
+    loadGlobalValue: (storageName:string, key:string) => ipcRenderer.invoke(ipcping.LOAD_GLOBAL_VALUE, storageName, key),
+    storeGlobalValue: (storageName:string, key:string, value:any) => ipcRenderer.invoke(ipcping.STORE_GLOBAL_VALUE, storageName, key, value),
+    
     loadProfileHistoryCount: (profileName:string, historyName:string) => ipcRenderer.invoke(ipcping.LOAD_PROFILE_HISTORY_COUNT, profileName, historyName),
     loadProfileHistory: (profileName:string, historyName:string, offset:number, limit:number) => ipcRenderer.invoke(ipcping.LOAD_PROFILE_HISTORY, profileName, historyName, offset, limit),
     storeProfileHistory: (profileName:string, historyName:string, data:any) => ipcRenderer.invoke(ipcping.STORE_PROFILE_HISTORY, profileName, historyName, data),

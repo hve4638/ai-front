@@ -1,76 +1,38 @@
-import * as path from 'node:path';
-import { app, BrowserWindow, Menu, shell, Tray, globalShortcut } from 'electron';
+import { openElectronApp } from './electron';
+import { initIPC } from './ipc';
+
 import {
     createRequiredPath,
     migrateLegacyProfile,
     aiFrontPath,
-} from './store';
-import { initIPC } from './ipc';
-import FetchContainer from './fetch-container';
-import Profiles from './profiles';
+} from './features/aifront-path';
 
-const FAVICON_PATH = path.join(__dirname, '../static/favicon.ico');
-const DEV_URL = 'http://localhost:3000';
-const STATIC_ENTRYPOINT = path.join(__dirname, '../static/index.html');
-const PRELOAD_PATH = path.join(__dirname, 'preload.js');
+import FetchContainer from './features/fetch-container';
+import Profiles from './features/profiles';
+import GlobalStorage from './features/global-storage';
 
 createRequiredPath();
+// v0.6 이전 버전의 폴더 구조 마이그레이션
 migrateLegacyProfile();
 
 const profiles = new Profiles(aiFrontPath.profilesDirectoryPath);
+const globalStorage = new GlobalStorage(aiFrontPath.baseDirectoryPath);
 const fetchContainer = new FetchContainer();
 
-initIPC({
+// 허용된 globalStorage 설정
+// 등록된 storage만 프론트엔드에서 IPC를 통해 접근할 수 있음
+globalStorage.registerStorage('cache', 'cache.json');
+
+
+const appDependencies = {
     fetchContainer,
-    profiles
-});
-
-function createWindow() {
-    const win = new BrowserWindow({
-        width: 1280,
-        height: 900,
-        minWidth: 500,
-        minHeight: 500,
-        icon: FAVICON_PATH,
-        webPreferences: {
-            preload: PRELOAD_PATH,
-            nodeIntegration: true,
-            contextIsolation: true
-        }
-    })
-
-    if (process.env['ELECTRON_DEV'] === 'TRUE') {
-        console.log(`Entrypoint : ${DEV_URL}`);
-    
-        win.webContents.openDevTools({ mode: "detach" });
-        globalShortcut.register('F5', () => {
-            win.reload();
-        });
-        globalShortcut.register('F11', () => {
-            win.webContents.toggleDevTools();
-        });
-        
-        win.loadURL(DEV_URL);
-    }
-    else {
-        console.log(`Entrypoint : file://${STATIC_ENTRYPOINT}`);
-        win.loadURL(`file://${STATIC_ENTRYPOINT}`);
-    }
-    Menu.setApplicationMenu(null);
-    // electronLocalshortcut.register(win, 'F5', () => {
-    //     win.reload();
-    // });
-    // electronLocalshortcut.register(win, 'F12', () => {
-    //     win.webContents.toggleDevTools();
-    // });
+    globalStorage,
+    profiles,
+}
+const appOptions = {
+    devMode : process.env['ELECTRON_DEV'] === 'TRUE',
+    devUrl : 'http://localhost:3600',
 }
 
-app.whenReady().then(() => {
-    createWindow();
-})
-
-app.on('window-all-closed', function () {
-    profiles.saveAll();
-    app.quit();
-});
-
+initIPC(appDependencies);
+openElectronApp(appDependencies, appOptions);

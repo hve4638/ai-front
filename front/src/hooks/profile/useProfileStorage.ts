@@ -15,6 +15,7 @@ export function useProfileStorage<T>(
 ): [any, (value: any) => void, ()=>void] {
     const encode = (value: any) => value
     const decode = (value: string | undefined) => value ?? default_value;
+    
     return useRawProfileStorage(
         profileName,
         category,

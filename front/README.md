@@ -1,26 +1,50 @@
-# AI Front
+# React + TypeScript + Vite
 
-![front](/img/01.png)
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-React.js + Electron 챗봇 프론트엔드
+Currently, two official plugins are available:
 
-## 설치 및 사용
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- [Relase](https://github.com/hve4638/ai-front/releases)
-- [위키](https://github.com/hve4638/ai-front/wiki/How-to-use) 참조
+## Expanding the ESLint configuration
 
-## 모델 API 설정
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-![setting](/img/02.png)
+- Configure the top-level `parserOptions` property like this:
 
-좌측 상단의 아이콘을 클릭해 모델 별 필요한 API 키를 입력할 수 있습니다.
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
-*모델 별 API를 얻기위한 각 공급자 별 콘솔*
-- *Google (Gemini)* : [https://console.cloud.google.com](https://console.cloud.google.com/)
-- *Anthropic (Claude)* : [https://console.anthropic.com](https://console.anthropic.com/)
-- *OpenAI (GPT)* : [https://platform.openai.com](https://platform.openai.com/)
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-## prompts/list.json 및 프롬프트 구조 가이드
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-- [prompts/list.json](https://github.com/hve4638/ai-front/wiki/Prompt-list)
-- [프롬프트 템플릿](https://github.com/hve4638/ai-front/wiki/Prompt-template)
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```

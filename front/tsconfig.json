@@ -1,44 +1,11 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "skipLibCheck": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true,
-        "module": "ES2022",
-        "target": "ES2022",
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "noImplicitAny": false,
-        "jsx": "react-jsx",
-        "allowImportingTsExtensions" : true,
-        "baseUrl": "src",
-        "paths": {
-            "assets/*": ["assets/*"],
-            "components/*": ["components/*"],
-            "context/*": ["context/*"],
-            "data/*": ["data/*"],
-            "features/*": ["features/*"],
-            "hooks/*": ["hooks/*"],
-            "libs/*": ["libs/*"],
-            "services/*": ["services/*"],
-            "utils/*": ["utils/*"],
-            "pages/*": ["pages/*"],
-            "api/*": ["api/*"],
-            "types/*": ["types/*"]
-        },
-        "typeRoots": [
-            "./node_modules/@types",
-            "./global.d.ts",
-            "./src/api/electron.d.ts"
-        ],
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
     },
-    "include": [
-        "./src/**/*",
-        "./global.d.ts"
-    ]
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

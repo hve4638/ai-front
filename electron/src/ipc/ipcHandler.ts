@@ -1,14 +1,20 @@
 import * as utils from '../utils';
 
-import Profiles from '../profiles';
-import FetchContainer from '../fetch-container';
+import Profiles from '../features/profiles';
+import FetchContainer from '../features/fetch-container';
+import GlobalStorage from '../features/global-storage';
 
 export interface IPCDependencies {
     fetchContainer:FetchContainer,
-    profiles:Profiles
+    profiles:Profiles,
+    globalStorage:GlobalStorage,
 }
 
-export function getIPCHandler({ fetchContainer, profiles }:IPCDependencies):IPC_TYPES {
+export function getIPCHandler({
+    fetchContainer,
+    profiles,
+    globalStorage,
+}:IPCDependencies):IPC_TYPES {
     const trottles = {};
 
     return {
@@ -37,7 +43,7 @@ export function getIPCHandler({ fetchContainer, profiles }:IPCDependencies):IPC_
         },
         getFetchResponse : async (fetchId:number) => {
             return [null, await fetchContainer.get(fetchId)];
-        }, 
+        },
 
         // Prompt 관련
         loadRootPromptMetadata : async (profileName:string) => {
@@ -54,6 +60,15 @@ export function getIPCHandler({ fetchContainer, profiles }:IPCDependencies):IPC_
             const profile = profiles.getProfile(profileName);
             const template = profile.getPromptTemplate(moduleName, filename);
             return [null, template];
+        },
+
+        // Global Storage 관련
+        loadGlobalValue : async (storageName:string, key:string) => {
+            return [null, globalStorage.getValue(storageName, key)];
+        },
+        storeGlobalValue : async (storageName:string, key:string, value:any) => {
+            globalStorage.setValue(storageName, key, value);
+            return [null];
         },
 
         // Profile 관련
@@ -119,11 +134,11 @@ export function getIPCHandler({ fetchContainer, profiles }:IPCDependencies):IPC_
 
         // Last Profile 관련
         setLastProfileName : async (profileName:string) => {
-            profiles.setLastProfileName(profileName);
+            globalStorage.setValue('cache', 'lastProfileName', profileName);
             return [null];
         },
         getLastProfileName : async () => {
-            return [null, profiles.getLastProfileName()];
+            return [null, globalStorage.getValue('cache', 'lastProfileName')];
         },
 
         // Log 관련

@@ -1,1 +1,4 @@
-export { default as Profile } from './Profile';
+import ProfilesConstructor from './Profiles'
+
+
+export const Profiles = new ProfilesConstructor();

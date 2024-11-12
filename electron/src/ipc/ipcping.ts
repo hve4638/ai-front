@@ -18,6 +18,9 @@ const PINGS = {
     LOAD_PROFILE_VALUE : 'load-profile-value',
     STORE_PROFILE_VALUE : 'store-profile-value',
 
+    LOAD_GLOBAL_VALUE : 'load-global-value',
+    STORE_GLOBAL_VALUE : 'store-global-value',
+
     LOAD_PROFILE_HISTORY_COUNT : 'load-profile-history-count',
     LOAD_PROFILE_HISTORY : 'load-profile-history',
     STORE_PROFILE_HISTORY : 'store-profile-history',
@@ -30,6 +33,8 @@ const PINGS = {
     EXECUTE_PLUGIN : 'execute-plugin',
 
     WRITE_LOG : 'write-log',
+
+    GET_LANGUAGE_TEXTS : 'get-language-texts',
 } as const;
 
 export default PINGS;

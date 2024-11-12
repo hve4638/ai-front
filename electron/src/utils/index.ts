@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 
-export function throttle(interval:number) {
+export function throttle(interval:number):(callback:()=>void)=>void {
     let timeout:NodeJS.Timeout|null = null;
 
     return (callback) => {  
