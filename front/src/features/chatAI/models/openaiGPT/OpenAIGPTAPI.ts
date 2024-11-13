@@ -2,14 +2,14 @@ import type { ChatRole, ChatType } from '../../types/request-form'
 import type { RequestForm } from '../../types/request-form'
 import { ChatAPIResponse } from '../../types/response-data';
 
-import { OPENAI_GPT_URL, ROLE } from './data'
+import { OPENAI_GPT_URL, ROLE, ROLE_DEFAULT } from './data'
 
 import { assertNotNull } from '../../utils'
 
 import ChatAIAPI from '../ChatAIAPI'
 
 type GPTMessage = {
-    role: string;
+    role: ROLE;
     content: string;
 }[];
 
@@ -20,7 +20,7 @@ class OpenAIGPTAPI extends ChatAIAPI {
         const message:GPTMessage = [];
         for(const m of form.message) {
             message.push({
-                role: m.role,
+                role: ROLE[m.role] ?? ROLE_DEFAULT,
                 content: m.content[0].text!
             });
         }
@@ -28,7 +28,7 @@ class OpenAIGPTAPI extends ChatAIAPI {
         const url = OPENAI_GPT_URL;
         const body = {
             model : form.model_detail,
-            messages : form.message,
+            messages : message,
             max_tokens: form.max_tokens ?? 1024,
             temperature: form.temperature ?? 1.0,
             top_p : form.top_p ?? 1.0,
@@ -41,7 +41,6 @@ class OpenAIGPTAPI extends ChatAIAPI {
             },
             body: JSON.stringify(body)
         }
-     
         return [url, data];
     }
 

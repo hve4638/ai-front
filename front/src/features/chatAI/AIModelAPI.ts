@@ -1,5 +1,5 @@
 import type ChatAIAPI from './models/ChatAIAPI';
-import type { RequestForm } from './types/request-form';
+import type { RequestForm, RequestDebugOption } from './types/request-form';
 
 import {
     ClaudeAPI, OpenAIGPTAPI, GoogleGeminiAPI, GoogleVertexAIAPI,
@@ -9,13 +9,14 @@ import type { ChatAPIResponse } from './types/response-data';
 
 import { RequestOption } from './types/request-form';
 
+
 class AIModelAPI {
     private requestOption:RequestOption;
     private chatAPIs:{[key:string]:ChatAIAPI} = {};
 
     constructor(requestOption:RequestOption) {
         this.requestOption = requestOption;
-
+        
         this.refreshCache();
     }
 
@@ -26,11 +27,11 @@ class AIModelAPI {
         this.chatAPIs[MODELS.GOOGLE_VERTEXAI] = new GoogleVertexAIAPI();
     }
 
-    async request(form:RequestForm):Promise<ChatAPIResponse> {
+    async request(form:RequestForm, debug?:RequestDebugOption):Promise<ChatAPIResponse> {
         const modelAPI = this.chatAPIs[form.model];
 
         await modelAPI.preprocess();
-        const response = await modelAPI.request(form, this.requestOption);
+        const response = await modelAPI.request(form, this.requestOption, debug);
         await modelAPI.postprocess();
 
         return response;

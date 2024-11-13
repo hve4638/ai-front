@@ -7,7 +7,7 @@ const tokenize = (expressionText) => {
 const token = (type, value) => {return {type, value}}
 
 describe('Tokenizer Error Test', () => {
-    test('Invalid token', ()=>{
+    test('Invalid Identifier', ()=>{
         const expressionText = '1a';
         try {
             tokenize(expressionText); // expected error

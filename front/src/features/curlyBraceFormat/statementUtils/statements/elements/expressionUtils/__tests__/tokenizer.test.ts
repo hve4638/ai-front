@@ -6,6 +6,9 @@ const tokenize = (expressionText) => {
 }
 const token = (type, value) => {return {type, value}}
 
+/**
+ * 토크나이저 표현식 토큰화 테스트
+ */
 describe('Tokenizer Test', () => {
     test('number', ()=>{
         const actual = tokenize('10');

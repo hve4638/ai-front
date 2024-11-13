@@ -1,8 +1,8 @@
-import type { ChatRole, ChatType } from '../../types/request-form'
+import { ChatRole, ChatType } from '../../types/request-form'
 import type { RequestForm, RequestOption } from '../../types/request-form'
 import { ChatAPIResponse } from '../../types/response-data'
 
-import { VERTEXAI_URL, ROLE } from './data'
+import { VERTEXAI_URL, ROLE, ROLE_DEFAULT } from './data'
 
 import { assertNotNull, bracketFormat } from '../../utils'
 
@@ -12,7 +12,7 @@ import TokenGenerator from './TokenGenerator'
 import { ClaudeAPI } from '../claude'
 
 type VertexAIMessage = {
-    role: string;
+    role: ROLE;
     content: string;
 }[];
 
@@ -84,7 +84,7 @@ class GoogleVertexAIAPI extends ChatAIAPI {
         const messages:VertexAIMessage = [];
 
         for (const m of form.message) {
-            if (m.role === 'system') {
+            if (m.role === ChatRole.SYSTEM) {
                 if (messages.length === 0) {
                     systemPrompt += m.content[0].text!;
                 }
@@ -97,7 +97,7 @@ class GoogleVertexAIAPI extends ChatAIAPI {
             }
             else {
                 messages.push({
-                    role : m.role,
+                    role : ROLE[m.role] ?? ROLE_DEFAULT,
                     content : m.content[0].text!
                 })
             }

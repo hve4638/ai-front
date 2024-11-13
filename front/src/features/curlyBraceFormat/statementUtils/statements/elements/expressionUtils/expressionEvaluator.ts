@@ -2,7 +2,13 @@ import { ExpressionArgs, ExpressionEventHooks, OPERATOR_HOOKS, Vars } from './in
 import { SyntaxToken, ExpressionType, EvaluatableExpression, IdentifierExpression, LiteralExpression, ObjectExpression, CallExpression, ParamExpression } from './expressionParser';
 import { AnyExpression } from './expressionParser/expressionInterface';
 import { HookEvaluationError, IdentifierError, InvalidExpressionError, NoHookError, UnsupportedOperator } from './error';
-import { LogicError } from 'features/errors';
+
+class ExpressionLogicError extends Error {
+    constructor() {
+        super('');
+        this.name = 'ExpressionLogicError';
+    }
+}
 
 const LITERAL_ACTIONS = {
     add(a, b) { return a + b },
@@ -107,7 +113,7 @@ export class ExpressionEvaluator {
     }
     
     #evaluateIdentifier(expr):ObjectExpression|LiteralExpression {
-        if (!this.#isIdentifier(expr)) throw new LogicError();
+        if (!this.#isIdentifier(expr)) throw new ExpressionLogicError();
         const identifier = expr.value;
 
         let data;
@@ -151,7 +157,7 @@ export class ExpressionEvaluator {
     }
 
     #evaluateCallExpr(expr):ObjectExpression|LiteralExpression {
-        if (!this.#isCall(expr)) throw new LogicError();
+        if (!this.#isCall(expr)) throw new ExpressionLogicError();
         const operator = expr.value;
         const operand1 = this.#evaluateExpr(expr.operands[0]);
         const operand2 = this.#evaluateExpr(expr.operands[1]);
@@ -209,7 +215,7 @@ export class ExpressionEvaluator {
     }
 
     #evaluateParamExpr(expr):ParamExpression {
-        if (!this.#isParam(expr)) throw new LogicError();
+        if (!this.#isParam(expr)) throw new ExpressionLogicError();
 
         const args:any[] = [];
         for(const child of expr.args) {

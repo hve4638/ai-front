@@ -144,6 +144,7 @@ export function getIPCHandler({
         // Log 관련
         writeLog : async (name:string, message:string, showDatetime:boolean) => {
             throw new Error('Not implemented yet');
-        }
+        },
+        
     }
 }

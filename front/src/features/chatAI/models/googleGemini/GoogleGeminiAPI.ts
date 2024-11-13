@@ -5,15 +5,14 @@ import { assertNotNull, bracketFormat } from '../../utils'
 
 import ChatAIAPI from '../ChatAIAPI'
 
-
 import { 
     GENIMIAPI_URL_FORMAT,
     GENIMI_OPTION_SAFETY,
-    GENIMI_ROLE,
-    GENIMI_ROLE_DEFAULT
+    ROLE,
+    ROLE_DEFAULT,
 } from './data'
 
-type GeminiMessage = {
+type GeminiMessage = { 
     role: string;
     parts: {
         text: string;
@@ -38,7 +37,7 @@ class GoogleGeminiAPI extends ChatAIAPI {
                 }
             });
             contents.push({
-                role: role,
+                role: ROLE[role] ?? ROLE_DEFAULT,
                 parts: parts
             });
         }

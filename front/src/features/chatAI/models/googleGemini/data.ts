@@ -1,3 +1,5 @@
+import { ChatRole } from '../../types/request-form';
+
 export const GENIMIAPI_URL_FORMAT = 'https://generativelanguage.googleapis.com/v1beta/models/{{modelname}}:generateContent?key={{apikey}}';
 
 export const GENIMI_OPTION_SAFETY = [
@@ -27,3 +29,10 @@ export const GENIMI_ROLE = {
   "assistant" : "MODEL",
   "bot" : "MODEL"
 }
+export const ROLE_DEFAULT = "USER";
+export const ROLE = {
+  [ChatRole.USER] : 'USER',
+  [ChatRole.SYSTEM] : 'MODEL',
+  [ChatRole.BOT] : 'MODEL',
+} as const;
+export type ROLE = keyof typeof ROLE;

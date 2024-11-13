@@ -2,7 +2,7 @@ export const ChatRole = {
     'USER' : 'USER',
     'BOT' : 'BOT',
     'SYSTEM' : 'SYSTEM',
-}
+} as const;
 export type ChatRole = typeof ChatRole[keyof typeof ChatRole];
 
 export const ChatType = {
@@ -47,3 +47,11 @@ export type RequestAPI = (url:string, init:RequestInit)=>Promise<any>;
 export type RequestOption = {
     requestAPI:RequestAPI;
 };
+
+export type RequestDebugOption = {
+    /** undefined가 아니라면 요청 data를 가져옵니다. */
+    requestData? : {
+        url?:string;
+        data?:any;
+    };
+}

@@ -1,7 +1,27 @@
 import { CurlyBraceFormatParser } from '../'
-import { handleAndGetError } from 'features/testUtils'
 import { CBFParseError } from '../errors';
 import { CBFRawErrorWarper } from '../cbfRawErrorWarper'
+
+class ExpectedButNotThrownError extends Error {
+    constructor() {
+        super('Expected error but not thrown');
+    }
+}
+
+export function handleAndGetError(callback) {
+    try {
+        callback();
+        
+        throw new ExpectedButNotThrownError();
+    }
+    catch(e:any) {
+        if (e instanceof ExpectedButNotThrownError) {
+            throw e;
+        }
+        return e;
+    }
+}
+
 const parseCBF = (promptTemplateText, args) => {
     const parser = new CurlyBraceFormatParser(promptTemplateText);
     return parser.build(args);

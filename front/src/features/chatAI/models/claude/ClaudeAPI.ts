@@ -1,7 +1,7 @@
-import type { RequestForm } from '../../types/request-form'
+import { ChatRole, type RequestForm } from '../../types/request-form'
 import { ChatAPIResponse } from '../../types/response-data';
 
-import { CLAUDE_URL, ROLE } from './data'
+import { CLAUDE_URL, ROLE, ROLE_DEFAULT } from './data'
 
 import { assertNotNull, bracketFormat } from '../../utils'
 
@@ -13,22 +13,50 @@ type ClaudeSystemPrompt = {
 }[];
 
 type ClaudeMessage = {
-    role: string;
-    content: string;
+    role: ROLE;
+    content: {
+        type: 'text';
+        text: string;
+    }[];
 }[];
 
 class ClaudeAPI extends ChatAIAPI {
     makeRequestData(form:RequestForm): [string, any] {
         assertNotNull(form.secret?.api_key, 'api_key is required');
 
-        let systemPrompt:ClaudeSystemPrompt = [];
+        let systemPrompt = '';
         const messages:ClaudeMessage = [];
         for (const message of form.message) {
-            /// @TODO : 이미지 & 파일 처리하도록 추가
-            messages.push({
-                role: message.role,
-                content: message.content[0].text!
-            });
+            const role = ROLE[message.role];
+            const text = message.content[0].text!;
+            
+            if (role === ROLE.SYSTEM) {
+                if (messages.length === 0) {
+                    systemPrompt += text;
+                }
+                else {
+                    messages.push({
+                        role: ROLE[ChatRole.BOT],
+                        content: [
+                            {
+                                type: 'text',
+                                text: 'system: ' + text,
+                            }
+                        ]
+                    });
+                }
+            }
+            else {
+                messages.push({
+                    role: role,
+                    content: [
+                        {
+                            type: 'text',
+                            text: text,
+                        }
+                    ]
+                });
+            }
         }
 
         const url = CLAUDE_URL;
@@ -36,10 +64,9 @@ class ClaudeAPI extends ChatAIAPI {
             model : form.model_detail,
             messages : messages,
             system : systemPrompt,
-            temperature: Number(form.temperature ?? 1.0),
-            max_tokens: Number(form.max_tokens),
-            top_p : Number(form.top_p),
-            top_k: Number(form.top_k),
+            max_tokens: form.max_tokens ?? 1024,
+            temperature: form.temperature ?? 1.0,
+            top_p : form.top_p ?? 1.0,
         }
         const data = {
             method : 'POST',
