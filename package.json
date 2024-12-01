@@ -2,7 +2,7 @@
   "name": "ai-front",
   "author": "Hve",
   "description": "ChatAI Frontend",
-  "version": "v0.6.1",
+  "version": "v0.6.2",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
