@@ -1,3 +1,5 @@
+
+
 type ElectronResultSync<T> = [Error|null, T];
 type ElectronResult<T> = Promise<[Error|null, T]>;
 type ElectronNoResult = Promise<[Error|null]>;

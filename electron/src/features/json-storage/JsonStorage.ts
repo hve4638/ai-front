@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 class JsonStorage {
     #filePath:string;
@@ -25,6 +26,8 @@ class JsonStorage {
     writeFile() {
         const jsonString = JSON.stringify(this.#contents, null, 4);
 
+        const dirPath = path.dirname(this.#filePath);
+        fs.mkdirSync(dirPath, { recursive: true });
         fs.writeFileSync(this.#filePath, jsonString, 'utf8');
     }
     deleteFile() {

@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { aiFrontPath } from '../features/aifront-path';
+import ProgramPath from '../features/program-path';
 import Profiles from '../features/profiles';
+
+const programPath = new ProgramPath(path.join(process.env['USERPROFILE'] ?? '', 'Documents', 'Afron'));
 
 const historyData = (id, data) => {
     return {
@@ -12,7 +14,7 @@ const historyData = (id, data) => {
 
 describe('Profile Test', () => {
     // 각 테스트는 병렬적으로 실행되므로 각 TestSuite마다 다른 profile 이름을 사용해야 함
-    const testPath = path.join(aiFrontPath.testDirectoryPath, 'profile-test', 'profiles');
+    const testPath = path.join(programPath.testPath, 'prompt-profile-test', 'profiles');
     /**
      * @type {Profiles}
      */
