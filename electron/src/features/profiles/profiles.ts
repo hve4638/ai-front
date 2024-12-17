@@ -4,8 +4,8 @@ import { ProfileError } from './errors';
 import Profile from './profile';
 
 class Profiles {
-    #basePath;
-    #metadataPath;
+    #basePath:string;
+    #metadataPath:string;
     /**
      * 메타데이터에서 불러온 프로필 이름 목록
      */
