@@ -1,4 +1,9 @@
 import type { ILocalAPI } from './interface';
+import type {
+    ChatSessionStructure,
+    ChatSessionTabStructure,
+} from './types'
+
 const electron = window.electron;
 
 class IPCError extends Error {
@@ -85,7 +90,7 @@ class ElectronIPCAPI implements ILocalAPI {
         if (err) throw new IPCError(err.message);
     }
 
-     async loadProfileValue(profileName:string, filename:string, key:string) {
+    async loadProfileValue(profileName:string, filename:string, key:string) {
         const [err, value] = await electron.loadProfileValue(profileName, filename, key);
         if (err) throw new IPCError(err.message);
         return value;

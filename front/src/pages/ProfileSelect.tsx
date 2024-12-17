@@ -1,20 +1,35 @@
-import { Profiles } from 'features/profiles'
+import { ProfileButton, ProfileAddButton, ProfileOptionButton } from 'components/ProfileSelect'
+import RedIcon from 'assets/img/red.png'
 
-function ProfileSelectPage() {
-    const profileNames = Profiles.names;
-    console.log(profileNames);
-    
+interface ProfileSelectPageProps {
+    profiles: string[];
+    onSelect: (profileName: string) => void;
+}
+
+function ProfileSelectPage({
+    profiles,
+    onSelect
+}: ProfileSelectPageProps) {
     return (
         <div
-            className='column'
+            className='column center wfill undraggable'
+            style={{
+                padding: '8px'
+            }}
         >
-            <h2>프로필 선택</h2>
+            <h2
+                className='center'
+                style={{
+                    marginBottom: '16px'
+                }}
+            >프로필 선택</h2>
             {
-                profileNames.map((profileName, index) => {
+                profiles.map((profileName, index) => {
                     return (
                         <button
                             key={index}
                             onClick={() => {
+                                console.log('hi')
                             }}
                         >
                             {profileName}
@@ -22,6 +37,16 @@ function ProfileSelectPage() {
                     );
                 })
             }
+            <ProfileButton
+                name='Guest'
+                identifier='guest'
+                image={RedIcon}
+                onClick={(profileName, identifier) => {
+                    onSelect(profileName);
+                }}
+            />
+            <ProfileAddButton/>
+            <ProfileOptionButton/>
         </div>
     );
 }

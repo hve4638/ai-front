@@ -1,0 +1,73 @@
+.session-bar { 
+    background-color: var(--secondary-bgcolor);
+}
+
+.hover-effect {
+    position : absolute;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    transition: 0.15s ease background-color;
+    pointer-events: none;
+}
+
+.session-tab {
+    position: relative;
+    background-color: transparent;
+    border-radius: 0px 0px 8px 8px;
+    margin: 0px 2px;
+    z-index: 2;
+
+    &:not(:active) {
+        transition : left 0.3s ease;
+    }
+
+    .hover-effect {
+        border-radius: 0px 0px 8px 8px;
+    }
+
+    &.enabled {
+        background-color: var(--bgcolor);
+        z-index: 3;
+    }
+    &:not(.enabled) {
+        background-color: var(trasparent);
+    }
+
+    &:not(.enabled):hover {
+        .hover-effect {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    .clickable-icon {
+        cursor: pointer;
+        border-radius: 20px;
+        transition : 0.1s ease background-color;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+.session-add-button {
+    position: relative;
+    background-color: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0px 2px;
+
+    .hover-effect {
+        border-radius: 50%;
+        margin : 1px;
+    }
+
+    &:hover {
+        .hover-effect {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+    }
+}
+
+.session-tab-container {
+}

@@ -6,9 +6,6 @@ import { LayoutModes, ThemeModes } from 'types/profile';
 import type { LastChats } from 'types/chat';
 
 interface RawProfileContextType {
-    profileName: string|null;
-    setProfileName: SetState<string|null>;
-
     // config.json
     fontSize: number;
     setFontSize: SetState<number>;
@@ -42,9 +39,10 @@ const STORAGE_CONFIG = 'config.json';
 const STORAGE_DATA = 'data.json';
 const STORAGE_CACHE = 'cache.json';
 
-export default function RawProfileContextProvider({children}: {children:React.ReactNode}) {
-    const [profileName, setProfileName] = useState<string|null>(null);
-
+export default function RawProfileContextProvider({
+    profileName,
+    children
+}: {profileName:string, children:React.ReactNode}) {
     const useConfigStorage = <T,>(key:string, default_value:T) => {
         return useProfileStorage<T>(profileName!, STORAGE_CONFIG, key, { default_value });
     }
@@ -74,6 +72,7 @@ export default function RawProfileContextProvider({children}: {children:React.Re
 
     const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('last_session_id', null);
 
+
     useLayoutEffect(() => {
         refetchFontSize();
         refetchThemeMode();
@@ -87,7 +86,6 @@ export default function RawProfileContextProvider({children}: {children:React.Re
     return (
         <RawProfileContext.Provider
             value={{
-                profileName, setProfileName,
                 fontSize, setFontSize,
                 themeMode, setThemeMode,
                 layoutMode, setLayoutMode,

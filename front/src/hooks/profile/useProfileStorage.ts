@@ -20,6 +20,9 @@ export function useProfileStorage<T>(
         profileName,
         category,
         key,
-        { encode, decode }
+        {
+            encode, decode,
+            onLoadError : (error: unknown) => {},
+        }
     );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface GoogleFontIconProps {
     className?:string;
@@ -9,12 +9,12 @@ interface GoogleFontIconProps {
 }
 
 export function GoogleFontIcon({
-    className='', value, onClick = ()=>{}
+    className='', style, value, onClick = ()=>{}
 }:GoogleFontIconProps) {
     return (
         <label
             className={`${className} undraggable center`}
-            style={{ color: 'white' }}
+            style={style}
             onClick={(e)=>onClick()}
         >
             <span className={`material-symbols-outlined`}>

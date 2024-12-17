@@ -25,7 +25,9 @@ export function useRawProfileStorage(
         [profileName, category]
     );
     const loadData = useCallback(
-        (key: string) => LocalAPI.loadProfileValue(profileName, category, key),
+        (key: string) => {
+            return LocalAPI.loadProfileValue(profileName, category, key);
+        },
         [profileName, category]
     );
 

@@ -1,0 +1,15 @@
+.flex {
+    flex: 1;
+}
+
+.noflex {
+    display: flex;
+    flex: none;
+}
+    
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  

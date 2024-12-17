@@ -1,1 +1,0 @@
-export { default as GoogleGeminiAPI } from './GoogleGeminiAPI';

@@ -1,0 +1,27 @@
+
+
+.input-field-container {
+    position: relative;
+    
+    border-radius: 5px;
+    border: 1px solid var(--inputfield-border-color);
+    background-color: var(--inputfield-background-color);
+    transition: 0.3s margin, 0.3s border-radius;
+    width : auto;
+    height: auto;
+}
+
+.input-field {
+    position: relative;
+    
+    border : 0;
+    background-color: transparent;
+    margin: 0px;
+    padding : 0px;
+    width : auto;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    resize: none;
+    outline: none;
+}

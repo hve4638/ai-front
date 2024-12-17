@@ -7,11 +7,9 @@
     "scripts": {
         "start": "concurrently \"yarn electron:start\" \"yarn front:start\"",
         "start:debug": "concurrently \"yarn electron:start\" \"yarn front:debug\"",
-
         "front:start": "cd front && yarn start",
         "front:debug": "cd front && yarn start",
         "electron:start": "cd electron && wait-on http://localhost:3600 && yarn start:dev",
-
         "front:build": "cd front && yarn build:electron",
         "front:sync": "node utils/cp front/build electron/static"
     },
@@ -19,5 +17,6 @@
         "concurrently": "^9.0.1",
         "cross-env": "^7.0.3",
         "wait-on": "^8.0.1"
-    }
+    },
+    "dependencies": {}
 }

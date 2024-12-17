@@ -17,7 +17,7 @@ export function useStorage(
         onStoreError = (error: unknown) => console.error(error),
         onLoadError = (error: unknown) => console.error(error),
         storeData,
-        loadData
+        loadData,
     }:ExtraArgs
 ): [any, (value: any) => void, ()=>void] {
     const [cacheValue, setCacheValue] = useState<any>(null);

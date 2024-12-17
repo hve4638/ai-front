@@ -6,36 +6,9 @@
     position: relative;
 }
 
-.textfield {
-    position: relative;
-    
-    border-radius: 6px;
-    border: 1px solid var(--inputfield-border-color);
-    background-color: var(--inputfield-background-color);
-    transition: 0.3s margin, 0.3s border-radius;
-
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
-.input-section-container {
-    display: flex;
-    flex-direction: column;
-    flex : 1;
-    margin: 0px 0px 0px 16px;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
-.output-section-container {
-    display: flex;
-    flex-direction: column;
-    flex : 1;
-    margin: 0px 16px 0px 0px;
-
-    resize: none;
-    overflow-x: hidden;
-    overflow-y: hidden;
+.box {
+    background-color: var(--container-bgcolor);
+    border-radius: 16px;
 }
 
 .seperate-section-item {
@@ -63,7 +36,6 @@
 }
 
 .floating-button {
-    font-size: 40px;
     position: absolute;
     bottom: 20px;
     right: 20px;
