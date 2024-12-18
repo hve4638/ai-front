@@ -1,4 +1,6 @@
+
 export interface IAccessor {
-    drop();
-    commit();
+    commit():void;
+    drop():void;
+    get dropped():boolean;
 }

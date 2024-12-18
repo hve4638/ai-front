@@ -19,10 +19,7 @@ class ProgramPath {
         return path.join(this.#basePath, 'test');
     }
 
-    /**
-     * 필수 디렉토리 생성
-     */
-    makeDirectory() {
+    makeRequiredDirectory() {
         fs.mkdirSync(this.basePath, { recursive: true });
         fs.mkdirSync(this.profilePath, { recursive: true });
         fs.mkdirSync(this.testPath, { recursive: true });

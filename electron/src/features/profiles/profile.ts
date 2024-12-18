@@ -1,9 +1,7 @@
 import * as fs from 'node:fs';
-import * as path from 'node:path';
-import HistoryManager from './history';
-import JsonStorage from './JsonStorage';
-import PromptPath from './promptPath';
-import { ProfileError } from './errors';
+import Storage, { StorageAccess } from '../storage'
+import HistoryAccessor from './HistoryAccessor';
+
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -11,91 +9,53 @@ import { ProfileError } from './errors';
 class Profile {
     /** Profile 디렉토리 경로 */
     #profilePath:string;
-    #promptPath:PromptPath;
-    #history:HistoryManager|null;
-    #profileStores = {};
+    #storage:Storage;
+    #histoyAccessBit:number;
 
     constructor(profilePath:string) {
         this.#profilePath = profilePath;
-        this.#promptPath = new PromptPath(profilePath);
-        this.#history = new HistoryManager(path.join(profilePath, 'history'));
+
+        this.#storage = new Storage(this.#profilePath);
+        this.#histoyAccessBit = this.#storage.addAccessorEvent({
+            create: (fullPath:string) => new HistoryAccessor(fullPath),
+        });
+        this.#storage.register({
+            'prompt' : {
+                'index.json' : StorageAccess.JSON,
+                '**/*' : StorageAccess.TEXT|StorageAccess.JSON,
+            },
+            'history': {
+                '*': this.#histoyAccessBit,
+            },
+            'cache.json' : StorageAccess.JSON,
+            'data.json' : StorageAccess.JSON,
+            'config.json' : StorageAccess.JSON,
+            'thumbnail' : StorageAccess.BINARY,
+        });
     }
 
-    get history() {
-        if (this.#history) {
-            return this.#history;
-        }
-        else {
-            throw new ProfileError('HistoryManger is closed.');
-        }
-    }
-    
-    setValue(storeName:string, key:string, value:any) {
-        this.#loadStoreFile(storeName);
-
-        this.#profileStores[storeName].set(key, value);
+    getJSONAccessor(identifier:string) {
+        return this.#storage.getJSONAccessor(identifier);
     }
 
-    getValue(storeName:string, key:string) {
-        this.#loadStoreFile(storeName);
-
-        return this.#profileStores[storeName].get(key);
+    getTextAccessor(identifier:string) {
+        return this.#storage.getTextAccessor(identifier);
     }
 
-    getRootPromptMetadata() {
-        try {
-            const targetPath = this.#promptPath.rootMetadata;
-            if (fs.existsSync(targetPath)) {
-                const data = fs.readFileSync(targetPath, 'utf8');
-                return data;
-            }
-            else {
-                // Legacy : list.json 파일을 사용하는 경우
-                const legacyTargetPath = this.#promptPath.legacyRootMetadata;
-                const data = fs.readFileSync(legacyTargetPath, 'utf8');
-                return data;
-            }
-        }
-        catch (e) {
-            throw new ProfileError('Failed to get root prompt metadata');
-        }
+    getBinaryAccessor(identifier:string) {
+        return this.#storage.getBinaryAccessor(identifier);
     }
 
-    getModulePromptMetdata(moduleName:string) {
-        const targetPath = this.#promptPath.getModuleMetadata(moduleName);
-        const data = fs.readFileSync(targetPath, 'utf8');
-        return data;
-    }
-
-    getPromptTemplate(moduleName:string, filename:string) {
-        const target = this.#promptPath.getFile(moduleName, filename);
-        return fs.readFileSync(target, 'utf8');
-    }
-
-    /** ProfileStore를 열기 */
-    #loadStoreFile(storeFileName:string):JsonStorage {
-        if (!(storeFileName in this.#profileStores)) {
-            const filePath = path.join(this.#profilePath, storeFileName);
- 
-            const file = new JsonStorage(filePath);
-            file.readFile();
-            
-            this.#profileStores[storeFileName] = file;
-        }
-
-        return this.#profileStores[storeFileName];
+    getHistoryAccessor(key:string):HistoryAccessor {
+        return this.#storage.getAccessor('history', this.#histoyAccessBit) as HistoryAccessor;
     }
 
     save() {
-        for (const filename in this.#profileStores) {
-            this.#profileStores[filename].writeFile();
-        }
+        this.#storage.commit();
     }
 
-    close() {
-        this.#history?.close();
-
-        this.#history = null;
+    delete() {
+        fs.rmdirSync(this.#profilePath, {recursive: true});
     }
 }
 

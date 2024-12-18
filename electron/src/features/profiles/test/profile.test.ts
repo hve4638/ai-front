@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import ProgramPath from '../features/program-path';
-import Profiles from '../features/profiles';
+import ProgramPath from '../../program-path';
+import Profiles from '..';
 
 const programPath = new ProgramPath(path.join(process.env['USERPROFILE'] ?? '', 'Documents', 'Afron'));
 

@@ -110,7 +110,7 @@ class Profiles {
         if (index !== -1) {
             const profilePath = this.#getProfilePath(profileName);
             if (profileName in this.#profiles) {
-                this.#profiles[profileName].close();
+                this.#profiles[profileName].delete();
 
                 delete this.#profiles[profileName];
             }

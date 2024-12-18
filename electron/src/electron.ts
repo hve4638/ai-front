@@ -5,7 +5,7 @@ import { throttle } from './utils';
 
 import type FetchContainer from './features/fetch-container';
 import type Profiles from './features/profiles';
-import type GlobalStorage from './features/global-storage';
+import type Storage from './features/storage';
 
 const FAVICON_PATH = path.join(__dirname, '../static/favicon.ico');
 const STATIC_ENTRYPOINT = path.join(__dirname, '../static/index.html');
@@ -13,7 +13,7 @@ const PRELOAD_PATH = path.join(__dirname, 'preload.js');
 
 interface ElectronAppDependencies {
     fetchContainer:FetchContainer,
-    globalStorage:GlobalStorage,
+    globalStorage:Storage,
     profiles:Profiles,
 }
 
@@ -36,7 +36,8 @@ export function openElectronApp(
         devUrl = ''
     } = options;
     
-    const [width, height] = globalStorage.getValue('cache', 'lastsize') ?? [1280, 900];
+    const cacheAccessor = globalStorage.getJSONAccessor('cache') ?? [1280, 900];
+    const [width, height] = cacheAccessor.get('lastsize') ?? [1280, 900];
     const [minWidth, minHeight] = [500, 500];
 
     function createWindow() {
@@ -70,7 +71,7 @@ export function openElectronApp(
         win.on('resize', ()=>{
             const [width, height] = win.getSize();
             throttledResize(()=>{
-                globalStorage.setValue('cache', 'lastsize', [width, height]);
+                cacheAccessor.set('lastsize', [width, height]);
                 console.log(width, height);
             });
         });

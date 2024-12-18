@@ -1,81 +1,72 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { IAccessor, BinaryAccessor, JSONAccessor, TextAccessor } from './accessor';
-import { StorageAccessError, StorageError } from './errors';
-import StorageAccessControl, { StorageAccess } from './StorageAccessControl';
+import StorageAccessControl, { AccessTree, StorageAccess } from './access-control';
+import { StorageError } from '.';
+
+type AccessorEvent = {
+    create: (fullPath:string)=>IAccessor;
+}
 
 class Storage {
     #basePath: string;
     #ac:StorageAccessControl;
-    #storages:Map<string, IAccessor> = new Map();
+    #accessors:Map<string, IAccessor> = new Map();
+    #customAccessorEvent: Map<number, AccessorEvent> = new Map();
 
     constructor(basePath:string) {
         this.#basePath = basePath;
         this.#ac = new StorageAccessControl({
-            onAccess: (access) => {
-                if (this.#storages.has(access.identifier)) {
-                    return this.#storages.get(access.identifier);
+            onAccess: (identifier:string, accessType:StorageAccess) => {
+                const targetPath = path.join(this.#basePath, identifier.replaceAll(':', '/'));
+
+                if (this.#accessors.has(identifier)) {
+                    return this.#accessors.get(identifier) as IAccessor;
                 }
                 else {
-                    const fullPath = path.join(this.#basePath, access.actualPath);
-
                     let accessor:IAccessor;
-                    switch(access.accessType) {
+                    switch(accessType) {
                         case StorageAccess.JSON:
-                            accessor = new JSONAccessor(fullPath);
+                            accessor = new JSONAccessor(targetPath);
                             break;
                         case StorageAccess.BINARY:
-                            accessor = new BinaryAccessor(fullPath);
+                            accessor = new BinaryAccessor(targetPath);
                             break;
                         case StorageAccess.TEXT:
-                            accessor = new TextAccessor(fullPath);
+                            accessor = new TextAccessor(targetPath);
                             break;
                         default:
-                            throw new StorageAccessError('Invalid access type');
+                            const event = this.#customAccessorEvent.get(accessType);
+                            if (!event) {
+                                throw new StorageError('Invalid access type');
+                            }
+                            accessor = event.create(targetPath);
+                            break;
                     }
-                    
-                    this.#storages.set(access.identifier, accessor);
+                    this.#accessors.set(identifier, accessor);
                     return accessor;
                 }
             },
-            onAccessDir: (access) => {
-                const dirPath = path.join(this.#basePath, access.actualPath);
+            onAccessDir: (identifier) => {
+                const targetPath = identifier.replaceAll(':', '/');
+
+                const dirPath = path.join(this.#basePath, targetPath);
                 if (!fs.existsSync(dirPath)) {
                     fs.mkdirSync(dirPath, { recursive: true });
-                }
-            },
-            onRegister: (access) => {
-                
-            },
-            onRegisterDir: (access) => {
-                
-            },
-            onDelete: (access) => {
-                const accessor = this.#storages.get(access.identifier);
-                if (accessor) {
-                    accessor.drop();
-                    this.#storages.delete(access.identifier);
-                }
-            },
-            onDeleteDir: (access) => {
-                const dirPath = path.join(this.#basePath, access.actualPath);
-                
-                if (fs.existsSync(dirPath)) {
-                    fs.rmdirSync(dirPath);
                 }
             }
         });
     }
 
-    register(identifier:string, filePath:string, accessType:StorageAccess=StorageAccess.JSON) {
-        this.#ac.register(identifier, filePath, accessType);
-    }
-    registerDir(identifier:string, filePath:string, accessType:number=StorageAccess.ANY) {
-        this.#ac.registerDir(identifier, filePath, accessType);
+    register(tree:AccessTree) {
+        this.#ac.register(tree);
     }
 
-    getRegisteredFiles() {
-        return this.#ac.getRegisteredFiles();
+    addAccessorEvent(event:AccessorEvent) {
+        const customType = this.#ac.addAccessType();
+        this.#customAccessorEvent.set(customType, event);
+
+        return customType;
     }
 
     getJSONAccessor(identifier:string):JSONAccessor {
@@ -86,6 +77,9 @@ class Storage {
     }
     getBinaryAccessor(identifier:string):BinaryAccessor {
         return this.#loadBinaryAccessor(identifier);
+    }
+    getAccessor(identifier:string, accessType:number):IAccessor {
+        return this.#ac.access(identifier, accessType) as IAccessor;
     }
 
     #loadJSONAccessor(identifier:string):JSONAccessor {
@@ -99,27 +93,22 @@ class Storage {
     }
 
     dropAccessor(identifier:string) {
-        this.#ac.delete(identifier);
-    }
-    dropDir(identifier:string) {
-        this.#ac.delete(identifier, { recursive: true });
+        const accessor = this.#accessors.get(identifier)
+        if (accessor && !accessor.dropped) {
+            accessor.drop();
+        }
     }
     
     dropAllAccessor() {
-        const dirs = this.#ac.getRegisteredDirs();
-
-        for (const dir of dirs) {
-            this.#ac.delete(dir, { recursive: true });
-        }
-        
-        const files = this.#ac.getRegisteredFiles();
-        for (const file of files) {
-            this.#ac.delete(file);
-        }
+        this.#accessors.forEach((accessor) => {
+            if (!accessor.dropped) {
+                accessor.drop();
+            }
+        });
     }
 
     commit() {
-        for (const accessor of this.#storages.values()) {
+        for (const accessor of this.#accessors.values()) {
             accessor.commit();
         }
     }

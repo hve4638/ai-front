@@ -2,12 +2,12 @@ import * as utils from '../utils';
 
 import Profiles from '../features/profiles';
 import FetchContainer from '../features/fetch-container';
-import GlobalStorage from '../features/global-storage';
+import Storage from '../features/storage';
 
 export interface IPCDependencies {
     fetchContainer:FetchContainer,
     profiles:Profiles,
-    globalStorage:GlobalStorage,
+    globalStorage:Storage,
 }
 
 export function getIPCHandler({
@@ -47,27 +47,34 @@ export function getIPCHandler({
 
         // Prompt 관련
         loadRootPromptMetadata : async (profileName:string) => {
-            const profile = profiles.getProfile(profileName);
-            const metadata = profile.getRootPromptMetadata();
-            return [null, metadata];
+            throw new Error('Not implemented yet');
+            // const profile = profiles.getProfile(profileName);
+            // const metadata = profile.getTextAccessor('prompt:index.json');
+            // return [null, metadata.read()];
         },
         loadModulePromptMetadata : async (profileName:string, moduleName:string) => {
-            const profile = profiles.getProfile(profileName);
-            const metadata = profile.getModulePromptMetdata(moduleName);
-            return [null, metadata];
+            throw new Error('Not implemented yet');
+            // const profile = profiles.getProfile(profileName);
+            // const metadata = profile.getModulePromptMetdata(moduleName);
+            // return [null, metadata];
         },
         loadPromptTemplate : async (profileName:string, moduleName:string, filename:string) => {
-            const profile = profiles.getProfile(profileName);
-            const template = profile.getPromptTemplate(moduleName, filename);
-            return [null, template];
+            throw new Error('Not implemented yet');
+            // const profile = profiles.getProfile(profileName);
+            // const template = profile.getPromptTemplate(moduleName, filename);
+            // return [null, template];
         },
 
         // Global Storage 관련
-        loadGlobalValue : async (storageName:string, key:string) => {
-            return [null, globalStorage.getValue(storageName, key)];
+        loadGlobalValue : async (identifier:string, key:string) => {
+            const accessor = globalStorage.getJSONAccessor(identifier);
+
+            return [null, accessor.get(key)];
         },
-        storeGlobalValue : async (storageName:string, key:string, value:any) => {
-            globalStorage.setValue(storageName, key, value);
+        storeGlobalValue : async (identifier:string, key:string, value:any) => {
+            const accessor = globalStorage.getJSONAccessor(identifier);
+
+            accessor.set(key, value);
             return [null];
         },
 
@@ -85,21 +92,23 @@ export function getIPCHandler({
         },
 
         // Profile Storage 관련
-        loadProfileValue : async (profileName:string, storageName:string, key:string) => {
+        loadProfileValue : async (profileName:string, identifier:string, key:string) => {
             const profile = profiles.getProfile(profileName);
-            const value = profile.getValue(storageName, key);
-            return [null, value];
+            const accessor = profile.getJSONAccessor(identifier);
+            return [null, accessor.get(key)];
         },
-        storeProfileValue : async (profileName:string, storageName:string, key:string, value:any) => {
-            trottles[storageName] ??= utils.throttle(500);
+        storeProfileValue : async (profileName:string, identifier:string, key:string, value:any) => {
+            trottles[identifier] ??= utils.throttle(500);
 
             const profile = profiles.getProfile(profileName);
-            profile.setValue(storageName, key, value);
+            const accessor = profile.getJSONAccessor(identifier);
+            accessor.set(key, value);
 
             // 500ms throttle로 저장
-            trottles[storageName](()=>{
+            trottles[identifier](()=>{
                 profile.save();
-            })
+            });
+
             return [null];
         },
 
@@ -109,36 +118,41 @@ export function getIPCHandler({
         },
         loadProfileHistory : async (profileName:string, historyName:string, offset, limit) => {
             const profile = profiles.getProfile(profileName);
-            const data = profile.history?.get(historyName, offset, limit);
-
-            return [null, data];
+            const accessor = profile.getHistoryAccessor(historyName);
+            
+            return [null, accessor.get(offset, limit)];
         },
         storeProfileHistory : async (profileName:string, historyName:string, data:any) => {
             const profile = profiles.getProfile(profileName);
-            profile.history.append(historyName, data);
+            const accessor = profile.getHistoryAccessor(historyName);
+            accessor.append('NORMAL', data);
 
             return [null];
         },
         deleteProfileHistory : async (profileName:string, historyName:string, id:number) => {
             const profile = profiles.getProfile(profileName);
-            profile.history.delete(historyName, id);
+            const accessor = profile.getHistoryAccessor(historyName);
+            accessor.delete(id);
 
             return [null];
         },
         deleteAllProfileHistory : async (profileName:string, historyName:string) => {
             const profile = profiles.getProfile(profileName);
-            profile.history.drop(historyName);
+            const accessor = profile.getHistoryAccessor(historyName);
+            accessor.deleteAll();
 
             return [null];
         },
 
         // Last Profile 관련
         setLastProfileName : async (profileName:string) => {
-            globalStorage.setValue('cache', 'lastProfileName', profileName);
+            const accessor = globalStorage.getJSONAccessor('cache');
+            accessor.set('last_profile_name', profileName);
             return [null];
         },
         getLastProfileName : async () => {
-            return [null, globalStorage.getValue('cache', 'lastProfileName')];
+            const accessor = globalStorage.getJSONAccessor('cache');
+            return [null, accessor.get('last_profile_name')];
         },
 
         // Log 관련

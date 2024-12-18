@@ -1,9 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import ProgramPath from '../program-path';
+import ProgramPath from '../../program-path';
 
-import Storage from './Storage';
-import { StorageAccess }  from './StorageAccessControl';
+import Storage, { StorageAccess } from '..';
 
 const programPath = new ProgramPath(path.join(process.env['USERPROFILE'] ?? '', 'Documents', 'Afron'));
 
@@ -16,14 +15,16 @@ describe('Storage Accessor Test', () => {
     });
     beforeEach(() => {
         storage = new Storage(testDirectory);
-        storage.registerDir('any', 'any', StorageAccess.ANY);
+        storage.register({
+            '**/*' : StorageAccess.ANY,
+        });
     });
     afterEach(() => {
         storage.dropAllAccessor();
     });
     
     test('JSONAccessor', () => {
-        const accessor = storage.getJSONAccessor('any:config.json');
+        const accessor = storage.getJSONAccessor('config.json');
 
         expect(accessor.get('key1')).toBeUndefined(); 
 
@@ -32,7 +33,7 @@ describe('Storage Accessor Test', () => {
     });
 
     test('TextAccessor', () => {
-        const accessor = storage.getTextAccessor('any:data.txt');
+        const accessor = storage.getTextAccessor('data.txt');
         
         expect(accessor.read()).toBe('');
         
@@ -47,7 +48,7 @@ describe('Storage Accessor Test', () => {
     });
 
     test('BinaryAccessor', () => {
-        const accessor = storage.getBinaryAccessor('any:data.bin');
+        const accessor = storage.getBinaryAccessor('data.bin');
         
         expect(accessor.read().toString()).toBe('');
 

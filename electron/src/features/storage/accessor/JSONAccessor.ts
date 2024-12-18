@@ -1,8 +1,10 @@
 import * as fs from 'node:fs';
 import type { IAccessor } from './types';
+import { AccessorError } from './errors';
 
 class JSONAccessor implements IAccessor {
     #filePath:string;
+    #dropped:boolean = false;
     #contents:{[key:string]:any};
     constructor(filePath:string) {
         this.#filePath = filePath;
@@ -31,21 +33,42 @@ class JSONAccessor implements IAccessor {
         fs.writeFileSync(this.#filePath, jsonString, 'utf8');
     }
     drop() {
+        if (this.dropped) return;
+
+        this.#dropped = true;
+
         if (fs.existsSync(this.#filePath)) {
             fs.rmSync(this.#filePath, { force: true });
         }
     }
+    get dropped() {
+        return this.#dropped;
+    }
     set(key:string, value:any) {
+        this.#ensureNotDropped();
+        
         this.#contents[key] = value;
     }
     get(key:string) {
+        this.#ensureNotDropped();
+        
         return this.#contents[key];
     }
     remove(key:string) {
+        this.#ensureNotDropped();
+
         delete this.#contents[key];
     }
     commit() {
+        this.#ensureNotDropped();
+
         this.#writeFile();
+    }
+
+    #ensureNotDropped() {
+        if (this.dropped) {
+            throw new AccessorError('The accessor has been dropped');
+        }
     }
 }
 
