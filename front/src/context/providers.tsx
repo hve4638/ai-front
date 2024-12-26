@@ -1,17 +1,14 @@
-import RawProfileContext from './RawProfileContext';
+import {RawProfileContextProvider} from './RawProfileContext';
+import {ProfileContextProvider} from './ProfileContext';
 // import MemoryContextProvider from './MemoryContext';
 //import SessionContextProvider from './SessionContext';
 
-export function Providers({children}) {
+export function Providers({children, profileId}: {children:React.ReactNode, profileId:string}) {
     return (
-        <RawProfileContext>
-            {/* <MemoryContextProvider> */}
-                {/* <SessionContextProvider> */}
-                    {/* <EventContextProvider> */}
-                        {children}
-                    {/* </EventContextProvider> */}
-                {/* </SessionContextProvider> */}
-            {/* </MemoryContextProvider> */}
-        </RawProfileContext>
+        <RawProfileContextProvider profileId={profileId}>
+            <ProfileContextProvider>
+                {children}
+            </ProfileContextProvider>
+        </RawProfileContextProvider>
     );
 }

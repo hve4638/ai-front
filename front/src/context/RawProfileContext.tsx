@@ -1,33 +1,31 @@
-import React, { useState, createContext, useLayoutEffect } from 'react';
-import { useProfileStorage } from 'hooks/profile'
-import { SetState, ChatSession } from './types';
+import React, { useState, createContext, useLayoutEffect, useCallback } from 'react';
+import { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 import { LayoutModes, ThemeModes } from 'types/profile';
-import type { LastChats } from 'types/chat';
+
+import Profiles, { IProfile } from 'features/profiles';
+import { useStorage } from 'hooks/useStorage';
 
 interface RawProfileContextType {
-    // config.json
-    fontSize: number;
-    setFontSize: SetState<number>;
-    
-    themeMode: ThemeModes;
-    setThemeMode: SetState<ThemeModes>;
-    layoutMode: LayoutModes;
-    setLayoutMode: SetState<LayoutModes>;
-    
-    // data.json
-    sessions: ChatSession[];
-    setSessions: SetState<ChatSession[]>;
+    profile: IProfile;
 
-    // 각 세션의 마지막 응답
-    lastChats: LastChats;
-    setLastChats: SetState<LastChats>;
+    /* config.json */
+    configs:Configs,
+    
+    /* data.json */
+    sessionIds: string[];
+    refetchSessionIds: ()=>Promise<void>;
+    starredModels: string[],
+    setStarredModels: SetStateAsync<string[]>,
 
-    // cache.json
+    /* cache.json */
     promptVariables: any;
-    setPromptVariables: SetState<any>;
-    lastSessionId: number|null;
-    setLastSessionId: SetState<number|null>;
+    setPromptVariables: SetStateAsync<any>;
+    lastSessionId: string|null|undefined;
+    setLastSessionId: SetStateAsync<string|null|undefined>;
+
+    /* shortcut.json */
+    shortcuts: Shortcuts;
 }
 
 /**
@@ -35,68 +33,174 @@ interface RawProfileContextType {
  */
 export const RawProfileContext = createContext<RawProfileContextType|null>(null);
 
-const STORAGE_CONFIG = 'config.json';
-const STORAGE_DATA = 'data.json';
-const STORAGE_CACHE = 'cache.json';
-
-export default function RawProfileContextProvider({
-    profileName,
+export function RawProfileContextProvider({
+    profileId,
     children
-}: {profileName:string, children:React.ReactNode}) {
+}: {profileId:string, children:React.ReactNode}) {
+    const [profile, setProfile] = useState<IProfile>();
+    const refetchList:(()=>Promise<void>)[] = [];
+    
+    const useProfileStorage = useCallback(<T,>(accessor:string, key:string, default_value:T) => {
+        return useStorage(key, {
+            encode: (value: any) => value,
+            decode: (value: any) => value ?? default_value,
+            store: async (key: string, value: any) => {
+                profile?.setData(accessor, key, value);
+            },
+            load: async (key: string) => {
+                return await profile?.getData(accessor, key);
+            },
+            onStoreError: (error: unknown) => console.error(error),
+            onLoadError: (error: unknown) => console.error(error),
+        });
+    }, [profile]);
+    const useSecretStorage = <T,>(key:string, default_value:T) => {
+        const [state, setState, refetch] = useProfileStorage<T>('secret.json', key, default_value);
+
+        refetchList.push(refetch);
+        return [state, setState, refetch]
+    }
     const useConfigStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profileName!, STORAGE_CONFIG, key, { default_value });
+        const [state, setState, refetch] = useProfileStorage<T>('config.json', key, default_value);
+
+        refetchList.push(refetch);
+        return [state, setState, refetch]
     }
     const useDataStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profileName!, STORAGE_DATA, key, { default_value });
+        const [state, setState, refetch] = useProfileStorage<T>('data.json', key, default_value);
+        
+        refetchList.push(refetch);
+        return [state, setState, refetch]
     }
     const useCacheStorage = <T,>(key:string, default_value:T) => {
-        return useProfileStorage<T>(profileName!, STORAGE_CACHE, key, { default_value });
+        const [state, setState, refetch] = useProfileStorage<T>('cache.json', key, default_value);
+        
+        refetchList.push(refetch);
+        return [state, setState, refetch]
+    }
+    const useShortcutStorage = <T,>(key:string, default_value:T) => {
+        const [state, setState, refetch] = useProfileStorage<T>('shortcut.json', key, default_value);
+        
+        refetchList.push(refetch);
+        return [state, setState, refetch]
     }
 
+    /* cache.json */
+    const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('last_session_id', null);
+    const [promptVariables, setPromptVariables, refetchPromptVariables] = useCacheStorage('prompt_variables', {});
+    const settingModelsShowFeatured = useCacheStorage('setting_models_show_featured', true);
+    const settingModelsShowSnapshot = useCacheStorage('setting_models_show_snapshot', false);
+    const settingModelsShowExperimental = useCacheStorage('setting_models_show_experimental', false);
+    const settingModelsShowDeprecated = useCacheStorage('setting_models_show_deprecated', false);
+
+
     /* config.json */
-    // 입출력 폰트 크기
-    const [fontSize, setFontSize, refetchFontSize] = useConfigStorage('fontsize', 18);
-    // 테마 지정 (다크/라이트/시스템)
-    const [themeMode, setThemeMode, refetchThemeMode] = useConfigStorage('theme_mode', ThemeModes.SYSTEM_DEFAULT);
-    // 레이아웃 모드 (자동/모바일/데스크탑)
-    const [layoutMode, setLayoutMode, refetchLayoutMode] = useConfigStorage('layout_mode', LayoutModes.AUTO);
+    const configFontSize = useConfigStorage('font_size', 18);
+    const configThemeMode = useConfigStorage('theme_mode', ThemeModes.SYSTEM_DEFAULT);
+    const configLayoutMode = useConfigStorage('layout_mode', LayoutModes.AUTO);
+    const configRememberDeletedSessionCount = useConfigStorage('remember_deleted_session_count', 30);
+    const configConfirmOnSessionClose = useConfigStorage('confirm_on_session_close', false);
+    const configHistoryEnabled = useConfigStorage('history_enabled', true);
+    const configMaxHistoryLimitPerSession = useConfigStorage('max_history_limit_per_session', 10000);
+    const configMaxHistoryStorageDays =  useConfigStorage('max_history_storage_days', 0);
+    const configGlobalShortcutEnabled = useConfigStorage('global_shortcut_enabled', false);
+    const onlyStarredModels = useConfigStorage('only_starred_models', false);
+    const configShowActualModelName = useConfigStorage('show_actual_model_name', false);
+    const configs:Configs = {
+        fontSize : configFontSize[0],
+        setFontSize : configFontSize[1],
+        themeMode : configThemeMode[0],
+        setThemeMode : configThemeMode[1],
+        layoutMode : configLayoutMode[0],
+        setLayoutMode : configLayoutMode[1],
+        rememberDeletedSessionCount : configRememberDeletedSessionCount[0],
+        setRememberDeletedSessionCount : configRememberDeletedSessionCount[1],
+        confirmOnSessionClose : configConfirmOnSessionClose[0],
+        setConfirmOnSessionClose : configConfirmOnSessionClose[1],
+        historyEnabled : configHistoryEnabled[0],
+        setHistoryEnabled : configHistoryEnabled[1],
+        maxHistoryLimitPerSession : configMaxHistoryLimitPerSession[0],
+        setMaxHistoryLimitPerSession : configMaxHistoryLimitPerSession[1],
+        maxHistoryStorageDays : configMaxHistoryStorageDays[0],
+        setMaxHistoryStorageDays : configMaxHistoryStorageDays[1],
+        globalShortcutEnabled : configGlobalShortcutEnabled[0],
+        setGlobalShortcutEnabled : configGlobalShortcutEnabled[1],
+
+        onlyStarredModels : onlyStarredModels[0],
+        setOnlyStarredModels : onlyStarredModels[1],
+        showActualModelName : configShowActualModelName[0],
+        setShowActualModelName : configShowActualModelName[1],
+
+        settingModelsShowSnapshot : settingModelsShowSnapshot[0],
+        setSettingModelsShowSnapshot : settingModelsShowSnapshot[1],
+        settingModelsShowExperimental : settingModelsShowExperimental[0],
+        setSettingModelsShowExperimental : settingModelsShowExperimental[1],
+        settingModelsShowDeprecated : settingModelsShowDeprecated[0],
+        setSettingModelsShowDeprecated : settingModelsShowDeprecated[1],
+        
+        settingModelsShowFeatured : settingModelsShowFeatured[0],
+        setSettingModelsShowFeatured : settingModelsShowFeatured[1],
+    }
+
+    /* secret.json */
+
 
     /* data.json */
-    const [sessions, setSessions, refetchSessions] = useDataStorage<ChatSession[]>('sessions', []);
+    const [sessionIds, setSessionIds, refetchSessionIds] = useDataStorage<string[]>('sessions', []);
+    const [starredModels, setStarredModels, refetchStarredModels] = useDataStorage<string[]>('starred_models', []);
 
-    /* cache.json */
-    // 새션 별 마지막 채팅 및 응답 기록
-    const [lastChats, setLastChats, refetchLastChats] = useCacheStorage<LastChats>('lastchats', {});
-    // 마지막으로 선택한 프롬프트 변수
-    const [promptVariables, setPromptVariables, refetchPromptVariables] = useCacheStorage('prompt_variables', {});
-
-    const [lastSessionId, setLastSessionId, refetchLastSessionId] = useCacheStorage('last_session_id', null);
-
+    /* shortcut.json */
+    const shortcutFontSizeUp = useShortcutStorage('font_size_up', { wheel: -1, ctrl: true });
+    const shortcutFontSizeDown = useShortcutStorage('font_size_down', { wheel: 1, ctrl: true });
+    const shortcutSendRequest = useShortcutStorage('send_request', { key: 'Enter', ctrl: true });
+    const shortcutCopyResponse = useShortcutStorage('copy_response', { key: 'c', ctrl: true, shift: true });
+    const shortcutGlobalToggleScreenActivation = useShortcutStorage('global_toggle_screen_activation', { key: 'e', ctrl: true, shift: true });
+    const shortcutGlobalRequestClipboard = useShortcutStorage('global_request_clipboard', { key: 'v', ctrl: true, shift: true });
+    const shortcuts:Shortcuts = {
+        fontSizeUp : shortcutFontSizeUp[0],
+        setFrontSizeUp : shortcutFontSizeUp[1],
+        fontSizeDown : shortcutFontSizeDown[0],
+        setFontSizeDown : shortcutFontSizeDown[1],
+        sendRequest : shortcutSendRequest[0],
+        setSendRequest : shortcutSendRequest[1],
+        copyResponse : shortcutCopyResponse[0],
+        setCopyResponse : shortcutCopyResponse[1],
+        globalToggleScreenActivation : shortcutGlobalToggleScreenActivation[0],
+        setGlobalToggleScreenActivation : shortcutGlobalToggleScreenActivation[1],
+        globalRequestClipboard : shortcutGlobalRequestClipboard[0],
+        setGlobalRequestClipboard : shortcutGlobalRequestClipboard[1],
+    }
+    
+    useLayoutEffect(() => {
+        (async () => {
+            const newProfile = await Profiles.getProfile(profileId)
+            setProfile(newProfile);
+        })();
+    }, [profileId]);
 
     useLayoutEffect(() => {
-        refetchFontSize();
-        refetchThemeMode();
-        refetchLayoutMode();
-        refetchSessions();
-        refetchLastChats();
-        refetchPromptVariables();
-        refetchLastSessionId();
-    }, [profileName]);
+        if (profile == null) {
+            return;
+        }
+        else {
+            refetchList.forEach((refetch)=>refetch());
+        }
+
+    }, [profile]);
     
     return (
         <RawProfileContext.Provider
             value={{
-                fontSize, setFontSize,
-                themeMode, setThemeMode,
-                layoutMode, setLayoutMode,
-                //isGlobalHistoryVolatile, setIsGlobalHistoryVolatile,
-                // overrideThemeMode, setOverrideThemeMode,
-                // overrideLayoutMode, setOverrideLayoutMode,
-                sessions, setSessions,
+                profile: profile!,
+                
+                sessionIds, refetchSessionIds,
+
                 lastSessionId, setLastSessionId,
-                lastChats, setLastChats,
                 promptVariables, setPromptVariables,
-                // lastvar, setLastvar
+                starredModels, setStarredModels,
+                
+                configs,
+                shortcuts,
             }}
         >
             {children}

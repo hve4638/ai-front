@@ -9,8 +9,11 @@ import ProgramPath from './features/program-path';
 import FetchContainer from './features/fetch-container';
 import Storage, { StorageAccess } from './features/storage';
 import Profiles from './features/profiles';
+import { personal } from 'win-known-folders';
 
-const programPath = new ProgramPath(path.join(process.env['USERPROFILE']!, 'Documents', 'Afron'));
+const documentPath = personal('cp949') ?? process.env['USERPROFILE']+'/documents' ?? './';
+
+const programPath = new ProgramPath(path.join(documentPath, 'Afron'));
 
 programPath.makeRequiredDirectory();
 
@@ -20,7 +23,11 @@ const fetchContainer = new FetchContainer();
 
 globalStorage.register({
     'cache.json' : StorageAccess.JSON,
+    'profiles' : {
+        'index.json' : StorageAccess.JSON,
+    }
 });
+globalStorage.setAlias('cache', 'cache.json');
 
 const appDependencies = {
     fetchContainer,

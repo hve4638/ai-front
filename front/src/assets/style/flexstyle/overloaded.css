@@ -2,30 +2,16 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Malgun Gothic", "굴림", "Gulim", "Arial";
-    font-weight: 600;
+    font-weight: bold;
+
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 16px;
     padding-right: 16px;
-    border: 1px solid #ccc;
-    border-radius: 7.5px;
-    color: white;
-    background-color: rgb(117, 128, 255);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    transform: scale(1.0);
-}
+    border-radius: 8px;
 
-button:hover {
-    cursor: pointer;
-    background-color: rgb(130, 141, 255);
-    transform: scale(0.96);
+    transition: background-color 0.2s ease;
 }
-
-button:active {
-    transform: scale(0.85);
-}
-
 
 textarea {
     font-family: inherit;
@@ -38,7 +24,6 @@ textarea {
 input[type="text"] {
     cursor: auto;
     padding: 8px;
-    border: 1px solid #ccc;
     border-radius: 7px;
 }
 

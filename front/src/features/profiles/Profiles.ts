@@ -1,32 +1,43 @@
 import LocalAPI from 'api/local';
-import LocaLAPI from 'api/local';
+import Profile from './Profile'
+import type { IProfile, IProfiles } from './types';
 
-class Profiles {
-    #names?:string[];
-    #lastName?:string|null;
+class Profiles implements IProfiles {
     #loaded:boolean = false;
+    #profiles:Map<string, Profile> = new Map();
 
     constructor() {
-        const load = async ()=>{
-            this.#names = await LocaLAPI.getProfileNames();
-            this.#lastName = await LocalAPI.getLastProfileName();
-            this.#loaded = true;
-        }
-
-        this.#loaded = false;
-        load();
     }
 
-    get profileNames():string[]|null|undefined {
-        return this.#names;
+    async getProfileIds():Promise<string[]> {
+        return await LocalAPI.getProfileList();
     }
-
-    get lastProfileName():string|null|undefined {
-        return this.#lastName;
+    async getLastProfile():Promise<string|null> {
+        return await LocalAPI.getLastProfile();
+    }
+    async setLastProfile(id:string|null) {
+        await LocalAPI.setLastProfile(id);
     }
 
     get loaded() {
         return this.#loaded;
+    }
+
+    async createProfile():Promise<string> {
+        return await LocalAPI.createProfile();
+    }
+
+    async getProfile(id:string):Promise<IProfile> {
+        if (!this.#profiles.has(id)) {
+            const profile = new Profile(id);
+            await profile.loadMetadata();
+            this.#profiles.set(id, profile);
+        }
+        return this.#profiles.get(id)!;
+    }
+
+    deleteProfile(id:string) {
+        LocalAPI.deleteProfile(id);
     }
 }
 

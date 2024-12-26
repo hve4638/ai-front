@@ -47,15 +47,17 @@ export function ProfileButton({
     );
 }
 
-export function ProfileAddButton() {
+export function ProfileAddButton({
+    onClick
+}:{
+    onClick:()=>void
+}) {
     return (
         <ProfileButton
             name='새 프로필'
             identifier='_'
             image={ProfileAddIcon}
-            onClick={() => {
-                console.log('새 프로필');
-            }}
+            onClick={onClick}
         />
     );
 }
@@ -65,16 +67,21 @@ export function ProfileOptionButton() {
         <div
             className='row center'
             style={{
-                padding: '4px 0'
+                padding: '4px 0',
+                fontSize: '0.85em',
             }}
         >
-            <button
-                onClick={() => {
-                    console.log('설정');
-                }}
+            <span
+                className='clickable-text row'
             >
-                설정
-            </button>
+                <GoogleFontIcon
+                    value='edit'
+                    style={{
+                        paddingRight: '4px'
+                    }}
+                />
+                <em>편집</em>
+            </span>
         </div>
     );
 }

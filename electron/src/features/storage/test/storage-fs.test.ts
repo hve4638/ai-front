@@ -40,10 +40,10 @@ describe('Storage FS Test', () => {
         storage = new Storage(testDirectory);
     });
     afterEach(() => {
-        fs.rmdirSync(testDirectory, { recursive: true });
+        fs.rmSync(testDirectory, { recursive: true });
         storage.dropAllAccessor();
     });
-
+    
     test('개별파일 Storage FS 연동', () => {
         const configPath = path.join(testDirectory, 'config.json');
         const dataPath = path.join(testDirectory, 'data.txt');

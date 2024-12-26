@@ -72,7 +72,6 @@ export function openElectronApp(
             const [width, height] = win.getSize();
             throttledResize(()=>{
                 cacheAccessor.set('lastsize', [width, height]);
-                console.log(width, height);
             });
         });
         

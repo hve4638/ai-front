@@ -1,0 +1,22 @@
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    padding: 4px 4px 4px 0px;
+    cursor: pointer;
+    font-size: 22px;
+    color: white;
+
+    .checkbox {
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        background-color: #3a3a3a;
+        border: 1px solid #7b7b7b;
+        border-radius: 4px;
+        margin-right: 5px;
+    }
+}
+
+
+
+

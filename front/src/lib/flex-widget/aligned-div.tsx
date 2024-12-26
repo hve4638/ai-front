@@ -8,6 +8,8 @@ export interface AlignedDivProps {
     rowAlign?: Align;
     columnAlign?: Align;
     reverse?: boolean;
+
+    onClick?: ()=>void;
 }
 
 export function Column({
@@ -17,6 +19,7 @@ export function Column({
     rowAlign = Align.Start,
     columnAlign = Align.Start,
     reverse = false,
+    onClick,
 }:AlignedDivProps) {
     return (
         <div
@@ -28,6 +31,7 @@ export function Column({
                 alignItems: rowAlign,
                 ...style,
             }}
+            onClick={onClick}
         >
             {children}
         </div>
@@ -42,6 +46,7 @@ export const Row = forwardRef(({
     rowAlign = Align.Start,
     columnAlign = Align.Start,
     reverse = false,
+    onClick,
 }:AlignedDivProps, ref:React.LegacyRef<HTMLDivElement>) => {
     return (
         <div
@@ -54,6 +59,7 @@ export const Row = forwardRef(({
                 alignItems: columnAlign,
                 ...style,
             }}
+            onClick={onClick}
         >
             {children}
         </div>

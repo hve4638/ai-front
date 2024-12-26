@@ -1,5 +1,6 @@
 /* 기본 HTML 스타일을 제거하는 CSS */
 
+
 textarea {
     font-family: inherit;
     cursor: auto;
@@ -29,7 +30,22 @@ button:hover {
     cursor : pointer;
 }
 
+h1 {
+    margin: 0px;
+    padding: 0px;
+}
+
 h2 {
+    margin: 0px;
+    padding: 0px;
+}
+
+h3 {
+    margin: 0px;
+    padding: 0px;
+}
+
+h4 {
     margin: 0px;
     padding: 0px;
 }

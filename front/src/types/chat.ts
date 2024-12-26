@@ -30,3 +30,4 @@ export interface LastChat {
     chatInput: ChatInput;
     chatResponse: LLMAPIResponse;
 }
+

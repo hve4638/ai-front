@@ -3,6 +3,11 @@ import * as utils from '../utils';
 import Profiles from '../features/profiles';
 import FetchContainer from '../features/fetch-container';
 import Storage from '../features/storage';
+import ChatAIModels from '../features/chatai-models';
+
+function debugLog(...args:any[]) {
+    console.log('[IPC]', ...args);
+}
 
 export interface IPCDependencies {
     fetchContainer:FetchContainer,
@@ -15,150 +20,239 @@ export function getIPCHandler({
     profiles,
     globalStorage,
 }:IPCDependencies):IPC_TYPES {
-    const trottles = {};
+    const throttles = {};
 
     return {
         echo : async (message:string) => {
             console.log(message);
-            
+
             return [null, message];
         },
         openBrowser : async (url:string) => {
             utils.openBrowser(url);
-    
+            
             return [null];
         },
-        openPromptDirectory : async (profileName:string) => {
-            throw new Error('Not implemented yet');
+        getChatAIModels : async () => {
+            return [null, ChatAIModels.models]
         },
 
-        // Fetch 관련
-        fetch : async (url:string, init:Object) => {
-            const fetchId = fetchContainer.fetch(url, init);
-            return [null, fetchId];
-        },
-        abortFetch : async (fetchId:number) => {
-            fetchContainer.abort(fetchId);
-            return [null];
-        },
-        getFetchResponse : async (fetchId:number) => {
-            return [null, await fetchContainer.get(fetchId)];
-        },
-
-        // Prompt 관련
-        loadRootPromptMetadata : async (profileName:string) => {
-            throw new Error('Not implemented yet');
-            // const profile = profiles.getProfile(profileName);
-            // const metadata = profile.getTextAccessor('prompt:index.json');
-            // return [null, metadata.read()];
-        },
-        loadModulePromptMetadata : async (profileName:string, moduleName:string) => {
-            throw new Error('Not implemented yet');
-            // const profile = profiles.getProfile(profileName);
-            // const metadata = profile.getModulePromptMetdata(moduleName);
-            // return [null, metadata];
-        },
-        loadPromptTemplate : async (profileName:string, moduleName:string, filename:string) => {
-            throw new Error('Not implemented yet');
-            // const profile = profiles.getProfile(profileName);
-            // const template = profile.getPromptTemplate(moduleName, filename);
-            // return [null, template];
-        },
-
-        // Global Storage 관련
-        loadGlobalValue : async (identifier:string, key:string) => {
+        /* 전역 스토리지 */
+        getGlobalData : async (identifier:string, key:string) => {
             const accessor = globalStorage.getJSONAccessor(identifier);
 
             return [null, accessor.get(key)];
         },
-        storeGlobalValue : async (identifier:string, key:string, value:any) => {
+        setGlobalData : async (identifier:string, key:string, value:any) => {
             const accessor = globalStorage.getJSONAccessor(identifier);
 
             accessor.set(key, value);
             return [null];
         },
 
-        // Profile 관련
-        getProfileNames : async () => {
-            return [null, profiles.getProfileNames()];
-        },
-        createProfile : async (profileName:string) => {
-            profiles.createProfile(profileName);
-            return [null];
+        /* 프로필 */
+        createProfile : async () => {
+            const identifier = profiles.createProfile();
+            
+            throttles['profiles'] ??= utils.throttle(500);
+            throttles['profiles'](()=>{
+                profiles.saveAll();
+            });
+
+            return [null, identifier];
         },
         deleteProfile : async (profileName:string) => {
             profiles.deleteProfile(profileName);
             return [null];
         },
 
-        // Profile Storage 관련
-        loadProfileValue : async (profileName:string, identifier:string, key:string) => {
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getJSONAccessor(identifier);
+        /* 프로필 목록 */
+        getProfileList : async () => {
+            const ids = profiles.getProfileIDs();
+
+            return [null, ids];
+        },
+        getLastProfile : async () => {
+            const ids = profiles.getLastProfileId();
+
+            return [null, ids];
+        },
+        setLastProfile : async (id:string|null) => {
+            profiles.setLastProfileId(id);
+
+            return [null];
+        },
+
+        /* 프로필 저장소 */
+        getProfileData : async (profileId:string, id:string, key:string) => {
+            console.log('[getProfileData]', profileId, id, key);
+
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor(id);
             return [null, accessor.get(key)];
         },
-        storeProfileValue : async (profileName:string, identifier:string, key:string, value:any) => {
-            trottles[identifier] ??= utils.throttle(500);
+        setProfileData : async (profileId:string, id:string, key:string, value:any) => {
+            console.log('[setProfileData]', profileId, id, key, value);
 
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getJSONAccessor(identifier);
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor(id);
             accessor.set(key, value);
 
+            throttles[profileId] ??= utils.throttle(500);
+
             // 500ms throttle로 저장
-            trottles[identifier](()=>{
-                profile.save();
+            throttles[profileId](()=>{
+                profile.commit();
             });
 
             return [null];
         },
-
-        // Profile History 관련
-        loadProfileHistoryCount : async (profileName:string, historyName:string) => {
-            throw new Error('Not implemented yet');
+        getProfileDataAsText : async (profileId:string, id:string) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getTextAccessor(id);
+            return [null, accessor.read()];
         },
-        loadProfileHistory : async (profileName:string, historyName:string, offset, limit) => {
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getHistoryAccessor(historyName);
+        setProfileDataAsText : async (profileId:string, id:string, value:any) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getTextAccessor(id);
+            accessor.write(value);
+
+            return [null];
+        },
+        getProfileDataAsBinary : async (profileId:string, id:string) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getBinaryAccessor(id);
+            return [null, accessor.read()];
+        },
+        setProfileDataAsBinary : async (profileId:string, id:string, content:Buffer) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getBinaryAccessor(id);
+            accessor.write(content);
+
+            return [null];
+        },
+        /* 프로필 세션 */
+        addProfileSession : async (profileId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const sid = profile.createSession();
+
+            const throttleId = `profile_${profileId}`;
+            throttles[throttleId] ??= utils.throttle(500);
+            throttles[throttleId](()=>{
+                profile.commit();
+            });
+            return [null, sid];
+        },
+        removeProfileSession : async (profileId:string, sessionId:string) => { 
+            const profile = profiles.getProfile(profileId);
+            profile.removeSession(sessionId);
+
+            const throttleId = `profile_${profileId}`;
+            throttles[throttleId] ??= utils.throttle(500);
+            throttles[throttleId](()=>{
+                profile.commit();
+            });
+
+            return [null];
+        },
+        undoRemoveProfileSession : async (profileId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const sid = profile.undoRemoveSession();
+
+            const throttleId = `profile_${profileId}`;
+            throttles[throttleId] ??= utils.throttle(500);
+            throttles[throttleId](()=>{
+                profile.commit();
+            });
+
+            if (sid == null) {
+                return [new Error('No session to undo')];
+            }
+            else {
+                return [null, sid];
+            }
+        },
+        reorderProfileSessions : async (profileId:string, newTabs:string[]) => {
+            const profile = profiles.getProfile(profileId);
+            profile.reorderSessions(newTabs);
+
+            const throttleId = `profile_${profileId}`;
+            throttles[throttleId] ??= utils.throttle(500);
+            throttles[throttleId](()=>{
+                profile.commit();
+            });
             
+            return [null];
+        },
+        getProfileSessionIds : async (profileId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const sessions = profile.getSessionIds();
+
+            return [null, sessions];
+        },
+
+        /* 프로필 세션 저장소 */
+        getProfileSessionData : async (profileId:string, sessionId:string, id:string, key:string) => {
+            console.log('[getProfileSessionData]', profileId, sessionId, id, key);
+
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor(`session:${sessionId}:${id}`);
+            
+            return [null, accessor.get(key)];
+        },
+        setProfileSessionData : async (profileId:string, sessionId:string, accessId:string, key:string, value:any) => {
+            console.log('[setProfileSessionData]', profileId, sessionId, accessId, key, value);
+
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor(`session:${sessionId}:${accessId}`);
+            
+            accessor.set(key, value);
+            throttles['profiles'] ??= utils.throttle(500);
+            throttles['profiles'](()=>{
+                profiles.saveAll();
+            });
+
+            return [null];
+        },
+        
+        /* 프로필 세션 히스토리 */
+        getProfileSessionHistory : async (profileId:string, sessionId:string, condition:HistoryCondition) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getHistoryAccessor(sessionId);
+
+            const {
+                offset = 0,
+                limit = 10,
+                date_begin,
+                date_end,
+                desc,
+                flag,
+            } = condition;
             return [null, accessor.get(offset, limit)];
         },
-        storeProfileHistory : async (profileName:string, historyName:string, data:any) => {
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getHistoryAccessor(historyName);
-            accessor.append('NORMAL', data);
+        addProfileSessionHistory : async (profileId:string, sessionId:string, history:any) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getHistoryAccessor(sessionId);
+
+            //accessor.add(history);
 
             return [null];
         },
-        deleteProfileHistory : async (profileName:string, historyName:string, id:number) => {
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getHistoryAccessor(historyName);
-            accessor.delete(id);
+        deleteProfileSessionHistory : async (profileId:string, sessionId:string, historyKey:number) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getHistoryAccessor(sessionId);
+
+            accessor.delete(historyKey);
 
             return [null];
         },
-        deleteAllProfileHistory : async (profileName:string, historyName:string) => {
-            const profile = profiles.getProfile(profileName);
-            const accessor = profile.getHistoryAccessor(historyName);
+        deleteAllProfileSessionHistory : async (profileId:string, sessionId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getHistoryAccessor(sessionId);
+
             accessor.deleteAll();
 
             return [null];
         },
-
-        // Last Profile 관련
-        setLastProfileName : async (profileName:string) => {
-            const accessor = globalStorage.getJSONAccessor('cache');
-            accessor.set('last_profile_name', profileName);
-            return [null];
-        },
-        getLastProfileName : async () => {
-            const accessor = globalStorage.getJSONAccessor('cache');
-            return [null, accessor.get('last_profile_name')];
-        },
-
-        // Log 관련
-        writeLog : async (name:string, message:string, showDatetime:boolean) => {
-            throw new Error('Not implemented yet');
-        },
-        
     }
 }

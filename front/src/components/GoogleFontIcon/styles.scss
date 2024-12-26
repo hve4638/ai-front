@@ -1,0 +1,11 @@
+.font-icon {
+    background-color: transparent;
+    transition: 0.15s ease background-color;
+    
+    &.hover-effect {
+        border-radius: 20px;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}

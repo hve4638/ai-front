@@ -1,40 +1,55 @@
 const PINGS = {
     ECHO : 'echo',
     OPEN_BROWSER : 'open-browser',
-    OPEN_PROMPT_DIRECTORY : 'open-prompt-directory',
+    GET_CHATAI_MODELS : 'get-chatai-models',
     
+    /* 레거시 */
     FETCH : 'fetch-proxy',
     ABORT_FETCH : 'abort-fetch',
     GET_FETCH_RESPONSE : 'get-fetch-response',
-    
-    LOAD_ROOT_PROMPT_METADATA : 'load-root-prompt-metadata',
-    LOAD_MODULE_PROMPT_METADATA : 'load-module-prompt-metadata',
-    LOAD_PROMPT_TEMPLATE : 'load-prompt-template',
 
-    GET_PROFILE_NAMES : 'get-profile-names',
+    /* 전역 스토리지 */
+    GET_GLOBAL_DATA : 'get-global-data',
+    SET_GLOBAL_DATA : 'set-global-data',
+
+    /* 프로필 */
     CREATE_PROFILE : 'create-profile',
     DELETE_PROFILE : 'delete-profile',
+
+    /* 프로필 목록 */
+    GET_PROFILE_LIST : 'get-profile-list',
+    GET_LAST_PROFILE : 'get-last-profile',
+    SET_LAST_PROFILE : 'set-last-profile',
     
-    LOAD_PROFILE_VALUE : 'load-profile-value',
-    STORE_PROFILE_VALUE : 'store-profile-value',
+    /* 프로필 저장소 */
+    GET_PROFILE_DATA : 'get-profile-data',
+    SET_PROFILE_DATA : 'set-profile-data',
+    GET_PROFILE_DATA_AS_TEXT : 'get-profile-data-as-text',
+    SET_PROFILE_DATA_AS_TEXT : 'set-profile-data-as-text',
+    GET_PROFILE_DATA_AS_BINARY : 'get-profile-data-as-binary',
+    SET_PROFILE_DATA_AS_BINARY : 'set-profile-data-as-binary',
 
-    LOAD_GLOBAL_VALUE : 'load-global-value',
-    STORE_GLOBAL_VALUE : 'store-global-value',
+    /* 프로필 세션 */
+    ADD_PROFILE_SESSION : 'add-profile-session',
+    REMOVE_PROFILE_SESSION : 'remove-profile-session',
+    GET_PROFILE_SESSION_IDS : 'get-profile-session-ids',
+    REORDER_PROFILE_SESSIONS : 'reorder-profile-sessions',
+    UNDO_REMOVE_PROFILE_SESSION : 'undo-remove-profile-session',
 
-    LOAD_PROFILE_HISTORY_COUNT : 'load-profile-history-count',
-    LOAD_PROFILE_HISTORY : 'load-profile-history',
-    STORE_PROFILE_HISTORY : 'store-profile-history',
-    DELETE_PROFILE_HISTORY : 'delete-profile-history',
-    DELETE_ALL_PROFILE_HISTORY : 'delete-all-profile-history',
+    /* 프로필 세션 저장소 */
+    GET_PROFILE_SESSION_DATA : 'get-profile-session-data',
+    SET_PROFILE_SESSION_DATA : 'set-profile-session-data',
     
-    SET_LAST_PROFILE_NAME : 'set-last-profile-name',
-    GET_LAST_PROFILE_NAME : 'get-last-profile-name',
+    /* 프로필 세션 히스토리 */
+    GET_PROFILE_SESSION_HISTORY : 'get-profile-session-history',
+    ADD_PROFILE_SESSION_HISTORY : 'add-profile-session-history',
+    DELETE_PROFILE_SESSION_HISTORY : 'delete-profile-session-history',
+    DELETE_ALL_PROFILE_SESSION_HISTORY : 'delete-all-profile-session-history',
+    
 
-    EXECUTE_PLUGIN : 'execute-plugin',
-
-    WRITE_LOG : 'write-log',
-
-    GET_LANGUAGE_TEXTS : 'get-language-texts',
+    // EXECUTE_PLUGIN : 'execute-plugin',
+    // WRITE_LOG : 'write-log',
+    // GET_LANGUAGE_TEXTS : 'get-language-texts',
 } as const;
 
 export default PINGS;

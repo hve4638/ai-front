@@ -54,6 +54,12 @@ class JSONAccessor implements IAccessor {
         
         return this.#contents[key];
     }
+    getAll() {
+        this.#ensureNotDropped();
+
+        // 깊은 복사
+        return JSON.parse(JSON.stringify(this.#contents));
+    }
     remove(key:string) {
         this.#ensureNotDropped();
 

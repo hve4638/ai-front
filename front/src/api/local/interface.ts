@@ -4,27 +4,45 @@ export interface Promptlist {
 }
 
 export interface ILocalAPI {
-    echo(message:string):Promise<string>;
-    openBrowser(url:string):Promise<void>;
-    openPromptDirectory(profileName:string):Promise<void>;
-    fetch(url:string, init:any):Promise<number>;
-    abortFetch(fetchId:number):Promise<void>;
-    getFetchResponse(fetchId:number):Promise<any>;
-    loadRootPromptMetadata(profileName:string):Promise<string>;
-    loadModulePromptMetadata(profileName:string, moduleName:string):Promise<string>;
-    loadPromptTemplate(profileName:string, basePath:string, filename:string):Promise<string>;
-    loadGlobalValue(storageName:string, key:string):Promise<any>;
-    storeGlobalValue(storageName:string, key:string, value:any):Promise<void>;
-    getProfileNames():Promise<string[]>;
-    createProfile(name:string):Promise<void>;
-    deleteProfile(name:string):Promise<void>;
-    loadProfileValue(profileName:string, filename:string, key:string):Promise<any>;
-    storeProfileValue(profileName:string, filename:string, key:string, value:any):Promise<void>;
-    loadProfileHistory(profileName:string, historyName:string, offset:number, limit:number):Promise<any>;
-    storeProfileHistory(profileName:string, historyName:string, data:any):Promise<void>;
-    deleteProfileHistory(profileName:string, historyName:string, id:number):Promise<void>;
-    deleteAllProfileHistory(profileName:string, historyName:string):Promise<void>;
-    getLastProfileName():Promise<string|null>;
-    setLastProfileName(profileName:string):Promise<void>;
-    writeLog(logName:string, message:string, showDatetime:boolean):Promise<void>;
+    echo: (message: string) => Promise<any>,
+    openBrowser: (url: string) => Promise<any>,
+    getChatAIModels: () => Promise<ChatAIModels>,
+
+    /* 전역 저장소 */
+    getGlobalData: (storageName: string, key: string) => Promise<any>,
+    setGlobalData: (storageName: string, key: string, value: any) => Promise<any>,
+
+    /* 프로필 */
+    createProfile: () => Promise<any>,
+    deleteProfile: (profileName: string) => Promise<any>,
+
+    /* 프로필 목록 */
+    getProfileList: () => Promise<string[]>,
+    getLastProfile: () => Promise<string|null>,
+    setLastProfile: (id: string | null) => Promise<void>,
+
+    /* 프로필 저장소 */
+    getProfileData: (profileId: string, accessor: string, key: string) => Promise<any>,
+    setProfileData: (profileId: string, accessor: string, key: string, value: any) => Promise<any>,
+    getProfileDataAsText: (profileId: string, accessor: string) => Promise<any>,
+    setProfileDataAsText: (profileId: string, accessor: string, value: any) => Promise<any>,
+    getProfileDataAsBinary: (profileId: string, accessor: string) => Promise<any>,
+    setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => Promise<any>,
+
+    /* 프로필 세션 */
+    addProfileSession: (profileId: string) => Promise<string>,
+    removeProfileSession: (profileId: string, sessionId: string) => Promise<void>,
+    getProfileSessionIds: (profileId: string) => Promise<string[]>,
+    reorderProfileSessions: (profileId: string, tabs: string[]) => Promise<void>,
+    undoRemoveProfileSession: (profileId: string) => Promise<string|null>,
+
+    /* 프로필 저장소 */
+    getProfileSessionData: (profileId: string, sessionId: string, accessor: string, key: string) => Promise<any>,
+    setProfileSessionData: (profileId: string, sessionId: string, accessor: string, key: string, value: any) => Promise<void>,
+
+    getProfileSessionHistory: (profileId: string, sessionId: string, condition: HistoryCondition) => Promise<any>,
+    addProfileSessionHistory: (profileId: string, sessionId: string, history: any) => Promise<any>,
+    deleteProfileSessionHistory: (profileId: string, sessionId: string, historyKey: number) => Promise<any>,
+    deleteAllProfileSessionHistory: (profileId: string, sessionId: string) => Promise<any>,
+
 }

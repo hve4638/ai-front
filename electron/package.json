@@ -1,6 +1,6 @@
 {
-  "name": "aifront",
-  "version": "0.6.1",
+  "name": "afron",
+  "version": "0.6.9",
   "repository": "https://github.com/hve4638/ai-front.git",
   "author": "Hve <hve4638@gmail.com>",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "start:release": "tsc && cross-env ELECTRON_DEV=FALSE electron .",
     "switch": "tsx switch-module",
     "test": "tsc && yarn jest",
-    "build": "tsc && cross-env ELECTRON_DEV=FALSE electron-builder",
+    "build": "tsc",
     "compile": "tsc",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -38,7 +38,8 @@
     "@hve/chatai": "^0.5.1",
     "better-sqlite3": "^11.3.0",
     "electron-localshortcut": "^3.2.1",
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "win-known-folders": "^1.0.0"
   },
   "build": {
     "productName": "AI Front",

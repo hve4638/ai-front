@@ -12,6 +12,8 @@ describe('StorageAccessControl Test', () => {
             onAccessDir: (identifier) => {
                 accesses.push(identifier);
             },
+            onRelease: (identifier) => {},
+            onReleaseDir: (identifier) => {},
         });
 
         ac.register({
@@ -45,6 +47,8 @@ describe('StorageAccessControl Test', () => {
             onAccessDir: (identifier) => {
                 accessesDir.push(identifier);
             },
+            onRelease: (identifier) => {},
+            onReleaseDir: (identifier) => {},
         });
 
         ac.register({

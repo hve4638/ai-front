@@ -10,32 +10,45 @@ export function initIPC(dependencies: IPCDependencies) {
 
     handleIPC(ipcping.ECHO, handlers.echo);
     handleIPC(ipcping.OPEN_BROWSER, handlers.openBrowser);
-    handleIPC(ipcping.OPEN_PROMPT_DIRECTORY, handlers.openPromptDirectory);
-    handleIPC(ipcping.FETCH, handlers.fetch);
-    handleIPC(ipcping.ABORT_FETCH, handlers.abortFetch);
-    handleIPC(ipcping.GET_FETCH_RESPONSE, handlers.getFetchResponse);
-    handleIPC(ipcping.LOAD_ROOT_PROMPT_METADATA, handlers.loadRootPromptMetadata);
-    handleIPC(ipcping.LOAD_MODULE_PROMPT_METADATA, handlers.loadModulePromptMetadata);
-    handleIPC(ipcping.LOAD_PROMPT_TEMPLATE, handlers.loadPromptTemplate);
-    handleIPC(ipcping.GET_PROFILE_NAMES, handlers.getProfileNames);
+    handleIPC(ipcping.GET_CHATAI_MODELS, handlers.getChatAIModels);
+
+    /* 전역 스토리지 */
+    handleIPC(ipcping.GET_GLOBAL_DATA, handlers.getGlobalData);
+    handleIPC(ipcping.SET_GLOBAL_DATA, handlers.setGlobalData);
+
+    /* 프로필 */
     handleIPC(ipcping.CREATE_PROFILE, handlers.createProfile);
     handleIPC(ipcping.DELETE_PROFILE, handlers.deleteProfile);
-    handleIPC(ipcping.LOAD_PROFILE_VALUE, handlers.loadProfileValue);
-    handleIPC(ipcping.STORE_PROFILE_VALUE, handlers.storeProfileValue);
 
-    handleIPC(ipcping.LOAD_GLOBAL_VALUE, handlers.loadGlobalValue);
-    handleIPC(ipcping.STORE_GLOBAL_VALUE, handlers.storeGlobalValue);
+    /* 프로필 목록 */
+    handleIPC(ipcping.GET_PROFILE_LIST, handlers.getProfileList);
+    handleIPC(ipcping.SET_LAST_PROFILE, handlers.setLastProfile);
+    handleIPC(ipcping.GET_LAST_PROFILE, handlers.getLastProfile);
 
-    handleIPC(ipcping.LOAD_PROFILE_HISTORY_COUNT, handlers.loadProfileHistoryCount);
-    handleIPC(ipcping.LOAD_PROFILE_HISTORY, handlers.loadProfileHistory);
-    handleIPC(ipcping.STORE_PROFILE_HISTORY, handlers.storeProfileHistory);
-    handleIPC(ipcping.DELETE_PROFILE_HISTORY, handlers.deleteProfileHistory);
-    handleIPC(ipcping.DELETE_ALL_PROFILE_HISTORY, handlers.deleteAllProfileHistory);
+    /* 프로필 저장소 */
+    handleIPC(ipcping.GET_PROFILE_DATA, handlers.getProfileData);
+    handleIPC(ipcping.SET_PROFILE_DATA, handlers.setProfileData);
+    handleIPC(ipcping.GET_PROFILE_DATA_AS_TEXT, handlers.getProfileDataAsText);
+    handleIPC(ipcping.SET_PROFILE_DATA_AS_TEXT, handlers.setProfileDataAsText);
+    handleIPC(ipcping.GET_PROFILE_DATA_AS_BINARY, handlers.getProfileDataAsBinary);
+    handleIPC(ipcping.SET_PROFILE_DATA_AS_BINARY, handlers.setProfileDataAsBinary);
 
-    handleIPC(ipcping.SET_LAST_PROFILE_NAME, handlers.setLastProfileName);
-    handleIPC(ipcping.GET_LAST_PROFILE_NAME, handlers.getLastProfileName);
+    /* 프로필 세션 */
+    handleIPC(ipcping.ADD_PROFILE_SESSION, handlers.addProfileSession);
+    handleIPC(ipcping.REMOVE_PROFILE_SESSION, handlers.removeProfileSession);
+    handleIPC(ipcping.REORDER_PROFILE_SESSIONS, handlers.reorderProfileSessions);
+    handleIPC(ipcping.GET_PROFILE_SESSION_IDS, handlers.getProfileSessionIds);
+    handleIPC(ipcping.UNDO_REMOVE_PROFILE_SESSION, handlers.undoRemoveProfileSession);
 
-    handleIPC(ipcping.WRITE_LOG, handlers.writeLog);
+    /* 프로필 세션 저장소 */
+    handleIPC(ipcping.GET_PROFILE_SESSION_DATA, handlers.getProfileSessionData);
+    handleIPC(ipcping.SET_PROFILE_SESSION_DATA, handlers.setProfileSessionData);
+
+    /* 프로필 세션 히스토리 */
+    handleIPC(ipcping.GET_PROFILE_SESSION_HISTORY, handlers.getProfileSessionHistory);
+    handleIPC(ipcping.ADD_PROFILE_SESSION_HISTORY, handlers.addProfileSessionHistory);
+    handleIPC(ipcping.DELETE_PROFILE_SESSION_HISTORY, handlers.deleteProfileSessionHistory);
+    handleIPC(ipcping.DELETE_ALL_PROFILE_SESSION_HISTORY, handlers.deleteAllProfileSessionHistory);
 }
 
 

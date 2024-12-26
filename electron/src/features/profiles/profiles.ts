@@ -2,167 +2,125 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { ProfileError } from './errors';
 import Profile from './profile';
+import Storage, { StorageAccess } from '../storage';
 
 class Profiles {
     #basePath:string;
-    #metadataPath:string;
-    /**
-     * 메타데이터에서 불러온 프로필 이름 목록
-     */
-    #profileNames:string[] = [];
-    /**
-     * 실제 로드된 프로필
-     */
-    #profiles:{[name:string]:Profile} = {};
-    #lastProfile:string|null = null;
+    #storage:Storage;
+    #profileIdentifiers:string[] = [];
+    #lastProfileId:string|null = null;
+    #profileAccessType:number;
+    #nextProfileId:number = 0;
 
     constructor(basePath:string) {
         this.#basePath = basePath;
-        this.#metadataPath = path.join(this.#basePath, 'profiles.json');
+        this.#storage = new Storage(this.#basePath);
+        this.#profileAccessType = this.#storage.addAccessorEvent({
+            create(fullPath:string) {
+                return new Profile(fullPath);
+            },
+        });
+        this.#storage.register({
+            'profiles.json' : StorageAccess.JSON,
+            '*' : this.#profileAccessType
+        });
+        this.#storage.setAlias('metadata', 'profiles.json');
 
-        this.loadProfileMetadata();
+        this.loadMetadata();
     }
 
-    loadProfileMetadata() {
-        let loaded = false;
-
-        if (fs.existsSync(this.#metadataPath)) {
-            const contents = fs.readFileSync(this.#metadataPath, 'utf8');
-            try {
-                const metadata = JSON.parse(contents);
-
-                if (!metadata.profiles) {
-                    // do nothing
-                }
-                else {
-                    this.#importProfileMetadata(metadata);
-                    loaded = true;
-                }
-            }
-            catch {
-                loaded = false;
-            }
-        }
+    #getProfileAcessor(identifier:string) {
+        return this.#storage.getAccessor(identifier, this.#profileAccessType) as Profile;
     }
 
-    #importProfileMetadata(metadata) {
-        if (Array.isArray(metadata.profiles)) {
-            this.#profileNames = metadata.profiles;
-            this.#lastProfile = metadata.lastProfile;
-        }
-        else {
-            throw new ProfileError('Invalid metadata');
-        }
-    }
-
-    saveProfileMetadata() {
-        const metadata = this.#exportProfileMetadata();
-        const jsonString = JSON.stringify(metadata, null, 4);
-
-        fs.writeFileSync(this.#metadataPath, jsonString, 'utf8');
-    }
-
-    /**
-     * @returns {Object} profiles.json에 저장할 메타데이터
-     */
-    #exportProfileMetadata() {
-        const metadata = {
-            profiles : this.#profileNames,
-            lastProfile : this.#lastProfile,
-        }
-        return metadata;
-    }
-
-    /**
-     * @returns 프로필 이름 목록
-     */
-    getProfileNames():string[] {
-        return [...this.#profileNames];
-    }
-
-    /**
-     * 프로필 생성. 이미 존재하는 경우 ProfileError 발생
-     * @param {string} profileName 
-     */
-    createProfile(profileName) {
-        if (profileName in this.#profiles) {
-            throw new ProfileError('Profile already exists');
-        }
-        else {
-            const profilePath = this.#getProfilePath(profileName);
-            const profile = new Profile(profilePath);
-
-            this.#profiles[profileName] = profile;
-            this.#profileNames.push(profileName);
-        }
-        this.saveProfileMetadata();
+    loadMetadata() {
+        const accessor = this.#storage.getJSONAccessor('metadata');
         
-        return this.#profiles[profileName];
+        this.#profileIdentifiers = accessor.get('profiles') ?? [];
+        this.#lastProfileId = accessor.get('last_profile') ?? null;
+        this.#nextProfileId = accessor.get('next_profile_id') ?? 0;
+    }
+
+    saveMetadata() {
+        const accessor = this.#storage.getJSONAccessor('metadata');
+        
+        accessor.set('profiles', this.#profileIdentifiers);
+        accessor.set('last_profile', this.#lastProfileId);
+        this.#storage.commit();
     }
 
     /**
-     * 프로필 삭제. 존재하지 않는 경우 ProfileError 발생
-     * @param {string} profileName
-     * @throws {ProfileError}
-    */
-    deleteProfile(profileName) {
-        const index = this.#profileNames.indexOf(profileName);
-        if (index !== -1) {
-            const profilePath = this.#getProfilePath(profileName);
-            if (profileName in this.#profiles) {
-                this.#profiles[profileName].delete();
+     * @returns 프로필ID 목록
+     */
+    getProfileIDs():string[] {
+        return this.#profileIdentifiers;
+    }
 
-                delete this.#profiles[profileName];
+    createProfile() {
+        const identifier = this.#makeNewProfileId();
+        this.#profileIdentifiers.push(identifier);
+
+        const profile = this.#getProfileAcessor(identifier);
+        profile.getJSONAccessor('metadata').set('name', 'New Profile');
+
+        return identifier;
+    }
+
+    #makeNewProfileId():string {
+        while (true) {
+            const identifier = `profile_${this.#nextProfileId}`;
+            if (this.#existsProfileId(identifier)) {
+                this.#nextProfileId += 1;
+                continue;
+            }
+            
+            const profilePath = path.join(this.#basePath, `profile_${this.#nextProfileId}`);
+            if (fs.existsSync(profilePath)
+            && fs.statSync(profilePath).isDirectory()) {
+                this.#nextProfileId += 1;
+                continue;
             }
 
-            fs.rmSync(profilePath, { recursive: true, force: true });
-
-            this.#profileNames.splice(index, 1);
-            this.saveProfileMetadata();
-        }
-        else {
-            throw new ProfileError('Profile not found');
+            return identifier;
         }
     }
 
-    #getProfilePath(profileName) {
-        return path.join(this.#basePath, profileName);
+    deleteProfile(identifier: string) {
+        const accessor = this.#getProfileAcessor(identifier);
+        accessor.drop();
     }
 
-    /**
-     * 프로필 전체 삭제 및 프로필 메타데이터 삭제
-    */
-    deleteProfiles() {
-        const names = [...this.#profileNames];
-        for (const name of names) {
-            this.deleteProfile(name);
+    getProfile(profileId:string):Profile {
+        if (!this.#existsProfileId(profileId)) {
+            throw new ProfileError(`Profile not found '${profileId}'`);
         }
-        this.#deleteProfileMetadata();
+        return this.#getProfileAcessor(profileId);
+    }
+
+    #existsProfileId(identifier:string) {
+        return this.#profileIdentifiers.includes(identifier);
     }
     
-    #deleteProfileMetadata() {
-        if (fs.existsSync(this.#metadataPath)) {
-            fs.unlinkSync(this.#metadataPath);
-        }
-    }
-
-    getProfile(profileName:string):Profile {
-        if (profileName in this.#profiles) {
-            return this.#profiles[profileName];
-        }
-        else if (this.#profileNames.includes(profileName)) {
-            return this.createProfile(profileName);
+    setLastProfileId(id:string|null) {
+        if (id === null || this.#existsProfileId(id)) {
+            this.#lastProfileId = id;
         }
         else {
-            throw new ProfileError(`Profile not found '${profileName}'`);
+            throw new ProfileError(`Profile not found: ${id}`);
         }
+        
     }
-    
+
+    getLastProfileId() {
+        return this.#lastProfileId;
+    }
+
     saveAll() {
-        for (const name in this.#profiles) {
-            const profile:Profile = this.#profiles[name];
-            profile.save();
-        }
+        this.saveMetadata();
+        this.#profileIdentifiers.forEach((identifier) => {
+            const profile = this.#getProfileAcessor(identifier);
+            profile.commit();
+        });
     }
 }
 

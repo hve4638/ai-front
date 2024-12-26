@@ -50,6 +50,40 @@ class StorageAccessControl {
         return this.#events.onAccess(identifiers[length-1].full, accessType);
     }
 
+    release(identifier:string, accessType:number|undefined) {
+        const bit = this.getRegisterBit(identifier);
+
+        if (accessType != undefined) {
+            const { allowed, denied } = this.#compareAccessTypes(bit, accessType);
+            if (denied !== 0) {
+                throw new AccessDeniedError(`Storage '${identifier}' is not accessible. '${StorageAccessName[denied] ?? 'UNKNOWN'}'`);
+            }
+        }
+        this.#events.onRelease(identifier);
+    }
+
+    releaseDir(identifier:string) {
+        const bit = this.getRegisterBit(identifier);
+
+        if (bit !== StorageAccess.DIR) {
+            throw new DirectoryAccessError(`Storage '${identifier}' is not directory.`);
+        }
+        this.#events.onReleaseDir(identifier);
+    }
+
+    getRegisterBit(identifier:string):number {
+        const identifiers = this.#splitIdentifier(identifier);
+
+        // 접근 권한 확인
+        let subtree = this.#accessTree;
+        const length = identifiers.length;
+        for (let i = 0; i < length-1; i++) {
+            subtree = this.#findSubtree(identifiers[i].name, subtree);
+        }
+
+        return this.#getRegisterBit(identifiers[length-1].name, subtree);
+    }
+
     #findSubtree(dirIdentifier:string, tree:AccessTree) {        
         if (tree[dirIdentifier] != undefined) {
             if (typeof tree[dirIdentifier] === 'number') {
@@ -58,6 +92,9 @@ class StorageAccessControl {
             else {
                 return tree[dirIdentifier];
             }
+        }
+        else if (tree['*'] != undefined && typeof tree['*'] !== 'number') {
+            return tree['*'];
         }
         else if (tree['**/*'] == undefined) {
             throw new NotRegisterError(`Storage '${dirIdentifier}' is not registered.`);
@@ -69,7 +106,33 @@ class StorageAccessControl {
         }
     }
     
+    #getRegisterBit(atomIdentifier:string, tree:AccessTree):number {
+        function getItemBit(item:number|AccessTree):number {
+            if (typeof item === 'object') {
+                return StorageAccess.DIR;
+            }
+            else {
+                return item;
+            }
+        }
+
+        if (tree[atomIdentifier] != undefined) {
+            return getItemBit(tree[atomIdentifier]);
+        }
+        else if (tree['*'] != undefined) {
+            return getItemBit(tree['*']);
+        }
+        else if (tree['**/*'] != undefined) {
+            return getItemBit(tree['**/*']);
+        }
+        else {
+            return StorageAccess.NOTHING;
+        }
+    }
+    
     #checkIsFileAccessible(atomIdentifier:string, tree:AccessTree, accessType:number) {
+        // @TODO : 리팩토링 필요
+        // #getRegisterBit()와 기능 중복
         const check = (treeItem:number|AccessTree, accessType:number) => {
             if (typeof treeItem === 'object') {
                 throw new DirectoryAccessError(`Storage '${atomIdentifier}' is directory.`);

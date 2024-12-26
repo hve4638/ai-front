@@ -1,2 +1,2 @@
-import '../../shared/ipctype.js';
+import '../../shared/ipctype.d.ts';
 

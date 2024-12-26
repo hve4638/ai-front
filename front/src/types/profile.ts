@@ -6,8 +6,8 @@ export const LayoutModes = {
 export type LayoutModes = typeof LayoutModes[keyof typeof LayoutModes];
   
 export const ThemeModes = {
-    LIGHT : 'LIGHT',
-    DARK : 'DARK',
-    SYSTEM_DEFAULT : 'SYSTEM_DEFAULT'
+    LIGHT : 'light',
+    DARK : 'dark',
+    SYSTEM_DEFAULT : 'system_default'
 } as const;
 export type ThemeModes = typeof ThemeModes[keyof typeof ThemeModes];

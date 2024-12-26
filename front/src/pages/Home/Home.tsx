@@ -1,53 +1,35 @@
-import { RawProfileContext, useContextForce } from 'context';
-import Header from './Header';
-import SessionBar from './components/SessionBar';
-import InputField from 'components/InputField';
 import { useState } from 'react';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { RawProfileSessionContextProvider } from 'context/RawProfileSessionContext';
+import Header from './Header';
+import SessionTabBar from './SessionTabBar';
+import MainSection from './MainSection';
+import SettingModal from '../SettingModal';
+import ShortcutHandler from 'pages/ShortcutHandler';
 
 function HomePage() {
-    const [text, setText] = useState('');
-    
+    const [enableModal, setEnableModal] = useState(false);
+
     return (
         <div
             id='home'
-            className='column'
+            className='column relative'
         >
-            <Header/>
-            <div className='row flex'>
-                <InputField
-                    className='flex'
-                    style={{
-                        margin: '16px 8px 16px 16px',
-                        padding: '12px',
-                    }}
-                    text={text}
-                    onChange={setText}
-                >
-                    <GoogleFontIcon
-                        className='floating-button'
-                        value='send'
-                        style={{
-                            fontSize: '40px',
-                            position: 'absolute',
-                            right: '10px',
-                            bottom: '10px',
-                        }}
-                    />
-                </InputField>
-                <InputField
-                    className='flex'
-                    style={{
-                        margin: '16px 16px 16px 8px',
-                        padding: '12px',
-                    }}
-                    text={text}
-                    onChange={setText}
-                    readonly={true}
+            <RawProfileSessionContextProvider>
+                <Header
+                    onEnableSetting={()=>setEnableModal(true)}
                 />
-
-            </div>
-            <SessionBar/>
+                <MainSection/>
+                
+                {
+                    enableModal &&
+                    <SettingModal
+                        onClose={()=>setEnableModal(false)}
+                    />
+                }
+            </RawProfileSessionContextProvider>
+            <SessionTabBar/>
+            
+            <ShortcutHandler/>
         </div>
     );
 }

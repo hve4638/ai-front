@@ -1,0 +1,55 @@
+:root {
+    --toggle-switch-secondary-color : gray;
+    --toggle-switch-hover-color : rgb(186, 186, 186);
+
+    --toggle-switch-disabled-color : rgb(200, 200, 200);
+    --toggle-switch-thumb-margin : 2px;
+}
+.toggle-switch {
+    --toggle-color: var(--toggle-switch-secondary-color);
+
+    &:hover {
+        --toggle-color: var(--toggle-switch-hover-color);
+    }
+
+    position: relative;
+    box-sizing: border-box;
+
+    &:not(.disabled) {
+        cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+        position : absolute;
+        visibility: hidden;
+    }
+
+    .slider {
+        position: absolute;
+        appearance: none;
+        border: max(2px, 0.1em) solid var(--toggle-color);
+        border-radius: 1.25em;
+        box-sizing: border-box;
+        width : 100%;
+        height: 100%;
+        transition: border 0.15s ease;
+    }
+
+    .thumb {
+        position: absolute;
+        box-sizing: border-box;
+
+        border-radius: 50%;
+        transform: scale(1.0);
+        background-color: var(--toggle-color);
+        transition: left 0.15s ease, background-color 0.15s ease;
+        
+        aspect-ratio: 1/1;
+        margin : calc(max(2px, 0.1em) + 2.5px);
+        height: calc(100% - (max(2px, 0.1em) * 2 + 5px));
+    }
+
+    &:checked::before {
+        left: 2em;
+    }
+}

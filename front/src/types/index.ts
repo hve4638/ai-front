@@ -1,0 +1,1 @@
+export type { ComponentProps } from './props';

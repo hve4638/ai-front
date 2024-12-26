@@ -17,16 +17,16 @@ export function useRawProfileStorage(
         encode = (value: any) => value,
         decode = (value: string | undefined) => value,
         onStoreError = (error: unknown) => console.error(error),
-        onLoadError  = (error: unknown) => console.error(error)
+        onLoadError  = (error: unknown) => console.error(error),
     }:ExtraArgs
 ): [any, (value: any) => void, ()=>void] {
-    const storeData = useCallback(
-        (key: string, value: any) => LocalAPI.storeProfileValue(profileName, category, key, value),
+    const store = useCallback(
+        (key: string, value: any) => LocalAPI.setProfileData(profileName, category, key, value),
         [profileName, category]
     );
-    const loadData = useCallback(
+    const load = useCallback(
         (key: string) => {
-            return LocalAPI.loadProfileValue(profileName, category, key);
+            return LocalAPI.getProfileData(profileName, category, key);
         },
         [profileName, category]
     );
@@ -34,7 +34,7 @@ export function useRawProfileStorage(
     const [value, setValue, refetch] = useStorage(key, {
         encode, decode,
         onStoreError, onLoadError,
-        storeData, loadData
+        store, load
     });
 
     return [value, setValue, refetch];

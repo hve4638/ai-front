@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useContextForce, RawProfileContext } from 'context'
-import { LayoutModes } from 'types/profile'
+import Providers from 'context'
 import Profiles from 'features/profiles'
 import ProfileSelectPage from 'pages/ProfileSelect';
 import Home from 'pages/Home';
 import LoadPage from 'features/loading';
-import usePing from 'hooks/usePing';
+import usePing from 'hooks/useSignal';
+import LocalAPI from 'api/local';
 
 const LoadPhase = {
     INIT : 0,
@@ -18,43 +18,49 @@ type LoadPhase = typeof LoadPhase[keyof typeof LoadPhase];
 function App() {
     const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.INIT);
     const [retryInitialization, pingRetryInitialization] = usePing();
-    const [profileName, setProfileName] = useState<string|null>(null);
-    const [profileNames, setProfileNames] = useState<string[]>([]);
+    const [profile, setProfile] = useState<string|null>(null);
 
     useEffect(() => {
-        switch (currentState) {
-            case LoadPhase.INIT:
-                setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
-                break;
+        const call = async ()=> {
+            switch (currentState) {
+                case LoadPhase.INIT:
+                    setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
+                    break;
+    
+                case LoadPhase.LOADING_PROFILE_METADATA:
+                    const lastProfile = await Profiles.getLastProfile();
 
-            case LoadPhase.LOADING_PROFILE_METADATA:
-                if (Profiles.loaded) {
-                    setProfileNames(Profiles.profileNames ?? []);
-
-                    if (Profiles.lastProfileName == null) {
-                        setProfileName(null);
+                    if (lastProfile == null) {
+                        setProfile(null);
                         setCurrentState(LoadPhase.SELECT_PROFILE);
                     }
                     else {
-                        setProfileName(Profiles.lastProfileName);
+                        setProfile(lastProfile);
                         setCurrentState(LoadPhase.ENTRYPOINT);
                     }
-                }
-                else {
-                    setTimeout(() => {
-                        pingRetryInitialization();
-                    }, 100);
-                }
-                break;
-            case LoadPhase.SELECT_PROFILE:
-                if (profileName != null) {
-                    setCurrentState(LoadPhase.ENTRYPOINT);
-                }
-                break;
-            case LoadPhase.ENTRYPOINT:
-                break;
+                    break;
+                case LoadPhase.SELECT_PROFILE:
+                    if (profile != null) {
+                        setCurrentState(LoadPhase.ENTRYPOINT);
+                    }
+                    break;
+                case LoadPhase.ENTRYPOINT:
+                    break;
+            }
         }
+        call();
     }, [currentState, retryInitialization]);
+    
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            LocalAPI.echo('[MESSAGE] UNHANDLE');
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
 
     return (
         <div
@@ -78,18 +84,18 @@ function App() {
             {
                 currentState == LoadPhase.SELECT_PROFILE &&
                 <ProfileSelectPage
-                    profiles={profileNames}
-                    onSelect={(profileName) => {
-                        setProfileName(profileName);
+                    onSelect={async (id) => {
+                        await Profiles.setLastProfile(id);
+                        setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
                         pingRetryInitialization();
                     }}
                 />
             }
             {
                 currentState == LoadPhase.ENTRYPOINT &&
-                <>
+                <Providers profileId={profile!}>
                     <Home/>
-                </>
+                </Providers>
             }
         </div>
     )

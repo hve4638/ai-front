@@ -1,4 +1,2 @@
-import React from 'react';
-
-export type SetState<T> = React.Dispatch<React.SetStateAction<T>>
-export type { ChatSession } from './profiles';
+export type { SetState, SetStateAsync } from './react';
+export type { Shortcuts, Configs } from './profiles';

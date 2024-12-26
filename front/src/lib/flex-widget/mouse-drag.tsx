@@ -8,6 +8,7 @@ interface MouseDragProps {
     onDragBegin?: (x:number, y:number) => void;
     onDrag?: (x:number, y:number) => void;
     onDragEnd?: (x:number, y:number) => void;
+    onClick?: (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     relative?: boolean;
     clampToBound?: boolean;
 }
@@ -19,6 +20,7 @@ function MouseDrag({
     onDragBegin = (x, y)=>{},
     onDrag = (x, y)=>{},
     onDragEnd = (x, y)=>{},
+    onClick = (e) => {},
     relative = true,
     clampToBound = false,
 }:MouseDragProps) {
@@ -97,13 +99,16 @@ function MouseDrag({
             className={className}
             style={style}
             onMouseDown={(e)=>{
-                setDragging(true);
-
-                const {x, y} = getMousePosition(e as any);
-                prevPos.x = x;
-                prevPos.y = y;
-                onDragBegin(x, y);
+                if (e.button === 0) {
+                    setDragging(true);
+    
+                    const {x, y} = getMousePosition(e);
+                    prevPos.x = x;
+                    prevPos.y = y;
+                    onDragBegin(x, y);
+                }
             }}
+            onClick={(e)=>onClick(e)}
         >
             {children ?? <></>}
         </div>

@@ -1,0 +1,88 @@
+.model-header {
+    box-sizing: border-box;
+    padding: 0px 0.8em;
+    font-size : 0.8em;
+    color: white;
+}
+
+.model-list {
+    box-sizing: border-box;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 8px;
+    margin: 0px 4px;
+    background-color: rgb(30, 30, 30);
+
+    hr {
+        box-sizing: border-box;
+        margin: 2px auto;
+        width: 95%;
+        border-color: rgba(23, 23, 23, 0.5);
+    }
+
+    .provider {
+        box-sizing: border-box;
+        width : 100%;
+        padding: 0px 4px;
+        border-radius: 6px;
+        transition : background-color 0.15s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        &.selected {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    .model {
+        box-sizing: border-box;
+        width : 100%;
+        padding: 0px 4px;
+        border-radius: 6px;
+        transition : background-color 0.15s ease;
+        color : white;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    .model-option {
+        box-sizing: border-box;
+        width : 100%;
+        min-height: 1.5em;
+        padding : 0px 0px 0px 1em;
+        margin : 1px 0px ;
+        border-radius: 6px;
+        font-size: 0.8em;
+        transition : background-color 0.15s ease;
+
+        color :rgb(181, 181, 181);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-container {
+            box-sizing: border-box;
+            height: auto;
+
+            .tag {
+                background-color: rgb(44, 44, 44);
+                padding : 0px 0.5em;
+                height: auto;
+                border-radius: 50px;
+                margin-left: 2px;
+            }
+        }
+    }
+
+    .star {
+        transition: color 0.15s ease;
+
+        &.starred {
+            color: rgb(235, 188, 34);
+        }
+    }
+}
