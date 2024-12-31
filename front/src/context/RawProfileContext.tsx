@@ -150,25 +150,69 @@ export function RawProfileContextProvider({
     const [starredModels, setStarredModels, refetchStarredModels] = useDataStorage<string[]>('starred_models', []);
 
     /* shortcut.json */
-    const shortcutFontSizeUp = useShortcutStorage('font_size_up', { wheel: -1, ctrl: true });
-    const shortcutFontSizeDown = useShortcutStorage('font_size_down', { wheel: 1, ctrl: true });
-    const shortcutSendRequest = useShortcutStorage('send_request', { key: 'Enter', ctrl: true });
-    const shortcutCopyResponse = useShortcutStorage('copy_response', { key: 'c', ctrl: true, shift: true });
-    const shortcutGlobalToggleScreenActivation = useShortcutStorage('global_toggle_screen_activation', { key: 'e', ctrl: true, shift: true });
-    const shortcutGlobalRequestClipboard = useShortcutStorage('global_request_clipboard', { key: 'v', ctrl: true, shift: true });
+    const scFontSizeUp = useShortcutStorage('font_size_up', { wheel: -1, ctrl: true });
+    const scFontSizeDown = useShortcutStorage('font_size_down', { wheel: 1, ctrl: true });
+    const scSendRequest = useShortcutStorage('send_request', { key: 'Enter', ctrl: true });
+    const scCopyResponse = useShortcutStorage('copy_response', { key: 'c', ctrl: true, shift: true });
+    const scNextTab = useShortcutStorage('next_tab', { key: 'Tab', ctrl: true });
+    const scPrevTab = useShortcutStorage('prev_tab', { key: 'Tab', ctrl: true, shift: true });
+    const scCreateTab = useShortcutStorage('create_tab', { key: 't', ctrl: true });
+    const scRemoveTab = useShortcutStorage('remove_tab', { key: 'w', ctrl: true });
+    const scUndoRemoveTab = useShortcutStorage('undo_remove_tab', { key: 't', ctrl: true, shift: true });
+    const scTab1 = useShortcutStorage('tab1', { key: '1', ctrl: true });
+    const scTab2 = useShortcutStorage('tab2', { key: '2', ctrl: true });
+    const scTab3 = useShortcutStorage('tab3', { key: '3', ctrl: true });
+    const scTab4 = useShortcutStorage('tab4', { key: '4', ctrl: true });
+    const scTab5 = useShortcutStorage('tab5', { key: '5', ctrl: true });
+    const scTab6 = useShortcutStorage('tab6', { key: '6', ctrl: true });
+    const scTab7 = useShortcutStorage('tab7', { key: '7', ctrl: true });
+    const scTab8 = useShortcutStorage('tab8', { key: '8', ctrl: true });
+    const scTab9 = useShortcutStorage('tab9', { key: '9', ctrl: true });
+
+    const scGlobalToggleScreenActivation = useShortcutStorage('global_toggle_screen_activation', { key: 'e', ctrl: true, shift: true });
+    const scGlobalRequestClipboard = useShortcutStorage('global_request_clipboard', { key: 'v', ctrl: true, shift: true });
     const shortcuts:Shortcuts = {
-        fontSizeUp : shortcutFontSizeUp[0],
-        setFrontSizeUp : shortcutFontSizeUp[1],
-        fontSizeDown : shortcutFontSizeDown[0],
-        setFontSizeDown : shortcutFontSizeDown[1],
-        sendRequest : shortcutSendRequest[0],
-        setSendRequest : shortcutSendRequest[1],
-        copyResponse : shortcutCopyResponse[0],
-        setCopyResponse : shortcutCopyResponse[1],
-        globalToggleScreenActivation : shortcutGlobalToggleScreenActivation[0],
-        setGlobalToggleScreenActivation : shortcutGlobalToggleScreenActivation[1],
-        globalRequestClipboard : shortcutGlobalRequestClipboard[0],
-        setGlobalRequestClipboard : shortcutGlobalRequestClipboard[1],
+        fontSizeUp : scFontSizeUp[0],
+        setFrontSizeUp : scFontSizeUp[1],
+        fontSizeDown : scFontSizeDown[0],
+        setFontSizeDown : scFontSizeDown[1],
+        sendRequest : scSendRequest[0],
+        setSendRequest : scSendRequest[1],
+        copyResponse : scCopyResponse[0],
+        setCopyResponse : scCopyResponse[1],
+        nextTab : scNextTab[0],
+        setNextTab : scNextTab[1],
+        prevTab : scPrevTab[0],
+        setPrevTab : scPrevTab[1],
+        createTab : scCreateTab[0],
+        setCreateTab : scCreateTab[1],
+        removeTab : scRemoveTab[0],
+        setRemoveTab : scRemoveTab[1],
+        undoRemoveTab : scUndoRemoveTab[0],
+        setUndoRemoveTab : scUndoRemoveTab[1],
+        tab1 : scTab1[0],
+        setTab1 : scTab1[1],
+        tab2 : scTab2[0],
+        setTab2 : scTab2[1],
+        tab3 : scTab3[0],
+        setTab3 : scTab3[1],
+        tab4 : scTab4[0],
+        setTab4 : scTab4[1],
+        tab5 : scTab5[0],
+        setTab5 : scTab5[1],
+        tab6 : scTab6[0],
+        setTab6 : scTab6[1],
+        tab7 : scTab7[0],
+        setTab7 : scTab7[1],
+        tab8 : scTab8[0],
+        setTab8 : scTab8[1],
+        tab9 : scTab9[0],
+        setTab9 : scTab9[1],
+
+        globalToggleScreenActivation : scGlobalToggleScreenActivation[0],
+        setGlobalToggleScreenActivation : scGlobalToggleScreenActivation[1],
+        globalRequestClipboard : scGlobalRequestClipboard[0],
+        setGlobalRequestClipboard : scGlobalRequestClipboard[1],
     }
     
     useLayoutEffect(() => {

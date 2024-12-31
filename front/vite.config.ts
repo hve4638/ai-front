@@ -18,6 +18,7 @@ export default defineConfig({
         alias: [
             
             alias('@', 'src'),
+            alias('data', 'src/data'),
             alias('components', 'src/components'),
             alias('context', 'src/context'),
             alias('utils', 'src/utils'),

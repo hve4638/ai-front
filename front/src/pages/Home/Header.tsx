@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import LocalAPI from 'api/local';
-import { Align, Flex, Row } from 'lib/flex-widget';
+import { Align, Flex, Row } from 'components/layout';
 import { ProfileContext, RawProfileSessionContext, useContextForce } from 'context';
 import Dropdown, { DropdownItem, DropdownItemList } from 'components/Dropdown';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';

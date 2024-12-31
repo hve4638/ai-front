@@ -5,6 +5,8 @@
 @use './utils/index' as util;
 @use './components/index' as components;
 
+
 @use './base';
 @use './main';
+@use './scrollbar.scss';
 @use'./page';

@@ -1,5 +1,5 @@
 import CheckBox from "components/CheckBox";
-import { Flex, Row } from "lib/flex-widget";
+import { Flex, Row } from "components/layout";
 
 interface CheckBoxFormProps {
     name:string;

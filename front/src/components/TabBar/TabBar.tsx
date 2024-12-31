@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Align, Center, Column, Flex, MouseDrag, Row } from 'lib/flex-widget';
+import { Align, Center, Column, Flex, MouseDrag, Row } from 'components/layout';
 import { clamp } from 'utils/math';
 import Tab from './Tab';
 import SessionAddButton from './TabAddButton';

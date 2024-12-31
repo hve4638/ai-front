@@ -24,6 +24,31 @@ class ElectronIPCAPI implements ILocalAPI {
         return models;
     }
 
+    async initMasterKey() {
+        const [err] = await electron.initMasterKey();
+        if (err) throw new IPCError(err.message);
+    }
+    async isMasterKeyExists() {
+        const [err, exists] = await electron.isMasterKeyExists();
+        if (err) throw new IPCError(err.message);
+        return exists;
+    }
+    async validateMasterKey() {
+        const [err, isValid] = await electron.validateMasterKey();
+        if (err) throw new IPCError(err.message);
+        return isValid;
+    }
+    async resetMasterKey(recoveryKey: string) {
+        const [err] = await electron.resetMasterKey(recoveryKey);
+        if (err) throw new IPCError(err.message);
+    }
+    async recoverMasterKey(recoveryKey: string) {
+        const [err, success] = await electron.recoverMasterKey(recoveryKey);
+        if (err) throw new IPCError(err.message);
+        return success;
+    }
+
+
     /* 전역 저장소 */
     async getGlobalData(storageName:string, key:string) {
         const [err, data] = await electron.getGlobalData(storageName, key);

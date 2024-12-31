@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ButtonForm, CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
 import { ProfileContext, useContextForce } from 'context';
-import { Align, Column, Flex, Row } from 'lib/flex-widget';
+import { Align, Column, Flex, Row } from 'components/layout';
 import LocalAPI from 'api/local';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import CheckBox from 'components/CheckBox';

@@ -6,7 +6,10 @@ import RedIcon from 'assets/img/red.png'
 import useSignal from 'hooks/useSignal';
 import { ProfileMetadata } from './types';
 import Profiles from 'features/profiles';
+import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
+import styles from './styles.module.scss';
+import classNames from 'classnames';
 
 interface ProfileSelectPageProps {
     onSelect: (profileName: string) => void;
@@ -63,6 +66,20 @@ function ProfileSelectPage({
                     }}
                 />
             }
+            <div
+                className={
+                    classNames(styles['rect-button'], 'center')
+                }
+                style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px'
+                }}
+            >
+                <GoogleFontIcon                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+                    value='settings'
+                />
+            </div>
             <h2
                 className='center'
                 style={{

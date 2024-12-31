@@ -1,32 +1,36 @@
 import { useEffect, useState } from 'react'
-import Providers from 'context'
-import Profiles from 'features/profiles'
+import LocalAPI from 'api/local';
+import Providers from 'context';
+import useSignal from 'hooks/useSignal';
+import LoadPage from 'features/loading';
+import Profiles from 'features/profiles';
 import ProfileSelectPage from 'pages/ProfileSelect';
 import Home from 'pages/Home';
-import LoadPage from 'features/loading';
-import usePing from 'hooks/useSignal';
-import LocalAPI from 'api/local';
+import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 
 const LoadPhase = {
-    INIT : 0,
-    LOADING_PROFILE_METADATA : 1,
-    SELECT_PROFILE : 2,
+    BEGIN : 0,
+    INIT_MASTER_KEY : 1,
+    LOADING_PROFILE_METADATA : 2,
+    SELECT_PROFILE : 3,
     ENTRYPOINT : 10,
 }
 type LoadPhase = typeof LoadPhase[keyof typeof LoadPhase];
 
 function App() {
-    const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.INIT);
-    const [retryInitialization, pingRetryInitialization] = usePing();
+    const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.BEGIN);
+    const [retrySignal, sendRetrySignal] = useSignal();
     const [profile, setProfile] = useState<string|null>(null);
 
     useEffect(() => {
-        const call = async ()=> {
+        (async ()=> {
+            console.log('currentState', currentState);
             switch (currentState) {
-                case LoadPhase.INIT:
-                    setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
+                case LoadPhase.BEGIN:
+                    setCurrentState(LoadPhase.INIT_MASTER_KEY);
                     break;
-    
+                case LoadPhase.INIT_MASTER_KEY:
+                    break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
                     const lastProfile = await Profiles.getLastProfile();
 
@@ -47,9 +51,8 @@ function App() {
                 case LoadPhase.ENTRYPOINT:
                     break;
             }
-        }
-        call();
-    }, [currentState, retryInitialization]);
+        })();
+    }, [currentState, retrySignal]);
     
     useEffect(() => {
         const handleBeforeUnload = (event) => {
@@ -76,10 +79,18 @@ function App() {
         >
             {
                 (
-                    currentState == LoadPhase.INIT ||
+                    currentState == LoadPhase.BEGIN ||
                     currentState == LoadPhase.LOADING_PROFILE_METADATA
                 ) &&
                 <LoadPage/>
+            }
+            {
+                currentState == LoadPhase.INIT_MASTER_KEY &&
+                <MasterKeyInitailize
+                    onFinished={() => {
+                        setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
+                    }}
+                />
             }
             {
                 currentState == LoadPhase.SELECT_PROFILE &&
@@ -87,7 +98,6 @@ function App() {
                     onSelect={async (id) => {
                         await Profiles.setLastProfile(id);
                         setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
-                        pingRetryInitialization();
                     }}
                 />
             }
@@ -96,7 +106,7 @@ function App() {
                 <Providers profileId={profile!}>
                     <Home/>
                 </Providers>
-            }
+            }            
         </div>
     )
 }

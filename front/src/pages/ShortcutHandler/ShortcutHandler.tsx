@@ -52,9 +52,7 @@ function ShortcutHandler() {
     
     useEffect(() => {
         return addHandler(shortcuts.fontSizeUp, () => {
-            console.log('fontSizeUp');
-            console.log('size:', configs.fontSize);
-            configs.setFontSize(prev=>prev+1);
+            configs.setFontSize(prev=>Math.min(prev+1, 48));
         })
     },[
         shortcuts.fontSizeUp,
@@ -63,7 +61,7 @@ function ShortcutHandler() {
 
     useEffect(() => {
         return addHandler(shortcuts.fontSizeDown, () => {
-            configs.setFontSize(prev=>prev-1);
+            configs.setFontSize(prev=>Math.max(prev-1, 6));
         })
     },[
         shortcuts.fontSizeDown,

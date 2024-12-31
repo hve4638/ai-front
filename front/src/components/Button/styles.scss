@@ -2,9 +2,10 @@ button {
     color: rgb(229, 229, 229);
     background-color: rgb(40, 40, 40);
     border: 1px solid rgb(90, 90, 90);
-    transform : background-color 0.15s ease,
+    transition : background-color 0.15s ease,
                 border 0.15s ease,
                 color 0.15s ease;
+    border-radius: 6px;
 
     &:hover {
         background-color: rgb(61, 61, 61);
@@ -42,7 +43,7 @@ button {
     &.disabled {
         color: rgb(153, 153, 153);
         background-color: rgb(40, 40, 40);
-        border: 1px solid rgb(90, 90, 90);
+        border: 0px;
         cursor: default !important;
 
         &:hover {

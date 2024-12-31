@@ -8,6 +8,13 @@ export interface ILocalAPI {
     openBrowser: (url: string) => Promise<any>,
     getChatAIModels: () => Promise<ChatAIModels>,
 
+    /* 마스터 키 */
+    initMasterKey: () => Promise<void>,
+    isMasterKeyExists: () => Promise<boolean>,
+    validateMasterKey: () => Promise<boolean>,
+    resetMasterKey: (recoveryKey: string) => Promise<void>,
+    recoverMasterKey: (recoveryKey: string) => Promise<boolean>,
+
     /* 전역 저장소 */
     getGlobalData: (storageName: string, key: string) => Promise<any>,
     setGlobalData: (storageName: string, key: string, value: any) => Promise<any>,

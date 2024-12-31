@@ -1,4 +1,4 @@
-import { Flex, Row } from "lib/flex-widget";
+import { Flex, Row } from "components/layout";
 
 interface HotkeyFormProps {
     name:string;

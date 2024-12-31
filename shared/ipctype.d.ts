@@ -18,6 +18,13 @@ declare global {
         openBrowser: (url:string) => ElectronNoResult;
         getChatAIModels: () => ElectronResult<ChatAIModels>;
 
+        /* 마스터 키 */
+        initMasterKey: () => ElectronNoResult;
+        isMasterKeyExists: () => ElectronResult<boolean>;
+        validateMasterKey: () => ElectronResult<boolean>;
+        resetMasterKey: (recoveryKey:string) => ElectronNoResult;
+        recoverMasterKey: (recoveryKey:string) => ElectronResult<boolean>;
+
         /* 전역 스토리지 */
         getGlobalData: (storageName:string, key:string) => ElectronResult<any>;
         setGlobalData: (storageName:string, key:string, value:any) => ElectronNoResult;

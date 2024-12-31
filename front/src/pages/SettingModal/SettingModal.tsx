@@ -85,6 +85,7 @@ function SettingModal({
         >
             <div
                 style={{
+                    position : 'relative',
                     display: 'grid',
                     gridTemplateRows: '64px 1fr',
                     gridTemplateColumns: '96px 1fr',

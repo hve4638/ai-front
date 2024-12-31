@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Align, Center, Column, Flex, Row } from 'lib/flex-widget';
+import { Align, Center, Column, Flex, Row } from 'components/layout';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
 interface TabProps {

@@ -1,18 +1,22 @@
+import classNames from "classnames";
 import { GoogleFontIcon } from "components/GoogleFontIcon";
-import { Flex, Row } from "lib/flex-widget";
+import { Flex, Row } from "components/layout";
 
 function ModalHeader({
     title,
-    onClose = () => {}
+    className,
+    onClose = () => {},
+    hideCloseButton = false,
 }: {
     title?: string,
     className?: string,
     style?: React.CSSProperties,
-    onClose?: () => void
+    onClose?: () => void,
+    hideCloseButton?: boolean,
 }) {
     return (
         <Row
-            className='flex'
+            className={classNames('flex', className)}
             style={{
                 width: '100%',
             }}
@@ -27,15 +31,18 @@ function ModalHeader({
                 >{title}</h2>
             }
             <Flex/>
-            <GoogleFontIcon
-                value='close'
-                style={{
-                    fontSize: '36px',
-                    margin: '4px',
-                    cursor: 'pointer',
-                }}
-                onClick={() => onClose()}
-            />
+            {
+                !hideCloseButton &&
+                <GoogleFontIcon
+                    value='close'
+                    style={{
+                        fontSize: '36px',
+                        margin: '4px',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => onClose()}
+                />
+            }
         </Row>
     )
 }

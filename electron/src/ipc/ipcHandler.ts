@@ -4,21 +4,24 @@ import Profiles from '../features/profiles';
 import FetchContainer from '../features/fetch-container';
 import Storage from '../features/storage';
 import ChatAIModels from '../features/chatai-models';
+import UniqueKeyManager from '../features/unique-key';
 
 function debugLog(...args:any[]) {
     console.log('[IPC]', ...args);
 }
 
 export interface IPCDependencies {
-    fetchContainer:FetchContainer,
-    profiles:Profiles,
-    globalStorage:Storage,
+    fetchContainer:FetchContainer;
+    profiles:Profiles;
+    globalStorage:Storage;
+    uniqueKeyManager:UniqueKeyManager;
 }
 
 export function getIPCHandler({
     fetchContainer,
     profiles,
     globalStorage,
+    uniqueKeyManager,
 }:IPCDependencies):IPC_TYPES {
     const throttles = {};
 
@@ -35,6 +38,29 @@ export function getIPCHandler({
         },
         getChatAIModels : async () => {
             return [null, ChatAIModels.models]
+        },
+
+        /* 마스터키 */
+        initMasterKey : async () => {
+            await uniqueKeyManager.readKey();
+
+            return [null];
+        },
+        isMasterKeyExists : async () => {
+            return [null, uniqueKeyManager.existsKey()];
+        }, 
+        validateMasterKey : async () => {
+            const key = uniqueKeyManager.getKey();
+
+            return [null, key !== null];
+        },
+        resetMasterKey : async (recoveryKey:string) => {
+            await uniqueKeyManager.generateKey(recoveryKey);
+            return [null];
+        },
+        recoverMasterKey : async (recoveryKey:string) => {
+            const success = await uniqueKeyManager.tryRecoveryKey(recoveryKey);
+            return [null, success];
         },
 
         /* 전역 스토리지 */

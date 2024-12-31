@@ -39,6 +39,8 @@
     "better-sqlite3": "^11.3.0",
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",
+    "systeminformation": "^5.23.23",
+    "uuid": "^11.0.3",
     "win-known-folders": "^1.0.0"
   },
   "build": {

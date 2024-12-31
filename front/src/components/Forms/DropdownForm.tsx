@@ -1,7 +1,7 @@
 import Dropdown from "components/Dropdown";
 import type { DropdownItem, DropdownItemList } from "components/Dropdown";
 import ToggleSwitch from "components/ToggleSwitch";
-import { Flex, Row } from "lib/flex-widget";
+import { Flex, Row } from "components/layout";
 import { useState } from "react";
 
 interface DropdownFormProps {

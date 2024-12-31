@@ -6,6 +6,13 @@ const api: IPC_TYPES = {
     openBrowser: (url: string) => ipcRenderer.invoke(ipcping.OPEN_BROWSER, url),
     getChatAIModels: () => ipcRenderer.invoke(ipcping.GET_CHATAI_MODELS),
 
+    /* 마스터 키 */
+    initMasterKey: () => ipcRenderer.invoke(ipcping.INIT_MASTER_KEY),
+    isMasterKeyExists: () => ipcRenderer.invoke(ipcping.IS_MASTER_KEY_EXISTS),
+    validateMasterKey: () => ipcRenderer.invoke(ipcping.VALIDATE_MASTER_KEY),
+    resetMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.RESET_MASTER_KEY, recoveryKey),
+    recoverMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.RECOVER_MASTER_KEY, recoveryKey),
+
     /* 전역 저장소 */
     getGlobalData: (storageName: string, key: string) => ipcRenderer.invoke(ipcping.GET_GLOBAL_DATA, storageName, key),
     setGlobalData: (storageName: string, key: string, value: any) => ipcRenderer.invoke(ipcping.SET_GLOBAL_DATA, storageName, key, value),

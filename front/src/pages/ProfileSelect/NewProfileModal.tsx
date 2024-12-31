@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Modal } from 'components/Modal';
-import { Align, Column, Flex, Row } from 'lib/flex-widget';
+import { Align, Column, Flex, Row } from 'components/layout';
 import Button from 'components/Button';
 import { ModalHeader } from 'components/Modal';
+import { TextInput } from 'components/Input';
+import { ButtonForm, StringForm } from 'components/Forms';
+import classNames from 'classnames';
+
+import styles from './styles.module.scss';
+
 
 function NewProfileModal({
     onSubmit,
@@ -42,7 +48,6 @@ function NewProfileModal({
 
     return (
         <Modal
-            title='프로필 추가'
             disappear={disappear}
         >
             <ModalHeader
@@ -86,19 +91,20 @@ function NewProfileModal({
                             paddingLeft: '16px'
                         }}
                     >
-                        <input
+                        <TextInput
                             ref={inputRef}
-                            className='wfill profile-input'
-                            type='text'
+                            className={classNames('wfill', styles['profile-input'])}
                             placeholder='프로필 이름'
                             style={{
-                                padding: '8px',
+                                boxSizing: 'content-box',
+                                padding: '2px 0.5em',
+                                /// @TODO : 하드코딩된 폰트 사이즈
                                 fontSize: '16px',
-                                height: '20px'
+                                height: '1.5em'
                             }}
                             value={name}
-                            onChange={(e) => {
-                                setName(e.target.value);
+                            onChange={(value) => {
+                                setName(value);
                             }}
                         />
                     </Flex>
@@ -108,6 +114,7 @@ function NewProfileModal({
                     rowAlign={Align.End}
                     style={{
                         width : '100%',
+                        height: '48px',
                         padding : '8px',
                         boxSizing : 'border-box'
                     }}
@@ -116,7 +123,8 @@ function NewProfileModal({
                         className='green'
                         style={{
                             marginLeft: '12px',
-                            width : '128px'
+                            width : '128px',
+                            height : '100%'
                         }}
                         onClick={() => {
                             if (name === '') return;
@@ -139,7 +147,8 @@ function NewProfileModal({
                         className='transparent'
                         style={{
                             marginLeft: '12px',
-                            width : '128px'
+                            width : '128px',
+                            height : '100%'
                         }}
                         onClick={() => {
                             setDisappear(true);

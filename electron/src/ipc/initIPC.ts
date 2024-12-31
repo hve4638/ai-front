@@ -12,6 +12,13 @@ export function initIPC(dependencies: IPCDependencies) {
     handleIPC(ipcping.OPEN_BROWSER, handlers.openBrowser);
     handleIPC(ipcping.GET_CHATAI_MODELS, handlers.getChatAIModels);
 
+    /* 마스터 키 */
+    handleIPC(ipcping.INIT_MASTER_KEY, handlers.initMasterKey);
+    handleIPC(ipcping.IS_MASTER_KEY_EXISTS, handlers.isMasterKeyExists);
+    handleIPC(ipcping.VALIDATE_MASTER_KEY, handlers.validateMasterKey);
+    handleIPC(ipcping.RESET_MASTER_KEY, handlers.resetMasterKey);
+    handleIPC(ipcping.RECOVER_MASTER_KEY, handlers.recoverMasterKey);
+
     /* 전역 스토리지 */
     handleIPC(ipcping.GET_GLOBAL_DATA, handlers.getGlobalData);
     handleIPC(ipcping.SET_GLOBAL_DATA, handlers.setGlobalData);

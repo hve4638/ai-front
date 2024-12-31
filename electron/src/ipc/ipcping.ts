@@ -8,6 +8,13 @@ const PINGS = {
     ABORT_FETCH : 'abort-fetch',
     GET_FETCH_RESPONSE : 'get-fetch-response',
 
+    /* 마스터 키 */
+    INIT_MASTER_KEY : 'init-master-key',
+    IS_MASTER_KEY_EXISTS : 'is-master-key-exists',
+    VALIDATE_MASTER_KEY : 'validate-master-key',
+    RESET_MASTER_KEY : 'reset-master-key',
+    RECOVER_MASTER_KEY : 'recover-master-key',
+
     /* 전역 스토리지 */
     GET_GLOBAL_DATA : 'get-global-data',
     SET_GLOBAL_DATA : 'set-global-data',
