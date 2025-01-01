@@ -54,8 +54,12 @@ export function getIPCHandler({
 
             return [null, key !== null];
         },
-        resetMasterKey : async (recoveryKey:string) => {
+        generateMasterKey : async (recoveryKey:string) => {
             await uniqueKeyManager.generateKey(recoveryKey);
+            return [null];
+        },
+        resetMasterKey : async () => {
+            uniqueKeyManager.resetKey();
             return [null];
         },
         recoverMasterKey : async (recoveryKey:string) => {

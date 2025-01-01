@@ -16,6 +16,7 @@ export function initIPC(dependencies: IPCDependencies) {
     handleIPC(ipcping.INIT_MASTER_KEY, handlers.initMasterKey);
     handleIPC(ipcping.IS_MASTER_KEY_EXISTS, handlers.isMasterKeyExists);
     handleIPC(ipcping.VALIDATE_MASTER_KEY, handlers.validateMasterKey);
+    handleIPC(ipcping.GENERATE_MASTER_KEY, handlers.generateMasterKey);
     handleIPC(ipcping.RESET_MASTER_KEY, handlers.resetMasterKey);
     handleIPC(ipcping.RECOVER_MASTER_KEY, handlers.recoverMasterKey);
 

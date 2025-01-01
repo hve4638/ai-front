@@ -22,7 +22,8 @@ declare global {
         initMasterKey: () => ElectronNoResult;
         isMasterKeyExists: () => ElectronResult<boolean>;
         validateMasterKey: () => ElectronResult<boolean>;
-        resetMasterKey: (recoveryKey:string) => ElectronNoResult;
+        generateMasterKey: (recoveryKey:string) => ElectronNoResult;
+        resetMasterKey: () => ElectronNoResult;
         recoverMasterKey: (recoveryKey:string) => ElectronResult<boolean>;
 
         /* 전역 스토리지 */

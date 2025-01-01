@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 import Button from "components/Button";
 import classNames from "classnames";
 import ReactLoading from "react-loading";
+import { ConfirmModal } from "components/Modal";
 
 interface RecoveryModalProps {
     onReset: () => void;
@@ -23,11 +24,13 @@ function RecoveryModal({
     const [loading, setLoading] = useState(false);
     const [recoveryKey, setRecoveryKey] = useState('');
     const valid = useMemo(()=>recoveryKey.length >= 5, [recoveryKey]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     useEffect(()=>{
         setTimeout(() => {
             setDisappear(false);
-        }, 0);
+        }, 1);
     }, []);
 
     const close = () => {
@@ -39,6 +42,7 @@ function RecoveryModal({
 
     return (
         <Modal
+            className='relative'
             disappear={disappear}
             style={{
                 width : 'auto',
@@ -73,6 +77,14 @@ function RecoveryModal({
             <div className={classNames(styles['description'], 'undraggable')}>
                 <div>복구키를 이용해 민감 데이터를 보존할 수 있습니다.</div>
                 <div>초기화 시에도 프로필, 프롬프트 등의 데이터는 보존됩니다.</div>
+                <div
+                    className={styles['error']}
+                    style={{
+                        height : '1em',
+                    }}
+                >
+                    {errorMessage}
+                </div>
             </div>
             <Row
                 style={{
@@ -113,6 +125,13 @@ function RecoveryModal({
 
                         try {
                             const success = await onRecovery(recoveryKey);
+                            if (success) {
+                                setErrorMessage('');
+                                close();
+                            }
+                            else{
+                                setErrorMessage('복구할 수 없습니다.');
+                            }
                         }
                         finally {
                             setLoading(false);
@@ -132,18 +151,30 @@ function RecoveryModal({
                         height: '100%',
                     }}
                     onClick={()=>{
-                        if (loading) return;
-                        setLoading(true);
-
-                        try {
-                            
-                        }
-                        finally {
-                            setLoading(false);
-                        }
+                        setShowConfirmModal(true);
                     }}
                 >초기화</Button>
             </Row>
+            {
+                showConfirmModal &&
+                <ConfirmModal
+                    style={{
+                        minWidth: '350px',
+                        width: 'auto',
+                    }}
+                    title='키 초기화'
+                    onConfirm={()=>{
+                        onReset();
+                        close();
+                        return true;
+                    }}
+                    onClosed={()=>{
+                        setShowConfirmModal(false);
+                    }}
+                >
+                    <div>정말로 초기화하겠습니까?</div>
+                </ConfirmModal>
+            }
         </Modal>
     )
 }

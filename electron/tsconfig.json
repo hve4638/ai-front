@@ -5,7 +5,7 @@
         
         "isolatedModules": true,
         
-        "target": "es2023",
+        "target": "es2022",
         "module": "CommonJS",
         
         "moduleResolution": "node",

@@ -242,6 +242,14 @@ function ModelOptions() {
                                     <Row
                                         key={model.name + index + option.name}
                                         className='model-option'
+                                        onRClick={(e)=>{
+                                            if (isModelStarred(option.id)) {
+                                                unstarModel(option.id);
+                                            }
+                                            else {
+                                                starModel(option.id);
+                                            }
+                                        }}
                                     >
                                         <Row
                                             key={option.name + index}

@@ -10,7 +10,8 @@ const api: IPC_TYPES = {
     initMasterKey: () => ipcRenderer.invoke(ipcping.INIT_MASTER_KEY),
     isMasterKeyExists: () => ipcRenderer.invoke(ipcping.IS_MASTER_KEY_EXISTS),
     validateMasterKey: () => ipcRenderer.invoke(ipcping.VALIDATE_MASTER_KEY),
-    resetMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.RESET_MASTER_KEY, recoveryKey),
+    generateMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.GENERATE_MASTER_KEY, recoveryKey),
+    resetMasterKey: () => ipcRenderer.invoke(ipcping.RESET_MASTER_KEY),
     recoverMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.RECOVER_MASTER_KEY, recoveryKey),
 
     /* 전역 저장소 */

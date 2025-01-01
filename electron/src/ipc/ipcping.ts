@@ -12,6 +12,7 @@ const PINGS = {
     INIT_MASTER_KEY : 'init-master-key',
     IS_MASTER_KEY_EXISTS : 'is-master-key-exists',
     VALIDATE_MASTER_KEY : 'validate-master-key',
+    GENERATE_MASTER_KEY : 'generate-master-key',
     RESET_MASTER_KEY : 'reset-master-key',
     RECOVER_MASTER_KEY : 'recover-master-key',
 

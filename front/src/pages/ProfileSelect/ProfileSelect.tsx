@@ -46,8 +46,7 @@ function ProfileSelectPage({
         <div
             className='column center wfill undraggable'
             style={{
-                padding: '8px'
-                
+                padding: '8px',
             }}
         >
             {
@@ -66,20 +65,6 @@ function ProfileSelectPage({
                     }}
                 />
             }
-            <div
-                className={
-                    classNames(styles['rect-button'], 'center')
-                }
-                style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px'
-                }}
-            >
-                <GoogleFontIcon                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-                    value='settings'
-                />
-            </div>
             <h2
                 className='center'
                 style={{

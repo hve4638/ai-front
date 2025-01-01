@@ -13,6 +13,8 @@ function Modal({
 
     backgroundClassName='',
     backgroundStyle={},
+
+    enableRoundedBackground = false,
 }: {
     disappear?: boolean,
     className?: string,
@@ -20,7 +22,9 @@ function Modal({
     backgroundClassName?: string,
     backgroundStyle?: React.CSSProperties,
     children?: React.ReactNode,
-    onClose?: () => void
+    onClose?: () => void,
+
+    enableRoundedBackground?: boolean
 }) {
     
     return (
@@ -31,12 +35,14 @@ function Modal({
             )}
             style={{
                 ...backgroundStyle,
+                borderRadius: enableRoundedBackground ? '5px' : '0px',
             }}
         >
             <div
                 className={`modal ${className} ${disappear ? 'disappear' : ''}`}
                 style={{
                     ...style,
+                    borderRadius: '5px',
                 }}
             >
                 {

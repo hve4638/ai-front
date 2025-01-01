@@ -54,7 +54,8 @@ function ShortcutOptions() {
                 ))
             }
             <div style={{ height: '1em' }}/>
-            <b style={{fontSize:'1.1em'}}>전역 단축키</b>
+            <h2 className='undraggable'>전역 단축키</h2>
+            {/* <b style={{fontSize:'1.1em'}}></b> */}
             <CheckBoxForm
                 name='활성화'
                 checked={enabledGlobalHotkey}

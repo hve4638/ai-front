@@ -12,7 +12,8 @@ export interface ILocalAPI {
     initMasterKey: () => Promise<void>,
     isMasterKeyExists: () => Promise<boolean>,
     validateMasterKey: () => Promise<boolean>,
-    resetMasterKey: (recoveryKey: string) => Promise<void>,
+    generateMasterKey: (recoveryKey: string) => Promise<void>,
+    resetMasterKey: () => Promise<void>,
     recoverMasterKey: (recoveryKey: string) => Promise<boolean>,
 
     /* 전역 저장소 */

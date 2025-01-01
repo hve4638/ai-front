@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import LocalAPI from 'api/local';
-import RecoveryKeySetupModal from './RecoveryKeySetupModal';
+import SetupRecoveryKeyModal from './SetupRecoveryKeyModal';
 import useSignal from 'hooks/useSignal';
 import RecoveryModal from './RecoveryModal';
 
@@ -40,9 +40,9 @@ function MasterKeyInitailize({
         <div>
         {
             initializeMode &&
-            <RecoveryKeySetupModal
+            <SetupRecoveryKeyModal
                 onSubmit={async (recoveryKey:string)=>{
-                    await LocalAPI.resetMasterKey(recoveryKey);
+                    await LocalAPI.generateMasterKey(recoveryKey);
                     return true;
                 }}
                 onClose = {()=>{
@@ -56,14 +56,10 @@ function MasterKeyInitailize({
             <RecoveryModal
                 onRecovery={async (recoveryKey:string)=>{
                     const success = await LocalAPI.recoverMasterKey(recoveryKey);
-                    if (success) {
-                        sendRefreshSignal();
-                    }
                     return success;
                 }}
                 onReset={async ()=>{
-                    // await LocalAPI.resetMasterKey('');
-                    // sendRefreshSignal();
+                    await LocalAPI.resetMasterKey();
                 }}
                 onClose={()=>{
                     setRecoveryMode(false);

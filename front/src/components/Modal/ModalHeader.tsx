@@ -23,12 +23,12 @@ function ModalHeader({
         >
             {
                 title != null &&
-                <h2
+                <h1
                     className='center undraggable'
                     style={{
                         margin : '4px'
                     }}
-                >{title}</h2>
+                >{title}</h1>
             }
             <Flex/>
             {

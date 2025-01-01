@@ -124,6 +124,11 @@ class UniqueKeyManager {
         return this.#uniqueKey;
     }
     
+    resetKey() {
+        if (this.#existsKeyFile()) {
+            fs.unlinkSync(this.#keyPath);    
+        }
+    }
 }
 
 export default UniqueKeyManager;

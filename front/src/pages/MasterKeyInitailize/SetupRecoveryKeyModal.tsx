@@ -25,7 +25,7 @@ function RecoveryKeySetupModal({
     useEffect(()=>{
         setTimeout(() => {
             setDisappear(false);
-        }, 0);
+        }, 1);
     }, []);
 
     const close = () => {
@@ -68,10 +68,14 @@ function RecoveryKeySetupModal({
                     onChange={(e)=>setRecoveryKey(e.target.value)}
                 />
             </Row>
-            <div className={styles['description']}>
+            <div
+                className={classNames(styles['description'], 'undraggable')}
+                style={{
+                    maxWidth: '31em'
+                }}
+            >
                 <div>기억하기 쉬운 복구키를 입력하세요.</div>
-                <div>다른 기기로 데이터 이동시 복구키를 사용합니다.</div>
-                <div>복구키를 잃어버리면 API키 등 민감 정보는 사라집니다.</div>
+                <div>API키 등 중요한 정보를 암호화하는데 사용되며 하드웨어 및 OS 설정 변경 이후 복구키를 요구할 수 있습니다.</div>
             </div>
             <Row
                 style={{

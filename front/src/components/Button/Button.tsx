@@ -1,7 +1,9 @@
+import classNames from "classnames";
+
 interface ButtonProps {
     className?: string;
     style?: React.CSSProperties;
-    onClick: () => void;
+    onClick?: () => void;
     children?: React.ReactNode;
     disabled?:boolean;
 }
@@ -11,11 +13,17 @@ function Button({
     className='',
     style={},
     children,
-    onClick
+    onClick=()=>{}
 }: ButtonProps) {
     return (
         <button
-            className={`${className} ${disabled ? 'disabled' : ''}`}
+            className={
+                classNames(
+                    'button',
+                    className,
+                    { disabled : disabled }
+                )
+            }
             style={style}
             onClick={()=>onClick()}
         >

@@ -10,6 +10,7 @@ export interface AlignedDivProps {
     reverse?: boolean;
 
     onClick?: ()=>void;
+    onRClick?: (e:React.MouseEvent<HTMLDivElement, MouseEvent>)=>void;
 }
 
 export function Column({
@@ -47,6 +48,7 @@ export const Row = forwardRef(({
     columnAlign = Align.Start,
     reverse = false,
     onClick,
+    onRClick,
 }:AlignedDivProps, ref:React.LegacyRef<HTMLDivElement>) => {
     return (
         <div
@@ -60,6 +62,7 @@ export const Row = forwardRef(({
                 ...style,
             }}
             onClick={onClick}
+            onContextMenu={onRClick}
         >
             {children}
         </div>

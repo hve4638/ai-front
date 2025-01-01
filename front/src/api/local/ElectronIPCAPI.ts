@@ -38,8 +38,12 @@ class ElectronIPCAPI implements ILocalAPI {
         if (err) throw new IPCError(err.message);
         return isValid;
     }
-    async resetMasterKey(recoveryKey: string) {
-        const [err] = await electron.resetMasterKey(recoveryKey);
+    async generateMasterKey(recoveryKey: string) {
+        const [err] = await electron.generateMasterKey(recoveryKey);
+        if (err) throw new IPCError(err.message);
+    }
+    async resetMasterKey() {
+        const [err] = await electron.resetMasterKey();
         if (err) throw new IPCError(err.message);
     }
     async recoverMasterKey(recoveryKey: string) {
