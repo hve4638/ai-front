@@ -18,6 +18,24 @@ export const GENIMI_OPTION_SAFETY = [
     "threshold": "BLOCK_NONE"
   }
 ] as const;
+export const GENIMI_OPTION_SAFETY_OFF = [
+  {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "OFF"
+  },
+  {
+    "category": "HARM_CATEGORY_HATE_SPEECH",
+    "threshold": "OFF"
+  },
+  {
+    "category": "HARM_CATEGORY_HARASSMENT",
+    "threshold": "OFF"
+  },
+  {
+    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+    "threshold": "OFF"
+  }
+] as const;
 
 export const GENIMI_ROLE_DEFAULT = "USER";
 export const GENIMI_ROLE = {

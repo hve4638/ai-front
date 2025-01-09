@@ -2,7 +2,7 @@
   "name": "ai-front",
   "author": "Hve",
   "description": "ChatAI Frontend",
-  "version": "v0.6.3",
+  "version": "v0.6.7",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -32,6 +32,7 @@
   "homepage": "./",
   "scripts": {
     "electron": "wait-on http://localhost:3000 && electron .",
+    "electron:run": "cross-env TARGET_ENV=WINDOWS REACT_APP_TARGET_ENV=WINDOWS DEV=TRUE BROWSER=none electron .",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --silent=false",

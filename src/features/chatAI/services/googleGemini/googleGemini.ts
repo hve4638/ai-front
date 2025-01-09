@@ -6,7 +6,7 @@ import { bracketFormat } from 'utils/format';
 
 import { proxyFetch } from 'services/local';
 
-import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant'
+import {GENIMIAPI_URL_FORMAT, GENIMI_OPTION_SAFETY, GENIMI_OPTION_SAFETY_OFF, GENIMI_ROLE, GENIMI_ROLE_DEFAULT } from './constant'
 
 interface Note {
     [key:string]:string
@@ -80,6 +80,14 @@ export class GoogleGemini implements AIModel {
                 }
             }
         });
+
+        let safety;
+        if (config.modelname === 'gemini-2.0-flash-exp') {
+            safety = GENIMI_OPTION_SAFETY_OFF;
+        }
+        else {
+            safety = GENIMI_OPTION_SAFETY;
+        }
         
         const body = {
             contents: result,
@@ -88,7 +96,7 @@ export class GoogleGemini implements AIModel {
                 "temperature": options.temperature,
                 "topP": options.topp
             },
-            "safetySettings" : GENIMI_OPTION_SAFETY
+            "safetySettings" : safety
         };
 
         return {
