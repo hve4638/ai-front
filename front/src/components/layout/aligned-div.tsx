@@ -11,6 +11,10 @@ export interface AlignedDivProps {
 
     onClick?: ()=>void;
     onRClick?: (e:React.MouseEvent<HTMLDivElement, MouseEvent>)=>void;
+    
+    onDragStart?: (e:React.DragEvent<HTMLDivElement>)=>void;
+    onDragOver?: (e:React.DragEvent<HTMLDivElement>)=>void;
+    draggable?: boolean;
 }
 
 export function Column({

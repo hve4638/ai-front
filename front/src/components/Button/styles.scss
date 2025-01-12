@@ -1,3 +1,12 @@
+:root {
+    --button-red-bgcolor: rgb(93, 12, 12);
+    --button-red-border-color: rgb(131, 19, 19);
+    --button-red-hover-bgcolor: rgb(127, 26, 26);
+    --button-blue-bgcolor: rgb(102, 102, 199);
+    --button-blue-border-color: rgb(132, 132, 255);
+    --button-blue-hover-bgcolor: rgb(82, 82, 175);
+}
+
 .button {
     color: rgb(229, 229, 229);
     background-color: rgb(40, 40, 40);
@@ -27,6 +36,15 @@
 
         &:hover {
             background-color: rgb(127, 26, 26);
+        }
+    }
+
+    &.blue {
+        background-color: var(--button-blue-bgcolor);
+        border: 1px solid var(--button-blue-border-color);
+
+        &:hover {
+            background-color: var(--button-blue-hover-bgcolor);
         }
     }
 

@@ -1,8 +1,9 @@
 import React from 'react';
-import './style.scss';
 import { Flex, Row } from 'components/layout';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import classNames from 'classnames';
+import ModalBackground from './ModalBackground';
+import ModalBox from './ModalBox';
 
 function Modal({
     children,
@@ -28,29 +29,25 @@ function Modal({
 }) {
     
     return (
-        <div className={
-            classNames(
-                'modal-background',
-                { disappear, backgroundClassName }
-            )}
-            style={{
-                ...backgroundStyle,
-                borderRadius: enableRoundedBackground ? '5px' : '0px',
-            }}
+    <>
+        <ModalBackground
+            className={backgroundClassName}
+            style={backgroundStyle}
+            disappear={disappear}
+            enableRoundedBackground={enableRoundedBackground}
         >
-            <div
-                className={`modal ${className} ${disappear ? 'disappear' : ''}`}
-                style={{
-                    ...style,
-                    borderRadius: '5px',
-                }}
+            <ModalBox
+                className={className}
+                style={style}
+                disappear={disappear}
             >
                 {
                     children != null &&
                     children
                 }
-            </div>
-        </div>
+            </ModalBox>
+        </ModalBackground>
+    </>
     );
 }
 

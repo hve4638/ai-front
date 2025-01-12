@@ -1,0 +1,17 @@
+:root {
+    --row-button-hover-bgcolor : rgba(154, 154, 154, 0.2);
+}
+
+.row-button {
+    cursor: pointer;
+    width: 100%;
+
+    background-color: transparent;
+    border-radius: 8px;
+
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: var(--row-button-hover-bgcolor);
+    }
+}

@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import Button from 'components/Button';
 import { Modal, ModalHeader } from 'components/Modal';
 import { Align, Center, Column, Flex, Grid, Row } from 'components/layout';
+import { MODAL_DISAPPEAR_DURATION } from 'data';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Shortcut } from 'types/shortcut';
 import { getKeyType, isKeyCodeChar, KEY_TYPE, mapKeyCode } from 'utils/keycode-map';
@@ -136,7 +137,7 @@ function ShortcutModal({
     const close = () => {
         setDisappear(true);
 
-        setTimeout(()=>onClose(), 300);
+        setTimeout(()=>onClose(), MODAL_DISAPPEAR_DURATION);
     }
 
     return (

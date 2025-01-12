@@ -8,6 +8,7 @@ import { ButtonForm, StringForm } from 'components/Forms';
 import classNames from 'classnames';
 
 import styles from './styles.module.scss';
+import { MODAL_DISAPPEAR_DURATION } from 'data';
 
 
 function NewProfileModal({
@@ -25,7 +26,7 @@ function NewProfileModal({
         setDisappear(true);
         setTimeout(() => {
             onClose();
-        }, 200);
+        }, MODAL_DISAPPEAR_DURATION);
     }
 
     useEffect(() => {
@@ -57,7 +58,7 @@ function NewProfileModal({
                         setDisappear(true);
                         setTimeout(() => {
                             onClose();
-                        }, 200);
+                        }, MODAL_DISAPPEAR_DURATION);
                     }
                 }
             />
@@ -137,7 +138,7 @@ function NewProfileModal({
                             setDisappear(true);
                             setTimeout(() => {
                                 onClose();
-                            }, 200);
+                            }, MODAL_DISAPPEAR_DURATION);
                         }}
                         disabled={name.length === 0}
                     >
@@ -154,7 +155,7 @@ function NewProfileModal({
                             setDisappear(true);
                             setTimeout(() => {
                                 onClose();
-                            }, 200);
+                            }, MODAL_DISAPPEAR_DURATION);
                         }}
                     >
                         취소

@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import HoverEffect from 'components/HoverEffect';
 import React from 'react';
 
@@ -22,11 +23,16 @@ function GoogleFontIcon({
     return (
         <label
             className={
-                `relative undraggable center font-icon `
-                + (className ? ` ${className}` : '')
-                + (enableHoverEffect ? ' hover-effect' : '')
+                classnames(
+                    'relative undraggable center font-icon',
+                    className,
+                    { 'hover-effect': enableHoverEffect } 
+                )
             }
-            style={style}
+            style={{
+                cursor: 'inherit',
+                ...style,
+            }}
             onClick={(e)=>onClick(e)}
             onMouseDown={(e)=>onMouseDown(e)}
         >

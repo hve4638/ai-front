@@ -1,0 +1,13 @@
+.prompt-add-button {
+    background-color: transparent;
+    border-radius: 8px;
+    height: 48px;
+    font-size: 24px;
+
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(154, 154, 154, 0.2);
+        cursor: pointer;
+    }
+}

@@ -1,4 +1,18 @@
+:root {
+    --text-input-bgcolor: rgb(18, 18, 18);
+    --text-input-hover-bgcolor: rgb(24, 24, 24);
+    --text-input-border-color: rgba(142, 142, 142, 0.452);
+}
+
 .text-input {
     border-radius: 8px;
-    padding : 0px 0em;
+    padding : 0px 0.25em;
+    
+    background-color: var(--text-input-bgcolor);
+    border: 1px solid var(--text-input-border-color);
+
+
+    &:focus {
+        background-color: var(--text-input-hover-bgcolor);
+    }
 }

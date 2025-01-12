@@ -23,3 +23,21 @@
         text-decoration: underline;
     }
 }
+
+.row-button {
+    cursor: pointer;
+    width: 100%;
+
+    background-color: transparent;
+    border-radius: 8px;
+
+    font-size : 18px;
+    padding : 6px 0px;
+    box-sizing: border-box;
+
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(154, 154, 154, 0.2);
+    }
+}

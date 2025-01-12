@@ -11,7 +11,7 @@
 
     z-index: 100;
 
-    transition : opacity 0.3s;
+    transition : opacity 0.2s;
     opacity: 1;
 
     &.disappear {
@@ -28,7 +28,7 @@
     max-width: 600px;
     display: block;
 
-    transition : transform 0.3s ease, opacity 0.3s ease;
+    transition : transform 0.2s ease, opacity 0.2s ease;
     transform: scale(1);
     opacity: 1;
 

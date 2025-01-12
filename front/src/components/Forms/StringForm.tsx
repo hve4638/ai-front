@@ -2,12 +2,14 @@ import { Flex, Row } from "components/layout";
 
 interface StringFormProps {
     name:string;
+    width?:string;
     value:string;
     onChange:(x:string)=>void;
 }
 
 function StringForm({
     name,
+    width,
     value,
     onChange,
 }:StringFormProps) {
@@ -26,6 +28,9 @@ function StringForm({
             type='text'
             className='input-number'
             value={value}
+            style={{
+                width
+            }}
             onChange={(e)=>onChange(e.target.value)}
         />
     </Row>

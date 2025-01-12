@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { CheckBoxForm, DropdownForm, HotkeyForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
 import { ProfileContext, useContextForce } from 'context';
 import ShortcutModal from './ShortcutModal';
@@ -15,7 +15,7 @@ function ShortcutOptions() {
     const [showShortcutModal, setShowShortcutModal] = useState(false);
     const [localSc, setLocalSc] = useState<[string, Shortcut][]>([]);
 
-    useEffect(()=>{
+    useLayoutEffect(()=>{
         const list:[string, Shortcut][] = [
             ['폰트 크기 확대', shortcuts.fontSizeUp],
             ['폰트 크기 축소', shortcuts.fontSizeDown],
@@ -55,7 +55,6 @@ function ShortcutOptions() {
             }
             <div style={{ height: '1em' }}/>
             <h2 className='undraggable'>전역 단축키</h2>
-            {/* <b style={{fontSize:'1.1em'}}></b> */}
             <CheckBoxForm
                 name='활성화'
                 checked={enabledGlobalHotkey}

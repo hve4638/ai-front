@@ -1,5 +1,5 @@
 import { GoogleFontIcon } from "components/GoogleFontIcon";
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback, useLayoutEffect } from "react";
 import ReactDOM from "react-dom";
 import DropdownList from "./DropdownList";
 import type { DropdownItem, DropdownItemList } from './types';
@@ -19,6 +19,7 @@ interface LayerDropdownProps {
     
     onItemNotFound?: ()=>void;
     renderSelectedItem?: (item: DropdownItem, parentList?: DropdownItemList|undefined) => React.ReactNode;
+    renderItem?: (item: DropdownItem|DropdownItemList, parentList?: DropdownItemList|undefined) => React.ReactNode;
 
     onChange?: (item: DropdownItem) => void;
 }
@@ -49,6 +50,7 @@ function Dropdown({
     onChange = ()=>{},
     onItemNotFound = ()=>{},
     renderSelectedItem = (item)=>(<span>{item.name}</span>),
+    renderItem = (item)=>(<span>{item.name}</span>),
 }: LayerDropdownProps) {
     const headerRef:React.Ref<HTMLDivElement> = useRef(null);
     const mainListRef:React.Ref<HTMLDivElement> = useRef(null);
@@ -59,32 +61,43 @@ function Dropdown({
     const [focusOptionRect, setFocusOptionRect] = useState<{ top: number; left: number; width: number; height: number; }>();
 
     const currentItemList = useRef<DropdownItemList|undefined>(undefined);
-    const currentItem = useMemo(()=>{
+    const [currentItem, setCurrentItem] = useState<Required<DropdownItem>>({ name: '', key: '', });
+
+    const currentName = useMemo(()=>{
+        return renderSelectedItem(currentItem, currentItemList.current);
+    }, [currentItem, currentItemList]);
+
+    const renderLayer1Item = useCallback((item:DropdownItem|DropdownItemList)=>{
+        return renderItem(item, undefined);
+    }, [renderItem]);
+    const renderLayer2Item = useCallback((item:DropdownItem|DropdownItemList)=>{
+        return renderItem(item, currentItemList.current);
+    }, [currentItemList.current, renderItem]);
+
+    useLayoutEffect(()=>{
         for (const item of items) {
             if ('list' in item) {
                 for (const subitem of item.list) {
                     if (subitem.key === value) {
                         currentItemList.current = item;
-                        return subitem;
+                        setCurrentItem(subitem);
+                        return;
                     }
                 }
             }
             else if (item.key === value) {
                 currentItemList.current = undefined;
-                return item;
+                setCurrentItem(item);
+                return;
             }
         }
         
         onItemNotFound();
-        return {
+        setCurrentItem({
             name: '',
             key: '',
-        }
+        });
     }, [items, value, onItemNotFound]);
-
-    const currentName = useMemo(()=>{
-        return renderSelectedItem(currentItem, currentItemList.current);
-    }, [currentItem, currentItemList]);
 
     useEffect(()=>{ 
         const handleClick = (event) => {
@@ -146,6 +159,7 @@ function Dropdown({
                                 className={itemClassName}
                                 style={itemStyle}
                                 item={item}
+                                renderItem={renderLayer1Item}
                                 onFocus={(rect) =>  {
                                     setFocusOptionRect(rect ?? {
                                         top: 0,
@@ -193,6 +207,7 @@ function Dropdown({
                                 key={index}
                                 className={itemClassName}
                                 item={item}
+                                renderItem={renderLayer2Item}
                                 onClick={() => {
                                     setIsOpen(false);
                                     if (value !== item.key) {

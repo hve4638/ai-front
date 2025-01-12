@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 import Button from "components/Button";
 import classNames from "classnames";
 import ReactLoading from 'react-loading';
+import { MODAL_DISAPPEAR_DURATION } from "data";
 
 interface RecoveryKeySetupModalProps {
     onSubmit: (recoveryKey:string) => Promise<boolean>;
@@ -32,7 +33,7 @@ function RecoveryKeySetupModal({
         setDisappear(true);
         setTimeout(() => {
             onClose();
-        }, 300);
+        }, MODAL_DISAPPEAR_DURATION);
     }
 
     return (

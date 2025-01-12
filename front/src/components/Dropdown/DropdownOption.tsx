@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { DropdownItem, DropdownItemList } from './types';
 
 interface DropdownItemProps {
@@ -10,6 +10,8 @@ interface DropdownItemProps {
     onHover?: () => void;
     onHoverLeave?: () => void;
     onFocus?: (rect:DOMRect|undefined) => void;
+
+    renderItem?: (item: DropdownItem|DropdownItemList) => React.ReactNode;
 }
 
 function DropdownOption({
@@ -17,10 +19,12 @@ function DropdownOption({
     style={},
     item,
     onFocus = (rect)=>{},
-    onClick = ()=>{}
+    onClick = ()=>{},
+    renderItem = (item)=>item.name,
 }:DropdownItemProps) { 
     const optionRef:React.LegacyRef<HTMLDivElement> = useRef(null);
     const [hover, setHover] = useState(false);
+    const name = useMemo(()=>renderItem(item), [item]);
 
     useEffect(()=>{
         let to:number;
@@ -56,7 +60,7 @@ function DropdownOption({
                 onClick();
             }}
         >
-            {item.name}
+            {name}
         </div>
     )
 }

@@ -9,6 +9,7 @@ import {
     ModelOptions,
     ShortcutOptions,
 } from './options';
+import { MODAL_DISAPPEAR_DURATION } from 'data';
 
 const SETTING_CATEGORY = {
     GENERAL : '일반',
@@ -46,7 +47,7 @@ function SettingModal({
         setDisappear(true);
         setTimeout(() => {
             onClose();
-        }, 200);
+        }, MODAL_DISAPPEAR_DURATION);
     }
 
     useEffect(() => {

@@ -34,6 +34,7 @@ function ModalHeader({
             {
                 !hideCloseButton &&
                 <GoogleFontIcon
+                    enableHoverEffect={true}
                     value='close'
                     style={{
                         fontSize: '36px',
