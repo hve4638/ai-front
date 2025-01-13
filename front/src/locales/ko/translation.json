@@ -1,0 +1,12 @@
+{
+    "error" : {
+        "notFound" : "찾을 수 없습니다."
+    },
+    "prompt" : {
+        "save_new" : "저장",
+        "save_renew" : "적용",
+        "error" : {
+            "notFound" : "찾을 수 없습니다."
+        }
+    }
+}

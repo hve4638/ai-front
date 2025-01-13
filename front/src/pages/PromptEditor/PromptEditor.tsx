@@ -43,7 +43,7 @@ function PromptEditor() {
                     column : endColumn,
                 } = calcTextPosition(text, e.positionEnd);
                 return {
-                    message: e.message,
+                    message: e.type,
                     startLineNumber : startLineNumber + 1,
                     endLineNumber : endLineNumber + 1,
                     startColumn,
@@ -57,9 +57,9 @@ function PromptEditor() {
     const editorOptions = {
         minimap: { enabled: false },
         fontFamily: 'Noto Sans KR',
-        fontSize: 16,
         quickSuggestions: false,
         contextmenu: false,
+        lightbulb: { enabled: undefined },
     };
 
     const handleEditorDidMount = (editor, monaco) => {

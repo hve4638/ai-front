@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import 'assets/style/index.scss'
+import 'locales';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

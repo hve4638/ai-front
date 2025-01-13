@@ -367,9 +367,9 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/retry/-/retry-0.4.1.tgz"
   integrity sha512-c7hNEllBlenFTHBky65mhq8WD2kbN9Q6gk0bTk8lSBvc554jpXSkST1iePudpt7+A/AQvuHs9EMqjHDXMY1lrA==
 
-"@hve/cbf@file:../../../lib-project/cbf":
+"@hve/cbf@file:../../../libproject/cbf":
   version "1.0.0"
-  resolved "file:../../../lib-project/cbf"
+  resolved "file:../../../libproject/cbf"
   dependencies:
     jest "^29.7.0"
 
@@ -917,9 +917,7 @@
   integrity sha512-P4t6saawp+b/dFrUr2cvkVsfvPguwsxtH6dNIYRllMsefqFzkZk5UIjzyDOv5g1dXIPdG4Sp1yCR4Z6RCUsG/Q==
 
 "@types/react@*":
-  version "19.0.5"
-  resolved "https://registry.npmjs.org/@types/react/-/react-19.0.5.tgz"
-  integrity sha512-i4OQzFiqsUCfoBns/KHpz+4QcvfjoCsTUi+mugo3lrSRA3+x0gJVvhZhAJrwLGEqz4EXiFVP4hPnOugx+m2uhg==
+  version "19.0.6"
   dependencies:
     csstype "^3.0.2"
 

@@ -29,6 +29,7 @@ export default defineConfig({
             alias('assets', 'src/assets'),
             alias('pages', 'src/pages'),
             alias('features', 'src/features'),
+            alias('locales', 'src/locales'),
         ]
     }
 })
