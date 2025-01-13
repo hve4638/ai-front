@@ -6,7 +6,7 @@ import SessionAddButton from './TabAddButton';
 import useDiff from 'hooks/useDiff';
 import { ChatSession } from 'types/chat-session';
 import { ProfileContext, useContextForce } from 'context';
-import useThrottle from 'hooks/useThrottle';
+import useLazyThrottle from 'hooks/useLazyThrottle';
 import useDebounce from 'hooks/useDebounce';
 
 type TabRequired = {

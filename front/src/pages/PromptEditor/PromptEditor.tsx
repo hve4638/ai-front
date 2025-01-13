@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import Editor, { useMonaco } from '@monaco-editor/react'
+import { CBFParser, CBFFail } from '@hve/cbf';
 import styles from './styles.module.scss';
 
 import { PromptVar, PromptVarType } from 'types/prompt-variables';
 import { Align, Column, Flex, Grid, Row } from "components/layout";
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { TextInput } from 'components/Input';
+import Button from 'components/Button';
+import { calcTextPosition } from 'utils';
 
 import EditPromptVarModal from './EditPromptVarModal';
 import useSignal from 'hooks/useSignal';
-import Button from 'components/Button';
+import useLazyThrottle from 'hooks/useLazyThrottle';
+
+const parser = new CBFParser();
 
 function PromptEditor() {
     const editorRef = useRef<any>(null);
@@ -20,15 +25,41 @@ function PromptEditor() {
     const [showEditPromptVarModal, setShowEditPromptVarModal] = useState(false);
     const [currentEditPromptVar, setCurrentEditPromptVar] = useState<PromptVar|null>(null);
     const [refreshSignal, sendRefreshSignal] = useSignal();
+    
     const monaco = useMonaco();
+    const lint = useLazyThrottle((text:string)=>{
+        const result = parser.build(text);
+        if (result.errors.length === 0) {
+            clearErrorMarker();
+        }
+        else {
+            const markers = result.errors.map((e)=>{
+                const {
+                    line : startLineNumber,
+                    column : startColumn,
+                } = calcTextPosition(text, e.positionBegin);
+                const {
+                    line : endLineNumber,
+                    column : endColumn,
+                } = calcTextPosition(text, e.positionEnd);
+                return {
+                    message: e.message,
+                    startLineNumber : startLineNumber + 1,
+                    endLineNumber : endLineNumber + 1,
+                    startColumn,
+                    endColumn,
+                }
+            });
+            setErrorMarker(markers);
+        }
+    }, 500);
 
     const editorOptions = {
         minimap: { enabled: false },
         fontFamily: 'Noto Sans KR',
-        fontSize: 15,
+        fontSize: 16,
         quickSuggestions: false,
         contextmenu: false,
-        lightbulb: { enabled: false }, // 퀵 픽스 아이콘 비활성화
     };
 
     const handleEditorDidMount = (editor, monaco) => {
@@ -41,32 +72,38 @@ function PromptEditor() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('save')
-
             }
         }
         window.addEventListener('keydown', handleKeyDown);
         return ()=>window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const setErrorMarker = () => {
-        if (editorRef.current) {
+    const setErrorMarker = (markers:{
+        message:string,
+        startLineNumber:number, startColumn:number,
+        endLineNumber:number, endColumn:number,
+    }[]) => {
+        if (editorRef.current && monaco) {
+            const editor = editorRef.current;
+            const model = editor.getModel();
+
+            monaco.editor.setModelMarkers(model, 'owner', 
+                markers.map((ele)=>({
+                    ...ele,
+                    severity: monaco.MarkerSeverity.Error,
+                }))
+            );
+        }
+    };
+
+    const clearErrorMarker = () => {
+        if (editorRef.current && monaco) {
             const editor = editorRef.current;
             const model = editor.getModel();
             
-            console.log(monaco);
-            monaco.editor.setModelMarkers(model, 'owner', [
-            {
-                startLineNumber: 1, // 에러 시작 라인
-                startColumn: 2,     // 에러 시작 위치 (열)
-                endLineNumber: 1,   // 에러 끝 라인
-                endColumn: 15,      // 에러 끝 위치 (열)
-                message: '여기 에러가 있습니다.', // 에러 메시지
-                severity: monaco.MarkerSeverity.Error, // 에러 심각도
-                disableSuggestions : false,
-            },
-            ]);
+            monaco.editor.setModelMarkers(model, 'owner', []);
         }
-      };
+    }
 
     return (
         <div
@@ -81,7 +118,7 @@ function PromptEditor() {
                     width='100%'
                     height='100%'
                     onChange={(value)=>{
-                        console.log(value)
+                        lint(value ?? '');
                     }}
                     onMount={handleEditorDidMount}
                 />
@@ -110,7 +147,7 @@ function PromptEditor() {
                         }}
                         value='close'
                         onClick={()=>{
-                            
+
                         }}
                     />
                 </Row>
@@ -238,13 +275,13 @@ function PromptEditor() {
                     }}
                 >
                     <Button
-                        className='blue'
+                        className={styles['save-button']}
                         style={{
                             width: '100%',
                             height: '100%',
                         }}
                         onClick={()=>{
-                            setErrorMarker();
+                            // setErrorMarker();
                         }}
                     >
                         저장

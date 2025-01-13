@@ -4,7 +4,7 @@ import Header from './Header';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { useEffect, useState } from 'react';
 import { ProfileContext, useContextForce } from 'context';
-import useThrottle from 'hooks/useThrottle';
+import useLazyThrottle from 'hooks/useLazyThrottle';
 import useDebounce from 'hooks/useDebounce';
 
 function MainSection() {
@@ -24,7 +24,7 @@ function MainSection() {
 
     // @TODO : 도중 세션 변경시 마지막 변경이 반영되지 않는 문제
     // 문제가 해결된다면 throttle을 debounce로 변경하는 것이 성능 상 좋음
-    const setInputTextThrottle = useThrottle(() => {
+    const setInputTextThrottle = useLazyThrottle(() => {
         setLastInput(inputText);
     }, 300);
 

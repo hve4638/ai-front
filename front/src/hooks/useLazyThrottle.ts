@@ -4,19 +4,24 @@ import { useCallback, useEffect, useRef } from 'react';
  * @param delay 지연시간 (ms)
  * @returns 
  */
-function useThrottle<T extends (...args: any[]) => void>(callback: T, delay:number) {
+function useLazyThrottle<T extends any[]>(
+    callback: (...args:T)=>void, delay:number
+):(...args:T)=>void {
     const timeoutRef = useRef<number|null>(null);
-    const callbackRef = useRef<T>(callback);
-
+    const callbackRef = useRef<(...args:T)=>void>(callback);
+    const lastArgRef = useRef<T>([] as unknown as T);
+    
     useEffect(() => {
         callbackRef.current = callback;
     }, [callback]);
     
-    const throttle = useCallback((...args: Parameters<T>)=> {
+    const throttle = useCallback((...args: T)=> {
+        lastArgRef.current = args;
         if (timeoutRef.current == null) {
             timeoutRef.current = window.setTimeout(()=>{
-                callbackRef.current(...args);
+                callbackRef.current(...lastArgRef.current);
                 timeoutRef.current = null;
+                lastArgRef.current = [] as unknown as T;
             }, delay);
         }
     }, [delay]);
@@ -24,4 +29,4 @@ function useThrottle<T extends (...args: any[]) => void>(callback: T, delay:numb
     return throttle;
 };
 
-export default useThrottle;
+export default useLazyThrottle;

@@ -7,7 +7,7 @@ import { ChatSession } from 'types/chat-session';
 import { ProfileContext } from './ProfileContext';
 import { IProfileSession } from 'features/profiles';
 import { useStorage } from 'hooks/useStorage';
-import useThrottle from 'hooks/useThrottle';
+import useLazyThrottle from 'hooks/useLazyThrottle';
 import useSignal from 'hooks/useSignal';
 
 
