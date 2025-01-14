@@ -14,15 +14,19 @@ import { calcTextPosition } from 'utils';
 import EditPromptVarModal from './EditPromptVarModal';
 import useSignal from 'hooks/useSignal';
 import useLazyThrottle from 'hooks/useLazyThrottle';
+import { useTranslation } from "react-i18next";
+import PromptTreeModal from 'pages/PromptTreeModal';
 
 const parser = new CBFParser();
 
 function PromptEditor() {
+    const { t } = useTranslation();
     const editorRef = useRef<any>(null);
     const [name, setName] = useState('');
     const [promptText, setPromptText] = useState('');
     const [promptVars, setPromptVars] = useState<PromptVar[]>([]);
     const [showEditPromptVarModal, setShowEditPromptVarModal] = useState(false);
+    const [showSavePromptModal, setShowSavePromptModal] = useState(false);
     const [currentEditPromptVar, setCurrentEditPromptVar] = useState<PromptVar|null>(null);
     const [refreshSignal, sendRefreshSignal] = useSignal();
     
@@ -43,13 +47,15 @@ function PromptEditor() {
                     column : endColumn,
                 } = calcTextPosition(text, e.positionEnd);
                 return {
-                    message: e.type,
+                    message: t(`prompt.error.${e.type}`) + `(${e.type})`, 
                     startLineNumber : startLineNumber + 1,
                     endLineNumber : endLineNumber + 1,
-                    startColumn,
-                    endColumn,
+                    startColumn : startColumn + 1,
+                    endColumn : endColumn + 1,
                 }
             });
+            console.log('markers')
+            console.log(markers)
             setErrorMarker(markers);
         }
     }, 500);
@@ -281,10 +287,10 @@ function PromptEditor() {
                             height: '100%',
                         }}
                         onClick={()=>{
-                            // setErrorMarker();
+                            setShowSavePromptModal(true);
                         }}
                     >
-                        저장
+                        { t('prompt.save_new') }
                     </Button>
                 </Row>
             </Column>
@@ -298,6 +304,16 @@ function PromptEditor() {
                         setShowEditPromptVarModal(false);
                     }}
                 />
+            }
+            {
+                showSavePromptModal &&
+                <PromptTreeModal
+                    onClose = {()=>{
+                        setShowSavePromptModal(false);
+                    }}
+                >
+
+                </PromptTreeModal>
             }
         </div>
     );

@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import translationEN from './en/translation.json';
 import translationKO from './ko/translation.json';
 
+console.log(translationKO);
+
 const resources = {
     en: {
         translation: translationEN
