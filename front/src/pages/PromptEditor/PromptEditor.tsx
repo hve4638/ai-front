@@ -164,7 +164,7 @@ function PromptEditor() {
                     rowAlign={Align.SpaceBetween}
                     columnAlign={Align.Center}
                 >
-                    <span>이름</span>
+                    <span className='noflex'>이름</span>
                     <TextInput
                         className={classNames(styles['input'], 'flex')}
                         style={{
