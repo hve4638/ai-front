@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import HistoryDAO from './HistoryDAO';
 import type { HistoryData } from './types';
-import { IAccessor } from '../../storage/accessor';
+import { type IAccessor } from '@hve/fs-storage';
 
 class HistoryAccessor implements IAccessor{
     #dao:HistoryDAO;

@@ -1,10 +1,12 @@
-import * as utils from '../utils';
+import * as utils from '@utils';
 
-import Profiles from '../features/profiles';
-import FetchContainer from '../features/fetch-container';
-import Storage from '../features/storage';
-import ChatAIModels from '../features/chatai-models';
-import UniqueKeyManager from '../features/unique-key';
+import { type FSStorage } from '@hve/fs-storage';
+
+import type Profiles from '@features/profiles';
+import type FetchContainer from '@features/fetch-container';
+import type UniqueKeyManager from '@features/unique-key';
+import type Profile from '@features/profiles/Profile/Profile';
+import ChatAIModels from '@features/chatai-models';
 
 function debugLog(...args:any[]) {
     console.log('[IPC]', ...args);
@@ -13,7 +15,7 @@ function debugLog(...args:any[]) {
 export interface IPCDependencies {
     fetchContainer:FetchContainer;
     profiles:Profiles;
-    globalStorage:Storage;
+    globalStorage:FSStorage;
     uniqueKeyManager:UniqueKeyManager;
 }
 
@@ -24,6 +26,14 @@ export function getIPCHandler({
     uniqueKeyManager,
 }:IPCDependencies):IPC_TYPES {
     const throttles = {};
+
+    const saveProfile = (profile:Profile) => {
+        const throttleId = `profile_${profile.path}`;
+        throttles[throttleId] ??= utils.throttle(500);
+        throttles[throttleId](()=>{
+            profile.commit();
+        });
+    }
 
     return {
         echo : async (message:string) => {
@@ -161,16 +171,56 @@ export function getIPCHandler({
 
             return [null];
         },
+
+        /* 프로필 프롬프트 */
+        getProfilePromptTree : async (profileId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor('prompts:prompts.json');
+            return [null, accessor.get('tree')];
+        },
+        updateProfilePromptTree : async (profileId:string, tree:any) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor('prompts:prompts.json');
+            accessor.set('tree', tree);
+            
+            return [null];
+        },
+        addProfilePrompt : async (profileId:string, prompt:any) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor('prompt');
+            const tree = accessor.get('tree');
+            tree.push(prompt); 
+            accessor.set('tree', tree);
+
+            throttles['profiles'] ??= utils.throttle(500);
+            throttles['profiles'](()=>{
+                profiles.saveAll();
+            });
+
+            return [null];
+        },
+        removeProfilePrompt : async (profileId:string, promptId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const accessor = profile.getJSONAccessor('prompt');
+            const tree = accessor.get('tree');
+            const newTree = tree.filter((item:any)=>item.id !== promptId);
+            accessor.set('tree', newTree);
+
+            throttles['profiles'] ??= utils.throttle(500);
+            throttles['profiles'](()=>{
+                profiles.saveAll();
+            });
+
+            return [null];
+        },
+
+
         /* 프로필 세션 */
         addProfileSession : async (profileId:string) => {
             const profile = profiles.getProfile(profileId);
             const sid = profile.createSession();
 
-            const throttleId = `profile_${profileId}`;
-            throttles[throttleId] ??= utils.throttle(500);
-            throttles[throttleId](()=>{
-                profile.commit();
-            });
+            saveProfile(profile);
             return [null, sid];
         },
         removeProfileSession : async (profileId:string, sessionId:string) => { 

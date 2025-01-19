@@ -35,6 +35,12 @@ const api: IPC_TYPES = {
     getProfileDataAsBinary: (profileId: string, accessor: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_DATA_AS_BINARY, profileId, accessor),
     setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => ipcRenderer.invoke(ipcping.SET_PROFILE_DATA_AS_BINARY, profileId, accessor, content),
 
+    /* 프로필 프롬프트 */
+    getProfilePromptTree: (profileId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_PROMPT_TREE, profileId),
+    updateProfilePromptTree: (profileId: string, tree: any) => ipcRenderer.invoke(ipcping.UPDATE_PROFILE_PROMPT_TREE, profileId, tree),
+    addProfilePrompt: (profileId: string, prompt: any) => ipcRenderer.invoke(ipcping.ADD_PROFILE_PROMPT, profileId, prompt),
+    removeProfilePrompt: (profileId: string, promptId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_PROMPT, profileId, promptId),
+    
     /* 프로필 세션 */
     addProfileSession: (profileId: string) => ipcRenderer.invoke(ipcping.ADD_PROFILE_SESSION, profileId),
     removeProfileSession: (profileId: string, sessionId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_SESSION, profileId, sessionId),

@@ -1,20 +1,12 @@
 {
     "compilerOptions": {
-        "incremental": true,
-        "tsBuildInfoFile": "./.tsbuildinfo",
-        
         "isolatedModules": true,
+        "moduleResolution": "node10",
         
         "target": "es2022",
-        "module": "CommonJS",
         
-        "moduleResolution": "node",
-        
-        "outDir": "./compiled",
-
-        "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-        
-        "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
+        "forceConsistentCasingInFileNames": true, /* 대소문자 구분 규칙 */
+        "esModuleInterop": true, /* ES 모듈 호환성 */
         
         /* Type Checking */
         "strict": true,
@@ -26,10 +18,28 @@
         "noPropertyAccessFromIndexSignature" : true, // 확인 불가한 key에 대한 dot 연산자 사용 금지
         "noImplicitOverride" : true, // 명시적 메서드 오버라이드
         "allowUnreachableCode" : true, // 도달할 수 없는 코드 허용
-        
-        "skipLibCheck": false /* Skip type checking all .d.ts files. */
+
+        "importHelpers": true, /* Import emit helpers from 'tslib'. */
+        "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+        // "declaration": true,
+        // "declarationDir": "./dist",
+        // "declarationMap": false,
+
+        "outDir" : "./dist",
+        "baseUrl": "./",
+        "paths": {
+          "@utils": ["src/utils/index"],
+          "@utils/*": ["src/utils/*"],
+          "@lib/*": ["src/lib/*"],
+          "@ipc/*": ["src/ipc/*"],
+          "@features/*": ["src/features/*"]
+        }
     },
     "include": [
         "./src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

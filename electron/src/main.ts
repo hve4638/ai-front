@@ -5,12 +5,12 @@ import {
     migrateLegacyProfile,
 } from './features/program-path';
 import ProgramPath from './features/program-path';
-
-import FetchContainer from './features/fetch-container';
-import Storage, { StorageAccess } from './features/storage';
-import Profiles from './features/profiles';
+ 
 import { personal, localAppdata } from 'win-known-folders';
-import UniqueKeyManager from './features/unique-key';
+import { FSStorage, StorageAccess } from '@hve/fs-storage';
+import FetchContainer from '@features/fetch-container';
+import Profiles from '@features/profiles';
+import UniqueKeyManager from '@features/unique-key';
 
 const documentPath = personal('cp949') ?? process.env['USERPROFILE']+'/documents' ?? './';
 const programPath = new ProgramPath(path.join(documentPath, 'Afron'));
@@ -24,7 +24,7 @@ async function main() {
     const uniqueKeyManager = new UniqueKeyManager(uniqueKeyPath);
 
     const profiles = new Profiles(programPath.profilePath);
-    const globalStorage = new Storage(programPath.basePath);
+    const globalStorage = new FSStorage(programPath.basePath);
     const fetchContainer = new FetchContainer();
     
     globalStorage.register({

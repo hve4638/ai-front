@@ -5,7 +5,7 @@ import { throttle } from './utils';
 
 import type FetchContainer from './features/fetch-container';
 import type Profiles from './features/profiles';
-import type Storage from './features/storage';
+import { type FSStorage } from '@hve/fs-storage';
 
 const FAVICON_PATH = path.join(__dirname, '../static/favicon.ico');
 const STATIC_ENTRYPOINT = path.join(__dirname, '../static/index.html');
@@ -13,7 +13,7 @@ const PRELOAD_PATH = path.join(__dirname, 'preload.js');
 
 interface ElectronAppDependencies {
     fetchContainer:FetchContainer,
-    globalStorage:Storage,
+    globalStorage:FSStorage,
     profiles:Profiles,
 }
 

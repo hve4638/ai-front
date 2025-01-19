@@ -1,12 +1,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ProfileError } from './errors';
-import Profile from './profile';
-import Storage, { StorageAccess } from '../storage';
+import { FSStorage, StorageAccess } from '@hve/fs-storage';
+import { ProfileError } from './Profile';
+import Profile from './Profile';
 
 class Profiles {
     #basePath:string;
-    #storage:Storage;
+    #storage:FSStorage;
     #profileIdentifiers:string[] = [];
     #lastProfileId:string|null = null;
     #profileAccessType:number;
@@ -14,7 +14,7 @@ class Profiles {
 
     constructor(basePath:string) {
         this.#basePath = basePath;
-        this.#storage = new Storage(this.#basePath);
+        this.#storage = new FSStorage(this.#basePath);
         this.#profileAccessType = this.#storage.addAccessorEvent({
             create(fullPath:string) {
                 return new Profile(fullPath);

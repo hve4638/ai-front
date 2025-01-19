@@ -47,6 +47,11 @@ declare global {
         getProfileDataAsBinary: (profileId:string, accessor:string) => ElectronResult<Buffer>;
         setProfileDataAsBinary: (profileId:string, accessor:string, content:Buffer) => ElectronNoResult;
 
+        /* 프로필 프롬프트 */
+        getProfilePromptTree: (profileId:string) => ElectronResult<any>;
+        updateProfilePromptTree: (profileId:string, tree:any) => ElectronNoResult;
+        addProfilePrompt: (profileId:string, prompt:any) => ElectronNoResult;
+        removeProfilePrompt: (profileId:string, promptId:string) => ElectronNoResult;
 
         /* 프로필 세션 */
         addProfileSession: (profileId:string) => ElectronResult<string>;

@@ -36,6 +36,12 @@ const PINGS = {
     SET_PROFILE_DATA_AS_TEXT : 'set-profile-data-as-text',
     GET_PROFILE_DATA_AS_BINARY : 'get-profile-data-as-binary',
     SET_PROFILE_DATA_AS_BINARY : 'set-profile-data-as-binary',
+    
+    /* 프로필 프롬프트 */
+    GET_PROFILE_PROMPT_TREE : 'get-profile-prompt-tree',
+    UPDATE_PROFILE_PROMPT_TREE : 'update-profile-prompt-tree',
+    ADD_PROFILE_PROMPT : 'add-profile-prompt',
+    REMOVE_PROFILE_PROMPT : 'remove-profile-prompt',
 
     /* 프로필 세션 */
     ADD_PROFILE_SESSION : 'add-profile-session',
@@ -53,7 +59,8 @@ const PINGS = {
     ADD_PROFILE_SESSION_HISTORY : 'add-profile-session-history',
     DELETE_PROFILE_SESSION_HISTORY : 'delete-profile-session-history',
     DELETE_ALL_PROFILE_SESSION_HISTORY : 'delete-all-profile-session-history',
-    
+
+
 
     // EXECUTE_PLUGIN : 'execute-plugin',
     // WRITE_LOG : 'write-log',
