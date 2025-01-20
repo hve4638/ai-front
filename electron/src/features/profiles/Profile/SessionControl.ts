@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import { FSStorage } from '@hve/fs-storage';
 import { ProfileError } from './errors';
 
@@ -64,6 +63,10 @@ class SessionControl {
         }
     }
 
+    /**
+     * 가장 최근에 삭제한 세션을 복구하고 세션 ID를 반환, 복구할 세션이 없으면 null 반환
+     * @returns 
+     */
     undoRemoveSession():string|null {
         const data = this.#storage.getJSONAccessor('data');
         const cache = this.#storage.getJSONAccessor('cache');
@@ -107,7 +110,7 @@ class SessionControl {
 
     removeOrphanSessions(sessionPath:string) {
         if (!fs.existsSync(sessionPath)) {
-                return [];  
+            return [];
         }
         else if (!fs.statSync(sessionPath).isDirectory()) {
             try {
@@ -122,15 +125,14 @@ class SessionControl {
             const cache = this.#storage.getJSONAccessor('cache');
             const sessions = data.get('sessions');
             const removedSessions = cache.get('removed_sessions');
-            
-            /// @TODO : 실제로 작동하는지 확인
-            const items = fs.readdirSync(sessionPath);
-            for (const item of items) {
-                if (!sessions.includes(item) && !removedSessions.includes(item)) {
-                    const dirPath = path.join(sessionPath, item);
-                    fs.rmSync(dirPath, { recursive: true, force : true });
+
+            const dirs = fs.readdirSync(sessionPath);
+            for (const dir of dirs) {
+                if (!sessions.includes(dir) && !removedSessions.includes(dir)) {
+                    this.#storage.dropDir(`session:${dir}`);
                 }
             }
+            
         }
     }
 

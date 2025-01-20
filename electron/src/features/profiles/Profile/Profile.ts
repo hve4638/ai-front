@@ -68,9 +68,7 @@ class Profile implements IAccessor{
         fs.rmSync(this.#basePath, {recursive: true});
     }
 
-    /**
-     * 새 세션 생성
-    */
+    /* 세션 */
     createSession():string {
         return this.#sessionControl.createSession();
     }
@@ -80,90 +78,29 @@ class Profile implements IAccessor{
     }
 
     undoRemoveSession():string|null {
-        const data = this.getJSONAccessor('data');
-        const cache = this.getJSONAccessor('cache');
-        
-        const removedSessions:string[] = cache.get('removed_sessions') ?? []
-        const lastRemovedSession = removedSessions.pop();
-        if (lastRemovedSession) {
-            const sessions = data.get('sessions') ?? [];
-            sessions.push(lastRemovedSession);
-            data.set('sessions', sessions);
-            cache.set('removed_sessions', removedSessions);
-            return lastRemovedSession;
-        }
-        else {
-            return null;
-        }
+        return this.#sessionControl.undoRemoveSession();
     }
 
     permanentRemoveSession(sid:string) {
-        const data = this.getJSONAccessor('data');
-        const cache = this.getJSONAccessor('cache');
-
-        const sessions = data.get('sessions') ?? [];
-        const removedSessions = cache.get('removed_sessions') ?? [];
-
-        const inRemoved = removedSessions.includes(sid);
-        const inSessions = sessions.includes(sid);
-        if (inRemoved || inSessions) {
-            if (inSessions) {
-                const filtered = sessions.filter((s)=>s!==sid);
-                data.set('sessions', filtered);
-            }
-            if (inRemoved) {
-                const filtered = removedSessions.filter((s)=>s!==sid);
-                cache.set('removed_sessions', filtered);
-            }
-
-            this.#storage.dropDir(`session:${sid}`);
-        }
+        this.#sessionControl.permanentRemoveSession(sid);
     }
 
     removeOrphanSessions() {
         const sessionPath = path.join(this.#basePath, 'session');
-        if (!fs.existsSync(sessionPath)) {
-             return [];  
-        }
-        else if (!fs.statSync(sessionPath).isDirectory()) {
-            try {
-                fs.rmSync(sessionPath, { recursive: true, force : true });
-            }
-            catch (e) {
-                console.error(e);
-            }
-        }
-        else {
-            const data = this.getJSONAccessor('data');
-            const cache = this.getJSONAccessor('cache');
-            const sessions = data.get('sessions');
-            const removedSessions = cache.get('removed_sessions');
-            
-            const items = fs.readdirSync(sessionPath);
-            for (const item of items) {
-                if (!sessions.includes(item) && !removedSessions.includes(item)) {
-                    const dirPath = path.join(this.#basePath, item);
-                    fs.rmSync(dirPath, { recursive: true, force : true });
-                }
-            }
-        }
+        
+        this.#sessionControl.removeOrphanSessions(sessionPath);
     }
 
     reorderSessions(newSessionIds:string[]) {
-        const data = this.getJSONAccessor('data');
-
-        const prevSet = new Set(data.get('sessions') ?? [])
-        const valid = newSessionIds.every((sid)=>prevSet.has(sid));
-        if (valid) {
-            data.set('sessions', newSessionIds);
-        }
+        this.#sessionControl.reorderSessions(newSessionIds);
     }
 
     getSessionIds():string[] {
-        const data = this.getJSONAccessor('data');
-        return data.get('sessions') ?? [];
+        return this.#sessionControl.getSessionIds();
     }
 
+    
+    /* 직접 접근 */
     getJSONAccessor(identifier:string) {
         return this.#storage.getJSONAccessor(identifier);
     }
