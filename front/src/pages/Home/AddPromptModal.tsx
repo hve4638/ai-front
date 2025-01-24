@@ -3,6 +3,7 @@ import { Modal, ModalHeader } from "components/Modal";
 import { Align, Grid, Row } from "components/layout";
 import { MODAL_DISAPPEAR_DURATION } from "data";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type AddPromptModalProps = {
     onAddPrompt: (type: 'simple'|'node') => void;
@@ -13,6 +14,7 @@ function AddPromptModal({
     onAddPrompt = ()=>{},
     onClose = ()=>{},
 }:AddPromptModalProps) {
+    const { t } = useTranslation();
     const [disappear, setDisappear] = useState(true);
 
     useEffect(()=>{
@@ -32,11 +34,12 @@ function AddPromptModal({
         <Modal
             disappear={disappear}
             style={{
-                width: '230px'
+                minWidth: '230px',
+                width: 'auto',
             }}
         >
             <ModalHeader
-                title='생성'
+                title={t('rt.create-rt-title')}
                 onClose={close}
             />
             <Row
@@ -49,10 +52,11 @@ function AddPromptModal({
                     style={{
                         height: 'auto',
                         width: '36px',
+                        marginRight: '0.5em',
                     }}
                     value='description'
                 />
-                <span className='flex center'>단순 프롬프트</span>
+                <span className='flex'>{t('rt.create-simple-prompt')}</span>
             </Row>
             <div style={{height:'8px'}}/>
             <Row
@@ -64,10 +68,11 @@ function AddPromptModal({
                     style={{
                         height: 'auto',
                         width: '36px',
+                        marginRight: '0.5em',
                     }}
                     value='polyline'
                 />
-                <span className='flex center'>노드 프롬프트</span>
+                <span className='flex'>{t('rt.create-node-flow-mode')}</span>
             </Row>
         </Modal>
     )

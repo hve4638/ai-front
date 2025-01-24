@@ -25,33 +25,6 @@ class Profile implements IProfile {
         return await LocalAPI.getProfileData(this.#id, accessor, key);
     }
     
-    getSession(sessionId:string):IProfileSession {
-        if (!this.#sessions.has(sessionId)) {
-            this.#sessions.set(sessionId, new ProfileSession(this.#id, sessionId));
-        }
-        return this.#sessions.get(sessionId) as ProfileSession;
-    }
-
-    async createSession() {
-        return await LocalAPI.addProfileSession(this.#id);
-    }
-
-    async removeSession(sessionId:string) {
-        return await LocalAPI.removeProfileSession(this.#id, sessionId);
-    }
-
-    async reorderSessions(sessions:string[]) {
-        return await LocalAPI.reorderProfileSessions(this.#id, sessions);
-    }
-
-    async getSessionIds() {
-        return await LocalAPI.getProfileSessionIds(this.#id);
-    }
-
-    async undoRemoveSession() {
-        return await LocalAPI.undoRemoveProfileSession(this.#id);
-    }
-    
     get name() {
         return this.#name;
     }
@@ -65,6 +38,54 @@ class Profile implements IProfile {
     set color(value:string) {
         LocalAPI.setProfileData(this.#id, 'config', 'color', value);
         this.#color = value;
+    }
+
+    getSession(sessionId:string):IProfileSession {
+        if (!this.#sessions.has(sessionId)) {
+            this.#sessions.set(sessionId, new ProfileSession(this.#id, sessionId));
+        }
+        return this.#sessions.get(sessionId) as ProfileSession;
+    }
+    async createSession() {
+        return await LocalAPI.addProfileSession(this.#id);
+    }
+    async removeSession(sessionId:string) {
+        return await LocalAPI.removeProfileSession(this.#id, sessionId);
+    }
+    async reorderSessions(sessions:string[]) {
+        return await LocalAPI.reorderProfileSessions(this.#id, sessions);
+    }
+    async getSessionIds() {
+        return await LocalAPI.getProfileSessionIds(this.#id);
+    }
+    async undoRemoveSession() {
+        return await LocalAPI.undoRemoveProfileSession(this.#id);
+    }
+
+    /* RT */
+    async getRTTree() {
+        return await LocalAPI.getProfileRTTree(this.#id);
+    }
+    async updateRTTree(tree:RTMetadataTree) {
+        await LocalAPI.updateProfileRTTree(this.#id, tree);
+    }
+    async addRT(metadata:RTMetadata) {
+        await LocalAPI.addProfileRT(this.#id, metadata);
+    }
+    async removeRT(rtId:string) {
+        await LocalAPI.removeProfileRT(this.#id, rtId);
+    }
+    async getRTMode(rtId:string) {
+        return await LocalAPI.getProfileRTMode(this.#id, rtId);
+    }
+    async setRTMode(rtId:string, mode:RTMode) {
+        await LocalAPI.setProfileRTMode(this.#id, rtId, mode);
+    }
+    async getRTPromptText(rtId:string) {
+        return await LocalAPI.getProfileRTPromptText(this.#id, rtId);
+    }
+    async setRTPromptText(rtId:string, promptText:string) {
+        await LocalAPI.setProfileRTPromptText(this.#id, rtId, promptText);
     }
 }
 

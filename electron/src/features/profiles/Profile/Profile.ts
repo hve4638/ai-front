@@ -4,6 +4,7 @@ import { FSStorage, StorageAccess, type IAccessor } from '@hve/fs-storage';
 import HistoryAccessor from '../HistoryAccessor';
 import SessionControl from './SessionControl';
 import { ProfileError } from './errors';
+import RTControl from './RequestTemplateControl';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -14,6 +15,7 @@ class Profile implements IAccessor{
     #storage:FSStorage;
     #histoyAccessBit:number;
     #sessionControl:SessionControl;
+    #rtControl:RTControl;
     #dropped:boolean = false;
  
     constructor(profilePath:string) {
@@ -25,8 +27,8 @@ class Profile implements IAccessor{
             create: (fullPath:string) => new HistoryAccessor(fullPath),
         });
         this.#storage.register({
-            'prompts' : {
-                'prompts.json' : StorageAccess.JSON,
+            'request-template' : {
+                'tree.json' : StorageAccess.JSON,
                 '*' : {
                     'index.json' : StorageAccess.JSON,
                     '*' : StorageAccess.TEXT|StorageAccess.JSON
@@ -48,6 +50,7 @@ class Profile implements IAccessor{
             'thumbnail' : StorageAccess.BINARY,
         });
         this.#sessionControl = new SessionControl(this.#storage);
+        this.#rtControl = new RTControl(this.#storage);
         
         this.#storage.setAlias('cache', 'cache.json');
         this.#storage.setAlias('data', 'data.json');
@@ -99,6 +102,31 @@ class Profile implements IAccessor{
         return this.#sessionControl.getSessionIds();
     }
 
+    /* RT */
+    getRTTree() {
+        return this.#rtControl.getTree();
+    }
+    updateRTTree(newTree:RTMetadataTree) {
+        this.#rtControl.updateTree(newTree);
+    }
+    addRT(metadata:RTMetadata) {
+        this.#rtControl.addRT(metadata);
+    }
+    removeRT(rtId:string) {
+        this.#rtControl.removeRT(rtId);
+    }
+    getRTMode(rtId:string):RTMode {
+        return this.#rtControl.getRTMode(rtId);
+    }
+    setRTMode(rtId:string, mode:RTMode) {
+        this.#rtControl.setRTMode(rtId, mode);
+    }
+    getRTPromptText(rtId:string):string {
+        return this.#rtControl.getRTPromptText(rtId);
+    }
+    setRTPromptText(rtId:string, text:string) {
+        this.#rtControl.setRTPromptText(rtId, text);
+    }
     
     /* 직접 접근 */
     getJSONAccessor(identifier:string) {

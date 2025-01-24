@@ -1,25 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
+import { useTranslation } from "react-i18next";
 import Editor, { useMonaco } from '@monaco-editor/react'
 import { CBFParser, CBFFail } from '@hve/cbf';
 import styles from './styles.module.scss';
 
+import useSignal from 'hooks/useSignal';
+import useLazyThrottle from 'hooks/useLazyThrottle';
 import { PromptVar, PromptVarType } from 'types/prompt-variables';
+import { calcTextPosition } from 'utils';
 import { Align, Column, Flex, Grid, Row } from "components/layout";
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { TextInput } from 'components/Input';
 import Button from 'components/Button';
-import { calcTextPosition } from 'utils';
 
 import EditPromptVarModal from './EditPromptVarModal';
-import useSignal from 'hooks/useSignal';
-import useLazyThrottle from 'hooks/useLazyThrottle';
-import { useTranslation } from "react-i18next";
-import PromptTreeModal from 'pages/PromptTreeModal';
+import RTTreeModal from 'pages/RTTreeModal';
+import { PromptEditMode } from './types';
 
 const parser = new CBFParser();
 
-function PromptEditor() {
+type PromptEditorProps = {
+    mode: PromptEditMode;
+}
+
+function PromptEditor({
+    mode=PromptEditMode.NEW,
+}:PromptEditorProps) {
     const { t } = useTranslation();
     const editorRef = useRef<any>(null);
     const [name, setName] = useState('');
@@ -307,13 +314,19 @@ function PromptEditor() {
             }
             {
                 showSavePromptModal &&
-                <PromptTreeModal
-                    onClose = {()=>{
+                <RTTreeModal
+                    item={[
+                        
+                    ]}
+                    onConfirm={()=>{
+
+                    }}
+                    onCancel={()=>{
                         setShowSavePromptModal(false);
                     }}
                 >
 
-                </PromptTreeModal>
+                </RTTreeModal>
             }
         </div>
     );

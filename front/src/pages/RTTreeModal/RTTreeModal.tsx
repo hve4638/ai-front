@@ -14,13 +14,18 @@ import { TreeDirectory, TreeNode } from './TreeNode';
 import { relocateTree } from './utils';
 import { Tree, TreeDirectoryData, TreeNodeData, TreeOffsets, } from './types';
 import { Regions } from './TreeNode/types';
+import type { RTNodeTree, RTNode, RTNodeDirectory } from 'types/rt-node'
 
 type PromptTreeModalProps = {
-    onClose: () => void;
+    item:RTNodeTree;
+    onConfirm: (item:Tree) => void;
+    onCancel: () => void;
 }
 
-function PromptTreeModal({
-    onClose,
+function RTTreeModal({
+    item,
+    onConfirm,
+    onCancel,
 }:PromptTreeModalProps) {
     const { t } = useTranslation();
     const [disappear, setDisappear] = useState(true);
@@ -35,25 +40,7 @@ function PromptTreeModal({
         offsets : TreeOffsets;
         region : Regions;
     }|null>(null);
-    const [tree, setTree] = useState<Tree>([
-        {
-            type: 'directory',
-            name: 'Root',
-            fixed: true,
-            children: [
-                {
-                    type: 'node',
-                    name: 'Prompt 1',
-                    fixed: true,
-                },
-            ]
-        },
-        {
-            type: 'node',
-            name: 'New Prompt',
-            added : true,
-        }
-    ]);
+    const [tree, setTree] = useState<Tree>(item);
 
     const makeNode = (node:any, offsets:number[]=[]) => {
         const key = offsets.join('_') + '_' + node.name;
@@ -148,7 +135,7 @@ function PromptTreeModal({
     const onExit = () => {
         setDisappear(true);
         setTimeout(() => {
-            onClose();
+            onCancel();  
         }, MODAL_DISAPPEAR_DURATION);
     }
     
@@ -309,4 +296,4 @@ function PromptTreeModal({
     );
 }
 
-export default PromptTreeModal;
+export default RTTreeModal;

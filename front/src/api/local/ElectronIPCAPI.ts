@@ -125,6 +125,43 @@ class ElectronIPCAPI implements ILocalAPI {
         if (err) throw new IPCError(err.message);
     }
 
+    /* 프로필 RT */
+    async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {
+        const [err, tree] = await electron.getProfileRTTree(profileId);
+        if (err) throw new IPCError(err.message);
+        return tree;
+    }
+    async updateProfileRTTree(profileId:string, tree:RTMetadataTree) {
+        const [err] = await electron.updateProfileRTTree(profileId, tree);
+        if (err) throw new IPCError(err.message);
+    }
+    async addProfileRT(profileId:string, rt:any) {
+        const [err] = await electron.addProfileRT(profileId, rt);
+        if (err) throw new IPCError(err.message);
+    }
+    async removeProfileRT(profileId:string, rtId:string) {
+        const [err] = await electron.removeProfileRT(profileId, rtId);
+        if (err) throw new IPCError(err.message);
+    }
+    async getProfileRTMode(profileId:string, rtId:string):Promise<RTMode> {
+        const [err, mode] = await electron.getProfileRTMode(profileId, rtId);
+        if (err) throw new IPCError(err.message);
+        return mode;
+    }
+    async setProfileRTMode(profileId:string, rtId:string, mode:RTMode) {
+        const [err] = await electron.setProfileRTMode(profileId, rtId, mode);
+        if (err) throw new IPCError(err.message);
+    }
+    async getProfileRTPromptText(profileId:string, rtId:string):Promise<string> {
+        const [err, promptText] = await electron.getProfileRTPromptText(profileId, rtId);
+        if (err) throw new IPCError(err.message);
+        return promptText;
+    }
+    async setProfileRTPromptText(profileId:string, rtId:string, promptText:string) {
+        const [err] = await electron.setProfileRTPromptText(profileId, rtId, promptText);
+        if (err) throw new IPCError(err.message);
+    }
+
     /* 프로필 세션 */
     async addProfileSession(profileId:string) {
         const [err, sid] = await electron.addProfileSession(profileId);

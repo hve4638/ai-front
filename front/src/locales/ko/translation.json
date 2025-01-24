@@ -1,6 +1,6 @@
 {
     "error" : {
-        "notFound" : "찾을 수 없습니다."
+        "not_found" : "찾을 수 없습니다."
     },
     "prompt" : {
         "save" : "저장",
@@ -30,6 +30,12 @@
             "INVALID_AST_FORMAT" : "잘못된 AST 형식 (내부 오류)",
             "LOGIC_ERROR" : "내부 문제가 발생했습니다"
         }
+    },
+    "rt" : {
+        "new-rt" : "생성",
+        "create-rt-title" : "새 요청 템플릿",
+        "create-simple-prompt" : "단순 프롬프트",
+        "create-node-flow-mode" : "노드 요청"
     }
 }
 

@@ -41,6 +41,16 @@ export function initIPC(dependencies: IPCDependencies) {
     handleIPC(ipcping.GET_PROFILE_DATA_AS_BINARY, handlers.getProfileDataAsBinary);
     handleIPC(ipcping.SET_PROFILE_DATA_AS_BINARY, handlers.setProfileDataAsBinary);
 
+    /* 프로필 RT */
+    handleIPC(ipcping.GET_PROFILE_RT_TREE, handlers.getProfileRTTree);
+    handleIPC(ipcping.UPDATE_PROFILE_RT_TREE, handlers.updateProfileRTTree);
+    handleIPC(ipcping.ADD_PROFILE_RT, handlers.addProfileRT);
+    handleIPC(ipcping.REMOVE_PROFILE_RT, handlers.removeProfileRT);
+    handleIPC(ipcping.GET_PROFILE_RT_MODE, handlers.getProfileRTMode);
+    handleIPC(ipcping.SET_PROFILE_RT_MODE, handlers.setProfileRTMode);
+    handleIPC(ipcping.GET_PROFILE_RT_PROMPT_TEXT, handlers.getProfileRTPromptText);
+    handleIPC(ipcping.SET_PROFILE_RT_PROMPT_TEXT, handlers.setProfileRTPromptText);
+
     /* 프로필 세션 */
     handleIPC(ipcping.ADD_PROFILE_SESSION, handlers.addProfileSession);
     handleIPC(ipcping.REMOVE_PROFILE_SESSION, handlers.removeProfileSession);

@@ -37,6 +37,16 @@ export interface ILocalAPI {
     getProfileDataAsBinary: (profileId: string, accessor: string) => Promise<any>,
     setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => Promise<any>,
 
+    /* 프로필 RT */
+    getProfileRTTree: (profileId: string) => Promise<RTMetadataTree>,
+    updateProfileRTTree: (profileId: string, tree: RTMetadataTree) => Promise<void>,
+    addProfileRT: (profileId: string, rt: any) => Promise<void>,
+    removeProfileRT: (profileId: string, rtId: string) => Promise<void>,
+    getProfileRTMode: (profileId: string, rtId: string) => Promise<RTMode>,
+    setProfileRTMode: (profileId: string, rtId: string, mode: RTMode) => Promise<void>,
+    getProfileRTPromptText: (profileId: string, rtId: string) => Promise<string>,
+    setProfileRTPromptText: (profileId: string, rtId: string, promptText: string) => Promise<void>,
+
     /* 프로필 세션 */
     addProfileSession: (profileId: string) => Promise<string>,
     removeProfileSession: (profileId: string, sessionId: string) => Promise<void>,

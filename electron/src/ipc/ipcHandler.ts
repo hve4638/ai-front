@@ -172,48 +172,59 @@ export function getIPCHandler({
             return [null];
         },
 
-        /* 프로필 프롬프트 */
-        getProfilePromptTree : async (profileId:string) => {
+        /* 프로필 RT */
+        getProfileRTTree : async (profileId:string) => {
             const profile = profiles.getProfile(profileId);
-            const accessor = profile.getJSONAccessor('prompts:prompts.json');
-            return [null, accessor.get('tree')];
-        },
-        updateProfilePromptTree : async (profileId:string, tree:any) => {
-            const profile = profiles.getProfile(profileId);
-            const accessor = profile.getJSONAccessor('prompts:prompts.json');
-            accessor.set('tree', tree);
-            
-            return [null];
-        },
-        addProfilePrompt : async (profileId:string, prompt:any) => {
-            const profile = profiles.getProfile(profileId);
-            const accessor = profile.getJSONAccessor('prompt');
-            const tree = accessor.get('tree');
-            tree.push(prompt); 
-            accessor.set('tree', tree);
+            const tree = profile.getRTTree();
 
-            throttles['profiles'] ??= utils.throttle(500);
-            throttles['profiles'](()=>{
-                profiles.saveAll();
-            });
+            return [null, tree];
+        },
+        updateProfileRTTree : async (profileId:string, tree:any) => {
+            const profile = profiles.getProfile(profileId);
+            profile.updateRTTree(tree);
+            saveProfile(profile);
 
             return [null];
         },
-        removeProfilePrompt : async (profileId:string, promptId:string) => {
+        addProfileRT : async (profileId:string, metadata:RTMetadata) => {
             const profile = profiles.getProfile(profileId);
-            const accessor = profile.getJSONAccessor('prompt');
-            const tree = accessor.get('tree');
-            const newTree = tree.filter((item:any)=>item.id !== promptId);
-            accessor.set('tree', newTree);
-
-            throttles['profiles'] ??= utils.throttle(500);
-            throttles['profiles'](()=>{
-                profiles.saveAll();
-            });
+            profile.addRT(metadata);
+            saveProfile(profile);
 
             return [null];
         },
+        removeProfileRT : async (profileId:string, promptId:string) => {
+            const profile = profiles.getProfile(profileId);
+            profile.removeRT(promptId);
+            saveProfile(profile);
 
+            return [null];
+        },
+        getProfileRTMode : async (profileId:string, rtId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const mode = profile.getRTMode(rtId);
+
+            return [null, mode];
+        },
+        setProfileRTMode : async (profileId:string, rtId:string, mode:RTMode) => {
+            const profile = profiles.getProfile(profileId);
+            profile.setRTMode(rtId, mode);
+            saveProfile(profile);
+
+            return [null];
+        },
+        getProfileRTPromptText : async (profileId:string, rtId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const prompt = profile.getRTPromptText(rtId);
+
+            return [null, prompt];
+        },
+        setProfileRTPromptText : async (profileId:string, rtId:string, promptText:string) => {
+            const profile = profiles.getProfile(profileId);
+            profile.setRTPromptText(rtId, promptText);
+
+            return [null];
+        },
 
         /* 프로필 세션 */
         addProfileSession : async (profileId:string) => {

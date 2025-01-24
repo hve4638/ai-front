@@ -60,7 +60,15 @@ const PINGS = {
     DELETE_PROFILE_SESSION_HISTORY : 'delete-profile-session-history',
     DELETE_ALL_PROFILE_SESSION_HISTORY : 'delete-all-profile-session-history',
 
-
+    /* 프로필 RT */
+    GET_PROFILE_RT_TREE : 'get-profile-rt-tree',
+    UPDATE_PROFILE_RT_TREE : 'update-profile-rt-tree',
+    ADD_PROFILE_RT : 'add-profile-rt',
+    REMOVE_PROFILE_RT : 'remove-profile-rt',
+    GET_PROFILE_RT_MODE : 'get-profile-rt-mode',
+    SET_PROFILE_RT_MODE : 'set-profile-rt-mode',
+    GET_PROFILE_RT_PROMPT_TEXT : 'get-profile-rt-prompt-text',
+    SET_PROFILE_RT_PROMPT_TEXT : 'set-profile-rt-prompt-text',
 
     // EXECUTE_PLUGIN : 'execute-plugin',
     // WRITE_LOG : 'write-log',

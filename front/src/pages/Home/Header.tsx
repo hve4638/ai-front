@@ -12,6 +12,7 @@ import {
 } from 'components/Icons'
 import AddPromptModal from './AddPromptModal';
 import { PageType } from './types';
+import { useTranslation } from 'react-i18next';
 
 type HeaderProps = {
     onEnableSetting: () => void;
@@ -24,6 +25,7 @@ function Header({
     onEnableSetting,
     onChangePage
 }:HeaderProps) {
+    const { t } = useTranslation();
     const profileContext = useContextForce(ProfileContext);
     const sessionContext = useContextForce(RawProfileSessionContext);
     const {
@@ -197,7 +199,7 @@ function Header({
                     }}
                     items={[
                         {
-                            name: '프롬프트 생성',
+                            name: t('rt.new-rt'),
                             key : CREATE_NEW_PROMPT,
                         }
                     ]}

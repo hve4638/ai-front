@@ -36,10 +36,14 @@ const api: IPC_TYPES = {
     setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => ipcRenderer.invoke(ipcping.SET_PROFILE_DATA_AS_BINARY, profileId, accessor, content),
 
     /* 프로필 프롬프트 */
-    getProfilePromptTree: (profileId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_PROMPT_TREE, profileId),
-    updateProfilePromptTree: (profileId: string, tree: any) => ipcRenderer.invoke(ipcping.UPDATE_PROFILE_PROMPT_TREE, profileId, tree),
-    addProfilePrompt: (profileId: string, prompt: any) => ipcRenderer.invoke(ipcping.ADD_PROFILE_PROMPT, profileId, prompt),
-    removeProfilePrompt: (profileId: string, promptId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_PROMPT, profileId, promptId),
+    getProfileRTTree: (profileId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_TREE, profileId),
+    updateProfileRTTree: (profileId: string, tree: RTMetadataTree) => ipcRenderer.invoke(ipcping.UPDATE_PROFILE_RT_TREE, profileId, tree),
+    addProfileRT: (profileId: string, rt: any) => ipcRenderer.invoke(ipcping.ADD_PROFILE_RT, profileId, rt),
+    removeProfileRT: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_RT, profileId, rtId),
+    getProfileRTMode: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_MODE, profileId, rtId),
+    setProfileRTMode: (profileId: string, rtId: string, mode: RTMode) => ipcRenderer.invoke(ipcping.SET_PROFILE_RT_MODE, profileId, rtId, mode),
+    getProfileRTPromptText: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_PROMPT_TEXT, profileId, rtId),
+    setProfileRTPromptText: (profileId: string, rtId: string, promptText: string) => ipcRenderer.invoke(ipcping.SET_PROFILE_RT_PROMPT_TEXT, profileId, rtId, promptText),
     
     /* 프로필 세션 */
     addProfileSession: (profileId: string) => ipcRenderer.invoke(ipcping.ADD_PROFILE_SESSION, profileId),
