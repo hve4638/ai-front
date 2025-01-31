@@ -3,11 +3,11 @@ import { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 import { LayoutModes, ThemeModes } from 'types/profile';
 
-import Profiles, { IProfile } from 'features/profiles';
+import Profiles, { type Profile } from 'features/profiles';
 import { useStorage } from 'hooks/useStorage';
 
 interface RawProfileContextType {
-    profile: IProfile;
+    profile: Profile;
 
     /* config.json */
     configs:Configs,
@@ -37,7 +37,7 @@ export function RawProfileContextProvider({
     profileId,
     children
 }: {profileId:string, children:React.ReactNode}) {
-    const [profile, setProfile] = useState<IProfile>();
+    const [profile, setProfile] = useState<Profile>();
     const refetchList:(()=>Promise<void>)[] = [];
     
     const useProfileStorage = useCallback(<T,>(accessor:string, key:string, default_value:T) => {

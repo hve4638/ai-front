@@ -5,6 +5,15 @@
     "prompt" : {
         "save" : "저장",
         "save_new" : "새로 저장",
+        "edit-metadata-modal" : {
+            "title" : "편집",
+            "name-form" : "이름",
+            "id-form" : "고유 이름"
+        },
+        "editor" : {
+            "default-name" : "새 프롬프트",
+            "new-variable" : "새 변수"
+        },
         "error" : {
             "INVALID_TOKEN" : "잘못된 토큰",
             "MULTIPLE_EXPRESSION" : "한 표현식에 여러 값이 들어갈 수 없습니다",

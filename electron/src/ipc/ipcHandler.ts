@@ -225,6 +225,25 @@ export function getIPCHandler({
 
             return [null];
         },
+        hasProfileRTId : async (profileId:string, rtId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const exists = profile.hasRTId(rtId);
+
+            return [null, exists];
+        },
+        generateProfileRTId : async (profileId:string) => {
+            const profile = profiles.getProfile(profileId);
+            const rtId = profile.generateRTId();
+
+            return [null, rtId];
+        },
+        changeProfileRTId : async (profileId:string, oldRTId:string, newRTId:string) => {
+            const profile = profiles.getProfile(profileId);
+            profile.changeRTId(oldRTId, newRTId);
+            saveProfile(profile);
+
+            return [null];
+        },
 
         /* 프로필 세션 */
         addProfileSession : async (profileId:string) => {

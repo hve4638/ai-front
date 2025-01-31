@@ -41,7 +41,7 @@ export function initIPC(dependencies: IPCDependencies) {
     handleIPC(ipcping.GET_PROFILE_DATA_AS_BINARY, handlers.getProfileDataAsBinary);
     handleIPC(ipcping.SET_PROFILE_DATA_AS_BINARY, handlers.setProfileDataAsBinary);
 
-    /* 프로필 RT */
+    /* 프로필 요청 템플릿 */
     handleIPC(ipcping.GET_PROFILE_RT_TREE, handlers.getProfileRTTree);
     handleIPC(ipcping.UPDATE_PROFILE_RT_TREE, handlers.updateProfileRTTree);
     handleIPC(ipcping.ADD_PROFILE_RT, handlers.addProfileRT);
@@ -50,6 +50,9 @@ export function initIPC(dependencies: IPCDependencies) {
     handleIPC(ipcping.SET_PROFILE_RT_MODE, handlers.setProfileRTMode);
     handleIPC(ipcping.GET_PROFILE_RT_PROMPT_TEXT, handlers.getProfileRTPromptText);
     handleIPC(ipcping.SET_PROFILE_RT_PROMPT_TEXT, handlers.setProfileRTPromptText);
+    handleIPC(ipcping.HAS_PROFILE_RT_ID, handlers.hasProfileRTId);
+    handleIPC(ipcping.GENERATE_PROFILE_RT_ID, handlers.generateProfileRTId);
+    handleIPC(ipcping.CHANGE_PROFILE_RT_ID, handlers.changeProfileRTId);
 
     /* 프로필 세션 */
     handleIPC(ipcping.ADD_PROFILE_SESSION, handlers.addProfileSession);

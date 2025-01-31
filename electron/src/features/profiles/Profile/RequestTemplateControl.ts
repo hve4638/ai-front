@@ -5,6 +5,7 @@ class RequestTemplateControl {
     #storage:FSStorage;
     #tree:RTMetadataTree;
     #rtIds:string[];
+    #lastNewRTIdIndex:number = 0;
     #loaded:boolean = false;
 
     constructor(storage:FSStorage) {
@@ -13,7 +14,7 @@ class RequestTemplateControl {
         this.#rtIds = [];
     }
 
-    #loadTree() {
+    #loadData() {
         if (this.#loaded) return;
         const prompts = this.#storage.getJSONAccessor('request-template:index.json');
         this.#tree = prompts.get('tree') ?? [];
@@ -22,11 +23,10 @@ class RequestTemplateControl {
         this.#loaded = true;
     }
 
-    #updateTree() {
+    #storeData() {
         const prompts = this.#storage.getJSONAccessor('request-template:index.json');
         prompts.set('tree', this.#tree);
-        
-        this.#loaded = true;
+        prompts.set('ids', this.#rtIds);
     }
 
     #getRTIds(tree:RTMetadataTree) {
@@ -34,78 +34,136 @@ class RequestTemplateControl {
         for(const item of tree) {
             if (item.type === 'directory') {
                 item.children.forEach((child)=>{
-                    promptIds.push(child.prompt_id);
+                    promptIds.push(child.id);
                 });
             }
             else {
-                promptIds.push(item.prompt_id);
+                promptIds.push(item.id);
             }
         }
 
         return promptIds;
     }
+
+    #hasId(rtId:string):boolean {
+        return this.#rtIds.includes(rtId);
+    }
     
     getTree():RTMetadataTree {
-        this.#loadTree();
+        this.#loadData();
         
         return this.#tree;
     }
     
     updateTree(newTree:RTMetadataTree) {
+        this.#loadData();
+        
         this.#tree = newTree;
         const prevIds = this.#getRTIds(this.#tree);
         const newIds = this.#getRTIds(newTree);
 
         for (const id of newIds) {
             if (!prevIds.includes(id)) {
-                throw new ProfileError('Invalid rt id');
+                throw invalidRTIdError(id);
             }
         }
         this.#tree = newTree;
-        this.#updateTree();
+        this.#storeData();
     }
     
     addRT(metadata:RTMetadata) {
-        const prevIds = this.#getRTIds(this.#tree);
-        const hasId = prevIds.some((id)=>(id === metadata.prompt_id));
-        if (hasId) {
-            throw new ProfileError('rt id already exists');
+        this.#loadData();
+
+        if (this.#hasId(metadata.id)) {
+            throw rtIdAlreadyExistsError(metadata.id);
         }
 
+        this.#rtIds.push(metadata.id);
         this.#tree.push(metadata);
-        this.#updateTree();
+        this.#storeData();
     }
 
-    removeRT(promptId:string) {
-        const newTree = this.#tryRemoveRTTreeAsId(this.#tree, promptId);
-
-        if (!newTree) {
-            throw new ProfileError('Invalid rt id');
-        }
-        this.#tree = newTree;
-        this.#updateTree();
-    }
-    
-    #tryRemoveRTTreeAsId(tree:RTMetadataTree, promptId:string):RTMetadataTree|null {
-        const newTree = tree.filter((item)=>(item.type === 'directory' || item.prompt_id !== promptId));
+    removeRT(rtId:string) {
+        this.#loadData();
         
-        if (newTree.length !== tree.length) {
-            return newTree;
+        if (!this.#hasId(rtId)) {
+            throw invalidRTIdError(rtId);
         }
-        for (const index in newTree) {
-            if (newTree[index].type === 'directory') {
-                const filtered = this.#tryRemoveRTTreeAsId(newTree[index].children, promptId);
+        const newTree = this.#removeRTTreeAsId(this.#tree, rtId);
 
+        this.#tree = newTree;
+        this.#rtIds = this.#rtIds.filter((id)=>(id !== rtId));
+        this.#storeData();
+    }
+
+    changeId(oldRTId:string, newRTId:string) {
+        this.#loadData();
+        
+        if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
+        if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
+
+        const metadata = this.#findRTMetadata(this.#tree, oldRTId);
+        if (metadata) {
+            metadata.id = newRTId;
+            
+            const newIds = this.#rtIds.filter((id)=>(id !== oldRTId));
+            newIds.push(newRTId);
+            this.#rtIds = newIds;
+        }
+
+        this.#storeData();
+    }
+
+    hasId(rtId:string):boolean {
+        this.#loadData();
+        return this.#hasId(rtId);
+    }
+
+    generateId():string {
+        this.#loadData();
+        
+        let rtId:string;
+        let index = this.#lastNewRTIdIndex;
+        do {
+            rtId = `rt-${index++}`;
+        } while (this.#hasId(rtId));
+        
+        this.#lastNewRTIdIndex = index;
+        return rtId;
+    }
+
+    #findRTMetadata(tree:RTMetadataTree, rtId:string):RTMetadata|null {
+        const item = tree.find((item)=>(item.type !== 'directory' && item.id === rtId));
+        if (item) {
+            return item as RTMetadata;
+        }
+
+        for (const index in tree) {
+            if (tree[index].type === 'directory') {
+                const filtered = tree[index].children.find((item)=>(item.id !== rtId));
                 if (filtered) {
-                    newTree[index] = {
-                        ...newTree[index],
-                        children: filtered as RTMetadata[],
-                    };
-                    return newTree;
+                    return filtered;
                 }
             }
         }
         return null;
+    }
+    
+    #removeRTTreeAsId(tree:RTMetadataTree, rtId:string):RTMetadataTree {
+        const newTree = tree.filter((item)=>(item.type === 'directory' || item.id !== rtId));
+        
+        if (newTree.length === tree.length) {
+            for (const index in newTree) {
+                if (newTree[index].type === 'directory') {
+                    const filtered = newTree[index].children.filter((item)=>(item.id !== rtId));
+                    newTree[index] = {
+                        ...newTree[index],
+                        children: filtered,
+                    };
+                }
+            }
+        }
+        return newTree;
     }
 
     #getRTIndexAccessor(rtId:string):IJSONAccessor {
@@ -146,6 +204,13 @@ class RequestTemplateControl {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
         indexAccessor.set(key, value);
     }
+}
+
+function rtIdAlreadyExistsError(rtId:string) {
+    throw new ProfileError(`rt id already exists : ${rtId}`);
+}
+function invalidRTIdError(rtId:string) {
+    throw new ProfileError(`Invalid rt id : ${rtId}`);
 }
 
 export default RequestTemplateControl;

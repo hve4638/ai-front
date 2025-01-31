@@ -33,7 +33,7 @@ function HomePage() {
             {
                 pageType === PageType.PROMPT_EDITOR &&
                 <PromptEditor
-                    
+                    mode={'NEW'}
                 />
             }
             

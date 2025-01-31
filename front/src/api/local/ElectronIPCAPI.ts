@@ -161,6 +161,20 @@ class ElectronIPCAPI implements ILocalAPI {
         const [err] = await electron.setProfileRTPromptText(profileId, rtId, promptText);
         if (err) throw new IPCError(err.message);
     }
+    async hasProfileRTId(profileId:string, rtId:string):Promise<boolean> {
+        const [err, exists] = await electron.hasProfileRTId(profileId, rtId);
+        if (err) throw new IPCError(err.message);
+        return exists;
+    }
+    async createProfileRTId(profileId:string):Promise<string> {
+        const [err, rtId] = await electron.createProfileRTId(profileId);
+        if (err) throw new IPCError(err.message);
+        return rtId;
+    }
+    async changeProfileRTId(profileId:string, oldId:string, newId:string) {
+        const [err] = await electron.changeProfileRTId(profileId, oldId, newId);
+        if (err) throw new IPCError(err.message);
+    }
 
     /* 프로필 세션 */
     async addProfileSession(profileId:string) {

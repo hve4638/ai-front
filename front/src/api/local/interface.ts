@@ -37,7 +37,7 @@ export interface ILocalAPI {
     getProfileDataAsBinary: (profileId: string, accessor: string) => Promise<any>,
     setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => Promise<any>,
 
-    /* 프로필 RT */
+    /* 프로필 요청 템플릿 */
     getProfileRTTree: (profileId: string) => Promise<RTMetadataTree>,
     updateProfileRTTree: (profileId: string, tree: RTMetadataTree) => Promise<void>,
     addProfileRT: (profileId: string, rt: any) => Promise<void>,
@@ -46,6 +46,9 @@ export interface ILocalAPI {
     setProfileRTMode: (profileId: string, rtId: string, mode: RTMode) => Promise<void>,
     getProfileRTPromptText: (profileId: string, rtId: string) => Promise<string>,
     setProfileRTPromptText: (profileId: string, rtId: string, promptText: string) => Promise<void>,
+    hasProfileRTId: (profileId: string, rtId: string) => Promise<boolean>,
+    createProfileRTId: (profileId: string) => Promise<string>,
+    changeProfileRTId: (profileId: string, oldId: string, newId: string) => Promise<void>,
 
     /* 프로필 세션 */
     addProfileSession: (profileId: string) => Promise<string>,

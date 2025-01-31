@@ -11,7 +11,7 @@ describe('Profile', () => {
             nodes.push({
                 type: 'node',
                 name: `node${i}`,
-                prompt_id: `node${i}`,
+                id: `node${i}`,
             });
         };
     });
@@ -20,7 +20,7 @@ describe('Profile', () => {
         storage = new MemStorage();
         storage.register({
             'request-template' : {
-                'tree.json' : StorageAccess.JSON,
+                'index.json' : StorageAccess.JSON,
                 '*' : {
                     'index.json' : StorageAccess.JSON,
                     '*' : StorageAccess.TEXT|StorageAccess.JSON
@@ -64,7 +64,7 @@ describe('Profile', () => {
             expect(actual).toEqual(expected);
         }
 
-        rtControl.removeRT(nodes[1].prompt_id);
+        rtControl.removeRT(nodes[1].id);
         {
             const expected = [ nodes[0], nodes[2] ];
             const actual = rtControl.getTree();
@@ -167,7 +167,7 @@ describe('Profile', () => {
             expect(actual).toEqual(expected);
         }
         
-        rtControl.removeRT(nodes[1].prompt_id);
+        rtControl.removeRT(nodes[1].id);
         {
             const expected = [
                 nodes[0], 
@@ -180,5 +180,80 @@ describe('Profile', () => {
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
+    });
+
+    test('hasId', () => {
+        const expectTrue = (...indexes:number[]) => {
+            for (const i of indexes) {
+                expect(rtControl.hasId(nodes[i].id)).toBe(true);
+            }
+        }
+        const expectFalse = (...indexes:number[]) => {
+            for (const i of indexes) {
+                expect(rtControl.hasId(nodes[i].id)).toBe(false);
+            }
+        }
+
+        expectFalse(0, 1, 2);
+
+        rtControl.addRT(nodes[0]);
+        rtControl.addRT(nodes[1]);
+        expectTrue(0, 1);
+        expectFalse(2);
+
+        rtControl.addRT(nodes[2]);
+        expectTrue(0, 1, 2);
+        
+        rtControl.removeRT(nodes[2].id);
+        expectTrue(0, 1);
+        expectFalse(2);
+
+        rtControl.removeRT(nodes[0].id);
+        expectTrue(1);
+        expectFalse(0, 2);
+
+        rtControl.removeRT(nodes[1].id);
+        expectFalse(0, 1, 2);
+    });
+
+    test('generateId', () => {
+        const ids = new Set<string>();
+
+        for (let i=0; i<1000; i++) {
+            const id = rtControl.generateId();
+            expect(ids.has(id)).toBe(false);
+            ids.add(id);
+        }
+    });
+
+    test('moveId', () => {
+        const expectTrue = (...indexes:number[]) => {
+            for (const i of indexes) {
+                expect([
+                    i, rtControl.hasId(nodes[i].id)
+                ]).toEqual([
+                    i, true
+                ]);
+            }
+        }
+        const expectFalse = (...indexes:number[]) => {
+            for (const i of indexes) {
+                expect([
+                    i, rtControl.hasId(nodes[i].id)
+                ]).toEqual([
+                    i, false
+                ]);
+            }
+        }
+
+        rtControl.addRT({...nodes[0]});
+        rtControl.addRT({...nodes[1]});
+        rtControl.addRT({...nodes[2]});
+        expectTrue(0, 1, 2);
+        expectFalse(3, 4, 5);
+
+        rtControl.changeId(nodes[0].id, nodes[3].id);
+        expectTrue(1, 2, 3);
+        expectFalse(0, 4, 5);
     });
 });

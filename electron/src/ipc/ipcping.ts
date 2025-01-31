@@ -60,7 +60,7 @@ const PINGS = {
     DELETE_PROFILE_SESSION_HISTORY : 'delete-profile-session-history',
     DELETE_ALL_PROFILE_SESSION_HISTORY : 'delete-all-profile-session-history',
 
-    /* 프로필 RT */
+    /* 프로필 요청 템플릿 */
     GET_PROFILE_RT_TREE : 'get-profile-rt-tree',
     UPDATE_PROFILE_RT_TREE : 'update-profile-rt-tree',
     ADD_PROFILE_RT : 'add-profile-rt',
@@ -69,10 +69,9 @@ const PINGS = {
     SET_PROFILE_RT_MODE : 'set-profile-rt-mode',
     GET_PROFILE_RT_PROMPT_TEXT : 'get-profile-rt-prompt-text',
     SET_PROFILE_RT_PROMPT_TEXT : 'set-profile-rt-prompt-text',
-
-    // EXECUTE_PLUGIN : 'execute-plugin',
-    // WRITE_LOG : 'write-log',
-    // GET_LANGUAGE_TEXTS : 'get-language-texts',
+    HAS_PROFILE_RT_ID : 'has-profile-rt-id',
+    GENERATE_PROFILE_RT_ID : 'generate-profile-rt-id',
+    CHANGE_PROFILE_RT_ID : 'change-profile-rt-id',
 } as const;
 
 export default PINGS;

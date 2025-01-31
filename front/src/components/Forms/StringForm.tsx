@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { Flex, Row } from "components/layout";
 
 interface StringFormProps {
@@ -5,9 +6,13 @@ interface StringFormProps {
     width?:string;
     value:string;
     onChange:(x:string)=>void;
+    warning?:string;
+
+    className?:string;
 }
 
 function StringForm({
+    className='',
     name,
     width,
     value,
@@ -15,6 +20,7 @@ function StringForm({
 }:StringFormProps) {
   return (
     <Row
+        className={classNames('string-form', className)}
         style={{
             height: '1.4em',
             margin: '0.5em 0'
@@ -25,8 +31,8 @@ function StringForm({
         </span>
         <Flex/>
         <input
-            type='text'
             className='input-number'
+            type='text'
             value={value}
             style={{
                 width

@@ -28,7 +28,7 @@ class Profile implements IAccessor{
         });
         this.#storage.register({
             'request-template' : {
-                'tree.json' : StorageAccess.JSON,
+                'index.json' : StorageAccess.JSON,
                 '*' : {
                     'index.json' : StorageAccess.JSON,
                     '*' : StorageAccess.TEXT|StorageAccess.JSON
@@ -102,7 +102,7 @@ class Profile implements IAccessor{
         return this.#sessionControl.getSessionIds();
     }
 
-    /* RT */
+    /* 요청 템플릿 */
     getRTTree() {
         return this.#rtControl.getTree();
     }
@@ -126,6 +126,15 @@ class Profile implements IAccessor{
     }
     setRTPromptText(rtId:string, text:string) {
         this.#rtControl.setRTPromptText(rtId, text);
+    }
+    hasRTId(rtId:string):boolean {
+        return this.#rtControl.hasId(rtId);
+    }
+    generateRTId():string {
+        return this.#rtControl.generateId();
+    }
+    changeRTId(oldRTId:string, newRTId:string) {
+        return this.#rtControl.changeId(oldRTId, newRTId);
     }
     
     /* 직접 접근 */

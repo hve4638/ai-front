@@ -87,6 +87,15 @@ class Profile implements IProfile {
     async setRTPromptText(rtId:string, promptText:string) {
         await LocalAPI.setProfileRTPromptText(this.#id, rtId, promptText);
     }
+    async hasRTId(rtId:string) {
+        return await LocalAPI.hasProfileRTId(this.#id, rtId);
+    }
+    async createRTId() {
+        return await LocalAPI.createProfileRTId(this.#id);
+    }
+    async changeRTId(oldId:string, newId:string) {
+        await LocalAPI.changeProfileRTId(this.#id, oldId, newId);
+    }
 }
 
 

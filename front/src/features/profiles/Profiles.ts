@@ -27,7 +27,7 @@ class Profiles implements IProfiles {
         return await LocalAPI.createProfile();
     }
 
-    async getProfile(id:string):Promise<IProfile> {
+    async getProfile(id:string):Promise<Profile> {
         if (!this.#profiles.has(id)) {
             const profile = new Profile(id);
             await profile.loadMetadata();

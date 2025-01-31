@@ -2,12 +2,13 @@ import React, { useState, createContext, useLayoutEffect, useEffect, useMemo } f
 import { useContextForce } from './useContextForce';
 import { RawProfileContext } from './RawProfileContext';
 import { ChatSession } from 'types/chat-session';
-import { IProfileSession } from 'features/profiles';
+import { IProfile, IProfileSession } from 'features/profiles';
 import useDebounce from 'hooks/useDebounce';
 import type { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 interface ProfileContextType {
-    createSession: () => void;
+    /* 세션 관리 */
+    createSession: () => Promise<void>;
     removeSession: (sessionId:string) => void;
     reorderSessions: (sessions:ChatSession[]) => void;
     undoRemoveSession: () => void;
@@ -18,11 +19,26 @@ interface ProfileContextType {
 
     getProfileSession: (sessionId:string) => IProfileSession;
 
+    /* 모델 즐겨찾기 */
     starredModels:string[];
     isModelStarred: (key:string)=>boolean;
     starModel: (key:string)=>void;
     unstarModel: (key:string)=>void;
+    
+    /* 요청 템플릿 */
+    getRTTree: () => Promise<RTMetadataTree>;
+    updateRTTree: (tree:RTMetadataTree) => Promise<void>;
+    hasRTId: (id:string) => Promise<boolean>;
+    createRTId: () => Promise<string>;
+    changeRTId: (oldId:string, newId:string) => Promise<void>;
+    addRT: (metadata:RTMetadata) => Promise<void>;
+    removeRT: (rtId:string) => Promise<void>;
+    setRTMode: (rtId:string, mode:RTMode) => Promise<void>;
+    getRTMode: (rtId:string) => Promise<RTMode>;
+    setRTPromptText: (rtId:string, promptText:string) => Promise<void>;
+    getRTPromptText: (rtId:string) => Promise<string>;
 
+    /* 이외 */
     configs:Configs;
     shortcuts:Shortcuts;
 }
@@ -35,6 +51,7 @@ export const ProfileContext = createContext<ProfileContextType|null>(null);
 export function ProfileContextProvider({children}: {children:React.ReactNode}) {
     const rawProfileContext = useContextForce(RawProfileContext);
     const {
+        // profile은 ProfileContext에서 직접 노출하지 않도록 함
         profile,
         sessionIds, refetchSessionIds,
         lastSessionId, setLastSessionId,
@@ -49,63 +66,84 @@ export function ProfileContextProvider({children}: {children:React.ReactNode}) {
     const [lastChatSession, setLastChatSession] = useState<ChatSession>();
     const starredModels = useMemo(()=>new Set(rawStarredModels), [rawStarredModels]);
 
-    const createSession = async () => {
-        const sid = await profile.createSession();
-        await setLastSessionId(sid);
-        await refetchSessionIds();
-    }
-    const removeSession = async (sessionId:string) => {
-        await profile.removeSession(sessionId);
-
-        if (sessionIds.length == 1) {
-            await createSession();
-        }
-        else if (sessionId === lastSessionId) {
-            const prevIndex = sessionIds.indexOf(sessionId);
-            if (prevIndex < 0) {
-                await setLastSessionId(sessionIds[0]);
+    const values:ProfileContextType = {
+        sessions : chatSessions,
+        currentSession : lastChatSession,
+        async createSession() {
+            const sid = await profile.createSession();
+            await setLastSessionId(sid);
+            await refetchSessionIds();
+        },
+        async removeSession (sessionId:string) {
+            await profile.removeSession(sessionId);
+    
+            if (sessionIds.length == 1) {
+                await values.createSession();
             }
-            else if (prevIndex === 0) {
-                await setLastSessionId(sessionIds[1]);
+            else if (sessionId === lastSessionId) {
+                const prevIndex = sessionIds.indexOf(sessionId);
+                if (prevIndex < 0) {
+                    await setLastSessionId(sessionIds[0]);
+                }
+                else if (prevIndex === 0) {
+                    await setLastSessionId(sessionIds[1]);
+                }
+                else {
+                    await setLastSessionId(sessionIds[prevIndex - 1]);
+                }
+                await refetchSessionIds();
             }
             else {
-                await setLastSessionId(sessionIds[prevIndex - 1]);
+                await refetchSessionIds();
             }
+        },
+        async reorderSessions(sessions:ChatSession[]) {
+            await profile.reorderSessions(sessions.map(item=>item.id));
             await refetchSessionIds();
-        }
-        else {
+        },
+        async setCurrentSession(session:ChatSession|string) {
+            const sid = typeof session === 'string' ? session : session.id;
+    
+            if (sid !== lastSessionId) {
+                await setLastSessionId(sid);
+            }
+        },
+        async undoRemoveSession() {
+            await profile.undoRemoveSession();
             await refetchSessionIds();
-        }
-    }
-    const reorderSessions = async (sessions:ChatSession[]) => {
-        await profile.reorderSessions(sessions.map(item=>item.id));
-        await refetchSessionIds();
-    }
-    const setCurrentSession = async (session:ChatSession|string) => {
-        const sid = typeof session === 'string' ? session : session.id;
+        },
+        getProfileSession(sessionId:string) {
+            return profile.getSession(sessionId);
+        },
 
-        if (sid !== lastSessionId) {
-            await setLastSessionId(sid);
-        }
-    }
-    const undoRemoveSession = async () => {
-        await profile.undoRemoveSession();
-        await refetchSessionIds();
-    }
+        /* 모델 즐겨찾기 */
+        starredModels : rawStarredModels,
+        isModelStarred(modelKey:string) {
+            return starredModels.has(modelKey);
+        },
+        async starModel(modelKey:string) {
+            setRawStarredModels([...rawStarredModels, modelKey]);
+        },
+        async unstarModel(modelKey:string) {
+            const next = rawStarredModels.filter(item=>item !== modelKey);
+            setRawStarredModels(next);
+        },
 
-    const getProfileSession = (sessionId:string) => {
-        return profile.getSession(sessionId);
-    }
-
-    const isModelStarred = (modelKey:string) => {
-        return starredModels.has(modelKey);
-    }
-    const starModel = async (modelKey:string) => {
-        setRawStarredModels([...rawStarredModels, modelKey]);
-    }
-    const unstarModel = async (modelKey:string) => {
-        const next = rawStarredModels.filter(item=>item !== modelKey);
-        setRawStarredModels(next);
+        /* 요청 템플릿 */
+        async getRTTree() { return await profile.getRTTree(); },
+        async updateRTTree(tree:RTMetadataTree) { await profile.updateRTTree(tree); },
+        async addRT(metadata:RTMetadata) { return await profile.addRT(metadata); },
+        async removeRT(rtId:string) { return await profile.removeRT(rtId); },
+        async setRTMode(rtId:string, mode:RTMode) { return await profile.setRTMode(rtId, mode); },
+        async getRTMode(rtId:string) { return await profile.getRTMode(rtId); },
+        async createRTId() { return await profile.createRTId(); },
+        async changeRTId(oldId:string, newId:string) { return await profile.changeRTId(oldId, newId); },
+        async hasRTId(id:string) { return await profile.hasRTId(id); },
+        async setRTPromptText(rtId:string, promptText:string) { return await profile.setRTPromptText(rtId, promptText); },
+        async getRTPromptText(rtId:string) { return await profile.getRTPromptText(rtId); },
+                
+        configs,
+        shortcuts,
     }
 
     useEffect(() => {
@@ -151,26 +189,7 @@ export function ProfileContextProvider({children}: {children:React.ReactNode}) {
     
     return (
         <ProfileContext.Provider
-            value={{
-                createSession,
-                removeSession,
-                reorderSessions,
-                undoRemoveSession,
-
-                sessions : chatSessions,
-                currentSession : lastChatSession,
-                setCurrentSession,
-                getProfileSession,
-
-                
-                starredModels : rawStarredModels,
-                isModelStarred,
-                starModel,
-                unstarModel,
-                
-                configs,
-                shortcuts,
-            }}
+            value={values}
         >
             {children}
         </ProfileContext.Provider>

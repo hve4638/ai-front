@@ -6,14 +6,13 @@ export type RTNodeDirectory = {
     children: RTNode[];
     added? : boolean;
     edited? : boolean;
-    fixed? : boolean;
 }
 export type RTNode = {
     type: 'node';
     name: string;
+    id : string;
     added? : boolean;
     edited? : boolean;
-    fixed? : boolean;
 }
 
 export type RTTreeOffsets = [number]|[number, number];

@@ -2,7 +2,7 @@ declare global {
     type RTMetadata = {
         type : 'node';
         name : string;
-        prompt_id : string;
+        id : string;
     }
 
     type RTDirectory = {

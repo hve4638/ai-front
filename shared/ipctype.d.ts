@@ -48,7 +48,7 @@ declare global {
         getProfileDataAsBinary: (profileId:string, accessor:string) => ElectronResult<Buffer>;
         setProfileDataAsBinary: (profileId:string, accessor:string, content:Buffer) => ElectronNoResult;
 
-        /* 프로필 RT */
+        /* 프로필 요청 템플릿 */
         getProfileRTTree: (profileId:string) => ElectronResult<RTMetadataTree>;
         updateProfileRTTree: (profileId:string, tree:RTMetadataTree) => ElectronNoResult;
         addProfileRT: (profileId:string, rt:any) => ElectronNoResult;
@@ -57,6 +57,9 @@ declare global {
         setProfileRTMode: (profileId:string, rtId:string, mode:RTMode) => ElectronNoResult;
         getProfileRTPromptText: (profileId:string, rtId:string) => ElectronResult<string>;
         setProfileRTPromptText: (profileId:string, rtId:string, promptText:string) => ElectronNoResult;
+        hasProfileRTId: (profileId:string, rtId:string) => ElectronResult<boolean>;
+        generateProfileRTId: (profileId:string) => ElectronResult<string>;
+        changeProfileRTId: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;
 
         /* 프로필 세션 */
         addProfileSession: (profileId:string) => ElectronResult<string>;

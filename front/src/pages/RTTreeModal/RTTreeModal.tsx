@@ -18,14 +18,16 @@ import type { RTNodeTree, RTNode, RTNodeDirectory } from 'types/rt-node'
 
 type PromptTreeModalProps = {
     item:RTNodeTree;
-    onConfirm: (item:Tree) => void;
+    onConfirm: (item:RTMetadataTree) => void;
     onCancel: () => void;
+    onClose: () => void;
 }
 
 function RTTreeModal({
     item,
     onConfirm,
     onCancel,
+    onClose,
 }:PromptTreeModalProps) {
     const { t } = useTranslation();
     const [disappear, setDisappear] = useState(true);
@@ -40,7 +42,7 @@ function RTTreeModal({
         offsets : TreeOffsets;
         region : Regions;
     }|null>(null);
-    const [tree, setTree] = useState<Tree>(item);
+    const [tree, setTree] = useState<RTMetadataTree>(item);
 
     const makeNode = (node:any, offsets:number[]=[]) => {
         const key = offsets.join('_') + '_' + node.name;
@@ -132,10 +134,19 @@ function RTTreeModal({
         }
     }
 
-    const onExit = () => {
+    const submit = () => {
+        onConfirm(tree);
+        close();
+    }
+    const cancel = () => {
+        onCancel();
+        close();
+    }
+
+    const close = () => {
         setDisappear(true);
         setTimeout(() => {
-            onCancel();  
+            onClose();  
         }, MODAL_DISAPPEAR_DURATION);
     }
     
@@ -259,18 +270,22 @@ function RTTreeModal({
                 <Row
                     rowAlign={Align.End}
                     style={{
-                        height: '100%'
+                        height: '100%',
                     }}
                 >
                     <Button
-                        onClick={onExit}
+                        onClick={submit}
                         style={{
-                            height: '100%'
+                            width: '80px',
+                            height: '100%',
+                            marginRight: '8px'
                         }}
                     >확인</Button>
                     <Button
-                        onClick={onExit}
+                        className='transparent'
+                        onClick={cancel}
                         style={{
+                            width: '80px',
                             height: '100%'
                         }}
                     >취소</Button>

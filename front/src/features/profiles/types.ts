@@ -18,6 +18,7 @@ export interface IProfile {
     setData(accessor:string, key: string, value: any): Promise<void>;
     getData(accessor:string, key: string): Promise<any>;
 
+    /* 세션 */
     getSession(sessionId:string): IProfileSession;
 
     createSession(): Promise<string>;
@@ -25,6 +26,13 @@ export interface IProfile {
     reorderSessions(sessions: string[]): Promise<void>;
     getSessionIds(): Promise<string[]>;
     undoRemoveSession(): Promise<string | null>;
+
+    /* 요청 템플릿 */
+    getRTTree(): Promise<RTMetadataTree>;
+    updateRTTree(tree:RTMetadataTree): Promise<void>;
+    createRTId(): Promise<string>;
+    changeRTId(oldId: string, newId: string): Promise<void>;
+    hasRTId(id: string): Promise<boolean>;
 
     get name(): string;
     get color(): string;
