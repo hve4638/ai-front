@@ -12,12 +12,11 @@ export const MODEL_CATEGORY = {
     [MODELS.GOOGLE_GEMINI] : {
         name : "Google Gemini",
         models : [
+            { name : "Gemini 2.0 Pro Exp 0205", value: "gemini-2.0-pro-exp-02-05" },
+            { name : "Gemini 2.0 Flash 001", value: "gemini-2.0-flash-001" },
+            { name : "Gemini 2.0 Flash Lite Preview 0205", value: "gemini-2.0-flash-lite-preview-02-05" },
             { name : "Gemini 2.0 Flash Thinking Exp", value: "gemini-2.0-flash-thinking-exp" },
             { name : "Gemini 2.0 Flash Exp", value: "gemini-2.0-flash-exp" },
-            { name : "Gemini Exp 1206", value: "gemini-exp-1206" },
-            { name : "Gemini Exp 1121", value: "gemini-exp-1121" },
-            { name : "Gemini Exp 1114", value: "gemini-exp-1114" },
-            { name : "Gemini 1.5 Pro Exp 0827", value: "gemini-1.5-pro-exp-0827" },
             { name : "Gemini 1.5 Pro 002", value: "gemini-1.5-pro-002" },
             { name : "Gemini 1.5 Pro 001", value: "gemini-1.5-pro-001" },
             { name : "Gemini 1.5 Pro (latest)", value: "gemini-1.5-pro-latest" },
