@@ -1,11 +1,12 @@
 import './chatai-model';
-import './prompt';
-
-type ElectronResultSync<T> = [Error|null, T];
-type ElectronResult<T> = Promise<[Error]|[null, T]>;
-type ElectronNoResult = Promise<[Error|null]>;
+import './prompt-var';
+import './rt';
 
 declare global {
+    type ElectronResultSync<T> = readonly [Error|null, T];
+    type ElectronResult<T> = Promise<readonly [Error]|readonly [null, T]>;
+    type ElectronNoResult = Promise<readonly [Error|null]>;
+
     type HistoryCondition = {
         offset? : number;
         limit? : number;
@@ -55,8 +56,8 @@ declare global {
         removeProfileRT: (profileId:string, rtId:string) => ElectronNoResult;
         getProfileRTMode: (profileId:string, rtId:string) => ElectronResult<RTMode>;
         setProfileRTMode: (profileId:string, rtId:string, mode:RTMode) => ElectronNoResult;
-        getProfileRTPromptText: (profileId:string, rtId:string) => ElectronResult<string>;
-        setProfileRTPromptText: (profileId:string, rtId:string, promptText:string) => ElectronNoResult;
+        getProfileRTSimpleModeData: (profileId:string, rtId:string) => ElectronResult<RTSimpleModeData>;
+        setProfileRTSimpleModeData: (profileId:string, data:RTSimpleModeData) => ElectronNoResult;
         hasProfileRTId: (profileId:string, rtId:string) => ElectronResult<boolean>;
         generateProfileRTId: (profileId:string) => ElectronResult<string>;
         changeProfileRTId: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;

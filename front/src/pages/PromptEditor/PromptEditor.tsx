@@ -1,31 +1,26 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
-import { useTranslation } from "react-i18next";
 import styles from './styles.module.scss';
+import { useTranslation } from "react-i18next";
+
+import { ProfileContext, useContextForce } from 'context';
 
 import useSignal from 'hooks/useSignal';
-import { PromptVar, PromptVarType } from 'types/prompt-variables';
-import { Align, Column, Flex, Grid, Row } from "components/layout";
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
-import { TextInput } from 'components/Input';
-import Button from 'components/Button';
+import useHotkey from 'hooks/useHotkey';
 
-import EditPromptVarModal from './EditPromptVarModal';
-import RTTreeModal from 'pages/RTTreeModal';
-import { PromptData, PromptEditMode } from './types';
-import EditPromptMetadataModal from './EditPromptMetadataModal';
+import MetadataEditModal from './MetadataEditModal';
+import VarEditModal from './VarEditModal';
+import RTSaveModal from './RTSaveModal';
 import EditorSection from './EditorSection';
 import SidePanel from './SidePanel';
-import { PromptInputType } from 'types';
-import { ProfileContext, useContextForce } from 'context';
-import { RTNode, RTNodeTree } from 'types/rt-node';
-import { hotkey } from 'features/hotkey';
-import useHotkey from 'hooks/useHotkey';
-import { mapRTMetadataToNode } from 'utils/rt';
 
-type PromptEditorProps = {
-    mode: PromptEditMode;
-}
+import { mapRTMetadataToNode, mapRTNodeToMetadata } from 'utils/rt';
+
+import { PromptInputType } from 'types';
+import { RTNode, RTNodeTree } from 'types/rt-node';
+import { PromptData, PromptEditMode } from './types';
+import { ModalProvider } from 'hooks/useModals';
 
 const Modals = {
     NONE : 'NONE',
@@ -35,25 +30,29 @@ const Modals = {
 } as const;
 type Modals = typeof Modals[keyof typeof Modals];
 
+type PromptEditorProps = {
+    mode: PromptEditMode;
+    rtId?: string;
+}
+
 function PromptEditor({
     mode=PromptEditMode.NEW,
+    rtId
 }:PromptEditorProps) {
     const { t } = useTranslation();
+    const { id } = useParams();
     const profileContext = useContextForce(ProfileContext);
-    const lastPromptData = useRef<PromptData|null>(null);
     const promptData = useRef<PromptData>({
         name: t('prompt.editor.default-name'),
-        id: 'rtid-1',
+        id: '0',
         vars: [],
         inputType: 'NORMAL',
         promptContent: '',
     });
-    const [currentMode, setCurrentMode] = useState<PromptEditMode>(mode);
-    const [currentEditPromptVar, setCurrentEditPromptVar] = useState<PromptVar|null>(null);
-    const [displayedModal, setDisplayedModal] = useState<Modals>(Modals.NONE);
-    const [refreshSignal, sendRefreshSignal] = useSignal();
+    const [loaded, setLoaded] = useState(false);
 
-    const [rtTree, setRTTree] = useState<RTMetadataTree>([]);
+    const [currentEditMode, setCurrentEditMode] = useState<PromptEditMode>(mode);
+    const [refreshSignal, sendRefreshSignal] = useSignal();
 
     const vars = promptData.current.vars;
 
@@ -72,167 +71,85 @@ function PromptEditor({
         }
 
         const newPromptVar:PromptVar = {
-            type: PromptVarType.Text,
+            type: 'text',
             name: varName,
             display_name: t('prompt.editor.new-variable'),
             allow_multiline: false,
             default_value: '',
             placeholder: '',
         }
-        promptData.current.vars.push(newPromptVar);
+        promptData.current?.vars.push(newPromptVar);
         sendRefreshSignal();
     }
-
-    // 저장 버튼 클릭시
-    const handleSaveTrigger = () => {
-        if (currentMode === PromptEditMode.NEW) {
-            prepareNewPromptSave();
-        }
-        else {
-            prepareExistingPromptSave();
-        }
-    }
-
-    const prepareNewPromptSave = async () => {
-        const metadata = await profileContext.getRTTree();
-        const rtTree = mapRTMetadataToNode(metadata);
-        setRTTree([
-            ...rtTree,
-            {
-                type : 'node',
-                name : promptData.current.name,
-                id : promptData.current.id,
-                added : true,
-                edited : false,
-            }
-        ]);
-        setDisplayedModal(Modals.SAVE_PROMPT);
-    }
-
-    const prepareExistingPromptSave = async () => {
-        ;
-    }
-
-    const saveNewPrompt = async (tree:RTNodeTree) => {
-        await profileContext.addRT({
-            type : 'node',
-            name : promptData.current.name,
-            id : promptData.current.id,
-        })
-        await profileContext.updateRTTree(tree);
-        await profileContext.setRTPromptText(promptData.current.id, promptData.current.promptContent);
-        
-        lastPromptData.current = { ...promptData.current };
-        promptData.current
-        setCurrentMode(PromptEditMode.EDIT);
-        sendRefreshSignal();
-    }
-    const saveExistingPrompt = async (tree:RTNodeTree) => {
-
-    }
-
-    useHotkey({
-        's' : (e)=>{
-            if (e.ctrlKey) {
-                handleSaveTrigger();
-                return true;
-            }
-        }
-    }, displayedModal === Modals.NONE);
 
     // NEW 인 경우 프롬프트 ID 초기화
     useEffect(()=>{
-        profileContext.createRTId()
-            .then((id)=>{
-                promptData.current.id = id;
+        (async ()=>{
+            if (currentEditMode === PromptEditMode.NEW) {
+                const newId = await profileContext.generateRTId()
+                promptData.current = {
+                    name: t('prompt.editor.default-name'),
+                    id: newId,
+                    vars: [],
+                    inputType: 'NORMAL',
+                    promptContent: '',
+                }
+                setLoaded(true);
                 sendRefreshSignal();
-            });
+            }
+            else {
+                // if (rtId == null) {
+                //     console.error('rtId is not provided');
+                //     return;
+                // }
+                // const inputType = await profileContext.getRTMode(rtId);
+                // const promptText = await profileContext.getRTPromptText(rtId);
+                // promptData.current = {
+                //     name: metadata.name,
+                //     id: metadata.id,
+                //     vars: [],
+                //     inputType: 'NORMAL',
+                //     promptContent: promptText,
+                // }
+                // setLoaded(true);
+                // sendRefreshSignal();
+            }
+        })();
     }, []);
 
-    return (
-        <div
-            className={styles['prompt-editor']}
-        >
-            <EditorSection
-            
-            />
-            <SidePanel
-                promptData={promptData.current}
-                onRefresh={()=>sendRefreshSignal()}
-                onSaveClick={()=>handleSaveTrigger()}
-                onCancelClick={()=>{
-                    console.log('cancel');
-                }}
-                onEditMetadataClick={()=>{
-                    setDisplayedModal(Modals.EDIT_PROMPT_METADATA);
-                }}
-                onAddPromptVarClick={()=>{
-                    addNewPromptVar();
-                }}
-                onEditPromptVarClick={(promptVar:PromptVar)=>{
-                    setCurrentEditPromptVar(promptVar);
-                    setDisplayedModal(Modals.EDIT_PROMPT_VAR);
-                }}
-                onRemovePromptVarClick={(promptVar:PromptVar)=>{
-                    promptData.current.vars = vars.filter((item)=>item.name !== promptVar.name);
-                    sendRefreshSignal();
-                }}
-                onChangeInputType={(inputType:PromptInputType)=>{
-                    promptData.current.inputType = inputType;
-                    sendRefreshSignal();
-                }}
-            />
-            {
-                displayedModal === Modals.EDIT_PROMPT_METADATA &&
-                <EditPromptMetadataModal
-                    metadata={promptData.current}
-                    onChange={async (next)=>{
-                        if (promptData.current.id === next.id || !await profileContext.hasRTId(next.id)) {
-                            promptData.current.name = next.name;
-                            promptData.current.id = next.id;
-                            sendRefreshSignal();
-                            return true;
-                        }
-                        return false;
-                    }}
-                    onClose={()=>{
-                        setDisplayedModal(Modals.NONE);
-                    }}
-                />
-            }
-            {
-                displayedModal === Modals.EDIT_PROMPT_VAR &&
-                currentEditPromptVar != null &&
-                <EditPromptVarModal
-                    promptVar={currentEditPromptVar}
-                    onRefresh={sendRefreshSignal}
-                    onClose={()=>{
-                        setDisplayedModal(Modals.NONE);
-                    }}
-                />
-            }
-            {
-                displayedModal === Modals.SAVE_PROMPT &&
-                <RTTreeModal
-                    item={rtTree}
-                    onConfirm={async (tree:RTMetadataTree)=>{
-                        if (currentMode === PromptEditMode.NEW) {
-                            await saveNewPrompt(tree);
-                        }
-                        console.log('save');
-                        console.log('rtTree', rtTree);
-                    }}
-                    onCancel={()=>{
-                        
-                    }}
-                    onClose={()=>{
-                        setDisplayedModal(Modals.NONE);
-                    }}
-                >
 
-                </RTTreeModal>
-            }
-        </div>
+    if (!loaded) {
+        return <></>
+    }
+    return (
+        <ModalProvider>
+            <div
+                className={styles['prompt-editor']}
+            >
+                <EditorSection
+                
+                />
+                <SidePanel
+                    promptData={promptData.current}
+                    onRefresh={()=>sendRefreshSignal()}
+                    onBack={()=>{
+                        console.log('click back');
+                    }}
+
+                    onAddPromptVarClick={()=>{
+                        addNewPromptVar();
+                    }}
+                    onRemovePromptVarClick={(promptVar:PromptVar)=>{
+                        promptData.current.vars = vars.filter((item)=>item.name !== promptVar.name);
+                        sendRefreshSignal();
+                    }}
+                    onChangeInputType={(inputType:PromptInputType)=>{
+                        promptData.current.inputType = inputType;
+                        sendRefreshSignal();
+                    }}
+                />
+            </div>
+        </ModalProvider>
     );
 }
 

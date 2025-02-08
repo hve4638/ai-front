@@ -1,8 +1,7 @@
 import LocalAPI from 'api/local';
 import Profile from './Profile'
-import type { IProfile, IProfiles } from './types';
 
-class Profiles implements IProfiles {
+class Profiles  {
     #loaded:boolean = false;
     #profiles:Map<string, Profile> = new Map();
 

@@ -5,6 +5,7 @@ import {
     migrateLegacyProfile,
 } from './features/program-path';
 import ProgramPath from './features/program-path';
+import { setRegistry } from './ipc/registry';
  
 import { personal, localAppdata } from 'win-known-folders';
 import { FSStorage, StorageAccess } from '@hve/fs-storage';
@@ -34,7 +35,13 @@ async function main() {
         }
     });
     globalStorage.setAlias('cache', 'cache.json');
-    
+
+    setRegistry({
+        fetchContainer,
+        globalStorage,
+        profiles,
+        uniqueKeyManager,
+    })
     const appDependencies = {
         fetchContainer,
         globalStorage,
@@ -45,9 +52,8 @@ async function main() {
         devMode : process.env['ELECTRON_DEV'] === 'TRUE',
         devUrl : 'http://localhost:3600',
     }
-    initIPC(appDependencies);
+    initIPC();
     openElectronApp(appDependencies, appOptions);
 }
-
 
 main();

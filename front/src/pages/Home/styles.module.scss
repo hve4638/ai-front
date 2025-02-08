@@ -1,0 +1,44 @@
+:global(.theme-dark) {
+    --avatar-popover-bgcolor: rgb(37, 37, 37);
+    --avatar-popover-border-color: rgb(61, 68, 77);
+}
+
+.avatar-container {
+    box-sizing: border-box;
+    position : relative;
+    aspect-ratio: 1/1;
+    height : 100%;
+    
+    .avatar-label {
+        width : 100%;
+        height : 100%;
+        padding: 4px;
+        border-radius: 100%;
+        cursor: pointer;
+
+        transition: background-color 0.1s ease;
+        &:hover {
+            background-color: rgba(150, 150, 150, 0.329);
+        }
+
+        .avatar {
+            box-sizing: border-box;
+            width: 100%;
+            height : 100%;
+            background-color: white;
+            border-radius: 100%;
+        }
+    }
+    
+    .avatar-popover {
+        position : absolute;
+        z-index: 1;
+        top: calc(100% + 4px);
+        right: 0px;
+        border: 1px solid var(--avatar-popover-border-color);
+        color: var(--text-color);
+        background-color: var(--avatar-popover-bgcolor);
+        padding : 4px 8px;
+        border-radius: 8px;
+    }
+}

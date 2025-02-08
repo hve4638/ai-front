@@ -1,34 +1,31 @@
-import { GoogleFontIcon } from "components/GoogleFontIcon";
-import { Modal, ModalHeader } from "components/Modal";
-import { Align, Grid, Row } from "components/layout";
-import { MODAL_DISAPPEAR_DURATION } from "data";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { Modal, ModalHeader } from 'components/Modal';
+import { Align, Grid, Row } from 'components/layout';
+import { MODAL_DISAPPEAR_DURATION } from 'data';
+import useHotkey from 'hooks/useHotkey';
+import useModalDisappear from 'hooks/useModalDisappear';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type AddPromptModalProps = {
     onAddPrompt: (type: 'simple'|'node') => void;
+
+    isFocused: boolean;
     onClose: () => void;
 }
 
 function AddPromptModal({
     onAddPrompt = ()=>{},
+
+    isFocused,
     onClose = ()=>{},
 }:AddPromptModalProps) {
     const { t } = useTranslation();
-    const [disappear, setDisappear] = useState(true);
+    const [disappear, close] = useModalDisappear(onClose);
 
-    useEffect(()=>{
-        setTimeout(()=>{
-            setDisappear(false);
-        }, 1);
-    }, []);
-    
-    const close = ()=>{
-        setDisappear(true);
-        setTimeout(()=>{
-            onClose();
-        }, MODAL_DISAPPEAR_DURATION);
-    }
+    useHotkey({
+        'Escape': close,
+    }, isFocused, []);
 
     return (
         <Modal

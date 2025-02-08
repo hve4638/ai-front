@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { useTranslation } from "react-i18next";
 import styles from './styles.module.scss';
 
-import { PromptVar, PromptVarType } from 'types/prompt-variables';
 import { calcTextPosition } from 'utils';
 import { Align, Column, Flex, Grid, Row } from "components/layout";
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
@@ -12,32 +11,71 @@ import Button from 'components/Button';
 import { DropdownForm } from 'components/Forms';
 import { PromptData } from './types';
 import { PromptInputType } from 'types';
+import { useModals } from 'hooks/useModals';
+import MetadataEditModal from './MetadataEditModal';
+import { ProfileContext, useContextForce } from 'context';
+import RTSaveModal from './RTSaveModal';
+import { mapRTMetadataToNode } from 'utils/rt';
+import { RTNodeTree } from 'types/rt-node';
+import VarEditModal from './VarEditModal';
+import useHotkey from 'hooks/useHotkey';
 
 type SidePanelProps = {
     promptData:PromptData;
+    onBack : ()=>void;
+
     onChangeInputType: (inputType:PromptInputType)=>void;
     onRefresh: ()=>void;
-    onSaveClick: ()=>void;
-    onCancelClick: ()=>void;
-    onEditMetadataClick: ()=>void;
     onAddPromptVarClick: ()=>void;
-    onEditPromptVarClick: (promptVar:PromptVar)=>void;
     onRemovePromptVarClick: (promptVar:PromptVar)=>void;
 }
 
 function SidePanel({
     promptData,
     
+    onBack,
     onRefresh,
     onChangeInputType,
-    onSaveClick,
-    onCancelClick,
-    onEditMetadataClick,
     onAddPromptVarClick,
-    onEditPromptVarClick,
     onRemovePromptVarClick,
 }:SidePanelProps) {
     const { t } = useTranslation();
+    const modals = useModals();
+    const profileContext = useContextForce(ProfileContext);
+    
+    const save = async ()=>{
+        const metadataTree = await profileContext.getRTTree();
+        const prevRTTree = mapRTMetadataToNode(metadataTree);
+        const rtTree = [
+            ...prevRTTree,
+            {
+                type : 'node',
+                name : promptData.name,
+                id : promptData.id,
+                added : true,
+                edited : false,
+            }
+        ] as RTNodeTree;
+
+        modals.open(RTSaveModal, {
+            item: rtTree,
+            onConfirm : async (tree:RTMetadataTree)=>{
+                // if (currentEditMode === PromptEditMode.NEW) {
+                //     await saveNewPrompt(tree);
+                // }
+            },
+            onCancel : ()=>{}
+        });
+    }
+    
+    useHotkey({
+        's' : (e)=>{
+            if (e.ctrlKey) {
+                save();
+                return true;
+            }
+        }
+    }, modals.count === 0, [save]);
     
     return <Column
         className={styles['edit-panel']}
@@ -72,7 +110,22 @@ function SidePanel({
                     margin: '4px'
                 }}
                 value='edit'
-                onClick={()=>onEditMetadataClick()}
+                onClick={()=>{
+                    modals.open(MetadataEditModal, {
+                        metadata: promptData,
+                        onChange: async (next)=>{
+                            // id 중복 검사
+                            if (promptData.id === next.id || !await profileContext.hasRTId(next.id)) {
+                                promptData.name = next.name;
+                                promptData.id = next.id;
+                                onRefresh();
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+                    // onEditMetadataClick();
+                }}
             />
             <GoogleFontIcon
                 enableHoverEffect={true}
@@ -83,7 +136,7 @@ function SidePanel({
                     margin: '4px'
                 }}
                 value='close'
-                onClick={()=>onCancelClick()}
+                onClick={()=>onBack()}
             />
         </Row>
         <div style={{height: '1em'}}/>
@@ -131,7 +184,12 @@ function SidePanel({
                         height: '36px',
                         padding: '4px 8px'
                     }}
-                    onClick={()=>onEditPromptVarClick(item)}
+                    onClick={()=>{
+                        modals.open(VarEditModal, {
+                            promptVar: item,
+                            onRefresh: onRefresh,
+                        });
+                    }}
                 >
                     <span>{item.name}</span>
                     <Flex/>
@@ -191,7 +249,7 @@ function SidePanel({
                     width: '100%',
                     height: '100%',
                 }}
-                onClick={()=>onSaveClick()}
+                onClick={save}
             >
                 { t('prompt.save_new') }
             </Button>

@@ -1,6 +1,4 @@
 export type { 
-    IProfile, 
-    IProfiles, 
     IProfileSession 
 } from './types';
 export { type default as Profile } from './Profile'

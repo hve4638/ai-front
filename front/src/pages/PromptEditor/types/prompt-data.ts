@@ -1,4 +1,3 @@
-import { PromptVar } from 'types/prompt-variables';
 import { PromptInputType } from 'types';
 
 export type PromptData = {

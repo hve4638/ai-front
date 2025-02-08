@@ -1,70 +1,77 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { ipcping } from './ipc';
+import PINGS from './ipc/ipcping';
 
-const api: IPC_TYPES = {
-    echo: (message: string) => ipcRenderer.invoke(ipcping.ECHO, message),
-    openBrowser: (url: string) => ipcRenderer.invoke(ipcping.OPEN_BROWSER, url),
-    getChatAIModels: () => ipcRenderer.invoke(ipcping.GET_CHATAI_MODELS),
-
+type IPC_INTERFACE_NAMES = {
+    [K in keyof IPC_TYPES]: PINGS;
+};
+const ipcInvokes:IPC_INTERFACE_NAMES = {
+    echo : ipcping.ECHO,
+    openBrowser : ipcping.OPEN_BROWSER,
+    getChatAIModels : ipcping.GET_CHATAI_MODELS,
+    
     /* 마스터 키 */
-    initMasterKey: () => ipcRenderer.invoke(ipcping.INIT_MASTER_KEY),
-    isMasterKeyExists: () => ipcRenderer.invoke(ipcping.IS_MASTER_KEY_EXISTS),
-    validateMasterKey: () => ipcRenderer.invoke(ipcping.VALIDATE_MASTER_KEY),
-    generateMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.GENERATE_MASTER_KEY, recoveryKey),
-    resetMasterKey: () => ipcRenderer.invoke(ipcping.RESET_MASTER_KEY),
-    recoverMasterKey: (recoveryKey: string) => ipcRenderer.invoke(ipcping.RECOVER_MASTER_KEY, recoveryKey),
+    initMasterKey : ipcping.INIT_MASTER_KEY,
+    isMasterKeyExists : ipcping.IS_MASTER_KEY_EXISTS,
+    validateMasterKey : ipcping.VALIDATE_MASTER_KEY,
+    generateMasterKey : ipcping.GENERATE_MASTER_KEY,
+    resetMasterKey : ipcping.RESET_MASTER_KEY,
+    recoverMasterKey : ipcping.RECOVER_MASTER_KEY,
 
     /* 전역 저장소 */
-    getGlobalData: (storageName: string, key: string) => ipcRenderer.invoke(ipcping.GET_GLOBAL_DATA, storageName, key),
-    setGlobalData: (storageName: string, key: string, value: any) => ipcRenderer.invoke(ipcping.SET_GLOBAL_DATA, storageName, key, value),
+    getGlobalData : ipcping.GET_GLOBAL_DATA,
+    setGlobalData : ipcping.SET_GLOBAL_DATA,
 
     /* 프로필 */
-    createProfile: () => ipcRenderer.invoke(ipcping.CREATE_PROFILE),
-    deleteProfile: (profileName: string) => ipcRenderer.invoke(ipcping.DELETE_PROFILE, profileName),
+    createProfile : ipcping.CREATE_PROFILE,
+    deleteProfile : ipcping.DELETE_PROFILE,
 
     /* 프로필 목록 */
-    getProfileList: () => ipcRenderer.invoke(ipcping.GET_PROFILE_LIST),
-    getLastProfile: () => ipcRenderer.invoke(ipcping.GET_LAST_PROFILE),
-    setLastProfile: (id: string | null) => ipcRenderer.invoke(ipcping.SET_LAST_PROFILE, id),
+    getProfileList : ipcping.GET_PROFILE_LIST,
+    getLastProfile : ipcping.GET_LAST_PROFILE,
+    setLastProfile : ipcping.SET_LAST_PROFILE,
 
     /* 프로필 저장소 */
-    getProfileData: (profileId: string, accessor: string, key: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_DATA, profileId, accessor, key),
-    setProfileData: (profileId: string, accessor: string, key: string, value: any) => ipcRenderer.invoke(ipcping.SET_PROFILE_DATA, profileId, accessor, key, value),
-    getProfileDataAsText: (profileId: string, accessor: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_DATA_AS_TEXT, profileId, accessor),
-    setProfileDataAsText: (profileId: string, accessor: string, value: any) => ipcRenderer.invoke(ipcping.SET_PROFILE_DATA_AS_TEXT, profileId, accessor, value),
-    getProfileDataAsBinary: (profileId: string, accessor: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_DATA_AS_BINARY, profileId, accessor),
-    setProfileDataAsBinary: (profileId: string, accessor: string, content: Buffer) => ipcRenderer.invoke(ipcping.SET_PROFILE_DATA_AS_BINARY, profileId, accessor, content),
-
+    getProfileData : ipcping.GET_PROFILE_DATA,
+    setProfileData : ipcping.SET_PROFILE_DATA,
+    getProfileDataAsText : ipcping.GET_PROFILE_DATA_AS_TEXT,
+    setProfileDataAsText : ipcping.SET_PROFILE_DATA_AS_TEXT,
+    getProfileDataAsBinary : ipcping.GET_PROFILE_DATA_AS_BINARY,
+    setProfileDataAsBinary : ipcping.SET_PROFILE_DATA_AS_BINARY,
+    
     /* 프로필 요청 템플릿 */
-    getProfileRTTree: (profileId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_TREE, profileId),
-    updateProfileRTTree: (profileId: string, tree: RTMetadataTree) => ipcRenderer.invoke(ipcping.UPDATE_PROFILE_RT_TREE, profileId, tree),
-    addProfileRT: (profileId: string, rt: any) => ipcRenderer.invoke(ipcping.ADD_PROFILE_RT, profileId, rt),
-    removeProfileRT: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_RT, profileId, rtId),
-    getProfileRTMode: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_MODE, profileId, rtId),
-    setProfileRTMode: (profileId: string, rtId: string, mode: RTMode) => ipcRenderer.invoke(ipcping.SET_PROFILE_RT_MODE, profileId, rtId, mode),
-    getProfileRTPromptText: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_RT_PROMPT_TEXT, profileId, rtId),
-    setProfileRTPromptText: (profileId: string, rtId: string, promptText: string) => ipcRenderer.invoke(ipcping.SET_PROFILE_RT_PROMPT_TEXT, profileId, rtId, promptText),
-    hasProfileRTId: (profileId: string, rtId: string) => ipcRenderer.invoke(ipcping.HAS_PROFILE_RT_ID, profileId, rtId),
-    generateProfileRTId: (profileId: string) => ipcRenderer.invoke(ipcping.GENERATE_PROFILE_RT_ID, profileId),
-    changeProfileRTId: (profileId: string, oldRTId: string, newRTId: string) => ipcRenderer.invoke(ipcping.CHANGE_PROFILE_RT_ID, profileId, oldRTId, newRTId),
+    getProfileRTTree : ipcping.GET_PROFILE_RT_TREE,
+    updateProfileRTTree : ipcping.UPDATE_PROFILE_RT_TREE,
+    addProfileRT : ipcping.ADD_PROFILE_RT,
+    removeProfileRT : ipcping.REMOVE_PROFILE_RT,
+    getProfileRTMode : ipcping.GET_PROFILE_RT_MODE,
+    setProfileRTMode : ipcping.SET_PROFILE_RT_MODE,
+    getProfileRTSimpleModeData : ipcping.GET_PROFILE_RT_SIMPLE_MODE_DATA,
+    setProfileRTSimpleModeData : ipcping.SET_PROFILE_RT_SIMPLE_MODE_DATA,
+    hasProfileRTId : ipcping.HAS_PROFILE_RT_ID,
+    generateProfileRTId : ipcping.GENERATE_PROFILE_RT_ID,
+    changeProfileRTId : ipcping.CHANGE_PROFILE_RT_ID,
 
     /* 프로필 세션 */
-    addProfileSession: (profileId: string) => ipcRenderer.invoke(ipcping.ADD_PROFILE_SESSION, profileId),
-    removeProfileSession: (profileId: string, sessionId: string) => ipcRenderer.invoke(ipcping.REMOVE_PROFILE_SESSION, profileId, sessionId),
-    reorderProfileSessions: (profileId: string, sessionIds: string[]) => ipcRenderer.invoke(ipcping.REORDER_PROFILE_SESSIONS, profileId, sessionIds),
-    getProfileSessionIds: (profileId: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_SESSION_IDS, profileId),
-    undoRemoveProfileSession : (profileId: string) => ipcRenderer.invoke(ipcping.UNDO_REMOVE_PROFILE_SESSION, profileId),
-    
+    addProfileSession : ipcping.ADD_PROFILE_SESSION,
+    removeProfileSession : ipcping.REMOVE_PROFILE_SESSION,
+    reorderProfileSessions : ipcping.REORDER_PROFILE_SESSIONS,
+    getProfileSessionIds : ipcping.GET_PROFILE_SESSION_IDS,
+    undoRemoveProfileSession : ipcping.UNDO_REMOVE_PROFILE_SESSION,
+
     /* 프로필 세션 저장소 */
-    getProfileSessionData: (profileId: string, sessionId: string, accessor: string, key: string) => ipcRenderer.invoke(ipcping.GET_PROFILE_SESSION_DATA, profileId, sessionId, accessor, key),
-    setProfileSessionData: (profileId: string, sessionId: string, accessor: string, key: string, value: any) => ipcRenderer.invoke(ipcping.SET_PROFILE_SESSION_DATA, profileId, sessionId, accessor, key, value),
+    getProfileSessionData : ipcping.GET_PROFILE_SESSION_DATA,
+    setProfileSessionData : ipcping.SET_PROFILE_SESSION_DATA,
 
     /* 프로필 세션 히스토리 */
-    getProfileSessionHistory: (profileId: string, sessionId: string, condition: HistoryCondition) => ipcRenderer.invoke(ipcping.GET_PROFILE_SESSION_HISTORY, profileId, sessionId, condition),
-    addProfileSessionHistory: (profileId: string, sessionId: string, history: any) => ipcRenderer.invoke(ipcping.ADD_PROFILE_SESSION_HISTORY, profileId, sessionId, history),
-    deleteProfileSessionHistory: (profileId: string, sessionId: string, historyKey: number) => ipcRenderer.invoke(ipcping.DELETE_PROFILE_SESSION_HISTORY, profileId, sessionId, historyKey),
-    deleteAllProfileSessionHistory: (profileId: string, sessionId: string) => ipcRenderer.invoke(ipcping.DELETE_ALL_PROFILE_SESSION_HISTORY, profileId, sessionId),
-};
+    getProfileSessionHistory : ipcping.GET_PROFILE_SESSION_HISTORY,
+    addProfileSessionHistory : ipcping.ADD_PROFILE_SESSION_HISTORY,
+    deleteProfileSessionHistory : ipcping.DELETE_PROFILE_SESSION_HISTORY,
+    deleteAllProfileSessionHistory : ipcping.DELETE_ALL_PROFILE_SESSION_HISTORY,
+}
 
+const ipcExports = Object.fromEntries(
+    Object.entries(ipcInvokes).map(([key, ping]) => [key, (...args: unknown[]) => ipcRenderer.invoke(ping, ...args)])
+) as IPC_TYPES;
 
-contextBridge.exposeInMainWorld('electron', api);
+contextBridge.exposeInMainWorld('electron', ipcExports);

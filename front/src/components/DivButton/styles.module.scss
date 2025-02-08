@@ -1,0 +1,12 @@
+.div-button {
+    cursor: pointer;
+    width : 100%;
+    padding : 0px 0.25em;
+    margin : 3px 3px;
+    transition : background-color 0.15s ease;
+    border-radius: 6px;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.322);
+    }
+}

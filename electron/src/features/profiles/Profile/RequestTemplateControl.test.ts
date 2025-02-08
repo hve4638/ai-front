@@ -118,7 +118,7 @@ describe('Profile', () => {
     });
     
     test('updateTree : directory 2', () => {
-        const emptyDir:RTDirectory = {
+        const emptyDir:RTMetadataDirectory = {
             type: 'directory',
             name: 'dir1',
             children: [],

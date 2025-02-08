@@ -1,4 +1,4 @@
-import { IJSONAccessor, type FSStorage } from '@hve/fs-storage';
+import { type IJSONAccessor, type ITextAccessor, type FSStorage } from '@hve/fs-storage';
 import { ProfileError } from './errors';
 
 class RequestTemplateControl {
@@ -14,17 +14,34 @@ class RequestTemplateControl {
         this.#rtIds = [];
     }
 
+    /** request-template의 entrypoint 접근자 */
+    #getEntrypointAccessor() {
+        return this.#storage.getJSONAccessor('request-template:index.json');
+    }
+
+    #getCacheAccessor() {
+        return this.#storage.getJSONAccessor('request-template:cache.json');
+    }
+
+    #getRTIndexAccessor(rtId:string):IJSONAccessor {
+        return this.#storage.getJSONAccessor(`request-template:${rtId}:index.json`);
+    }
+
+    #getRTTextAccessor(rtId:string, target:string):ITextAccessor {
+        return this.#storage.getTextAccessor(`request-template:${rtId}:${target}`);
+    }
+
     #loadData() {
         if (this.#loaded) return;
-        const prompts = this.#storage.getJSONAccessor('request-template:index.json');
+        const prompts = this.#getEntrypointAccessor();
         this.#tree = prompts.get('tree') ?? [];
         this.#rtIds = prompts.get('ids') ?? [];
-
+        
         this.#loaded = true;
     }
 
     #storeData() {
-        const prompts = this.#storage.getJSONAccessor('request-template:index.json');
+        const prompts = this.#getEntrypointAccessor();
         prompts.set('tree', this.#tree);
         prompts.set('ids', this.#rtIds);
     }
@@ -47,6 +64,28 @@ class RequestTemplateControl {
 
     #hasId(rtId:string):boolean {
         return this.#rtIds.includes(rtId);
+    }
+
+    #updateRTNameInTree(rtId:string, newName:string) {
+        try {
+            for (const item of this.#tree) {
+                if (item.type === 'directory') {
+                    for (const child of item.children) {
+                        if (child.id === rtId) {
+                            child.name = newName;
+                            return;
+                        }
+                    }
+                }
+                else if (item.id === rtId) {
+                    item.name = newName;
+                    return;
+                }
+            }
+        }
+        finally {
+            this.#storeData();
+        }
     }
     
     getTree():RTMetadataTree {
@@ -78,8 +117,15 @@ class RequestTemplateControl {
             throw rtIdAlreadyExistsError(metadata.id);
         }
 
+        const indexAccessor = this.#getRTIndexAccessor(metadata.id);
+
+        indexAccessor.set('name', metadata.name);
         this.#rtIds.push(metadata.id);
-        this.#tree.push(metadata);
+        this.#tree.push({
+            type : 'node',
+            id : metadata.id,
+            name : metadata.name
+        });
         this.#storeData();
     }
 
@@ -166,10 +212,6 @@ class RequestTemplateControl {
         return newTree;
     }
 
-    #getRTIndexAccessor(rtId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`request-template:${rtId}:index.json`);
-    }
-
     getRTMode(rtId:string):RTMode {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
         return indexAccessor.get('mode') ?? 'simple';
@@ -184,15 +226,42 @@ class RequestTemplateControl {
                 throw new ProfileError('Invalid RT mode');
         }
     }
-    
-    /* RT 단순 모드에서 활용 */
-    setRTPromptText(rtId:string, text:string) {
-        const textAccessor = this.#storage.getTextAccessor(`request-template:${rtId}:prompt.txt`);
-        textAccessor.write(text);
+
+    setRTSimpleModeData(data:RTSimpleModeData) {
+        this.#loadData();
+        const rtId = data.id;
+        const indexAccessor = this.#getRTIndexAccessor(rtId);
+        if (data.name) this.#updateRTNameInTree(rtId, data.name);
+        if (data.name) indexAccessor.set('name', data.name);
+        if (data.forms) indexAccessor.set('forms', data.forms);
+        if (data.inputType) indexAccessor.set('input_type', data.inputType);
+        if (data.contents) {
+            const textAccessor = this.#getRTTextAccessor(rtId, 'prompt.txt');
+            textAccessor.write(data.contents);
+        }
     }
-    getRTPromptText(rtId:string):string {
-        const textAccessor = this.#storage.getTextAccessor(`request-template:${rtId}:prompt.txt`);
-        return textAccessor.read();
+
+    getRTSimpleModeData(rtId:string):RTSimpleModeData {
+        const indexAccessor = this.#getRTIndexAccessor(rtId);
+        const mode = indexAccessor.get('mode');
+        if (mode !== 'simple') {
+            throw new ProfileError('this method is only available in simple mode');
+        }
+        
+        const name:string = indexAccessor.get('name');
+        const inputType = indexAccessor.get('input_type');
+        const forms:PromptVar[] = indexAccessor.get('forms');
+
+        const textAccessor = this.#getRTTextAccessor(rtId, 'prompt.txt');
+        const contents = textAccessor.read();
+
+        return {
+            inputType : inputType ?? 'text',
+            forms : forms ?? [],
+            name : name ?? 'New Prompt',
+            id : rtId,
+            contents : contents ?? '',
+        };
     }
     
     /* RAW 접근 */

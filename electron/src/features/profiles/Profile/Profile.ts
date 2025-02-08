@@ -121,11 +121,11 @@ class Profile implements IAccessor{
     setRTMode(rtId:string, mode:RTMode) {
         this.#rtControl.setRTMode(rtId, mode);
     }
-    getRTPromptText(rtId:string):string {
-        return this.#rtControl.getRTPromptText(rtId);
+    getRTSimpleModeData(rtId:string):RTSimpleModeData {
+        return this.#rtControl.getRTSimpleModeData(rtId);
     }
-    setRTPromptText(rtId:string, text:string) {
-        this.#rtControl.setRTPromptText(rtId, text);
+    setRTSimpleModeData(data:RTSimpleModeData) {
+        this.#rtControl.setRTSimpleModeData(data);
     }
     hasRTId(rtId:string):boolean {
         return this.#rtControl.hasId(rtId);

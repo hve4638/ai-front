@@ -7,6 +7,7 @@ import Profiles from 'features/profiles';
 import ProfileSelectPage from 'pages/ProfileSelect';
 import Home from 'pages/Home';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';
+import Hub from 'pages/Hub';
 
 const LoadPhase = {
     BEGIN : 0,
@@ -104,7 +105,7 @@ function App() {
             {
                 currentState == LoadPhase.ENTRYPOINT &&
                 <Providers profileId={profile!}>
-                    <Home/>
+                    <Hub/>
                 </Providers>
             }            
         </div>

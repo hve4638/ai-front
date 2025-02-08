@@ -1,77 +1,78 @@
 const PINGS = {
-    ECHO : 'echo',
-    OPEN_BROWSER : 'open-browser',
-    GET_CHATAI_MODELS : 'get-chatai-models',
+    ECHO : 'ECHO',
+    OPEN_BROWSER : 'OPEN_BROWSER',
+    GET_CHATAI_MODELS : 'GET_CHATAI_MODELS',
     
     /* 레거시 */
-    FETCH : 'fetch-proxy',
-    ABORT_FETCH : 'abort-fetch',
-    GET_FETCH_RESPONSE : 'get-fetch-response',
+    FETCH : 'FETCH_PROXY',
+    ABORT_FETCH : 'ABORT_FETCH',
+    GET_FETCH_RESPONSE : 'GET_FETCH_RESPONSE',
 
     /* 마스터 키 */
-    INIT_MASTER_KEY : 'init-master-key',
-    IS_MASTER_KEY_EXISTS : 'is-master-key-exists',
-    VALIDATE_MASTER_KEY : 'validate-master-key',
-    GENERATE_MASTER_KEY : 'generate-master-key',
-    RESET_MASTER_KEY : 'reset-master-key',
-    RECOVER_MASTER_KEY : 'recover-master-key',
+    INIT_MASTER_KEY : 'INIT_MASTER_KEY',
+    IS_MASTER_KEY_EXISTS: 'IS_MASTER_KEY_EXISTS',
+    VALIDATE_MASTER_KEY: 'VALIDATE_MASTER_KEY',
+    GENERATE_MASTER_KEY: 'GENERATE_MASTER_KEY',
+    RESET_MASTER_KEY: 'RESET_MASTER_KEY',
+    RECOVER_MASTER_KEY: 'RECOVER_MASTER_KEY',
 
     /* 전역 스토리지 */
-    GET_GLOBAL_DATA : 'get-global-data',
-    SET_GLOBAL_DATA : 'set-global-data',
+    GET_GLOBAL_DATA: 'GET_GLOBAL_DATA',
+    SET_GLOBAL_DATA: 'SET_GLOBAL_DATA',
 
     /* 프로필 */
-    CREATE_PROFILE : 'create-profile',
-    DELETE_PROFILE : 'delete-profile',
+    CREATE_PROFILE: 'CREATE_PROFILE',
+    DELETE_PROFILE: 'DELETE_PROFILE',
 
     /* 프로필 목록 */
-    GET_PROFILE_LIST : 'get-profile-list',
-    GET_LAST_PROFILE : 'get-last-profile',
-    SET_LAST_PROFILE : 'set-last-profile',
+    GET_PROFILE_LIST: 'GET_PROFILE_LIST',
+    GET_LAST_PROFILE: 'GET_LAST_PROFILE',
+    SET_LAST_PROFILE: 'SET_LAST_PROFILE',
     
     /* 프로필 저장소 */
-    GET_PROFILE_DATA : 'get-profile-data',
-    SET_PROFILE_DATA : 'set-profile-data',
-    GET_PROFILE_DATA_AS_TEXT : 'get-profile-data-as-text',
-    SET_PROFILE_DATA_AS_TEXT : 'set-profile-data-as-text',
-    GET_PROFILE_DATA_AS_BINARY : 'get-profile-data-as-binary',
-    SET_PROFILE_DATA_AS_BINARY : 'set-profile-data-as-binary',
+    GET_PROFILE_DATA: 'GET_PROFILE_DATA',
+    SET_PROFILE_DATA: 'SET_PROFILE_DATA',
+    GET_PROFILE_DATA_AS_TEXT: 'GET_PROFILE_DATA_AS_TEXT',
+    SET_PROFILE_DATA_AS_TEXT: 'SET_PROFILE_DATA_AS_TEXT',
+    GET_PROFILE_DATA_AS_BINARY: 'GET_PROFILE_DATA_AS_BINARY',
+    SET_PROFILE_DATA_AS_BINARY: 'SET_PROFILE_DATA_AS_BINARY',
     
     /* 프로필 프롬프트 */
-    GET_PROFILE_PROMPT_TREE : 'get-profile-prompt-tree',
-    UPDATE_PROFILE_PROMPT_TREE : 'update-profile-prompt-tree',
-    ADD_PROFILE_PROMPT : 'add-profile-prompt',
-    REMOVE_PROFILE_PROMPT : 'remove-profile-prompt',
+    GET_PROFILE_PROMPT_TREE: 'GET_PROFILE_PROMPT_TREE',
+    UPDATE_PROFILE_PROMPT_TREE: 'UPDATE_PROFILE_PROMPT_TREE',
+    ADD_PROFILE_PROMPT: 'ADD_PROFILE_PROMPT',
+    REMOVE_PROFILE_PROMPT: 'REMOVE_PROFILE_PROMPT',
 
     /* 프로필 세션 */
-    ADD_PROFILE_SESSION : 'add-profile-session',
-    REMOVE_PROFILE_SESSION : 'remove-profile-session',
-    GET_PROFILE_SESSION_IDS : 'get-profile-session-ids',
-    REORDER_PROFILE_SESSIONS : 'reorder-profile-sessions',
-    UNDO_REMOVE_PROFILE_SESSION : 'undo-remove-profile-session',
+    ADD_PROFILE_SESSION: 'ADD_PROFILE_SESSION',
+    REMOVE_PROFILE_SESSION: 'REMOVE_PROFILE_SESSION',
+    GET_PROFILE_SESSION_IDS: 'GET_PROFILE_SESSION_IDS',
+    REORDER_PROFILE_SESSIONS: 'REORDER_PROFILE_SESSIONS',
+    UNDO_REMOVE_PROFILE_SESSION: 'UNDO_REMOVE_PROFILE_SESSION',
 
     /* 프로필 세션 저장소 */
-    GET_PROFILE_SESSION_DATA : 'get-profile-session-data',
-    SET_PROFILE_SESSION_DATA : 'set-profile-session-data',
+    GET_PROFILE_SESSION_DATA: 'GET_PROFILE_SESSION_DATA',
+    SET_PROFILE_SESSION_DATA: 'SET_PROFILE_SESSION_DATA',
     
     /* 프로필 세션 히스토리 */
-    GET_PROFILE_SESSION_HISTORY : 'get-profile-session-history',
-    ADD_PROFILE_SESSION_HISTORY : 'add-profile-session-history',
-    DELETE_PROFILE_SESSION_HISTORY : 'delete-profile-session-history',
-    DELETE_ALL_PROFILE_SESSION_HISTORY : 'delete-all-profile-session-history',
+    GET_PROFILE_SESSION_HISTORY: 'GET_PROFILE_SESSION_HISTORY',
+    ADD_PROFILE_SESSION_HISTORY: 'ADD_PROFILE_SESSION_HISTORY',
+    DELETE_PROFILE_SESSION_HISTORY: 'DELETE_PROFILE_SESSION_HISTORY',
+    DELETE_ALL_PROFILE_SESSION_HISTORY: 'DELETE_ALL_PROFILE_SESSION_HISTORY',
 
     /* 프로필 요청 템플릿 */
-    GET_PROFILE_RT_TREE : 'get-profile-rt-tree',
-    UPDATE_PROFILE_RT_TREE : 'update-profile-rt-tree',
-    ADD_PROFILE_RT : 'add-profile-rt',
-    REMOVE_PROFILE_RT : 'remove-profile-rt',
-    GET_PROFILE_RT_MODE : 'get-profile-rt-mode',
-    SET_PROFILE_RT_MODE : 'set-profile-rt-mode',
-    GET_PROFILE_RT_PROMPT_TEXT : 'get-profile-rt-prompt-text',
-    SET_PROFILE_RT_PROMPT_TEXT : 'set-profile-rt-prompt-text',
-    HAS_PROFILE_RT_ID : 'has-profile-rt-id',
-    GENERATE_PROFILE_RT_ID : 'generate-profile-rt-id',
-    CHANGE_PROFILE_RT_ID : 'change-profile-rt-id',
+    GET_PROFILE_RT_TREE: 'GET_PROFILE_RT_TREE',
+    UPDATE_PROFILE_RT_TREE: 'UPDATE_PROFILE_RT_TREE',
+    ADD_PROFILE_RT: 'ADD_PROFILE_RT',
+    REMOVE_PROFILE_RT: 'REMOVE_PROFILE_RT',
+    GET_PROFILE_RT_MODE: 'GET_PROFILE_RT_MODE',
+    SET_PROFILE_RT_MODE: 'SET_PROFILE_RT_MODE',
+    GET_PROFILE_RT_SIMPLE_MODE_DATA: 'GET_PROFILE_RT_SIMPLE_MODE_DATA',
+    SET_PROFILE_RT_SIMPLE_MODE_DATA: 'SET_PROFILE_RT_SIMPLE_MODE_DATA',
+    HAS_PROFILE_RT_ID: 'HAS_PROFILE_RT_ID',
+    GENERATE_PROFILE_RT_ID: 'GENERATE_PROFILE_RT_ID',
+    CHANGE_PROFILE_RT_ID: 'CHANGE_PROFILE_RT_ID',
 } as const;
+type PINGS = typeof PINGS[keyof typeof PINGS];
 
 export default PINGS;

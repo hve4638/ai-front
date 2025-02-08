@@ -1,8 +1,10 @@
-import { ProfileContext, useContextForce } from "context";
-import { useEffect, useMemo } from "react";
-import { Shortcut } from "types/shortcut";
+import { useEffect, useMemo } from 'react';
+import { ProfileContext, useContextForce } from 'context';
+import { useModals } from 'hooks/useModals';
+import { Shortcut } from 'types/shortcut';
 
 function ShortcutHandler() {
+    const modals = useModals();
     const profileContext = useContextForce(ProfileContext);
     const {
         shortcuts,

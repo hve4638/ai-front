@@ -10,6 +10,7 @@ import {
     ShortcutOptions,
 } from './options';
 import { MODAL_DISAPPEAR_DURATION } from 'data';
+import useHotkey from 'hooks/useHotkey';
 
 const SETTING_CATEGORY = {
     GENERAL : '일반',
@@ -25,10 +26,12 @@ type SETTING_CATEGORY = typeof SETTING_CATEGORY[keyof typeof SETTING_CATEGORY];
 
 
 type SettingModalProps = {
+    isFocused:boolean;
     onClose:() => void;
 }
 
 function SettingModal({
+    isFocused,
     onClose,
 }:SettingModalProps) {
     const categories = [
@@ -43,7 +46,7 @@ function SettingModal({
     const [disappear, setDisappear] = useState(true);
     const [currentCategory, setCurrentCategory] = useState<SETTING_CATEGORY>(SETTING_CATEGORY.GENERAL);
     
-    const onExit = () => {
+    const close = () => {
         setDisappear(true);
         setTimeout(() => {
             onClose();
@@ -51,30 +54,14 @@ function SettingModal({
     }
 
     useEffect(() => {
-        const keyDownHandler = (e)=>{
-            if (e.key === 'Escape') {
-                onExit();
-            }
-        }
         setTimeout(() => {
             setDisappear(false);
         }, 0);
-
-        window.addEventListener('keydown', keyDownHandler);
-        return () => {
-            window.removeEventListener('keydown', keyDownHandler);
-        }
     }, []);
 
-    useEffect(()=>{
-        const keyDownHandler = (e)=>{
-            console.log(e.key);
-        }
-        window.addEventListener('keydown', keyDownHandler);
-        return () => {
-            window.removeEventListener('keydown', keyDownHandler);
-        }
-    })
+    useHotkey({
+        'Escape': close,
+    }, isFocused, []);
     
     return (
         <Modal
@@ -99,7 +86,7 @@ function SettingModal({
                 <div>
                     <ModalHeader
                         title={currentCategory}
-                        onClose={onExit}
+                        onClose={close}
                     />
                 </div>
                 <div

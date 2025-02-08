@@ -44,7 +44,9 @@
         "new-rt" : "생성",
         "create-rt-title" : "새 요청 템플릿",
         "create-simple-prompt" : "단순 프롬프트",
-        "create-node-flow-mode" : "노드 요청"
+        "create-node-flow-mode" : "노드 요청",
+        "rt-create" : "새 템플릿 추가",
+        "rt-edit" : "요청 템플릿 수정"
     }
 }
 

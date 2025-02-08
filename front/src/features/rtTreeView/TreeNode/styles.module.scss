@@ -1,0 +1,49 @@
+.node,
+.node-directory {
+    cursor: pointer;
+    padding-left : 0.1em;
+    border-radius: 3px;
+        
+    &.no-mouseaction {
+        cursor: default;
+    }
+
+    
+    &:not(&.disable-hover):hover {
+        &.any {
+            background-color: var(--prompt-tree-hover-bgcolor);
+        }
+        &.top {
+            background : linear-gradient(to top, transparent, var(--prompt-tree-hover-bgcolor));
+        }
+        &.bottom {
+            background : linear-gradient(to bottom, transparent, var(--prompt-tree-hover-bgcolor));
+        }
+    }
+    &.edited {
+        color: var(--edited-prompt-item-color);
+    }
+    &.added {
+        color: var(--added-prompt-item-color);
+    }
+    &.fixed {
+        cursor: unset;
+    }
+}
+
+.node-children {
+    display: block;
+    position: relative;
+    .node {
+        padding-left: 1.1em;
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0.5em;
+        top: 0;
+        width: 1px;
+        height: 100%;
+        background-color: rgb(163, 163, 163);
+    }
+}

@@ -2,6 +2,25 @@ import { RTNode, RTNodeDirectory, RTNodeTree } from 'types/rt-node';
 
 type RTNodeOptions = Omit<RTNode, 'type'|'id'|'name'>;
 
+type mapRTMetadataTreeOptions<TNode, TDirectory> = {
+    mapDirectory : (item:RTMetadataDirectory, children:TNode[])=>TDirectory;
+    mapNode : (item:RTMetadata)=>TNode;
+}
+
+export function mapRTMetadataTree<TNode, TDirectory>(
+    items:RTMetadataTree,
+    options:mapRTMetadataTreeOptions<TNode, TDirectory>
+) {
+    return items.map((item:RTMetadata|RTMetadataDirectory)=>{
+        if (item.type === 'directory') {
+            return options.mapDirectory(item, mapRTMetadataTree(item.children, options));
+        }
+        else {
+            return options.mapNode(item);
+        }
+    });
+}
+
 export function mapRTMetadataToNode(
     metadataTree:RTMetadataTree,
     mapOption:(mt:RTMetadata)=>RTNodeOptions = (mt)=>({}),
@@ -15,7 +34,7 @@ export function mapRTMetadataToNode(
         } as RTMetadata;
     }
 
-    const rtTree:RTNodeTree = metadataTree.map((item:RTMetadata|RTDirectory)=>{
+    const rtTree:RTNodeTree = metadataTree.map((item:RTMetadata|RTMetadataDirectory)=>{
         if (item.type === 'directory') {
             return {
                 type : 'directory',

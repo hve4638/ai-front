@@ -2,7 +2,7 @@ import React, { useState, createContext, useLayoutEffect, useEffect, useMemo } f
 import { useContextForce } from './useContextForce';
 import { RawProfileContext } from './RawProfileContext';
 import { ChatSession } from 'types/chat-session';
-import { IProfile, IProfileSession } from 'features/profiles';
+import { IProfileSession } from 'features/profiles';
 import useDebounce from 'hooks/useDebounce';
 import type { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
@@ -29,7 +29,7 @@ interface ProfileContextType {
     getRTTree: () => Promise<RTMetadataTree>;
     updateRTTree: (tree:RTMetadataTree) => Promise<void>;
     hasRTId: (id:string) => Promise<boolean>;
-    createRTId: () => Promise<string>;
+    generateRTId: () => Promise<string>;
     changeRTId: (oldId:string, newId:string) => Promise<void>;
     addRT: (metadata:RTMetadata) => Promise<void>;
     removeRT: (rtId:string) => Promise<void>;
@@ -136,7 +136,7 @@ export function ProfileContextProvider({children}: {children:React.ReactNode}) {
         async removeRT(rtId:string) { return await profile.removeRT(rtId); },
         async setRTMode(rtId:string, mode:RTMode) { return await profile.setRTMode(rtId, mode); },
         async getRTMode(rtId:string) { return await profile.getRTMode(rtId); },
-        async createRTId() { return await profile.createRTId(); },
+        async generateRTId() { return await profile.generateRTId(); },
         async changeRTId(oldId:string, newId:string) { return await profile.changeRTId(oldId, newId); },
         async hasRTId(id:string) { return await profile.hasRTId(id); },
         async setRTPromptText(rtId:string, promptText:string) { return await profile.setRTPromptText(rtId, promptText); },

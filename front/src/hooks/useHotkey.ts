@@ -3,7 +3,7 @@ import { DependencyList, useEffect, useMemo } from "react";
 type HotkeyCallbacks = {
     [key:string]:(e:KeyboardEvent)=>boolean|void;
 }
-function useHotkey(hotkey:HotkeyCallbacks, enabled:boolean=true, deps:DependencyList=[]) {
+function useHotkey(hotkey:HotkeyCallbacks, enabled:boolean=true, deps?:DependencyList) {
     const callbacks = useMemo(()=>{
         const lowerCallbacks:HotkeyCallbacks = {}
         for (const key in hotkey) {
@@ -12,6 +12,10 @@ function useHotkey(hotkey:HotkeyCallbacks, enabled:boolean=true, deps:Dependency
         return lowerCallbacks;
     }, [hotkey]);
 
+    let dependencyList:DependencyList|undefined = undefined;
+    if (deps) {
+        dependencyList = [...deps, enabled];
+    }
     useEffect(()=>{
         const listener = (e:KeyboardEvent)=>{
             const key = e.key.toLowerCase();
@@ -29,7 +33,7 @@ function useHotkey(hotkey:HotkeyCallbacks, enabled:boolean=true, deps:Dependency
     
             return ()=>window.removeEventListener('keydown', listener);
         }
-    }, [enabled, ...deps]);
+    }, dependencyList);
 }
 
 export default useHotkey;

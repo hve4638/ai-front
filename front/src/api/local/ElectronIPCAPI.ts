@@ -166,8 +166,8 @@ class ElectronIPCAPI implements ILocalAPI {
         if (err) throw new IPCError(err.message);
         return exists;
     }
-    async createProfileRTId(profileId:string):Promise<string> {
-        const [err, rtId] = await electron.createProfileRTId(profileId);
+    async generateProfileRTId(profileId:string):Promise<string> {
+        const [err, rtId] = await electron.generateProfileRTId(profileId);
         if (err) throw new IPCError(err.message);
         return rtId;
     }
