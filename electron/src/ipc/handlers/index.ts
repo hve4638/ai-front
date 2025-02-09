@@ -5,9 +5,8 @@ import profile from './profile'
 import profileRT from './profileRT'
 import profileSession from './profileSession'
 import profileSessionHistory from './profileSessionHistory';
-import type { IPCHandlers } from './types';
 
-function get():IPCHandlers {
+function get():IPCInterface {
     return {
         ...general(),
         ...masterKey(),
@@ -19,5 +18,4 @@ function get():IPCHandlers {
     };
 }
 
-export { type IPCHandlers };
 export default get;

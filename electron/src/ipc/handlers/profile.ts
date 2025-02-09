@@ -1,6 +1,5 @@
 import * as utils from '@utils';
-import ChatAIModels from '@features/chatai-models';
-import PING from '@ipc/ipcping';
+import { IPCCommand } from '@types';
 
 import {
     profiles,
@@ -20,7 +19,7 @@ function handler() {
 
     return {
         /* 프로필 */
-        [PING.CREATE_PROFILE]: async () => {
+        [IPCCommand.CreateProfile]: async () => {
             const identifier = profiles.createProfile();
 
             throttles['profiles'] ??= utils.throttle(500);
@@ -30,35 +29,35 @@ function handler() {
 
             return [null, identifier] as const;
         },
-        [PING.DELETE_PROFILE]: async (profileName: string) => {
+        [IPCCommand.DeleteProfile]: async (profileName: string) => {
             profiles.deleteProfile(profileName);
             return [null] as const;
         },
 
         /* 프로필 목록 */
-        [PING.GET_PROFILE_LIST]: async () => {
+        [IPCCommand.GetProfileList]: async () => {
             const ids = profiles.getProfileIDs();
 
             return [null, ids] as const;
         },
-        [PING.GET_LAST_PROFILE]: async () => {
+        [IPCCommand.GetLastProfile]: async () => {
             const ids = profiles.getLastProfileId();
 
             return [null, ids] as const;
         },
-        [PING.SET_LAST_PROFILE]: async (id: string | null) => {
+        [IPCCommand.SetLastProfile]: async (id: string | null) => {
             profiles.setLastProfileId(id);
 
             return [null] as const;
         },
 
         /* 프로필 저장소 */
-        [PING.GET_PROFILE_DATA]: async (profileId: string, id: string, key: string) => {
+        [IPCCommand.GetProfileData]: async (profileId: string, id: string, key: string) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(id);
             return [null, accessor.get(key)] as const;
         },
-        [PING.SET_PROFILE_DATA]: async (profileId: string, id: string, key: string, value: any) => {
+        [IPCCommand.SetProfileData]: async (profileId: string, id: string, key: string, value: any) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(id);
             accessor.set(key, value);
@@ -72,24 +71,24 @@ function handler() {
 
             return [null] as const;
         },
-        [PING.GET_PROFILE_DATA_AS_TEXT]: async (profileId: string, id: string) => {
+        [IPCCommand.GetProfileDataAsText]: async (profileId: string, id: string) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getTextAccessor(id);
             return [null, accessor.read()] as const;
         },
-        [PING.SET_PROFILE_DATA_AS_TEXT]: async (profileId: string, id: string, value: any) => {
+        [IPCCommand.SetProfileDataAsText]: async (profileId: string, id: string, value: any) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getTextAccessor(id);
             accessor.write(value);
 
             return [null] as const;
         },
-        [PING.GET_PROFILE_DATA_AS_BINARY]: async (profileId: string, id: string) => {
+        [IPCCommand.GetProfileDataAsBinary]: async (profileId: string, id: string) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getBinaryAccessor(id);
             return [null, accessor.read()] as const;
         },
-        [PING.SET_PROFILE_DATA_AS_BINARY]: async (profileId: string, id: string, content: Buffer) => {
+        [IPCCommand.SetProfileDataAsBinary]: async (profileId: string, id: string, content: Buffer) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getBinaryAccessor(id);
             accessor.write(content);

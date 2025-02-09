@@ -1,20 +1,18 @@
 import * as utils from '@utils';
+import { IPCCommand } from '@types';
 import ChatAIModels from '@features/chatai-models';
-import PING from '@ipc/ipcping';
-
-import {  } from '@ipc/registry';
 
 function handler() {
     return {
-        [PING.ECHO] : async (message:string) => {
+        [IPCCommand.Echo] : async (message:string) => {
             return [null, message] as const;
         },
-        [PING.OPEN_BROWSER] : async (url:string) => {
+        [IPCCommand.OpenBrowser] : async (url:string) => {
             utils.openBrowser(url);
             
             return [null] as const;
         },
-        [PING.GET_CHATAI_MODELS] : async () => {
+        [IPCCommand.GetChatAIModels] : async () => {
             return [null, ChatAIModels.models] as const;
         },
     }

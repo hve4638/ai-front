@@ -7,52 +7,36 @@ import { useTranslation } from "react-i18next";
 import { ProfileContext, useContextForce } from 'context';
 
 import useSignal from 'hooks/useSignal';
-import useHotkey from 'hooks/useHotkey';
-
-import MetadataEditModal from './MetadataEditModal';
-import VarEditModal from './VarEditModal';
-import RTSaveModal from './RTSaveModal';
 import EditorSection from './EditorSection';
 import SidePanel from './SidePanel';
 
-import { mapRTMetadataToNode, mapRTNodeToMetadata } from 'utils/rt';
-
 import { PromptInputType } from 'types';
-import { RTNode, RTNodeTree } from 'types/rt-node';
 import { PromptData, PromptEditMode } from './types';
 import { ModalProvider } from 'hooks/useModals';
 
-const Modals = {
-    NONE : 'NONE',
-    EDIT_PROMPT_METADATA: 'EDIT_PROMPT_METADATA',
-    EDIT_PROMPT_VAR: 'EDIT_PROMPT_VAR',
-    SAVE_PROMPT: 'SAVE_PROMPT',
-} as const;
-type Modals = typeof Modals[keyof typeof Modals];
-
 type PromptEditorProps = {
     mode: PromptEditMode;
-    rtId?: string;
 }
 
 function PromptEditor({
-    mode=PromptEditMode.NEW,
-    rtId
+    mode=PromptEditMode.NEW
 }:PromptEditorProps) {
     const { t } = useTranslation();
     const { id } = useParams();
     const profileContext = useContextForce(ProfileContext);
+    const [refreshSignal, sendRefreshSignal] = useSignal();
+    const [loaded, setLoaded] = useState(false);
+
+    
     const promptData = useRef<PromptData>({
         name: t('prompt.editor.default-name'),
-        id: '0',
+        id: id ?? '0',
         vars: [],
         inputType: 'NORMAL',
         promptContent: '',
     });
-    const [loaded, setLoaded] = useState(false);
 
     const [currentEditMode, setCurrentEditMode] = useState<PromptEditMode>(mode);
-    const [refreshSignal, sendRefreshSignal] = useSignal();
 
     const vars = promptData.current.vars;
 
@@ -98,21 +82,21 @@ function PromptEditor({
                 sendRefreshSignal();
             }
             else {
-                // if (rtId == null) {
-                //     console.error('rtId is not provided');
-                //     return;
-                // }
-                // const inputType = await profileContext.getRTMode(rtId);
-                // const promptText = await profileContext.getRTPromptText(rtId);
-                // promptData.current = {
-                //     name: metadata.name,
-                //     id: metadata.id,
-                //     vars: [],
-                //     inputType: 'NORMAL',
-                //     promptContent: promptText,
-                // }
-                // setLoaded(true);
-                // sendRefreshSignal();
+                if (id == null) {
+                    console.error('rtId is not provided');
+                    return;
+                }
+                const inputType = await profileContext.getRTMode(id);
+                const promptText = await profileContext.getRTPromptText(id);
+                promptData.current = {
+                    name: metadata.name,
+                    id: id,
+                    vars: [],
+                    inputType: 'NORMAL',
+                    promptContent: promptText,
+                }
+                setLoaded(true);
+                sendRefreshSignal();
             }
         })();
     }, []);

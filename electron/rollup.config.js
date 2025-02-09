@@ -19,11 +19,8 @@ export default [
       commonjs(),
       json(),
       typescript({ tsconfig: './tsconfig.json' }),
-      // resolve(),
-      // commonjs(),
-      
-      // typescript({ tsconfig: './tsconfig.json' }), // TypeScript 변환
-      // terser(), // 코드 압축 (필요시 활성화)
+
+      // terser(),
     ],
     external: ['electron'],
   }

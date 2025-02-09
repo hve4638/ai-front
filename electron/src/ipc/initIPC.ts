@@ -1,8 +1,6 @@
 import { ipcMain } from 'electron';
-import ipcping from './ipcping';
+import { IPCCommand } from '@types';
 import getHandlers from './handlers';
-
-type PINGS = typeof ipcping[keyof typeof ipcping];
 
 export function initIPC() {
     const handlers = getHandlers();
@@ -13,7 +11,7 @@ export function initIPC() {
     }
 }
 
-function handleIPC(ping:PINGS, callback:any) {
+function handleIPC(ping:IPCCommand, callback:any) {
     ipcMain.handle(ping, async (event: any, ...args: any) => {
         try {
             const result = await callback(...args);

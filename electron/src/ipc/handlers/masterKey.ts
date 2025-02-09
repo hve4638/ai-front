@@ -1,36 +1,33 @@
-import * as utils from '@utils';
-import ChatAIModels from '@features/chatai-models';
-import PING from '@ipc/ipcping';
-
 import { uniqueKeyManager } from '@ipc/registry';
+import { IPCCommand } from '@types';
 
 function handler() {
     return {
         /* 마스터키 */
-        [PING.INIT_MASTER_KEY] : async () => {
+        [IPCCommand.InitMasterKey] : async () => {
             await uniqueKeyManager.readKey();
 
             return [null] as const;
         },
-        [PING.IS_MASTER_KEY_EXISTS] : async () => {
+        [IPCCommand.CheckMasterKeyExistence] : async () => {
             return [null, uniqueKeyManager.existsKey()] as const;
         }, 
-        [PING.VALIDATE_MASTER_KEY] : async () => {
+        [IPCCommand.ValidateMasterKey] : async () => {
             const key = uniqueKeyManager.getKey();
 
             return [null, key !== null] as const;
         },
-        [PING.GENERATE_MASTER_KEY] : async (recoveryKey:string) => {
+        [IPCCommand.GenerateMasterKey] : async (recoveryKey:string) => {
             await uniqueKeyManager.generateKey(recoveryKey);
 
             return [null] as const;
         },
-        [PING.RESET_MASTER_KEY] : async () => {
+        [IPCCommand.ResetMasterKey] : async () => {
             uniqueKeyManager.resetKey();
 
             return [null] as const;
         },
-        [PING.RECOVER_MASTER_KEY] : async (recoveryKey:string) => {
+        [IPCCommand.RecoverMasterKey] : async (recoveryKey:string) => {
             const success = await uniqueKeyManager.tryRecoveryKey(recoveryKey);
 
             return [null, success] as const;

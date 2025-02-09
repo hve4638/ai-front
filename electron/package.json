@@ -10,7 +10,7 @@
     "start": "yarn build && electron-forge start",
     "start:dev": "yarn build && cross-env ELECTRON_DEV=TRUE electron .",
     "start:release": "yarn build && cross-env ELECTRON_DEV=FALSE electron .",
-    "switch": "tsx switch-module",
+    "playground": "tsx ./src/playground",
     "test": "jest",
     "build": "rollup -c",
     "compile": "tsc",
