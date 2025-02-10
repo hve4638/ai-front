@@ -1,19 +1,20 @@
 {
+    "submit_label" : "확인",
+    "cancel_label" : "취소",
     "error" : {
         "not_found" : "찾을 수 없습니다."
     },
-    "prompt" : {
-        "save" : "저장",
-        "save_new" : "새로 저장",
-        "edit-metadata-modal" : {
-            "title" : "편집",
-            "name-form" : "이름",
-            "id-form" : "고유 이름"
-        },
-        "editor" : {
-            "default-name" : "새 프롬프트",
-            "new-variable" : "새 변수"
-        },
+    "prompt_editor" : {
+        "title" : "편집",
+        "metadata_edit_title" : "메타데이터 편집",
+        "name_label" : "이름",
+        "id_label" : "식별자",
+        "submit_label" : "",
+        "save_label" : "저장",
+        "save_new_label" : "새로 저장",
+        "prompt_default_name" : "새 프롬프트",
+        "variable_default_name" : "새 변수",
+
         "error" : {
             "INVALID_TOKEN" : "잘못된 토큰",
             "MULTIPLE_EXPRESSION" : "한 표현식에 여러 값이 들어갈 수 없습니다",

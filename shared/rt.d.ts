@@ -17,11 +17,11 @@ declare global {
 
     type RTMode = 'simple' | 'flow';
     
-    type RTSimpleModeData = {
+    type RTPromptData = {
+        name?: string|null; // flow 모드에서는 null
+        id : string;
         inputType? : 'text'|'chat';
         forms? : PromptVar[];
-        name? : string;
-        id : string;
         contents? : string;
     }
 }

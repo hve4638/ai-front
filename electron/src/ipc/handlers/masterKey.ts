@@ -1,5 +1,5 @@
 import { uniqueKeyManager } from '@ipc/registry';
-import { IPCCommand } from '@types';
+import { IPCCommand } from 'types';
 
 function handler() {
     return {

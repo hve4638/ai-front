@@ -1,5 +1,3 @@
-// ipc-command.d.ts와 ipc-command.ts 는 항상 동일해야 함
-
 export enum IPCCommand {
     Echo = 'Echo',
     OpenBrowser = 'OpenBrowser',
@@ -69,8 +67,8 @@ export enum IPCCommand {
     RemoveProfileRT = 'RemoveProfileRT',
     GetProfileRTMode = 'GetProfileRTMode',
     SetProfileRTMode = 'SetProfileRTMode',
-    GetProfileRTSimpleModeData = 'GetProfileRTSimpleModeData',
-    SetProfileRTSimpleModeData = 'SetProfileRTSimpleModeData',
+    GetProfileRTPromptData = 'GetProfileRTPromptData',
+    SetProfileRTPromptData = 'SetProfileRTPromptData',
     HasProfileRTId = 'HasProfileRTId',
     GenerateProfileRTId = 'GenerateProfileRTId',
     ChangeProfileRTId = 'ChangeProfileRTId',

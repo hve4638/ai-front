@@ -13,30 +13,31 @@ import SidePanel from './SidePanel';
 import { PromptInputType } from 'types';
 import { PromptData, PromptEditMode } from './types';
 import { ModalProvider } from 'hooks/useModals';
+import { PromptEditAction } from './types/prompt-editor';
 
 type PromptEditorProps = {
+    action : PromptEditAction;
     mode: PromptEditMode;
 }
 
 function PromptEditor({
-    mode=PromptEditMode.NEW
+    mode,
+    action
 }:PromptEditorProps) {
     const { t } = useTranslation();
     const { id } = useParams();
     const profileContext = useContextForce(ProfileContext);
-    const [refreshSignal, sendRefreshSignal] = useSignal();
     const [loaded, setLoaded] = useState(false);
-
+    const promptActionRef = useRef(action);
+    const [refreshSignal, sendRefreshSignal] = useSignal();
     
     const promptData = useRef<PromptData>({
-        name: t('prompt.editor.default-name'),
+        name: t('prompt_editor.prompt_default_name'),
         id: id ?? '0',
         vars: [],
         inputType: 'NORMAL',
         promptContent: '',
     });
-
-    const [currentEditMode, setCurrentEditMode] = useState<PromptEditMode>(mode);
 
     const vars = promptData.current.vars;
 
@@ -57,7 +58,7 @@ function PromptEditor({
         const newPromptVar:PromptVar = {
             type: 'text',
             name: varName,
-            display_name: t('prompt.editor.new-variable'),
+            display_name: t('prompt_editor.variable_default_name'),
             allow_multiline: false,
             default_value: '',
             placeholder: '',
@@ -69,35 +70,43 @@ function PromptEditor({
     // NEW 인 경우 프롬프트 ID 초기화
     useEffect(()=>{
         (async ()=>{
-            if (currentEditMode === PromptEditMode.NEW) {
-                const newId = await profileContext.generateRTId()
-                promptData.current = {
-                    name: t('prompt.editor.default-name'),
-                    id: newId,
-                    vars: [],
-                    inputType: 'NORMAL',
-                    promptContent: '',
+            const currentAction = promptActionRef.current;
+            switch(promptActionRef.current) {
+                case PromptEditAction.NEW:
+                {
+                    const newId = await profileContext.generateRTId();
+                    promptData.current = {
+                        name: t('prompt_editor.prompt_default_name'),
+                        id: newId,
+                        vars: [],
+                        inputType: 'NORMAL',
+                        promptContent: '',
+                    }
+                    break;
                 }
-                setLoaded(true);
-                sendRefreshSignal();
+                case PromptEditAction.EDIT:
+                {
+                    if (id == null) {
+                        console.error('rtId is not provided');
+                        return;
+                    }
+                    const inputType = await profileContext.getRTMode(id);
+                    const promptText = await profileContext.getRTPromptText(id);
+                    promptData.current = {
+                        name: metadata.name,
+                        id: id,
+                        vars: [],
+                        inputType: 'NORMAL',
+                        promptContent: promptText,
+                    }
+                    setLoaded(true);
+                    sendRefreshSignal();
+                    break;
+                }
             }
-            else {
-                if (id == null) {
-                    console.error('rtId is not provided');
-                    return;
-                }
-                const inputType = await profileContext.getRTMode(id);
-                const promptText = await profileContext.getRTPromptText(id);
-                promptData.current = {
-                    name: metadata.name,
-                    id: id,
-                    vars: [],
-                    inputType: 'NORMAL',
-                    promptContent: promptText,
-                }
-                setLoaded(true);
-                sendRefreshSignal();
-            }
+
+            setLoaded(true);
+            sendRefreshSignal();
         })();
     }, []);
 

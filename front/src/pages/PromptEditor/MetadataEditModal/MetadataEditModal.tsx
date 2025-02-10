@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, ModalHeader } from 'components/Modal';
 import { DropdownForm, StringForm } from 'components/Forms';
 import { Align, Row } from 'components/layout';
@@ -80,17 +80,17 @@ function MetadataEditModal({
             disappear={disappear}
         >
             <ModalHeader
-                title={t('prompt.edit-metadata-modal.title')}
+                title={t('prompt_editor.metadata_edit_title')}
                 onClose={close}
             />
             <StringForm
-                name={t('prompt.edit-metadata-modal.name-form')}
+                name={t('prompt_editor.name_label')}
                 value={currentName}
                 onChange={setCurrentName}
                 width='18em'
             />
             <StringForm
-                name={t('prompt.edit-metadata-modal.id-form')}
+                name={t('prompt_editor.id_label')}
                 value={currentId}
                 onChange={setCurrentIdAndCheck}
                 width='18em'
@@ -115,7 +115,7 @@ function MetadataEditModal({
                         marginRight: '8px'
                     }}
                     onClick={submit}
-                >확인</Button>
+                >{t('submit_label')}</Button>
                 <Button
                     className='hfill transparent'
                     style={{
@@ -124,7 +124,7 @@ function MetadataEditModal({
                     onClick={()=>{
                         close();
                     }}
-                >취소</Button>
+                >{t('cancel_label')}</Button>
             </Row>
         </Modal>
     )

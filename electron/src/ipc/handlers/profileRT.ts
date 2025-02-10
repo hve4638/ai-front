@@ -1,5 +1,5 @@
 import * as utils from '@utils';
-import { IPCCommand } from '@types';
+import { IPCCommand } from 'types';
 
 import {
     profiles,
@@ -18,7 +18,15 @@ function handler() {
     }
 
     return {
-        /* 프로필 RT */
+        /*  */
+        [IPCCommand.GenerateProfileRTId]: async (profileId: string) => {
+            const profile = profiles.getProfile(profileId);
+            const rtId = profile.generateRTId();
+
+            return [null, rtId] as const;
+        },
+
+        /* 트리 */
         [IPCCommand.GetProfileRTTree]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const tree = profile.getRTTree();
@@ -32,6 +40,8 @@ function handler() {
 
             return [null] as const;
         },
+
+        /* RT 컨트롤 */
         [IPCCommand.AddProfileRT]: async (profileId: string, metadata: RTMetadata) => {
             const profile = profiles.getProfile(profileId);
             profile.addRT(metadata);
@@ -43,9 +53,11 @@ function handler() {
             const profile = profiles.getProfile(profileId);
             profile.removeRT(promptId);
             saveProfile(profile);
-
+            
             return [null] as const;
         },
+
+        /* RT 모드 */
         [IPCCommand.GetProfileRTMode]: async (profileId: string, rtId: string) => {
             const profile = profiles.getProfile(profileId);
             const mode = profile.getRTMode(rtId);
@@ -59,29 +71,26 @@ function handler() {
 
             return [null] as const;
         },
-        [IPCCommand.GetProfileRTSimpleModeData]: async (profileId: string, rtId: string) => {
+
+        
+        [IPCCommand.GetProfileRTPromptData]: async (profileId: string, rtId: string, promptId:string) => {
             const profile = profiles.getProfile(profileId);
-            const data = profile.getRTSimpleModeData(rtId);
+            const data = profile.getRTPromptData(rtId, promptId);
 
             return [null, data] as const;
         },
-        [IPCCommand.SetProfileRTSimpleModeData]: async (profileId: string, data:RTSimpleModeData) => {
+        [IPCCommand.SetProfileRTPromptData]: async (profileId: string, data:RTPromptData) => {
             const profile = profiles.getProfile(profileId);
-            profile.setRTSimpleModeData(data);
+            profile.setRTPromptData(data);
 
             return [null] as const;
         },
+
         [IPCCommand.HasProfileRTId]: async (profileId: string, rtId: string) => {
             const profile = profiles.getProfile(profileId);
             const exists = profile.hasRTId(rtId);
 
             return [null, exists] as const;
-        },
-        [IPCCommand.GenerateProfileRTId]: async (profileId: string) => {
-            const profile = profiles.getProfile(profileId);
-            const rtId = profile.generateRTId();
-
-            return [null, rtId] as const;
         },
         [IPCCommand.ChangeProfileRTId]: async (profileId: string, oldRTId: string, newRTId: string) => {
             const profile = profiles.getProfile(profileId);

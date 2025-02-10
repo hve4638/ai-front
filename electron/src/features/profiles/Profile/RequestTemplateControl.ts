@@ -27,6 +27,10 @@ class RequestTemplateControl {
         return this.#storage.getJSONAccessor(`request-template:${rtId}:index.json`);
     }
 
+    #getRTPromptAccessor(rtId:string, promptId:string):IJSONAccessor {
+        return this.#storage.getJSONAccessor(`request-template:${rtId}:prompts:${promptId}.json`);
+    }
+
     #getRTTextAccessor(rtId:string, target:string):ITextAccessor {
         return this.#storage.getTextAccessor(`request-template:${rtId}:${target}`);
     }
@@ -227,7 +231,7 @@ class RequestTemplateControl {
         }
     }
 
-    setRTSimpleModeData(data:RTSimpleModeData) {
+    setRTPromptData(data:RTPromptData) {
         this.#loadData();
         const rtId = data.id;
         const indexAccessor = this.#getRTIndexAccessor(rtId);
@@ -241,7 +245,7 @@ class RequestTemplateControl {
         }
     }
 
-    getRTSimpleModeData(rtId:string):RTSimpleModeData {
+    getRTPromptData(rtId:string, promptId:string):RTPromptData {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
         const mode = indexAccessor.get('mode');
         if (mode !== 'simple') {

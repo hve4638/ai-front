@@ -33,8 +33,8 @@
           "@lib/*": ["src/lib/*"],
           "@ipc/*": ["src/ipc/*"],
           "@features/*": ["src/features/*"],
-          "@types": ["src/types/index"],
-          "@types/*": ["src/types/*"]
+          "types": ["src/types/index"],
+          "types/*": ["src/types/*"]
         }
     },
     "include": [

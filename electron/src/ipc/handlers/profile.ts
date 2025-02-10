@@ -1,5 +1,5 @@
 import * as utils from '@utils';
-import { IPCCommand } from '@types';
+import { IPCCommand } from 'types';
 
 import {
     profiles,

@@ -1,13 +1,13 @@
 import { ipcMain } from 'electron';
-import { IPCCommand } from '@types';
+import { IPCCommand } from 'types';
 import getHandlers from './handlers';
 
 export function initIPC() {
     const handlers = getHandlers();
 
     for(const ping in handlers) {
-        const handler = handlers[ping as keyof typeof handlers];
-        handleIPC(ping as keyof typeof handlers, handler);
+        const handler = handlers[ping as IPCCommand];
+        handleIPC(ping as IPCCommand, handler);
     }
 }
 

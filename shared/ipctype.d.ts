@@ -58,8 +58,8 @@ declare global {
         [IPCCommand.RemoveProfileRT]: (profileId:string, rtId:string) => ElectronNoResult;
         [IPCCommand.GetProfileRTMode]: (profileId:string, rtId:string) => ElectronResult<RTMode>;
         [IPCCommand.SetProfileRTMode]: (profileId:string, rtId:string, mode:RTMode) => ElectronNoResult;
-        [IPCCommand.GetProfileRTSimpleModeData]: (profileId:string, rtId:string) => ElectronResult<RTSimpleModeData>;
-        [IPCCommand.SetProfileRTSimpleModeData]: (profileId:string, data:RTSimpleModeData) => ElectronNoResult;
+        [IPCCommand.GetProfileRTPromptData]: (profileId:string, rtId:string, promptId:string) => ElectronResult<RTPromptData>;
+        [IPCCommand.SetProfileRTPromptData]: (profileId:string, data:RTPromptData) => ElectronNoResult;
         [IPCCommand.HasProfileRTId]: (profileId:string, rtId:string) => ElectronResult<boolean>;
         [IPCCommand.GenerateProfileRTId]: (profileId:string) => ElectronResult<string>;
         [IPCCommand.ChangeProfileRTId]: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;
