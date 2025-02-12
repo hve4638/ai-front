@@ -1,10 +1,15 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { FSStorage, StorageAccess, type IAccessor } from '@hve/fs-storage';
+import {
+    FSStorage,
+    StorageAccess,
+    type IAccessor
+} from '@hve/fs-storage';
 import HistoryAccessor from '../HistoryAccessor';
 import SessionControl from './SessionControl';
 import { ProfileError } from './errors';
 import RTControl from './RequestTemplateControl';
+import { PROFILE_STORAGE_TREE } from './data';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -13,7 +18,6 @@ class Profile implements IAccessor{
     /** Profile 디렉토리 경로 */
     #basePath:string;
     #storage:FSStorage;
-    #histoyAccessBit:number;
     #sessionControl:SessionControl;
     #rtControl:RTControl;
     #dropped:boolean = false;
@@ -23,39 +27,13 @@ class Profile implements IAccessor{
         fs.mkdirSync(this.#basePath, {recursive: true});
 
         this.#storage = new FSStorage(this.#basePath);
-        this.#histoyAccessBit = this.#storage.addAccessorEvent({
+        this.#storage.addAccessEvent('history', {
             create: (fullPath:string) => new HistoryAccessor(fullPath),
         });
-        this.#storage.register({
-            'request-template' : {
-                'index.json' : StorageAccess.JSON,
-                '*' : {
-                    'index.json' : StorageAccess.JSON,
-                    '*' : StorageAccess.TEXT|StorageAccess.JSON
-                }
-            },
-            'session' : {
-                '*' : {
-                    'data.json' : StorageAccess.JSON,
-                    'config.json' : StorageAccess.JSON,
-                    'cache.json' : StorageAccess.JSON,
-                    'history' : this.#histoyAccessBit,
-                }
-            },
-            'shortcut.json' : StorageAccess.JSON,
-            'cache.json' : StorageAccess.JSON,
-            'data.json' : StorageAccess.JSON,
-            'config.json' : StorageAccess.JSON,
-            'metadata.json' : StorageAccess.JSON,
-            'thumbnail' : StorageAccess.BINARY,
-        });
+        
+        this.#storage.register(PROFILE_STORAGE_TREE);
         this.#sessionControl = new SessionControl(this.#storage);
         this.#rtControl = new RTControl(this.#storage);
-        
-        this.#storage.setAlias('cache', 'cache.json');
-        this.#storage.setAlias('data', 'data.json');
-        this.#storage.setAlias('config', 'config.json');
-        this.#storage.setAlias('metadata', 'metadata.json');
     }
     commit(): void {
         this.#storage.commit();

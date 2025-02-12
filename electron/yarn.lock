@@ -627,9 +627,9 @@
   optionalDependencies:
     global-agent "^3.0.0"
 
-"@electron/node-gyp@git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":
+"@electron/node-gyp@https://github.com/electron/node-gyp#06b29aafb7708acef8b3669835c8a7857ebc92d2":
   version "10.2.0-electron.1"
-  resolved "git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2"
+  resolved "https://github.com/electron/node-gyp#06b29aafb7708acef8b3669835c8a7857ebc92d2"
   dependencies:
     env-paths "^2.2.0"
     exponential-backoff "^3.1.1"
@@ -865,10 +865,10 @@
     axios "^1.7.9"
     tslib "^2.8.1"
 
-"@hve/fs-storage@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@hve/fs-storage/-/fs-storage-0.2.1.tgz#f523411ecf6a9f18de355c088641ec689375a9cd"
-  integrity sha512-CDf237F6QTNtzZb7h0JO1I+rWiv8AfPayNSRhxO0BWhjdmHuhIHOP9jGjlKK0Np2plTMUeS/EhKGMIN6nrEioA==
+"@hve/fs-storage@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@hve/fs-storage/-/fs-storage-0.4.0.tgz#953e9f82bdc5b046f2e08276e18b1f0f7d4133e8"
+  integrity sha512-PfNg8MPCMxDitTE+flSwQT5OCh5j6gBnuHlVIqGFFfkNfKih9cePyKTVT8q24KDnKLNqMM+4tr4PJuqd3bsmqg==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"

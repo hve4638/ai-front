@@ -1,51 +1,54 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { FSStorage, StorageAccess } from '@hve/fs-storage';
+import { FSStorage, StorageAccess, JSONType } from '@hve/fs-storage';
 import { ProfileError } from './Profile';
 import Profile from './Profile';
 
+const PROFILES_METADATA_PATH = 'profiles.json';
 class Profiles {
     #basePath:string;
     #storage:FSStorage;
     #profileIdentifiers:string[] = [];
     #lastProfileId:string|null = null;
-    #profileAccessType:number;
     #nextProfileId:number = 0;
 
     constructor(basePath:string) {
         this.#basePath = basePath;
         this.#storage = new FSStorage(this.#basePath);
-        this.#profileAccessType = this.#storage.addAccessorEvent({
+        this.#storage.addAccessEvent('profile', {
             create(fullPath:string) {
                 return new Profile(fullPath);
             },
         });
         this.#storage.register({
-            'profiles.json' : StorageAccess.JSON,
-            '*' : this.#profileAccessType
+            'profiles.json' : StorageAccess.JSON({
+                'profiles' : JSONType.array,
+                'last_profile' : JSONType.string,
+            }),
+            '*' : StorageAccess.Custom('profile'),
         });
-        this.#storage.setAlias('metadata', 'profiles.json');
+        // this.#storage.setAlias('metadata', 'profiles.json');
 
         this.loadMetadata();
     }
 
     #getProfileAcessor(identifier:string) {
-        return this.#storage.getAccessor(identifier, this.#profileAccessType) as Profile;
+        return this.#storage.getAccessor(identifier, 'profile') as Profile;
     }
 
     loadMetadata() {
-        const accessor = this.#storage.getJSONAccessor('metadata');
+        const accessor = this.#storage.getJSONAccessor(PROFILES_METADATA_PATH);
         
-        this.#profileIdentifiers = accessor.get('profiles') ?? [];
-        this.#lastProfileId = accessor.get('last_profile') ?? null;
-        this.#nextProfileId = accessor.get('next_profile_id') ?? 0;
+        this.#profileIdentifiers = accessor.getOne('profiles') ?? [];
+        this.#lastProfileId = accessor.getOne('last_profile') ?? null;
+        this.#nextProfileId = accessor.getOne('next_profile_id') ?? 0;
     }
 
     saveMetadata() {
-        const accessor = this.#storage.getJSONAccessor('metadata');
+        const accessor = this.#storage.getJSONAccessor(PROFILES_METADATA_PATH);
         
-        accessor.set('profiles', this.#profileIdentifiers);
-        accessor.set('last_profile', this.#lastProfileId);
+        accessor.setOne('profiles', this.#profileIdentifiers);
+        accessor.setOne('last_profile', this.#lastProfileId);
         this.#storage.commit();
     }
 
@@ -61,7 +64,7 @@ class Profiles {
         this.#profileIdentifiers.push(identifier);
 
         const profile = this.#getProfileAcessor(identifier);
-        profile.getJSONAccessor('metadata').set('name', 'New Profile');
+        profile.getJSONAccessor(PROFILES_METADATA_PATH).setOne('name', 'New Profile');
 
         return identifier;
     }

@@ -1,7 +1,7 @@
 import LocalAPI from 'api/local';
 import Profile from './Profile'
 
-class Profiles  {
+class Profiles {
     #loaded:boolean = false;
     #profiles:Map<string, Profile> = new Map();
 

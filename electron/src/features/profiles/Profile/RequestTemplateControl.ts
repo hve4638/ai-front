@@ -1,14 +1,14 @@
-import { type IJSONAccessor, type ITextAccessor, type FSStorage } from '@hve/fs-storage';
+import { type IJSONAccessor, type ITextAccessor, type IStorage } from '@hve/fs-storage';
 import { ProfileError } from './errors';
 
 class RequestTemplateControl {
-    #storage:FSStorage;
+    #storage:IStorage;
     #tree:RTMetadataTree;
     #rtIds:string[];
     #lastNewRTIdIndex:number = 0;
     #loaded:boolean = false;
 
-    constructor(storage:FSStorage) {
+    constructor(storage:IStorage) {
         this.#storage = storage;
         this.#tree = [];
         this.#rtIds = [];

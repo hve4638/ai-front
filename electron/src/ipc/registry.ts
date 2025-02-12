@@ -1,4 +1,4 @@
-import { FSStorage } from '@hve/fs-storage';
+import type { IStorage } from '@hve/fs-storage';
 
 import FetchContainer from '@features/fetch-container';
 import UniqueKeyManager from '@features/unique-key';
@@ -6,13 +6,13 @@ import Profiles from '@features/profiles';
 
 export let fetchContainer:FetchContainer;
 export let profiles:Profiles;
-export let globalStorage:FSStorage;
+export let globalStorage:IStorage;
 export let uniqueKeyManager:UniqueKeyManager;
 
 export function setRegistry(registry:{
     fetchContainer:FetchContainer,
     profiles:Profiles,
-    globalStorage:FSStorage,
+    globalStorage:IStorage,
     uniqueKeyManager:UniqueKeyManager,
 }) {
     fetchContainer = registry.fetchContainer;

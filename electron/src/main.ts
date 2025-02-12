@@ -26,15 +26,19 @@ async function main() {
 
     const profiles = new Profiles(programPath.profilePath);
     const globalStorage = new FSStorage(programPath.basePath);
+    
     const fetchContainer = new FetchContainer();
     
     globalStorage.register({
-        'cache.json' : StorageAccess.JSON,
+        'cache.json' : StorageAccess.JSON({
+
+        }),
         'profiles' : {
-            'index.json' : StorageAccess.JSON,
+            'index.json' : StorageAccess.JSON({
+                
+            }),
         }
     });
-    globalStorage.setAlias('cache', 'cache.json');
 
     setRegistry({
         fetchContainer,

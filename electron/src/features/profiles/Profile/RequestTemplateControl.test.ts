@@ -20,10 +20,10 @@ describe('Profile', () => {
         storage = new MemStorage();
         storage.register({
             'request-template' : {
-                'index.json' : StorageAccess.JSON,
+                'index.json' : StorageAccess.JSON(),
                 '*' : {
-                    'index.json' : StorageAccess.JSON,
-                    '*' : StorageAccess.TEXT|StorageAccess.JSON
+                    'index.json' : StorageAccess.JSON(),
+                    '*' : StorageAccess.TEXT()|StorageAccess.JSON()
                 }
             },
         })
