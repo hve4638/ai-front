@@ -73,15 +73,15 @@ function handler() {
         },
 
         
-        [IPCCommand.GetProfileRTPromptData]: async (profileId: string, rtId: string, promptId:string) => {
+        [IPCCommand.GetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, keys:string[]) => {
             const profile = profiles.getProfile(profileId);
-            const data = profile.getRTPromptData(rtId, promptId);
+            const data = profile.getRTPromptData(rtId, promptId, keys);
 
             return [null, data] as const;
         },
-        [IPCCommand.SetProfileRTPromptData]: async (profileId: string, data:RTPromptData) => {
+        [IPCCommand.SetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, data:KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
-            profile.setRTPromptData(data);
+            profile.setRTPromptData(rtId, promptId, data);
 
             return [null] as const;
         },

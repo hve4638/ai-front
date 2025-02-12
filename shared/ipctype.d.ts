@@ -8,6 +8,8 @@ declare global {
     type ElectronResult<T> = Promise<readonly [Error]|readonly [null, T]>;
     type ElectronNoResult = Promise<readonly [Error|null]>;
 
+    type KeyValueInput = [string, any][] | Record<string, any>;
+
     type HistoryCondition = {
         offset? : number;
         limit? : number;
@@ -31,8 +33,8 @@ declare global {
         [IPCCommand.RecoverMasterKey]: (recoveryKey:string) => ElectronResult<boolean>;
     
         /* 전역 스토리지 */
-        [IPCCommand.GetGlobalData]: (storageName:string, key:string) => ElectronResult<any>;
-        [IPCCommand.SetGlobalData]: (storageName:string, key:string, value:any) => ElectronNoResult;
+        [IPCCommand.GetGlobalData]: (storageName:string, keys:string[]) => ElectronResult<any>;
+        [IPCCommand.SetGlobalData]: (storageName:string, data:KeyValueInput) => ElectronNoResult;
     
         /* 프로필 */
         [IPCCommand.CreateProfile]: () => ElectronResult<string>;
@@ -44,8 +46,8 @@ declare global {
         [IPCCommand.SetLastProfile]: (id:string|null) => ElectronNoResult;
     
         /* 프로필 저장소 */
-        [IPCCommand.GetProfileData]: (profileId:string, accessor:string, key:string) => ElectronResult<any>;
-        [IPCCommand.SetProfileData]: (profileId:string, accessor:string, key:string, value:any) => ElectronNoResult;
+        [IPCCommand.GetProfileData]: (profileId:string, accessor:string, keys:string[]) => ElectronResult<any>;
+        [IPCCommand.SetProfileData]: (profileId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
         [IPCCommand.GetProfileDataAsText]: (profileId:string, accessor:string) => ElectronResult<string>;
         [IPCCommand.SetProfileDataAsText]: (profileId:string, accessor:string, value:string) => ElectronNoResult;
         [IPCCommand.GetProfileDataAsBinary]: (profileId:string, accessor:string) => ElectronResult<Buffer>;
@@ -58,8 +60,8 @@ declare global {
         [IPCCommand.RemoveProfileRT]: (profileId:string, rtId:string) => ElectronNoResult;
         [IPCCommand.GetProfileRTMode]: (profileId:string, rtId:string) => ElectronResult<RTMode>;
         [IPCCommand.SetProfileRTMode]: (profileId:string, rtId:string, mode:RTMode) => ElectronNoResult;
-        [IPCCommand.GetProfileRTPromptData]: (profileId:string, rtId:string, promptId:string) => ElectronResult<RTPromptData>;
-        [IPCCommand.SetProfileRTPromptData]: (profileId:string, data:RTPromptData) => ElectronNoResult;
+        [IPCCommand.GetProfileRTPromptData]: (profileId:string, rtId:string, promptId:string, data:string[]) => ElectronResult<Record<string, any>>;
+        [IPCCommand.SetProfileRTPromptData]: (profileId:string, rtId:string, promptId:string, data:KeyValueInput) => ElectronNoResult;
         [IPCCommand.HasProfileRTId]: (profileId:string, rtId:string) => ElectronResult<boolean>;
         [IPCCommand.GenerateProfileRTId]: (profileId:string) => ElectronResult<string>;
         [IPCCommand.ChangeProfileRTId]: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;
@@ -72,8 +74,8 @@ declare global {
         [IPCCommand.GetProfileSessionIds]: (profileId:string) => ElectronResult<string[]>;
         
         /* 프로필 세션 저장소 */
-        [IPCCommand.GetProfileSessionData]: (profileId:string, sessionId:string, accessor:string, key:string) => ElectronResult<any>;
-        [IPCCommand.SetProfileSessionData]: (profileId:string, sessionId:string, accessor:string, key:string, value:any) => ElectronNoResult;
+        [IPCCommand.GetProfileSessionData]: (profileId:string, sessionId:string, accessor:string, keys:string[]) => ElectronResult<any>;
+        [IPCCommand.SetProfileSessionData]: (profileId:string, sessionId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
     
         /* 프로필 세션 히스토리 */
         [IPCCommand.GetProfileSessionHistory]: (profileId:string, sessionId:string, condition:HistoryCondition) => ElectronResult<any>;

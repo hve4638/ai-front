@@ -52,15 +52,15 @@ function handler() {
         },
 
         /* 프로필 저장소 */
-        [IPCCommand.GetProfileData]: async (profileId: string, id: string, key: string) => {
+        [IPCCommand.GetProfileData]: async (profileId: string, id: string, keys: string[]) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(id);
-            return [null, accessor.get(key)] as const;
+            return [null, accessor.get(keys)] as const;
         },
-        [IPCCommand.SetProfileData]: async (profileId: string, id: string, key: string, value: any) => {
+        [IPCCommand.SetProfileData]: async (profileId: string, id: string, data: KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(id);
-            accessor.set(key, value);
+            accessor.set(data);
 
             throttles[profileId] ??= utils.throttle(500);
 

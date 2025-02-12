@@ -27,7 +27,6 @@ class Profiles {
             }),
             '*' : StorageAccess.Custom('profile'),
         });
-        // this.#storage.setAlias('metadata', 'profiles.json');
 
         this.loadMetadata();
     }
@@ -117,7 +116,7 @@ class Profiles {
     getLastProfileId() {
         return this.#lastProfileId;
     }
-
+    
     saveAll() {
         this.saveMetadata();
         this.#profileIdentifiers.forEach((identifier) => {

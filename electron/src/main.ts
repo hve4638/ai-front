@@ -33,11 +33,6 @@ async function main() {
         'cache.json' : StorageAccess.JSON({
 
         }),
-        'profiles' : {
-            'index.json' : StorageAccess.JSON({
-                
-            }),
-        }
     });
 
     setRegistry({

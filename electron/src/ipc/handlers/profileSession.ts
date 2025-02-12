@@ -75,17 +75,17 @@ function handler() {
         },
 
         /* 프로필 세션 저장소 */
-        [IPCCommand.GetProfileSessionData]: async (profileId: string, sessionId: string, id: string, key: string) => {
+        [IPCCommand.GetProfileSessionData]: async (profileId: string, sessionId: string, id: string, keys: string[]) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(`session:${sessionId}:${id}`);
-
-            return [null, accessor.get(key)] as const;
+            
+            return [null, accessor.get(keys)] as const;
         },
-        [IPCCommand.SetProfileSessionData]: async (profileId: string, sessionId: string, accessId: string, key: string, value: any) => {
+        [IPCCommand.SetProfileSessionData]: async (profileId: string, sessionId: string, accessId: string, data:KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(`session:${sessionId}:${accessId}`);
 
-            accessor.set(key, value);
+            accessor.set(data);
             throttles['profiles'] ??= utils.throttle(500);
             throttles['profiles'](() => {
                 profiles.saveAll();

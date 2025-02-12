@@ -54,13 +54,13 @@ class ElectronIPCAPI {
 
 
     /* 전역 저장소 */
-    async getGlobalData(storageName:string, key:string) {
-        const [err, data] = await electron.GetGlobalData(storageName, key);
+    async getGlobalData(storageName:string, keys:string[]) {
+        const [err, data] = await electron.GetGlobalData(storageName, keys);
         if (err) throw new IPCError(err.message);
         return data;
     }
-    async setGlobalData(storageName:string, key:string, data:any) {
-        const [err] = await electron.SetGlobalData(storageName, key, data);
+    async setGlobalData(storageName:string, data:[string, any][]) {
+        const [err] = await electron.SetGlobalData(storageName, data);
         if (err) throw new IPCError(err.message);
     }
 
@@ -94,14 +94,14 @@ class ElectronIPCAPI {
    }
 
     /* 프로필 저장소 */
-    async getProfileData(profileId:string, accessor:string, key:string) {
-        const [err, data] = await electron.GetProfileData(profileId, accessor, key);
+    async getProfileData(profileId:string, accessor:string, keys:string[]) {
+        const [err, data] = await electron.GetProfileData(profileId, accessor, keys);
         if (err) throw new IPCError(err.message);
 
         return data;
     }
-    async setProfileData(profileId:string, accessor:string, key:string, data:any) {
-        const [err] = await electron.SetProfileData(profileId, accessor, key, data);
+    async setProfileData(profileId:string, accessor:string, data:[string, any][]) {
+        const [err] = await electron.SetProfileData(profileId, accessor, data);
         if (err) throw new IPCError(err.message);
     }
     async getProfileDataAsText(profileId:string, accessor:string) {
@@ -152,13 +152,13 @@ class ElectronIPCAPI {
         const [err] = await electron.SetProfileRTMode(profileId, rtId, mode);
         if (err) throw new IPCError(err.message);
     }
-    async getProfileRTPromptData(profileId:string, rtId:string, promptId:string):Promise<RTPromptData> {
-        const [err, promptText] = await electron.GetProfileRTPromptData(profileId, rtId, promptId);
+    async getProfileRTPromptData(profileId:string, rtId:string, promptId:string, keys:string[]):Promise<Record<string, any>> {
+        const [err, promptText] = await electron.GetProfileRTPromptData(profileId, rtId, promptId, keys);
         if (err) throw new IPCError(err.message);
         return promptText;
     }
-    async setProfileRTPromptData(profileId:string, rtId:string, data:RTPromptData) {
-        const [err] = await electron.SetProfileRTPromptData(profileId, rtId, promptText);
+    async setProfileRTPromptData(profileId:string, rtId:string, promptId:string, data:KeyValueInput) {
+        const [err] = await electron.SetProfileRTPromptData(profileId, rtId, promptId, data);
         if (err) throw new IPCError(err.message);
     }
     async hasProfileRTId(profileId:string, rtId:string):Promise<boolean> {
@@ -204,15 +204,14 @@ class ElectronIPCAPI {
     }
 
     /* 프로필 세션 저장소 */
-    async getProfileSessionData(profileId:string, sessionId:string, accessor:string, key:string) {
-        console.log("[IPC] getProfileSessionData", profileId, sessionId, accessor, key);
-        const [err, data] = await electron.GetProfileSessionData(profileId, sessionId, accessor, key);
+    async getProfileSessionData(profileId:string, sessionId:string, accessor:string, keys:string[]) {
+        const [err, data] = await electron.GetProfileSessionData(profileId, sessionId, accessor, keys);
         if (err) throw new IPCError(err.message);
         
         return data;
     }
-    async setProfileSessionData(profileId:string, sessionId:string, accessor:string, key:string, data:any) {
-        const [err] = await electron.SetProfileSessionData(profileId, sessionId, accessor, key, data);
+    async setProfileSessionData(profileId:string, sessionId:string, accessor:string, data:[string, any][]) {
+        const [err] = await electron.SetProfileSessionData(profileId, sessionId, accessor, data);
         if (err) throw new IPCError(err.message);
     }
 

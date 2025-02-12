@@ -1,5 +1,5 @@
 import { MemStorage, StorageAccess } from '@hve/fs-storage';
-import RequestTemplateControl from './RequestTemplateControl';
+import RequestTemplateControl from './RTControl';
 
 describe('Profile', () => {
     let storage:MemStorage;
@@ -23,7 +23,10 @@ describe('Profile', () => {
                 'index.json' : StorageAccess.JSON(),
                 '*' : {
                     'index.json' : StorageAccess.JSON(),
-                    '*' : StorageAccess.TEXT()|StorageAccess.JSON()
+                    '*' : StorageAccess.Union(
+                        StorageAccess.Text(),
+                        StorageAccess.JSON()
+                    ),
                 }
             },
         })

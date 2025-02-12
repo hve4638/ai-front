@@ -1,7 +1,7 @@
 import { type IJSONAccessor, type ITextAccessor, type IStorage } from '@hve/fs-storage';
 import { ProfileError } from './errors';
 
-class RequestTemplateControl {
+class RTControl {
     #storage:IStorage;
     #tree:RTMetadataTree;
     #rtIds:string[];
@@ -18,36 +18,34 @@ class RequestTemplateControl {
     #getEntrypointAccessor() {
         return this.#storage.getJSONAccessor('request-template:index.json');
     }
-
+    
     #getCacheAccessor() {
         return this.#storage.getJSONAccessor('request-template:cache.json');
+    }
+
+    #getRTPromptDataAccessor(rtId:string, promptId:string):IJSONAccessor {
+        return this.#storage.getJSONAccessor(`request-template:${rtId}:prompts:${promptId}.json`);
     }
 
     #getRTIndexAccessor(rtId:string):IJSONAccessor {
         return this.#storage.getJSONAccessor(`request-template:${rtId}:index.json`);
     }
 
-    #getRTPromptAccessor(rtId:string, promptId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`request-template:${rtId}:prompts:${promptId}.json`);
-    }
-
-    #getRTTextAccessor(rtId:string, target:string):ITextAccessor {
-        return this.#storage.getTextAccessor(`request-template:${rtId}:${target}`);
-    }
-
     #loadData() {
         if (this.#loaded) return;
         const prompts = this.#getEntrypointAccessor();
-        this.#tree = prompts.get('tree') ?? [];
-        this.#rtIds = prompts.get('ids') ?? [];
+        this.#tree = prompts.getOne('tree') ?? [];
+        this.#rtIds = prompts.getOne('ids') ?? [];
         
         this.#loaded = true;
     }
 
     #storeData() {
         const prompts = this.#getEntrypointAccessor();
-        prompts.set('tree', this.#tree);
-        prompts.set('ids', this.#rtIds);
+        prompts.set({
+            'tree' :  this.#tree,
+            'ids' : this.#rtIds,
+        });
     }
 
     #getRTIds(tree:RTMetadataTree) {
@@ -123,7 +121,7 @@ class RequestTemplateControl {
 
         const indexAccessor = this.#getRTIndexAccessor(metadata.id);
 
-        indexAccessor.set('name', metadata.name);
+        indexAccessor.setOne('name', metadata.name);
         this.#rtIds.push(metadata.id);
         this.#tree.push({
             type : 'node',
@@ -132,7 +130,7 @@ class RequestTemplateControl {
         });
         this.#storeData();
     }
-
+    
     removeRT(rtId:string) {
         this.#loadData();
         
@@ -148,6 +146,9 @@ class RequestTemplateControl {
 
     changeId(oldRTId:string, newRTId:string) {
         this.#loadData();
+
+        throw new Error('Not implemented');
+        // rt 디렉토리 자체를 이동하도록 구현 필요
         
         if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
         if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
@@ -218,64 +219,54 @@ class RequestTemplateControl {
 
     getRTMode(rtId:string):RTMode {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
-        return indexAccessor.get('mode') ?? 'simple';
+        return indexAccessor.getOne('mode') ?? 'simple';
     }
     setRTMode(rtId:string, mode:RTMode) {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
         switch(mode) {
             case 'simple':
             case 'flow':
-                indexAccessor.set('mode', mode);
+                indexAccessor.setOne('mode', mode);
             default:
                 throw new ProfileError('Invalid RT mode');
         }
     }
 
-    setRTPromptData(data:RTPromptData) {
+    setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
         this.#loadData();
-        const rtId = data.id;
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
-        if (data.name) this.#updateRTNameInTree(rtId, data.name);
-        if (data.name) indexAccessor.set('name', data.name);
-        if (data.forms) indexAccessor.set('forms', data.forms);
-        if (data.inputType) indexAccessor.set('input_type', data.inputType);
-        if (data.contents) {
-            const textAccessor = this.#getRTTextAccessor(rtId, 'prompt.txt');
-            textAccessor.write(data.contents);
+        const promptDataAccessor = this.#getRTPromptDataAccessor(rtId, promptId);
+
+        const names = promptDataAccessor.set(data);
+        if (names.includes('name')) {
+            this.#updateRTNameInTree(rtId, promptDataAccessor.getOne('name'));
+        }
+        if (names.includes('id')) {
+            const newId = promptDataAccessor.getOne('id');
+            if (newId && newId !== promptId) {
+                const newPromptDataAccessor = this.#getRTPromptDataAccessor(rtId, newId);
+                
+                newPromptDataAccessor.set(promptDataAccessor.getAll());
+
+                promptDataAccessor.drop();
+                newPromptDataAccessor.commit();
+            }
         }
     }
 
-    getRTPromptData(rtId:string, promptId:string):RTPromptData {
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
-        const mode = indexAccessor.get('mode');
-        if (mode !== 'simple') {
-            throw new ProfileError('this method is only available in simple mode');
-        }
+    getRTPromptData(rtId:string, promptId:string, keys:string[]) {
+        const indexAccessor = this.#getRTPromptDataAccessor(rtId, promptId);
         
-        const name:string = indexAccessor.get('name');
-        const inputType = indexAccessor.get('input_type');
-        const forms:PromptVar[] = indexAccessor.get('forms');
-
-        const textAccessor = this.#getRTTextAccessor(rtId, 'prompt.txt');
-        const contents = textAccessor.read();
-
-        return {
-            inputType : inputType ?? 'text',
-            forms : forms ?? [],
-            name : name ?? 'New Prompt',
-            id : rtId,
-            contents : contents ?? '',
-        };
+        return indexAccessor.get(keys);
     }
     
     /* RAW 접근 */
-    getRTData(rtId:string, key:string):any {
+    getRTData(rtId:string, keys:string[]):any {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
-        return indexAccessor.get(key);
+        return indexAccessor.get(keys);
     }
-    setRTData(rtId:string, key:string, value:any) {
+    setRTData(rtId:string, data:KeyValueInput) {
         const indexAccessor = this.#getRTIndexAccessor(rtId);
-        indexAccessor.set(key, value);
+        indexAccessor.set(data);
     }
 }
 
@@ -286,4 +277,4 @@ function invalidRTIdError(rtId:string) {
     throw new ProfileError(`Invalid rt id : ${rtId}`);
 }
 
-export default RequestTemplateControl;
+export default RTControl;

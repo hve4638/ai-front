@@ -7,8 +7,7 @@ import {
 } from '@hve/fs-storage';
 import HistoryAccessor from '../HistoryAccessor';
 import SessionControl from './SessionControl';
-import { ProfileError } from './errors';
-import RTControl from './RequestTemplateControl';
+import RTControl from './RTControl';
 import { PROFILE_STORAGE_TREE } from './data';
 
 /**
@@ -99,11 +98,11 @@ class Profile implements IAccessor{
     setRTMode(rtId:string, mode:RTMode) {
         this.#rtControl.setRTMode(rtId, mode);
     }
-    getRTPromptData(rtId:string, promptId:string):RTPromptData {
-        return this.#rtControl.getRTPromptData(rtId, promptId);
+    getRTPromptData(rtId:string, promptId:string, keys:string[]):RTPromptData {
+        return this.#rtControl.getRTPromptData(rtId, promptId, keys);
     }
-    setRTPromptData(data:RTPromptData) {
-        this.#rtControl.setRTPromptData(data);
+    setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
+        this.#rtControl.setRTPromptData(rtId, promptId, data);
     }
     hasRTId(rtId:string):boolean {
         return this.#rtControl.hasId(rtId);
@@ -129,7 +128,7 @@ class Profile implements IAccessor{
     }
 
     getHistoryAccessor(id:string):HistoryAccessor {
-        return this.#storage.getAccessor(`history:${id}`, this.#histoyAccessBit) as HistoryAccessor;
+        return this.#storage.getAccessor(`history:${id}`, 'history') as HistoryAccessor;
     }
 }
 
