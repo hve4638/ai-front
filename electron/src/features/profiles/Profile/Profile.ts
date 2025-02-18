@@ -1,10 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-    FSStorage,
+    ACStorage,
     StorageAccess,
     type IAccessor
-} from '@hve/fs-storage';
+} from 'ac-storage';
 import HistoryAccessor from '../HistoryAccessor';
 import SessionControl from './SessionControl';
 import RTControl from './RTControl';
@@ -16,7 +16,7 @@ import { PROFILE_STORAGE_TREE } from './data';
 class Profile implements IAccessor{
     /** Profile 디렉토리 경로 */
     #basePath:string;
-    #storage:FSStorage;
+    #storage:ACStorage;
     #sessionControl:SessionControl;
     #rtControl:RTControl;
     #dropped:boolean = false;
@@ -25,7 +25,7 @@ class Profile implements IAccessor{
         this.#basePath = profilePath;
         fs.mkdirSync(this.#basePath, {recursive: true});
 
-        this.#storage = new FSStorage(this.#basePath);
+        this.#storage = new ACStorage(this.#basePath);
         this.#storage.addAccessEvent('history', {
             create: (fullPath:string) => new HistoryAccessor(fullPath),
         });

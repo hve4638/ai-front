@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import { FSStorage } from '@hve/fs-storage';
+import { ACStorage } from 'ac-storage';
 import { ProfileError } from './errors';
 
 class SessionControl {
-    #storage:FSStorage;
+    #storage:ACStorage;
 
-    constructor(storage:FSStorage) {
+    constructor(storage:ACStorage) {
         this.#storage = storage;
     }
     
@@ -16,8 +16,8 @@ class SessionControl {
         const data = this.#storage.getJSONAccessor('data');
         const cache = this.#storage.getJSONAccessor('cache');
 
-        const sessions:string[] = data.get('sessions') ?? [];
-        const removedSessions:string[] = cache.get('removed_sessions') ?? [];  
+        const sessions:string[] = data.getOne('sessions') ?? [];
+        const removedSessions:string[] = cache.getOne('removed_sessions') ?? [];  
         let num = 0;
         let sid:string;
         while(true) {
@@ -28,7 +28,7 @@ class SessionControl {
             }
             num++;
         }
-        data.set('sessions', sessions);
+        data.setOne('sessions', sessions);
 
         return sid;
     }
@@ -42,13 +42,13 @@ class SessionControl {
         const data = this.#storage.getJSONAccessor('data');
         const cache = this.#storage.getJSONAccessor('cache');
 
-        let sessions:string[] = data.get('sessions') ?? [];
+        let sessions:string[] = data.getOne('sessions') ?? [];
         if (sessions.includes(sid)) {
             sessions = sessions.filter((s)=>s!==sid);
-            data.set('sessions', sessions);
+            data.setOne('sessions', sessions);
 
-            const removedSessionLimit = config.get('removed_session_limit') ?? 30;
-            const removedSessions = cache.get('removed_sessions') ?? [];
+            const removedSessionLimit = config.getOne('removed_session_limit') ?? 30;
+            const removedSessions = cache.getOne('removed_sessions') ?? [];
             removedSessions.push(sid);
             if (removedSessions.length > removedSessionLimit) {
                 const permanentRemoved = removedSessions.splice(0, removedSessions.length - removedSessionLimit);
@@ -56,7 +56,7 @@ class SessionControl {
                     this.#storage.dropDir(`session:${item}`);
                 }
             }
-            cache.set('removed_sessions', removedSessions);
+            cache.setOne('removed_sessions', removedSessions);
         }
         else {
             throw new ProfileError('Invalid session id');
@@ -71,13 +71,13 @@ class SessionControl {
         const data = this.#storage.getJSONAccessor('data');
         const cache = this.#storage.getJSONAccessor('cache');
         
-        const removedSessions:string[] = cache.get('removed_sessions') ?? []
+        const removedSessions:string[] = cache.getOne('removed_sessions') ?? []
         const lastRemovedSession = removedSessions.pop();
         if (lastRemovedSession) {
-            const sessions = data.get('sessions') ?? [];
+            const sessions = data.getOne('sessions') ?? [];
             sessions.push(lastRemovedSession);
-            data.set('sessions', sessions);
-            cache.set('removed_sessions', removedSessions);
+            data.setOne('sessions', sessions);
+            cache.setOne('removed_sessions', removedSessions);
             return lastRemovedSession;
         }
         else {
@@ -89,19 +89,19 @@ class SessionControl {
         const data = this.#storage.getJSONAccessor('data');
         const cache = this.#storage.getJSONAccessor('cache');
 
-        const sessions = data.get('sessions') ?? [];
-        const removedSessions = cache.get('removed_sessions') ?? [];
+        const sessions = data.getOne('sessions') ?? [];
+        const removedSessions = cache.getOne('removed_sessions') ?? [];
 
         const inRemoved = removedSessions.includes(sid);
         const inSessions = sessions.includes(sid);
         if (inRemoved || inSessions) {
             if (inSessions) {
                 const filtered = sessions.filter((s)=>s!==sid);
-                data.set('sessions', filtered);
+                data.setOne('sessions', filtered);
             }
             if (inRemoved) {
                 const filtered = removedSessions.filter((s)=>s!==sid);
-                cache.set('removed_sessions', filtered);
+                cache.setOne('removed_sessions', filtered);
             }
 
             this.#storage.dropDir(`session:${sid}`);
@@ -123,8 +123,8 @@ class SessionControl {
         else {
             const data = this.#storage.getJSONAccessor('data');
             const cache = this.#storage.getJSONAccessor('cache');
-            const sessions = data.get('sessions');
-            const removedSessions = cache.get('removed_sessions');
+            const sessions = data.getOne('sessions');
+            const removedSessions = cache.getOne('removed_sessions');
 
             const dirs = fs.readdirSync(sessionPath);
             for (const dir of dirs) {
@@ -145,16 +145,16 @@ class SessionControl {
     reorderSessions(newSessionIds:string[]) {
         const data = this.#storage.getJSONAccessor('data');
 
-        const prevSet = new Set(data.get('sessions') ?? [])
+        const prevSet = new Set(data.getOne('sessions') ?? [])
         const valid = newSessionIds.every((sid)=>prevSet.has(sid));
         if (valid) {
-            data.set('sessions', newSessionIds);
+            data.setOne('sessions', newSessionIds);
         }
     }
 
     getSessionIds():string[] {
         const data = this.#storage.getJSONAccessor('data');
-        return data.get('sessions') ?? [];
+        return data.getOne('sessions') ?? [];
     }
 }
 

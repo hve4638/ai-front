@@ -1,4 +1,4 @@
-import { MemStorage, StorageAccess } from '@hve/fs-storage';
+import { MemStorage, StorageAccess } from 'ac-storage';
 import RequestTemplateControl from './RTControl';
 
 describe('Profile', () => {

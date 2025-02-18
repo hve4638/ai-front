@@ -1,20 +1,20 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { FSStorage, StorageAccess, JSONType } from '@hve/fs-storage';
+import { ACStorage, StorageAccess, JSONType } from 'ac-storage';
 import { ProfileError } from './Profile';
 import Profile from './Profile';
 
 const PROFILES_METADATA_PATH = 'profiles.json';
 class Profiles {
     #basePath:string;
-    #storage:FSStorage;
+    #storage:ACStorage;
     #profileIdentifiers:string[] = [];
     #lastProfileId:string|null = null;
     #nextProfileId:number = 0;
 
     constructor(basePath:string) {
         this.#basePath = basePath;
-        this.#storage = new FSStorage(this.#basePath);
+        this.#storage = new ACStorage(this.#basePath);
         this.#storage.addAccessEvent('profile', {
             create(fullPath:string) {
                 return new Profile(fullPath);

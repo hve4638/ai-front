@@ -1,4 +1,4 @@
-import { JSONType, StorageAccess } from '@hve/fs-storage';
+import { JSONType, StorageAccess } from 'ac-storage';
 
 export const PROFILE_STORAGE_TREE = {
     'request-template' : {
@@ -25,9 +25,15 @@ export const PROFILE_STORAGE_TREE = {
     },
     'session' : {
         '*' : {
-            'data.json' : StorageAccess.JSON(),
-            'config.json' : StorageAccess.JSON(),
-            'cache.json' : StorageAccess.JSON(),
+            'data.json' : StorageAccess.JSON({
+                'sessions' : JSONType.array,
+            }),
+            'config.json' : StorageAccess.JSON({
+                'removed_session_limit' : JSONType.number,
+            }),
+            'cache.json' : StorageAccess.JSON({
+                'removed_sessions' : JSONType.array,
+            }),
             'history' : StorageAccess.Custom('history'),
         }
     },

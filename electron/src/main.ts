@@ -8,7 +8,7 @@ import ProgramPath from './features/program-path';
 import { setRegistry } from './ipc/registry';
  
 import { personal, localAppdata } from 'win-known-folders';
-import { FSStorage, StorageAccess } from '@hve/fs-storage';
+import { ACStorage, JSONType, StorageAccess } from 'ac-storage';
 import FetchContainer from '@features/fetch-container';
 import Profiles from '@features/profiles';
 import UniqueKeyManager from '@features/unique-key';
@@ -25,13 +25,13 @@ async function main() {
     const uniqueKeyManager = new UniqueKeyManager(uniqueKeyPath);
 
     const profiles = new Profiles(programPath.profilePath);
-    const globalStorage = new FSStorage(programPath.basePath);
+    const globalStorage = new ACStorage(programPath.basePath);
     
     const fetchContainer = new FetchContainer();
     
     globalStorage.register({
         'cache.json' : StorageAccess.JSON({
-
+            'lastsize' : JSONType.array,
         }),
     });
 
