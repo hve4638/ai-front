@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import { ACStorage } from 'ac-storage';
+import { ACStorage, IACSubStorage } from 'ac-storage';
 import { ProfileError } from './errors';
 
 class SessionControl {
-    #storage:ACStorage;
+    #storage:IACSubStorage;
 
-    constructor(storage:ACStorage) {
+    constructor(storage:IACSubStorage) {
         this.#storage = storage;
     }
     

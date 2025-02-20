@@ -35,7 +35,7 @@ class HistoryAccessor implements IAccessor{
         this.#dao.drop();
     }
 
-    get dropped() {
+    isDropped() {
         return this.#droped;
     }
 

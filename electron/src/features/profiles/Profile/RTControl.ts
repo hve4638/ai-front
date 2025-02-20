@@ -1,14 +1,14 @@
-import { type IJSONAccessor, type ITextAccessor, type IACStorage } from 'ac-storage';
+import { type IJSONAccessor, type ITextAccessor, type IACStorage, IACSubStorage } from 'ac-storage';
 import { ProfileError } from './errors';
 
 class RTControl {
-    #storage:IACStorage;
+    #storage:IACSubStorage;
     #tree:RTMetadataTree;
     #rtIds:string[];
     #lastNewRTIdIndex:number = 0;
     #loaded:boolean = false;
 
-    constructor(storage:IACStorage) {
+    constructor(storage:IACSubStorage) {
         this.#storage = storage;
         this.#tree = [];
         this.#rtIds = [];
@@ -16,19 +16,19 @@ class RTControl {
 
     /** request-template의 entrypoint 접근자 */
     #getEntrypointAccessor() {
-        return this.#storage.getJSONAccessor('request-template:index.json');
+        return this.#storage.getJSONAccessor('index.json');
     }
     
     #getCacheAccessor() {
-        return this.#storage.getJSONAccessor('request-template:cache.json');
+        return this.#storage.getJSONAccessor('cache.json');
     }
 
     #getRTPromptDataAccessor(rtId:string, promptId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`request-template:${rtId}:prompts:${promptId}.json`);
+        return this.#storage.getJSONAccessor(`${rtId}:prompts:${promptId}.json`);
     }
 
     #getRTIndexAccessor(rtId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`request-template:${rtId}:index.json`);
+        return this.#storage.getJSONAccessor(`${rtId}:index.json`);
     }
 
     #loadData() {
@@ -147,20 +147,7 @@ class RTControl {
     changeId(oldRTId:string, newRTId:string) {
         this.#loadData();
 
-        throw new Error('Not implemented');
-        // rt 디렉토리 자체를 이동하도록 구현 필요
-        
-        if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
-        if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
-
-        const metadata = this.#findRTMetadata(this.#tree, oldRTId);
-        if (metadata) {
-            metadata.id = newRTId;
-            
-            const newIds = this.#rtIds.filter((id)=>(id !== oldRTId));
-            newIds.push(newRTId);
-            this.#rtIds = newIds;
-        }
+        this.#storage.moveAccessor(`${oldRTId}`, `${newRTId}`);
 
         this.#storeData();
     }

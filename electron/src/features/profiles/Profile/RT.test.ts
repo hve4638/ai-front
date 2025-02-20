@@ -1,8 +1,8 @@
-import { MemStorage, StorageAccess } from 'ac-storage';
+import { MemACStorage, StorageAccess } from 'ac-storage';
 import RequestTemplateControl from './RTControl';
 
 describe('Profile', () => {
-    let storage:MemStorage;
+    let storage:MemACStorage;
     let rtControl:RequestTemplateControl;
     const nodes:RTMetadata[] = [];
 
@@ -17,7 +17,7 @@ describe('Profile', () => {
     });
 
     beforeEach(()=>{
-        storage = new MemStorage();
+        storage = new MemACStorage();
         storage.register({
             'request-template' : {
                 'index.json' : StorageAccess.JSON(),

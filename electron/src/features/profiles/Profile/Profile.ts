@@ -3,7 +3,6 @@ import * as path from 'node:path';
 import {
     ACStorage,
     StorageAccess,
-    type IAccessor
 } from 'ac-storage';
 import HistoryAccessor from '../HistoryAccessor';
 import SessionControl from './SessionControl';
@@ -13,7 +12,7 @@ import { PROFILE_STORAGE_TREE } from './data';
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
  */
-class Profile implements IAccessor{
+class Profile {
     /** Profile 디렉토리 경로 */
     #basePath:string;
     #storage:ACStorage;
@@ -28,11 +27,16 @@ class Profile implements IAccessor{
         this.#storage = new ACStorage(this.#basePath);
         this.#storage.addAccessEvent('history', {
             create: (fullPath:string) => new HistoryAccessor(fullPath),
+            //copy: (prevAC, nextAC) => {},
         });
         
         this.#storage.register(PROFILE_STORAGE_TREE);
-        this.#sessionControl = new SessionControl(this.#storage);
-        this.#rtControl = new RTControl(this.#storage);
+        this.#sessionControl = new SessionControl(
+            this.#storage
+        );
+        this.#rtControl = new RTControl(
+            this.#storage.subStorage('request-template')
+        );
     }
     commit(): void {
         this.#storage.commit();
