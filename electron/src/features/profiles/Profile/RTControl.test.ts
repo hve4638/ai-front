@@ -1,14 +1,15 @@
-import { MemACStorage, StorageAccess } from 'ac-storage';
+import { JSONType, MemACStorage, StorageAccess } from 'ac-storage';
 import RequestTemplateControl from './RTControl';
+import { PROFILE_STORAGE_TREE } from './data';
 
 describe('Profile', () => {
     let storage:MemACStorage;
     let rtControl:RequestTemplateControl;
-    const nodes:RTMetadata[] = [];
+    const NODES:RTMetadata[] = [];
 
     beforeAll(()=>{
         for (let i=0; i<10; i++) {
-            nodes.push({
+            NODES.push({
                 type: 'node',
                 name: `node${i}`,
                 id: `node${i}`,
@@ -18,98 +19,86 @@ describe('Profile', () => {
 
     beforeEach(()=>{
         storage = new MemACStorage();
-        storage.register({
-            'request-template' : {
-                'index.json' : StorageAccess.JSON(),
-                '*' : {
-                    'index.json' : StorageAccess.JSON(),
-                    '*' : StorageAccess.Union(
-                        StorageAccess.Text(),
-                        StorageAccess.JSON()
-                    ),
-                }
-            },
-        })
-        rtControl = new RequestTemplateControl(storage);
+        storage.register(PROFILE_STORAGE_TREE);
+        rtControl = new RequestTemplateControl(storage.subStorage('request-template'));
     })
 
-    test('getTree', () => {
+    test('getTree()', () => {
         const expected = [];
         const actual = rtControl.getTree();
         
         expect(actual).toEqual(expected);
     });
 
-    test('addRT', () => {
-        rtControl.addRT(nodes[0]);
-        
+    test('addRT()', () => {
+        rtControl.addRT(NODES[0]);
         {
-            const expected = [ nodes[0] ];
+            const expected = [ NODES[0] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
 
-        rtControl.addRT(nodes[1]);
+        rtControl.addRT(NODES[1]);
         {
-            const expected = [ nodes[0], nodes[1] ];
-            const actual = rtControl.getTree();
-            expect(actual).toEqual(expected);
-        }
-    });
-
-    test('removeRT', () => {
-        rtControl.addRT(nodes[0]);
-        rtControl.addRT(nodes[1]);
-        rtControl.addRT(nodes[2]);
-        {
-            const expected = [ nodes[0], nodes[1], nodes[2] ];
-            const actual = rtControl.getTree();
-            expect(actual).toEqual(expected);
-        }
-
-        rtControl.removeRT(nodes[1].id);
-        {
-            const expected = [ nodes[0], nodes[2] ];
+            const expected = [ NODES[0], NODES[1] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
     });
 
-    test('updateTree', () => {
-        rtControl.addRT(nodes[0]);
-        rtControl.addRT(nodes[1]);
-        rtControl.addRT(nodes[2]);
+    test('removeRT()', () => {
+        rtControl.addRT(NODES[0]);
+        rtControl.addRT(NODES[1]);
+        rtControl.addRT(NODES[2]);
         {
-            const expected = [ nodes[0], nodes[1], nodes[2] ];
+            const expected = [ NODES[0], NODES[1], NODES[2] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
 
-        rtControl.updateTree([ nodes[2], nodes[0], nodes[1] ]);
+        rtControl.removeRT(NODES[1].id);
         {
-            const expected = [ nodes[2], nodes[0], nodes[1] ];
+            const expected = [ NODES[0], NODES[2] ];
+            const actual = rtControl.getTree();
+            expect(actual).toEqual(expected);
+        }
+    });
+
+    test('updateTree()', () => {
+        rtControl.addRT(NODES[0]);
+        rtControl.addRT(NODES[1]);
+        rtControl.addRT(NODES[2]);
+        {
+            const expected = [ NODES[0], NODES[1], NODES[2] ];
+            const actual = rtControl.getTree();
+            expect(actual).toEqual(expected);
+        }
+
+        rtControl.updateTree([ NODES[2], NODES[0], NODES[1] ]);
+        {
+            const expected = [ NODES[2], NODES[0], NODES[1] ];
             const actual = rtControl.getTree();
 
             expect(actual).toEqual(expected);
         }
     });
 
-    test('updateTree : directory 1', () => {
-        rtControl.addRT(nodes[0]);
-        rtControl.addRT(nodes[1]);
-        rtControl.addRT(nodes[2]);
+    test('updateTree() : 디렉토리 추가', () => {
+        rtControl.addRT(NODES[0]);
+        rtControl.addRT(NODES[1]);
+        rtControl.addRT(NODES[2]);
         {
-            const expected = [ nodes[0], nodes[1], nodes[2] ];
+            const expected = [ NODES[0], NODES[1], NODES[2] ];
             const actual = rtControl.getTree();
 
             expect(actual).toEqual(expected);
         }
         const changed:RTMetadataTree = [
-            nodes[2],
+            NODES[2],
             {
                 type: 'directory',
                 name: 'dir1',
-                children: [ nodes[0], nodes[1] ],
+                children: [ NODES[0], NODES[1] ],
             },
         ];
         rtControl.updateTree(changed);
@@ -120,17 +109,17 @@ describe('Profile', () => {
         }
     });
     
-    test('updateTree : directory 2', () => {
+    test('updateTree() : 빈 디렉토리 추가 허용', () => {
         const emptyDir:RTMetadataDirectory = {
             type: 'directory',
             name: 'dir1',
             children: [],
         };
-        rtControl.addRT(nodes[0]);
+        rtControl.addRT(NODES[0]);
         
         {
             const expected:RTMetadataTree = [
-                nodes[0],
+                NODES[0],
                 emptyDir,
             ]
             rtControl.updateTree(expected);
@@ -141,7 +130,7 @@ describe('Profile', () => {
         {
             const expected:RTMetadataTree = [
                 emptyDir,
-                nodes[0],
+                NODES[0],
             ]
             rtControl.updateTree(expected);
             
@@ -150,17 +139,16 @@ describe('Profile', () => {
         }
     });
 
-    // 디렉토리에서 마지막 프롬프트를 삭제한 경우에도 디렉토리는 보존됨
-    test('removeTree : directory', () => {
-        rtControl.addRT(nodes[0]);
-        rtControl.addRT(nodes[1]);
+    test('removeTree() : RT 삭제 후 빈 디렉토리 허용', () => {
+        rtControl.addRT(NODES[0]);
+        rtControl.addRT(NODES[1]);
         
         const changed:RTMetadataTree = [
-            nodes[0], 
+            NODES[0], 
             {
                 type: 'directory',
                 name: 'dir1',
-                children: [ nodes[1] ],
+                children: [ NODES[1] ],
             },
         ];
         rtControl.updateTree(changed);
@@ -170,10 +158,10 @@ describe('Profile', () => {
             expect(actual).toEqual(expected);
         }
         
-        rtControl.removeRT(nodes[1].id);
+        rtControl.removeRT(NODES[1].id);
         {
             const expected = [
-                nodes[0], 
+                NODES[0], 
                 {
                     type: 'directory',
                     name: 'dir1',
@@ -185,41 +173,41 @@ describe('Profile', () => {
         }
     });
 
-    test('hasId', () => {
+    test('hasId()', () => {
         const expectTrue = (...indexes:number[]) => {
             for (const i of indexes) {
-                expect(rtControl.hasId(nodes[i].id)).toBe(true);
+                expect(rtControl.hasId(NODES[i].id)).toBe(true);
             }
         }
         const expectFalse = (...indexes:number[]) => {
             for (const i of indexes) {
-                expect(rtControl.hasId(nodes[i].id)).toBe(false);
+                expect(rtControl.hasId(NODES[i].id)).toBe(false);
             }
         }
 
         expectFalse(0, 1, 2);
 
-        rtControl.addRT(nodes[0]);
-        rtControl.addRT(nodes[1]);
+        rtControl.addRT(NODES[0]);
+        rtControl.addRT(NODES[1]);
         expectTrue(0, 1);
         expectFalse(2);
 
-        rtControl.addRT(nodes[2]);
+        rtControl.addRT(NODES[2]);
         expectTrue(0, 1, 2);
         
-        rtControl.removeRT(nodes[2].id);
+        rtControl.removeRT(NODES[2].id);
         expectTrue(0, 1);
         expectFalse(2);
 
-        rtControl.removeRT(nodes[0].id);
+        rtControl.removeRT(NODES[0].id);
         expectTrue(1);
         expectFalse(0, 2);
 
-        rtControl.removeRT(nodes[1].id);
+        rtControl.removeRT(NODES[1].id);
         expectFalse(0, 1, 2);
     });
 
-    test('generateId', () => {
+    test('generateId()', () => {
         const ids = new Set<string>();
 
         for (let i=0; i<1000; i++) {
@@ -229,33 +217,29 @@ describe('Profile', () => {
         }
     });
 
-    test('moveId', () => {
+    test('changeId()', () => {
         const expectTrue = (...indexes:number[]) => {
-            for (const i of indexes) {
-                expect([
-                    i, rtControl.hasId(nodes[i].id)
-                ]).toEqual([
-                    i, true
-                ]);
-            }
+            const expected = indexes.map((i)=>rtControl.hasId(NODES[i].id))
+
+            expect(expected).toEqual(indexes.map(()=>true));
         }
         const expectFalse = (...indexes:number[]) => {
             for (const i of indexes) {
                 expect([
-                    i, rtControl.hasId(nodes[i].id)
+                    i, rtControl.hasId(NODES[i].id)
                 ]).toEqual([
                     i, false
                 ]);
             }
         }
 
-        rtControl.addRT({...nodes[0]});
-        rtControl.addRT({...nodes[1]});
-        rtControl.addRT({...nodes[2]});
+        rtControl.addRT({...NODES[0]});
+        rtControl.addRT({...NODES[1]});
+        rtControl.addRT({...NODES[2]});
         expectTrue(0, 1, 2);
         expectFalse(3, 4, 5);
 
-        rtControl.changeId(nodes[0].id, nodes[3].id);
+        rtControl.changeId(NODES[0].id, NODES[3].id);
         expectTrue(1, 2, 3);
         expectFalse(0, 4, 5);
     });

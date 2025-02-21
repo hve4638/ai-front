@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
     ACStorage,
+    ICustomAccessor,
     StorageAccess,
 } from 'ac-storage';
 import HistoryAccessor from '../HistoryAccessor';
@@ -12,7 +13,7 @@ import { PROFILE_STORAGE_TREE } from './data';
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
  */
-class Profile {
+class Profile implements ICustomAccessor{
     /** Profile 디렉토리 경로 */
     #basePath:string;
     #storage:ACStorage;
@@ -42,12 +43,12 @@ class Profile {
         this.#storage.commit();
     }
     drop(): void {
-        if (this.dropped) return;
+        if (this.isDropped()) return;
     }
     get path(): string {
         return this.#basePath;
     }
-    get dropped(): boolean {
+    isDropped(): boolean {
         return this.#dropped;
         fs.rmSync(this.#basePath, {recursive: true});
     }

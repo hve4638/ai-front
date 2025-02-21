@@ -2,9 +2,9 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import HistoryDAO from './HistoryDAO';
 import type { HistoryData } from './types';
-import { type IAccessor } from 'ac-storage';
+import { ICustomAccessor } from 'ac-storage';
 
-class HistoryAccessor implements IAccessor{
+class HistoryAccessor implements ICustomAccessor {
     #dao:HistoryDAO;
     #droped:boolean = false;
 

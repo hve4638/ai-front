@@ -8,13 +8,23 @@ class SessionControl {
     constructor(storage:IACSubStorage) {
         this.#storage = storage;
     }
+
+    #getCacheAccessor() {
+        return this.#storage.getJSONAccessor('cache.json');
+    }
+    #getDataAccessor() {
+        return this.#storage.getJSONAccessor('data.json');
+    }
+    #getConfigAccessor() {
+        return this.#storage.getJSONAccessor('config.json');
+    }
     
     /**
      * 새 세션 생성
     */
     createSession():string {
-        const data = this.#storage.getJSONAccessor('data');
-        const cache = this.#storage.getJSONAccessor('cache');
+        const data = this.#getDataAccessor();
+        const cache = this.#getCacheAccessor();
 
         const sessions:string[] = data.getOne('sessions') ?? [];
         const removedSessions:string[] = cache.getOne('removed_sessions') ?? [];  
@@ -38,9 +48,9 @@ class SessionControl {
      * @param sid 
      */
     removeSession(sid:string) {
-        const config = this.#storage.getJSONAccessor('config');
-        const data = this.#storage.getJSONAccessor('data');
-        const cache = this.#storage.getJSONAccessor('cache');
+        const config = this.#getConfigAccessor();
+        const data = this.#getDataAccessor();
+        const cache = this.#getCacheAccessor();
 
         let sessions:string[] = data.getOne('sessions') ?? [];
         if (sessions.includes(sid)) {
@@ -68,8 +78,8 @@ class SessionControl {
      * @returns 
      */
     undoRemoveSession():string|null {
-        const data = this.#storage.getJSONAccessor('data');
-        const cache = this.#storage.getJSONAccessor('cache');
+        const data = this.#getDataAccessor();
+        const cache = this.#getCacheAccessor();
         
         const removedSessions:string[] = cache.getOne('removed_sessions') ?? []
         const lastRemovedSession = removedSessions.pop();
@@ -86,8 +96,8 @@ class SessionControl {
     }
 
     permanentRemoveSession(sid:string) {
-        const data = this.#storage.getJSONAccessor('data');
-        const cache = this.#storage.getJSONAccessor('cache');
+        const data = this.#getDataAccessor();
+        const cache = this.#getCacheAccessor();
 
         const sessions = data.getOne('sessions') ?? [];
         const removedSessions = cache.getOne('removed_sessions') ?? [];
@@ -121,8 +131,8 @@ class SessionControl {
             }
         }
         else {
-            const data = this.#storage.getJSONAccessor('data');
-            const cache = this.#storage.getJSONAccessor('cache');
+            const data = this.#getDataAccessor();
+            const cache = this.#getCacheAccessor();
             const sessions = data.getOne('sessions');
             const removedSessions = cache.getOne('removed_sessions');
 
@@ -143,7 +153,7 @@ class SessionControl {
      * @param newSessionIds 
      */
     reorderSessions(newSessionIds:string[]) {
-        const data = this.#storage.getJSONAccessor('data');
+        const data = this.#getDataAccessor();
 
         const prevSet = new Set(data.getOne('sessions') ?? [])
         const valid = newSessionIds.every((sid)=>prevSet.has(sid));
@@ -153,7 +163,8 @@ class SessionControl {
     }
 
     getSessionIds():string[] {
-        const data = this.#storage.getJSONAccessor('data');
+        const data = this.#getDataAccessor();
+        
         return data.getOne('sessions') ?? [];
     }
 }

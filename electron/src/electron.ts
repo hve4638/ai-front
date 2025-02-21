@@ -36,7 +36,7 @@ export function openElectronApp(
         devUrl = ''
     } = options;
     
-    const cacheAccessor = globalStorage.getJSONAccessor('cache');
+    const cacheAccessor = globalStorage.getJSONAccessor('cache.json');
     const [width, height] = cacheAccessor.getOne('lastsize') ?? [1280, 900];
     const [minWidth, minHeight] = [500, 500];
 

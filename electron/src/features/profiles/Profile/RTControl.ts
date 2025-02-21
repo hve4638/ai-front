@@ -96,6 +96,15 @@ class RTControl {
         return this.#tree;
     }
     
+    /**
+     * RT 트리 갱신
+     * 
+     * 새로운 RT 트리는 기존 트리에 존재하는 모든 RT를 포함해야 한다.
+     * 
+     * 새 RT 추가 후 위치 지정은, addRT()를 통한 RT 추가후 updateTree()를 호출해야 한다.
+     * 
+     * 새 디렉토리는 updateTree를 통해 바로 추가 및 제거할 수 있으며 빈 디렉토리도 허용된다.
+     */
     updateTree(newTree:RTMetadataTree) {
         this.#loadData();
         
@@ -146,8 +155,20 @@ class RTControl {
 
     changeId(oldRTId:string, newRTId:string) {
         this.#loadData();
+        
+        if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
+        if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
 
         this.#storage.moveAccessor(`${oldRTId}`, `${newRTId}`);
+
+        const metadata = this.#findRTMetadata(this.#tree, oldRTId);
+        if (metadata) {
+            metadata.id = newRTId;
+            
+            const newIds = this.#rtIds.filter((id)=>(id !== oldRTId));
+            newIds.push(newRTId);
+            this.#rtIds = newIds;
+        }
 
         this.#storeData();
     }
@@ -157,6 +178,9 @@ class RTControl {
         return this.#hasId(rtId);
     }
 
+    /**
+     * 사용되지 않는 RT ID 생성
+     */
     generateId():string {
         this.#loadData();
         
