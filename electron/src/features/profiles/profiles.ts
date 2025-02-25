@@ -16,7 +16,7 @@ class Profiles {
         this.#basePath = basePath;
         this.#storage = new ACStorage(this.#basePath);
         this.#storage.addAccessEvent('profile', {
-            create(fullPath:string) {
+            init(fullPath:string) {
                 return new Profile(fullPath);
             },
         });

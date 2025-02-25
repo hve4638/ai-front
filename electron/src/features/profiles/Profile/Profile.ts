@@ -27,8 +27,12 @@ class Profile implements ICustomAccessor{
 
         this.#storage = new ACStorage(this.#basePath);
         this.#storage.addAccessEvent('history', {
-            create: (fullPath:string) => new HistoryAccessor(fullPath),
-            //copy: (prevAC, nextAC) => {},
+            init: (fullPath:string) => new HistoryAccessor(fullPath),
+            create: (fullPath) => {},
+            load: (accessor, fullPath) => {},
+            save: (accessor, fullPath) => {},
+            destroy: (accessor, fullPath) => {},
+            exists : () => false,
         });
         
         this.#storage.register(PROFILE_STORAGE_TREE);

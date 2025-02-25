@@ -30,9 +30,18 @@ async function main() {
     const fetchContainer = new FetchContainer();
     
     globalStorage.register({
+        'profiles' : StorageAccess.Custom('profiles'),
         'cache.json' : StorageAccess.JSON({
             'lastsize' : JSONType.array,
         }),
+    });
+    globalStorage.addAccessEvent('profiles', {
+        init(actualPath: string) {
+            return new Profiles(actualPath);
+        },
+        destroy: function (ac: unknown, actualPath: string, ...args: any[]): void {
+            
+        }
     });
 
     setRegistry({
