@@ -1,110 +1,139 @@
-import LocalAPI from 'api/local';
-import ProfileSessionAPI from './SessionAPI';
-import type { IProfileSession } from './types';
+import SessionAPI from './SessionAPI';
 import { IPCError } from 'api/error';
+import RTAPI from './RTAPI';
+
+const electron = window.electron;
 
 class ProfileAPI {
-    #id:string;
-    #name:string = 'UNKNOWN';
-    #color:string = '';
-    #sessions:Map<string, ProfileSessionAPI> = new Map();
+    #profileId:string;
+    #sessionAPIs:Record<string, SessionAPI> = {};
+    #rtAPIs:Record<string, RTAPI> = {};
 
     constructor(id:string) {
-        this.#id = id;
+        this.#profileId = id;
     }
 
-    async loadMetadata() {
-        const {
-            name,
-            color
-        } = await LocalAPI.getProfileData(this.#id, 'config.json', ['name', 'color']);
-        this.#name = name;
-        this.#color = color;
+    get id() {
+        return this.#profileId;
     }
 
-    async setData(accessor:string, key:string, value:any) {
-        await LocalAPI.setProfileData(this.#id, accessor, [[key, value]]);
+    /* get/set JSON */
+    async set(accessor:string, data:[string, any][]) {
+        const [err] = await electron.SetProfileData(this.#profileId, accessor, data);
+        if (err) throw new IPCError(err.message);
     }
 
-    async getData(accessor:string, key:string) {
-        return await LocalAPI.getProfileData(this.#id, accessor, [key]);
+    async get(accessor:string, keys:string[]) {
+        const [err] = await electron.GetProfileData(this.#profileId, accessor, keys);
+        if (err) throw new IPCError(err.message);
     }
     
-    get name() {
-        return this.#name;
-    }
-    get color() {
-        return this.#color;
-    }
-    set name(value:string) {
-        LocalAPI.setProfileData(this.#id, 'config.json', [['name', value]]);
-        this.#name = value;
-    }
-    set color(value:string) {
-        LocalAPI.setProfileData(this.#id, 'config.json', [['color', value]]);
-        this.#color = value;
+    async setOne(accessor:string, key:string, value:any) {
+        const [err] = await electron.SetProfileData(this.#profileId, accessor, [[key, value]]);
+        if (err) throw new IPCError(err.message);
     }
 
-    getSession(sessionId:string):IProfileSession {
-        if (!this.#sessions.has(sessionId)) {
-            this.#sessions.set(sessionId, new ProfileSession(this.#id, sessionId));
+    async getOne(accessor:string, key:string) {
+        const [err] = await electron.GetProfileData(this.#profileId, accessor, [key]);
+        if (err) throw new IPCError(err.message);
+    }
+
+    /* get/set Text */
+    async getAsText(accessorId:string):Promise<string> {
+        const [err, contents] = await electron.GetProfileDataAsText(this.#profileId, accessorId);
+        if (err) throw new IPCError(err.message);
+        return contents;
+    }
+    async setAsText(accessorId:string, contents:string) {
+        const [err] = await electron.SetProfileDataAsText(this.#profileId, accessorId, contents);
+        if (err) throw new IPCError(err.message);
+    }
+
+    /* get/set Binary */
+    async getAsBinary(accessorId:string):Promise<Buffer> {
+        const [err, buffer] = await electron.GetProfileDataAsBinary(this.#profileId, accessorId);
+        if (err) throw new IPCError(err.message);
+        return buffer;
+    }
+    async setAsBinary(accessorId:string, buffer:Buffer) {
+        const [err] = await electron.SetProfileDataAsBinary(this.#profileId, accessorId, buffer);
+        if (err) throw new IPCError(err.message);
+    }
+
+    /* 하위 API */
+    getSession(sessionId:string):SessionAPI {
+        if (!(sessionId in this.#sessionAPIs)) {
+            this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);
         }
-        return this.#sessions.get(sessionId) as ProfileSession;
+        return this.#sessionAPIs[sessionId] as SessionAPI;
+    }
+    getRT(rtId:string):RTAPI {
+        if (!(rtId in this.#rtAPIs)) {
+            this.#rtAPIs[rtId] = new RTAPI(this.#profileId, rtId);
+        }
+        return this.#rtAPIs[rtId] as RTAPI;
+    }
+
+    /* 세션 */
+    async getSessionIds():Promise<string[]> {
+        const [err, sessionIds] = await electron.GetProfileSessionIds(this.#profileId);
+        if (err) throw new IPCError(err.message);
+
+        return sessionIds;
     }
     async createSession() {
-        return await LocalAPI.addProfileSession(this.#id);
+        const [err, sid] = await electron.AddProfileSession(this.#profileId);
+        if (err) throw new IPCError(err.message);
+        return sid;
     }
     async removeSession(sessionId:string) {
-        return await LocalAPI.removeProfileSession(this.#id, sessionId);
+        const [err] = await electron.RemoveProfileSession(this.#profileId, sessionId);
+        if (err) throw new IPCError(err.message);
+
+        delete this.#sessionAPIs[sessionId];
     }
-    async reorderSessions(sessions:string[]) {
-        return await LocalAPI.reorderProfileSessions(this.#id, sessions);
-    }
-    async getSessionIds() {
-        return await LocalAPI.getProfileSessionIds(this.#id);
+    async reorderSessions(sessions:string[]):Promise<void> {
+        const [err] = await electron.ReorderProfileSessions(this.#profileId, sessions);
+        if (err) throw new IPCError(err.message);
     }
     async undoRemoveSession() {
-        return await LocalAPI.undoRemoveProfileSession(this.#id);
+        const [err, sid] = await electron.UndoRemoveProfileSession(this.#profileId);
+        if (err) throw new IPCError(err.message);
+
+        return sid;
     }
 
     /* RT */
-    async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {
-        const [err, tree] = await window.electron.GetProfileRTTree(profileId);
+    async getRTTree():Promise<RTMetadataTree> {
+        const [err, tree] = await window.electron.GetProfileRTTree(this.#profileId);
         if (err) throw new IPCError(err.message);
         return tree;
     }
-    async getRTTree() {
-        return await LocalAPI.getProfileRTTree(this.#id);
-    }
     async updateRTTree(tree:RTMetadataTree) {
-        await LocalAPI.updateProfileRTTree(this.#id, tree);
-    }
-    async addRT(metadata:RTMetadata) {
-        await LocalAPI.addProfileRT(this.#id, metadata);
-    }
-    async removeRT(rtId:string) {
-        await LocalAPI.removeProfileRT(this.#id, rtId);
-    }
-    async getRTMode(rtId:string) {
-        return await LocalAPI.getProfileRTMode(this.#id, rtId);
-    }
-    async setRTMode(rtId:string, mode:RTMode) {
-        await LocalAPI.setProfileRTMode(this.#id, rtId, mode);
-    }
-    async getRTPromptText(rtId:string) {
-        return await LocalAPI.getProfileRTPromptText(this.#id, rtId);
-    }
-    async setRTPromptText(rtId:string, promptText:string) {
-        await LocalAPI.setProfileRTPromptText(this.#id, rtId, promptText);
-    }
-    async hasRTId(rtId:string) {
-        return await LocalAPI.hasProfileRTId(this.#id, rtId);
+        const [err] = await electron.UpdateProfileRTTree(this.#profileId, tree);
+        if (err) throw new IPCError(err.message);
     }
     async generateRTId() {
-        return await LocalAPI.generateProfileRTId(this.#id);
+        const [err, rtId] = await electron.GenerateProfileRTId(this.#profileId);
+        if (err) throw new IPCError(err.message);
+        return rtId;
+    }
+    async addRT(metadata:RTMetadata) {
+        const [err] = await electron.AddProfileRT(this.#profileId, metadata);
+        if (err) throw new IPCError(err.message);
+    }
+    async removeRT(rtId:string) {
+        const [err] = await electron.RemoveProfileRT(this.#profileId, rtId);
+        if (err) throw new IPCError(err.message);
+    }
+    async hasRTId(rtId:string) {
+        const [err, exists] = await electron.HasProfileRTId(this.#profileId, rtId);
+        if (err) throw new IPCError(err.message);
+        return exists;
     }
     async changeRTId(oldId:string, newId:string) {
-        await LocalAPI.changeProfileRTId(this.#id, oldId, newId);
+        const [err] = await electron.ChangeProfileRTId(this.#profileId, oldId, newId);
+        if (err) throw new IPCError(err.message);
     }
 }
 

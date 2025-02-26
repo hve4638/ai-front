@@ -271,13 +271,13 @@ class RTControl {
     }
     
     /* RAW 접근 */
-    getRTData(rtId:string, keys:string[]):any {
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
-        return indexAccessor.get(keys);
+    getRTData(rtId:string, accessId:string, keys:string[]):any {
+        const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
+        return accessor.get(keys);
     }
-    setRTData(rtId:string, data:KeyValueInput) {
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
-        indexAccessor.set(data);
+    setRTData(rtId:string, accessId:string, data:KeyValueInput) {
+        const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
+        return accessor.set(data);
     }
 }
 

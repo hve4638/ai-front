@@ -91,6 +91,12 @@ class Profile {
     }
 
     /* 요청 템플릿 */
+    getRTData(rtId:string, accessId:string, keys:string[]):any {
+        return this.#rtControl.getRTData(rtId, accessId, keys);
+    }
+    setRTData(rtId:string, accessId:string, data:KeyValueInput) {
+        return this.#rtControl.setRTData(rtId, accessId, data);
+    }
     getRTTree() {
         return this.#rtControl.getTree();
     }

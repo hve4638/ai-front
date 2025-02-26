@@ -57,6 +57,16 @@ function handler() {
             return [null] as const;
         },
 
+        /* RT 데이터 */
+        [IPCCommand.SetProfileData]: async (profileId: string, rtId: string, accessorId: string, data:KeyValueInput) => {
+            const profile = profiles.getProfile(profileId);
+            return profile.setRTData(rtId, accessorId, data);
+        },
+        [IPCCommand.GetProfileRTData]: async (profileId: string, rtId: string, accessorId: string, keys:string[]) => {
+            const profile = profiles.getProfile(profileId);
+            return profile.getRTData(rtId, accessorId, keys);
+        },
+
         /* RT 모드 */
         [IPCCommand.GetProfileRTMode]: async (profileId: string, rtId: string) => {
             const profile = profiles.getProfile(profileId);

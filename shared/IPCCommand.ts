@@ -60,7 +60,7 @@ export enum IPCCommand {
     DeleteProfileSessionHistory = 'DeleteProfileSessionHistory',
     DeleteAllProfileSessionHistory = 'DeleteAllProfileSessionHistory',
 
-    /* 프로필 요청 템플릿 */
+    /* 프로필 RT */
     GetProfileRTTree = 'GetProfileRTTree',
     UpdateProfileRTTree = 'UpdateProfileRTTree',
     AddProfileRT = 'AddProfileRT',
@@ -72,6 +72,8 @@ export enum IPCCommand {
     HasProfileRTId = 'HasProfileRTId',
     GenerateProfileRTId = 'GenerateProfileRTId',
     ChangeProfileRTId = 'ChangeProfileRTId',
+    GetProfileRTData = 'GetProfileRTData',
+    SetProfileRTData = 'SetProfileRTData',
 }
 
 export {};

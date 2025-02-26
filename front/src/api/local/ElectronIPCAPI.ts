@@ -87,16 +87,16 @@ class ElectronIPCAPI {
    }
 
     /* 프로필 저장소 */
-    async getProfileData(profileId:string, accessor:string, keys:string[]) {
-        const [err, data] = await electron.GetProfileData(profileId, accessor, keys);
-        if (err) throw new IPCError(err.message);
+    // async getProfileData(profileId:string, accessor:string, keys:string[]) {
+    //     const [err, data] = await electron.GetProfileData(profileId, accessor, keys);
+    //     if (err) throw new IPCError(err.message);
 
-        return data as Record<string, any>;
-    }
-    async setProfileData(profileId:string, accessor:string, data:[string, any][]) {
-        const [err] = await electron.SetProfileData(profileId, accessor, data);
-        if (err) throw new IPCError(err.message);
-    }
+    //     return data as Record<string, any>;
+    // }
+    // async setProfileData(profileId:string, accessor:string, data:[string, any][]) {
+    //     const [err] = await electron.SetProfileData(profileId, accessor, data);
+    //     if (err) throw new IPCError(err.message);
+    // }
     async getProfileDataAsText(profileId:string, accessor:string) {
         const [err, data] = await electron.GetProfileDataAsText(profileId, accessor);
         if (err) throw new IPCError(err.message);
@@ -119,114 +119,114 @@ class ElectronIPCAPI {
     }
 
     /* 프로필 RT */
-    async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {
-        const [err, tree] = await electron.GetProfileRTTree(profileId);
-        if (err) throw new IPCError(err.message);
-        return tree;
-    }
-    async updateProfileRTTree(profileId:string, tree:RTMetadataTree) {
-        const [err] = await electron.UpdateProfileRTTree(profileId, tree);
-        if (err) throw new IPCError(err.message);
-    }
-    async addProfileRT(profileId:string, rt:any) {
-        const [err] = await electron.AddProfileRT(profileId, rt);
-        if (err) throw new IPCError(err.message);
-    }
-    async removeProfileRT(profileId:string, rtId:string) {
-        const [err] = await electron.RemoveProfileRT(profileId, rtId);
-        if (err) throw new IPCError(err.message);
-    }
-    async getProfileRTMode(profileId:string, rtId:string):Promise<RTMode> {
-        const [err, mode] = await electron.GetProfileRTMode(profileId, rtId);
-        if (err) throw new IPCError(err.message);
-        return mode;
-    }
-    async setProfileRTMode(profileId:string, rtId:string, mode:RTMode) {
-        const [err] = await electron.SetProfileRTMode(profileId, rtId, mode);
-        if (err) throw new IPCError(err.message);
-    }
-    async getProfileRTPromptData(profileId:string, rtId:string, promptId:string, keys:string[]):Promise<Record<string, any>> {
-        const [err, promptText] = await electron.GetProfileRTPromptData(profileId, rtId, promptId, keys);
-        if (err) throw new IPCError(err.message);
-        return promptText;
-    }
-    async setProfileRTPromptData(profileId:string, rtId:string, promptId:string, data:KeyValueInput) {
-        const [err] = await electron.SetProfileRTPromptData(profileId, rtId, promptId, data);
-        if (err) throw new IPCError(err.message);
-    }
-    async hasProfileRTId(profileId:string, rtId:string):Promise<boolean> {
-        const [err, exists] = await electron.HasProfileRTId(profileId, rtId);
-        if (err) throw new IPCError(err.message);
-        return exists;
-    }
-    async generateProfileRTId(profileId:string):Promise<string> {
-        const [err, rtId] = await electron.GenerateProfileRTId(profileId);
-        if (err) throw new IPCError(err.message);
-        return rtId;
-    }
-    async changeProfileRTId(profileId:string, oldId:string, newId:string) {
-        const [err] = await electron.ChangeProfileRTId(profileId, oldId, newId);
-        if (err) throw new IPCError(err.message);
-    }
+    // async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {
+    //     const [err, tree] = await electron.GetProfileRTTree(profileId);
+    //     if (err) throw new IPCError(err.message);
+    //     return tree;
+    // }
+    // async updateProfileRTTree(profileId:string, tree:RTMetadataTree) {
+    //     const [err] = await electron.UpdateProfileRTTree(profileId, tree);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async addProfileRT(profileId:string, rt:any) {
+    //     const [err] = await electron.AddProfileRT(profileId, rt);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async removeProfileRT(profileId:string, rtId:string) {
+    //     const [err] = await electron.RemoveProfileRT(profileId, rtId);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async getProfileRTMode(profileId:string, rtId:string):Promise<RTMode> {
+    //     const [err, mode] = await electron.GetProfileRTMode(profileId, rtId);
+    //     if (err) throw new IPCError(err.message);
+    //     return mode;
+    // }
+    // async setProfileRTMode(profileId:string, rtId:string, mode:RTMode) {
+    //     const [err] = await electron.SetProfileRTMode(profileId, rtId, mode);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async getProfileRTPromptData(profileId:string, rtId:string, promptId:string, keys:string[]):Promise<Record<string, any>> {
+    //     const [err, promptText] = await electron.GetProfileRTPromptData(profileId, rtId, promptId, keys);
+    //     if (err) throw new IPCError(err.message);
+    //     return promptText;
+    // }
+    // async setProfileRTPromptData(profileId:string, rtId:string, promptId:string, data:KeyValueInput) {
+    //     const [err] = await electron.SetProfileRTPromptData(profileId, rtId, promptId, data);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async hasProfileRTId(profileId:string, rtId:string):Promise<boolean> {
+    //     const [err, exists] = await electron.HasProfileRTId(profileId, rtId);
+    //     if (err) throw new IPCError(err.message);
+    //     return exists;
+    // }
+    // async generateProfileRTId(profileId:string):Promise<string> {
+    //     const [err, rtId] = await electron.GenerateProfileRTId(profileId);
+    //     if (err) throw new IPCError(err.message);
+    //     return rtId;
+    // }
+    // async changeProfileRTId(profileId:string, oldId:string, newId:string) {
+    //     const [err] = await electron.ChangeProfileRTId(profileId, oldId, newId);
+    //     if (err) throw new IPCError(err.message);
+    // }
 
     /* 프로필 세션 */
-    async addProfileSession(profileId:string) {
-        const [err, sid] = await electron.AddProfileSession(profileId);
-        if (err) throw new IPCError(err.message);
-        return sid;
-    }
-    async removeProfileSession(profileId:string, sessionId:string) {
-        const [err] = await electron.RemoveProfileSession(profileId, sessionId);
-        if (err) throw new IPCError(err.message);
-    }
-    async getProfileSessionIds(profileId:string) {
-        const [err, tabs] = await electron.GetProfileSessionIds(profileId);
-        if (err) throw new IPCError(err.message);
+    // async addProfileSession(profileId:string) {
+    //     const [err, sid] = await electron.AddProfileSession(profileId);
+    //     if (err) throw new IPCError(err.message);
+    //     return sid;
+    // }
+    // async removeProfileSession(profileId:string, sessionId:string) {
+    //     const [err] = await electron.RemoveProfileSession(profileId, sessionId);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async getProfileSessionIds(profileId:string) {
+    //     const [err, tabs] = await electron.GetProfileSessionIds(profileId);
+    //     if (err) throw new IPCError(err.message);
 
-        return tabs;
-    }
-    async reorderProfileSessions(profileId:string, tabs:string[]) {
-        const [err] = await electron.ReorderProfileSessions(profileId, tabs);
-        if (err) throw new IPCError(err.message);
-    }
-    async undoRemoveProfileSession(profileId:string) {
-        const [err, sid] = await electron.UndoRemoveProfileSession(profileId);
-        if (err) throw new IPCError(err.message);
+    //     return tabs;
+    // }
+    // async reorderProfileSessions(profileId:string, tabs:string[]) {
+    //     const [err] = await electron.ReorderProfileSessions(profileId, tabs);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async undoRemoveProfileSession(profileId:string) {
+    //     const [err, sid] = await electron.UndoRemoveProfileSession(profileId);
+    //     if (err) throw new IPCError(err.message);
 
-        return sid;
-    }
+    //     return sid;
+    // }
 
-    /* 프로필 세션 저장소 */
-    async getProfileSessionData(profileId:string, sessionId:string, accessor:string, keys:string[]) {
-        const [err, data] = await electron.GetProfileSessionData(profileId, sessionId, accessor, keys);
-        if (err) throw new IPCError(err.message);
+    // /* 프로필 세션 저장소 */
+    // async getProfileSessionData(profileId:string, sessionId:string, accessor:string, keys:string[]) {
+    //     const [err, data] = await electron.GetProfileSessionData(profileId, sessionId, accessor, keys);
+    //     if (err) throw new IPCError(err.message);
         
-        return data;
-    }
-    async setProfileSessionData(profileId:string, sessionId:string, accessor:string, data:[string, any][]) {
-        const [err] = await electron.SetProfileSessionData(profileId, sessionId, accessor, data);
-        if (err) throw new IPCError(err.message);
-    }
+    //     return data;
+    // }
+    // async setProfileSessionData(profileId:string, sessionId:string, accessor:string, data:[string, any][]) {
+    //     const [err] = await electron.SetProfileSessionData(profileId, sessionId, accessor, data);
+    //     if (err) throw new IPCError(err.message);
+    // }
 
-    /* 프로필 세션 히스토리 */
-    async getProfileSessionHistory(profileId:string, sessionId:string, condition:any) {
-        const [err, history] = await electron.GetProfileSessionHistory(profileId, sessionId, condition);
-        if (err) throw new IPCError(err.message);
+    // /* 프로필 세션 히스토리 */
+    // async getProfileSessionHistory(profileId:string, sessionId:string, condition:any) {
+    //     const [err, history] = await electron.GetProfileSessionHistory(profileId, sessionId, condition);
+    //     if (err) throw new IPCError(err.message);
 
-        return history;
-    }
-    async addProfileSessionHistory(profileId:string, sessionId:string, history:any) {
-        const [err] = await electron.AddProfileSessionHistory(profileId, sessionId, history);
-        if (err) throw new IPCError(err.message);
-    }
-    async deleteProfileSessionHistory(profileId:string, sessionId:string, historyKey:number) {
-        const [err] = await electron.DeleteProfileSessionHistory(profileId, sessionId, historyKey);
-        if (err) throw new IPCError(err.message);
-    }
-    async deleteAllProfileSessionHistory(profileId:string, sessionId:string) {
-        const [err] = await electron.DeleteAllProfileSessionHistory(profileId, sessionId);
-        if (err) throw new IPCError(err.message);
-    }
+    //     return history;
+    // }
+    // async addProfileSessionHistory(profileId:string, sessionId:string, history:any) {
+    //     const [err] = await electron.AddProfileSessionHistory(profileId, sessionId, history);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async deleteProfileSessionHistory(profileId:string, sessionId:string, historyKey:number) {
+    //     const [err] = await electron.DeleteProfileSessionHistory(profileId, sessionId, historyKey);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async deleteAllProfileSessionHistory(profileId:string, sessionId:string) {
+    //     const [err] = await electron.DeleteAllProfileSessionHistory(profileId, sessionId);
+    //     if (err) throw new IPCError(err.message);
+    // }
 }
 
 export default ElectronIPCAPI;

@@ -65,6 +65,8 @@ declare global {
         [IPCCommand.HasProfileRTId]: (profileId:string, rtId:string) => ElectronResult<boolean>;
         [IPCCommand.GenerateProfileRTId]: (profileId:string) => ElectronResult<string>;
         [IPCCommand.ChangeProfileRTId]: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;
+        [IPCCommand.GetProfileRTData]: (profileId:string, rtId:string, accessor:string, keys:string[]) => ElectronResult<Record<string, any>>;
+        [IPCCommand.SetProfileRTData]: (profileId:string, rtId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
     
         /* 프로필 세션 */
         [IPCCommand.AddProfileSession]: (profileId:string) => ElectronResult<string>;
