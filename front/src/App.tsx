@@ -3,7 +3,7 @@ import LocalAPI from 'api/local';
 import Providers from 'context';
 import useSignal from 'hooks/useSignal';
 import LoadPage from 'features/loading';
-import Profiles from 'features/profiles';
+import Profiles from 'features/profilesAPI';
 import ProfileSelectPage from 'pages/ProfileSelect';
 import Home from 'pages/Home';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';

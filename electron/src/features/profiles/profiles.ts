@@ -1,25 +1,24 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ACStorage, StorageAccess, JSONType } from 'ac-storage';
-import { ProfileError } from './Profile';
-import Profile from './Profile';
+import { ACStorage, StorageAccess, JSONType, MemACStorage } from 'ac-storage';
+import Profile, { ProfileError } from './Profile';
 
 const PROFILES_METADATA_PATH = 'profiles.json';
 class Profiles {
-    #basePath:string;
+    #basePath:string|null;
     #storage:ACStorage;
     #profileIdentifiers:string[] = [];
     #lastProfileId:string|null = null;
     #nextProfileId:number = 0;
 
-    constructor(basePath:string) {
+    constructor(basePath:string|null) {
         this.#basePath = basePath;
-        this.#storage = new ACStorage(this.#basePath);
-        this.#storage.addAccessEvent('profile', {
-            init(fullPath:string) {
-                return new Profile(fullPath);
-            },
-        });
+        if (basePath === null) {
+            this.#storage = new MemACStorage();
+        }
+        else {
+            this.#storage = new ACStorage(basePath);
+        }
         this.#storage.register({
             'profiles.json' : StorageAccess.JSON({
                 'profiles' : JSONType.array,
@@ -27,16 +26,24 @@ class Profiles {
             }),
             '*' : StorageAccess.Custom('profile'),
         });
+        this.#storage.addAccessEvent('profile', {
+            init(fullPath) {
+                return new Profile(fullPath);
+            },
+            save(ac) {
+                ac.commit();
+            }
+        });
 
         this.loadMetadata();
     }
 
     #getProfileAcessor(identifier:string) {
-        return this.#storage.getAccessor(identifier, 'profile') as Profile;
+        return this.#storage.access(identifier, 'profile') as Profile;
     }
 
     loadMetadata() {
-        const accessor = this.#storage.getJSONAccessor(PROFILES_METADATA_PATH);
+        const accessor = this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
         
         this.#profileIdentifiers = accessor.getOne('profiles') ?? [];
         this.#lastProfileId = accessor.getOne('last_profile') ?? null;
@@ -44,7 +51,8 @@ class Profiles {
     }
 
     saveMetadata() {
-        const accessor = this.#storage.getJSONAccessor(PROFILES_METADATA_PATH);
+        console.log('loadMetadata', this.#lastProfileId);
+        const accessor = this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
         
         accessor.setOne('profiles', this.#profileIdentifiers);
         accessor.setOne('last_profile', this.#lastProfileId);
@@ -63,12 +71,16 @@ class Profiles {
         this.#profileIdentifiers.push(identifier);
 
         const profile = this.#getProfileAcessor(identifier);
-        profile.getJSONAccessor(PROFILES_METADATA_PATH).setOne('name', 'New Profile');
+        profile.accessAsJSON('config.json').setOne('name', 'New Profile');
 
         return identifier;
     }
 
     #makeNewProfileId():string {
+        if (this.#basePath === null) {
+            return `profile_${this.#nextProfileId++}`;
+        }
+
         while (true) {
             const identifier = `profile_${this.#nextProfileId}`;
             if (this.#existsProfileId(identifier)) {

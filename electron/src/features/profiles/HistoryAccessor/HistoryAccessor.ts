@@ -1,5 +1,3 @@
-import * as path from 'node:path';
-import * as fs from 'node:fs';
 import HistoryDAO from './HistoryDAO';
 import type { HistoryData } from './types';
 import { ICustomAccessor } from 'ac-storage';
@@ -8,7 +6,7 @@ class HistoryAccessor implements ICustomAccessor {
     #dao:HistoryDAO;
     #droped:boolean = false;
 
-    constructor(target:string) {
+    constructor(target:string|null) {
         this.#dao = new HistoryDAO(target);
     }
 

@@ -1,13 +1,6 @@
-import type { ILocalAPI } from './interface';
+import { IPCError } from 'api/error';
 
 const electron = window.electron;
-
-class IPCError extends Error {
-    constructor(message:string) {
-        super(message);
-        this.name = 'IPCError';
-    }
-}
 
 class ElectronIPCAPI {
     async echo(message:any) {
@@ -98,7 +91,7 @@ class ElectronIPCAPI {
         const [err, data] = await electron.GetProfileData(profileId, accessor, keys);
         if (err) throw new IPCError(err.message);
 
-        return data;
+        return data as Record<string, any>;
     }
     async setProfileData(profileId:string, accessor:string, data:[string, any][]) {
         const [err] = await electron.SetProfileData(profileId, accessor, data);

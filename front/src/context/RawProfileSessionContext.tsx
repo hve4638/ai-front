@@ -5,7 +5,7 @@ import { SetState } from './types';
 import { LayoutModes, ThemeModes } from 'types/profile';
 import { ChatSession } from 'types/chat-session';
 import { ProfileContext } from './ProfileContext';
-import { IProfileSession } from 'features/profiles';
+import { IProfileSession } from 'features/profilesAPI';
 import { useStorage } from 'hooks/useStorage';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import useSignal from 'hooks/useSignal';

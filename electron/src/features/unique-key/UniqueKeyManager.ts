@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import si from 'systeminformation';
 import { v4 as uuidv4 } from 'uuid';
 import { AES } from '../../lib/crypt-wrapper';
+import level0 from './level0';
 
 const UNIQUE_KEY_VERSION = '0';
 
@@ -18,26 +19,60 @@ class UniqueKeyManager {
         this.#target = target;
         this.#keyPath = path.join(this.#target, 'key');
 
+        this.initKeyFile();
+    }
+    protected initKeyFile() {
         fs.mkdirSync(this.#target, { recursive: true });
     }
-    #existsKeyFile():boolean {
+    protected existsKeyFile():boolean {
         return (
             fs.existsSync(this.#keyPath) &&
             fs.statSync(this.#keyPath).isFile()
         );
     }
-    #readFile():string {
+    protected readFile():string {
         return fs.readFileSync(this.#keyPath, 'utf8');
     }
-    #writeFile(text:string) {
+    protected writeFile(text:string) {
         fs.writeFileSync(
             this.#keyPath,
             text,
             { encoding: 'utf8' }
         );
     }
+    protected deleteKeyFile() {
+        fs.unlinkSync(this.#keyPath);
+    }
+    
+    #encryptKey(uniqueKey:string, encKey:string):string {
+        switch (UNIQUE_KEY_VERSION) {
+            case '0':
+            default:
+                return level0.encrypt(uniqueKey, encKey);
+        }
+    }
+    #decryptKey(encrypted:string, decKey:string, iv:string):string {
+        switch (UNIQUE_KEY_VERSION) {
+            case '0':
+            default:
+                return level0.decrypt(encrypted, decKey, iv);
+        }
+    }
+    /** 하드웨어 종속 키 생성 */
+    async #makeDependencyKey() {
+        if (this.#dependencyKey != null) {
+            return this.#dependencyKey;
+        }
+        switch (UNIQUE_KEY_VERSION) {
+            case '0':
+            default:
+                return level0.makeDependencyKey();
+        }
+    }
+
+
     existsKey() {
-        return this.#existsKeyFile();
+        return this.existsKeyFile();
     }
     async generateKey(recoveryKey:string):Promise<string> {
         const dKey = await this.#makeDependencyKey();
@@ -46,31 +81,19 @@ class UniqueKeyManager {
         const mainId = this.#encryptKey(uniqueKey, dKey);
         const recoveryId = this.#encryptKey(uniqueKey, recoveryKey);
         
-        this.#writeFile(`${mainId}\n${recoveryId}`);
+        this.writeFile(`${mainId}\n${recoveryId}`);
         this.#uniqueKey = uniqueKey;
 
         return uniqueKey;
     }
-    #encryptKey(uniqueKey:string, encKey:string):string {
-        const encryptKey = crypto.scryptSync(encKey, 'AFRON', 32);
-        const aes = new AES(encryptKey);
-        const enc = aes.encrypt(uniqueKey);
-
-        return `${UNIQUE_KEY_VERSION}:${enc.iv}:${enc.data}`;
-    }
-    #decryptKey(encrypted:string, decKey:string, iv:string):string {
-        const decryptKey = crypto.scryptSync(decKey, 'AFRON', 32);
-        const aes = new AES(decryptKey);
-        return aes.decrypt(encrypted, iv);
-    }
     async readKey():Promise<string|null> {
-        if (!this.#existsKeyFile()) {
+        if (!this.existsKeyFile()) {
             return null;
         }
 
         try {
             const dKey = await this.#makeDependencyKey();
-            const readed = this.#readFile();
+            const readed = this.readFile();
 
             const [id, recoveryId] = readed.split('\n')
             const splitted = id.split(':');
@@ -85,12 +108,12 @@ class UniqueKeyManager {
         }
     }
     async tryRecoveryKey(recoveryKey:string):Promise<boolean> {
-        if (!this.#existsKeyFile()) {
+        if (!this.existsKeyFile()) {
             return false;
         }
         
         try {
-            const readed = this.#readFile();
+            const readed = this.readFile();
 
             const [id, recoveryId] = readed.split('\n')
             const splitted = recoveryId.split(':');
@@ -101,7 +124,7 @@ class UniqueKeyManager {
                 const dKey = await this.#makeDependencyKey();
                 const mainId = this.#encryptKey(uniqueKey, dKey);
                 const recoveryId = this.#encryptKey(uniqueKey, recoveryKey);
-                this.#writeFile(`${mainId}\n${recoveryId}`);
+                this.writeFile(`${mainId}\n${recoveryId}`);
             }
             return true;
         }
@@ -109,24 +132,12 @@ class UniqueKeyManager {
             return false;
         }
     }
-    async #makeDependencyKey() {
-        if (this.#dependencyKey != null) {
-            return this.#dependencyKey;
-        }
-        const cpuBrand = (await si.cpu()).brand.trim().replaceAll(' ', '');
-        const boardModel = (await si.baseboard()).model.trim().replaceAll(' ', '');
-        const hostname = os.hostname();
-        
-        this.#dependencyKey = `${cpuBrand}:${boardModel}:${hostname}`;
-        return this.#dependencyKey;
-    }
     getKey():string|null {
         return this.#uniqueKey;
     }
-    
     resetKey() {
-        if (this.#existsKeyFile()) {
-            fs.unlinkSync(this.#keyPath);    
+        if (this.existsKeyFile()) {
+            this.deleteKeyFile();
         }
     }
 }

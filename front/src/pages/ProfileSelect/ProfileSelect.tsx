@@ -5,7 +5,7 @@ import NewProfileModal from './NewProfileModal';
 import RedIcon from 'assets/img/red.png'
 import useSignal from 'hooks/useSignal';
 import { ProfileMetadata } from './types';
-import Profiles from 'features/profiles';
+import Profiles from 'features/profilesAPI';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
 import styles from './styles.module.scss';

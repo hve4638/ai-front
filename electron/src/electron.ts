@@ -1,19 +1,14 @@
-import * as path from 'node:path';
 import { app, BrowserWindow, Menu, globalShortcut } from 'electron';
 import * as electronLocalshortcut from 'electron-localshortcut';
 import { throttle } from './utils';
 
-import type FetchContainer from './features/fetch-container';
 import type Profiles from './features/profiles';
-import { type ACStorage } from 'ac-storage';
+import { IACStorage } from 'ac-storage';
 
-const FAVICON_PATH = path.join(__dirname, '../static/favicon.ico');
-const STATIC_ENTRYPOINT = path.join(__dirname, '../static/index.html');
-const PRELOAD_PATH = path.join(__dirname, 'preload.js');
+import * as staticPath from './static-path'
 
 interface ElectronAppDependencies {
-    fetchContainer:FetchContainer,
-    globalStorage:ACStorage,
+    globalStorage:IACStorage,
     profiles:Profiles,
 }
 
@@ -27,7 +22,6 @@ export function openElectronApp(
     options : ElectronAppOptions
 ) {
     const {
-        fetchContainer,
         globalStorage,
         profiles
     } = dependencies;
@@ -36,7 +30,7 @@ export function openElectronApp(
         devUrl = ''
     } = options;
     
-    const cacheAccessor = globalStorage.getJSONAccessor('cache.json');
+    const cacheAccessor = globalStorage.accessAsJSON('cache.json');
     const [width, height] = cacheAccessor.getOne('lastsize') ?? [1280, 900];
     const [minWidth, minHeight] = [500, 500];
 
@@ -44,14 +38,14 @@ export function openElectronApp(
         const win = new BrowserWindow({
             width, height,
             minWidth, minHeight,
-            icon: FAVICON_PATH,
+            icon: staticPath.FAVICON,
             webPreferences: {
-                preload: PRELOAD_PATH,
+                preload: staticPath.PRELOAD,
                 nodeIntegration: true,
                 contextIsolation: true
             }
         })
-    
+        
         if (devMode) {
             console.log(`DEV MODE`);
             console.log(`Entrypoint : ${devUrl}`);
@@ -63,7 +57,7 @@ export function openElectronApp(
             win.loadURL(devUrl);
         }
         else {
-            win.loadURL(`file://${STATIC_ENTRYPOINT}`);
+            win.loadURL(`file://${staticPath.STATIC_ENTRYPOINT}`);
         }
         Menu.setApplicationMenu(null);
 

@@ -1,7 +1,7 @@
 import LocalAPI from 'api/local';
-import Profile from './Profile'
+import Profile from './ProfileAPI'
 
-class Profiles {
+class ProfilesAPI {
     #loaded:boolean = false;
     #profiles:Map<string, Profile> = new Map();
 
@@ -40,4 +40,4 @@ class Profiles {
     }
 }
 
-export default Profiles;
+export default ProfilesAPI;

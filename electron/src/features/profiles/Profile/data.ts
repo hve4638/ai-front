@@ -37,10 +37,27 @@ export const PROFILE_STORAGE_TREE = {
             'history' : StorageAccess.Custom('history'),
         }
     },
+    'cache.json' : StorageAccess.JSON({
+        'last_session_id' : JSONType.string,
+        'setting_models_show_featured' : JSONType.boolean,
+        'setting_models_show_snapshot' : JSONType.boolean,
+        'setting_models_show_experimental' : JSONType.boolean,
+        'setting_models_show_deprecated' : JSONType.boolean,
+    }),
+    'data.json' : StorageAccess.JSON({
+        'sessions' : JSONType.array,
+        'starred_models' : JSONType.array,
+    }),
+    'config.json' : StorageAccess.JSON({
+        'name' : JSONType.string,
+        'color' : JSONType.string,
+        'show_actual_model_name' : JSONType.boolean,
+        'only_starred_models' : JSONType.boolean,
+        'confirm_on_session_close' : JSONType.boolean,
+    }),
     'shortcut.json' : StorageAccess.JSON(),
-    'cache.json' : StorageAccess.JSON(),
-    'data.json' : StorageAccess.JSON(),
-    'config.json' : StorageAccess.JSON(),
-    'metadata.json' : StorageAccess.JSON(),
+    'metadata.json' : StorageAccess.JSON({
+
+    }),
     'thumbnail' : StorageAccess.Binary(),
 }

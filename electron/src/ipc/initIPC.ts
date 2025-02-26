@@ -13,6 +13,7 @@ export function initIPC() {
 
 function handleIPC(ping:IPCCommand, callback:any) {
     ipcMain.handle(ping, async (event: any, ...args: any) => {
+        console.log(`[IPC] ${ping}`, ...args);
         try {
             const result = await callback(...args);
             return result;

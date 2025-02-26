@@ -2,9 +2,12 @@ import React, { useState, createContext, useLayoutEffect, useEffect, useMemo } f
 import { useContextForce } from './useContextForce';
 import { RawProfileContext } from './RawProfileContext';
 import { ChatSession } from 'types/chat-session';
-import { IProfileSession } from 'features/profiles';
+import { IProfileSession } from 'features/profilesAPI';
 import useDebounce from 'hooks/useDebounce';
 import type { Configs, SetState, SetStateAsync, Shortcuts } from './types';
+/*
+    ProfileContext는 RawProfileContext를 읽기전용 상태값과 이벤트(함수)를 노출
+*/
 
 interface ProfileContextType {
     /* 세션 관리 */

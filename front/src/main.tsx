@@ -6,7 +6,7 @@ import 'assets/style/index.scss'
 import 'locales';
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
+    // <StrictMode>
         <App/>
-    </StrictMode>,
+    // </StrictMode>
 )

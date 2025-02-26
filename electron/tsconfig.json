@@ -30,7 +30,7 @@
         "paths": {
           "@utils": ["src/utils/index"],
           "@utils/*": ["src/utils/*"],
-          "@lib/*": ["src/lib/*"],
+          "lib/*": ["src/lib/*"],
           "@ipc/*": ["src/ipc/*"],
           "@features/*": ["src/features/*"],
           "types": ["src/types/index"],

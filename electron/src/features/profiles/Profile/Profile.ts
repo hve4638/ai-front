@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import {
     ACStorage,
     ICustomAccessor,
+    MemACStorage,
     StorageAccess,
 } from 'ac-storage';
 import HistoryAccessor from '../HistoryAccessor';
@@ -13,29 +14,32 @@ import { PROFILE_STORAGE_TREE } from './data';
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
  */
-class Profile implements ICustomAccessor{
+class Profile {
     /** Profile 디렉토리 경로 */
-    #basePath:string;
+    #basePath:string|null;
     #storage:ACStorage;
     #sessionControl:SessionControl;
     #rtControl:RTControl;
     #dropped:boolean = false;
  
-    constructor(profilePath:string) {
+    constructor(profilePath:string|null) {
         this.#basePath = profilePath;
-        fs.mkdirSync(this.#basePath, {recursive: true});
-
-        this.#storage = new ACStorage(this.#basePath);
-        this.#storage.addAccessEvent('history', {
-            init: (fullPath:string) => new HistoryAccessor(fullPath),
-            create: (fullPath) => {},
-            load: (accessor, fullPath) => {},
-            save: (accessor, fullPath) => {},
-            destroy: (accessor, fullPath) => {},
-            exists : () => false,
-        });
+        if (this.#basePath) {
+            fs.mkdirSync(this.#basePath, {recursive: true});    
+            this.#storage = new ACStorage(this.#basePath);
+        }
+        else {
+            this.#storage = new MemACStorage();
+        }
         
         this.#storage.register(PROFILE_STORAGE_TREE);
+        this.#storage.addAccessEvent('history', {
+            init: (fullPath) => new HistoryAccessor(fullPath),
+            save: (ac) => ac.commit(),
+            destroy: (ac) => ac.drop(),
+        });
+        
+        
         this.#sessionControl = new SessionControl(
             this.#storage
         );
@@ -47,16 +51,12 @@ class Profile implements ICustomAccessor{
         this.#storage.commit();
     }
     drop(): void {
-        if (this.isDropped()) return;
+        if (this.#basePath) fs.rmSync(this.#basePath, {recursive: true});
     }
     get path(): string {
-        return this.#basePath;
+        return this.#basePath ?? '';
     }
-    isDropped(): boolean {
-        return this.#dropped;
-        fs.rmSync(this.#basePath, {recursive: true});
-    }
-
+    
     /* 세션 */
     createSession():string {
         return this.#sessionControl.createSession();
@@ -75,6 +75,8 @@ class Profile implements ICustomAccessor{
     }
 
     removeOrphanSessions() {
+        if (!this.#basePath) return;
+        
         const sessionPath = path.join(this.#basePath, 'session');
         
         this.#sessionControl.removeOrphanSessions(sessionPath);
@@ -107,7 +109,7 @@ class Profile implements ICustomAccessor{
     setRTMode(rtId:string, mode:RTMode) {
         this.#rtControl.setRTMode(rtId, mode);
     }
-    getRTPromptData(rtId:string, promptId:string, keys:string[]):RTPromptData {
+    getRTPromptData(rtId:string, promptId:string, keys:string[]) {
         return this.#rtControl.getRTPromptData(rtId, promptId, keys);
     }
     setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
@@ -124,20 +126,37 @@ class Profile implements ICustomAccessor{
     }
     
     /* 직접 접근 */
+    accessAsJSON(identifier:string) {
+        return this.#storage.accessAsJSON(identifier);
+    }
+    accessAsText(identifier:string) {
+        return this.#storage.accessAsText(identifier);
+    }
+    accessAsBinary(identifier:string) {
+        return this.#storage.accessAsBinary(identifier);
+    }
+    accessAsHistory(id:string):HistoryAccessor {
+        return this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
+    }
+
+    /** @deprecated use accessAsJSON() instead */
     getJSONAccessor(identifier:string) {
-        return this.#storage.getJSONAccessor(identifier);
+        return this.#storage.accessAsJSON(identifier);
     }
 
+    /** @deprecated use accessAsTEXT() instead */
     getTextAccessor(identifier:string) {
-        return this.#storage.getTextAccessor(identifier);
+        return this.#storage.accessAsText(identifier);
     }
 
+    /** @deprecated use accessAsBinary() instead */
     getBinaryAccessor(identifier:string) {
-        return this.#storage.getBinaryAccessor(identifier);
+        return this.#storage.accessAsBinary(identifier);
     }
 
+    /** @deprecated use accessAsHistory() instead */
     getHistoryAccessor(id:string):HistoryAccessor {
-        return this.#storage.getAccessor(`history:${id}`, 'history') as HistoryAccessor;
+        return this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
     }
 }
 

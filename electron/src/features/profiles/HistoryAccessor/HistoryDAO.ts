@@ -1,5 +1,4 @@
 import Database from 'better-sqlite3';
-import path from 'node:path';
 import fs from 'node:fs';
 
 type HistoryRow = {
@@ -11,13 +10,13 @@ type HistoryRow = {
 }
 
 class HistoryDAO {
-    #path:string;
+    #path:string|null;
     #db:Database;
 
-    constructor(path) {
+    constructor(path:string|null) {
         this.#path = path;
         try {
-            this.#db = new Database(path);
+            this.#db = new Database(path ?? ':memory:');
         }
         catch(e:any) {
             throw new Error(`Failed to open database '${path}' : ${e.message}`);
@@ -91,14 +90,14 @@ class HistoryDAO {
         query.run();
         this.#db.close();
 
-        if (fs.existsSync(this.#path)) {
+        if (this.#path && fs.existsSync(this.#path)) {
             fs.unlinkSync(this.#path);
         }
     }
     drop() {
         this.#db.close();
 
-        if (fs.existsSync(this.#path)) {
+        if (this.#path && fs.existsSync(this.#path)) {
             fs.unlinkSync(this.#path);
         }
     }

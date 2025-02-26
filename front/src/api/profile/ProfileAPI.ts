@@ -1,28 +1,33 @@
 import LocalAPI from 'api/local';
-import ProfileSession from './ProfileSession';
+import ProfileSessionAPI from './SessionAPI';
 import type { IProfileSession } from './types';
+import { IPCError } from 'api/error';
 
-class Profile {
+class ProfileAPI {
     #id:string;
     #name:string = 'UNKNOWN';
     #color:string = '';
-    #sessions:Map<string, ProfileSession> = new Map();
+    #sessions:Map<string, ProfileSessionAPI> = new Map();
 
     constructor(id:string) {
         this.#id = id;
     }
 
     async loadMetadata() {
-        this.#name = await LocalAPI.getProfileData(this.#id, 'config', 'name');
-        this.#color = await LocalAPI.getProfileData(this.#id, 'config', 'color');
+        const {
+            name,
+            color
+        } = await LocalAPI.getProfileData(this.#id, 'config.json', ['name', 'color']);
+        this.#name = name;
+        this.#color = color;
     }
 
     async setData(accessor:string, key:string, value:any) {
-        await LocalAPI.setProfileData(this.#id, accessor, key, value);
+        await LocalAPI.setProfileData(this.#id, accessor, [[key, value]]);
     }
 
     async getData(accessor:string, key:string) {
-        return await LocalAPI.getProfileData(this.#id, accessor, key);
+        return await LocalAPI.getProfileData(this.#id, accessor, [key]);
     }
     
     get name() {
@@ -32,11 +37,11 @@ class Profile {
         return this.#color;
     }
     set name(value:string) {
-        LocalAPI.setProfileData(this.#id, 'config', 'name', value);
+        LocalAPI.setProfileData(this.#id, 'config.json', [['name', value]]);
         this.#name = value;
     }
     set color(value:string) {
-        LocalAPI.setProfileData(this.#id, 'config', 'color', value);
+        LocalAPI.setProfileData(this.#id, 'config.json', [['color', value]]);
         this.#color = value;
     }
 
@@ -63,6 +68,11 @@ class Profile {
     }
 
     /* RT */
+    async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {
+        const [err, tree] = await window.electron.GetProfileRTTree(profileId);
+        if (err) throw new IPCError(err.message);
+        return tree;
+    }
     async getRTTree() {
         return await LocalAPI.getProfileRTTree(this.#id);
     }
@@ -99,4 +109,4 @@ class Profile {
 }
 
 
-export default Profile;
+export default ProfileAPI;

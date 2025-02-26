@@ -6,10 +6,12 @@
     "license": "MIT",
     "scripts": {
         "start": "concurrently \"yarn electron:start\" \"yarn front:start\"",
+        "start:mem": "concurrently \"yarn electron:start:mem\" \"yarn front:start\"",
         "start:debug": "concurrently \"yarn electron:start\" \"yarn front:debug\"",
         "front:start": "cd front && yarn start",
         "front:debug": "cd front && yarn start",
         "electron:start": "cd electron && wait-on http://localhost:3600 && yarn start:dev",
+        "electron:start:mem": "cd electron && wait-on http://localhost:3600 && yarn start:dev:mem",
         "front:build": "cd front && yarn build:electron",
         "front:sync": "node utils/cp front/build electron/static"
     },

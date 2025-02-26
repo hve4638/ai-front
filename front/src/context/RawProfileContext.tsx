@@ -3,7 +3,7 @@ import { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 import { LayoutModes, ThemeModes } from 'types/profile';
 
-import Profiles, { type Profile } from 'features/profiles';
+import Profiles, { type Profile } from 'features/profilesAPI';
 import { useStorage } from 'hooks/useStorage';
 
 interface RawProfileContextType {
@@ -229,7 +229,6 @@ export function RawProfileContextProvider({
         else {
             refetchList.forEach((refetch)=>refetch());
         }
-
     }, [profile]);
     
     return (
