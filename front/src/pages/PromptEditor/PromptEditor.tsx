@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import styles from './styles.module.scss';
 import { useTranslation } from "react-i18next";
 
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 
 import useSignal from 'hooks/useSignal';
 import EditorSection from './EditorSection';
@@ -26,7 +26,7 @@ function PromptEditor({
 }:PromptEditorProps) {
     const { t } = useTranslation();
     const { id } = useParams();
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const [loaded, setLoaded] = useState(false);
     const promptActionRef = useRef(action);
     const [refreshSignal, sendRefreshSignal] = useSignal();

@@ -3,7 +3,7 @@ import Button from 'components/Button';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { Align, Grid, Row } from 'components/layout';
 import { Modal, ModalHeader } from 'components/Modal';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 import RTTreeView from 'features/rtTreeView';
 import useHotkey from 'hooks/useHotkey';
 import useModalDisappear from 'hooks/useModalDisappear';
@@ -22,7 +22,7 @@ function RTEditModal({
     onClose
 }:RTEditModalProps) {
     const { t } = useTranslation();
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const [disappear, close] = useModalDisappear(onClose);
 
     const [tree, setTree] = useState<RTNodeTree>([]);

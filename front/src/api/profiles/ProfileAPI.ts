@@ -13,29 +13,32 @@ class ProfileAPI {
         this.#profileId = id;
     }
 
+
     get id() {
         return this.#profileId;
     }
 
     /* get/set JSON */
-    async set(accessor:string, data:[string, any][]) {
-        const [err] = await electron.SetProfileData(this.#profileId, accessor, data);
-        if (err) throw new IPCError(err.message);
-    }
-
-    async get(accessor:string, keys:string[]) {
-        const [err] = await electron.GetProfileData(this.#profileId, accessor, keys);
+    async set(accessorId:string, data:KeyValueInput) {
+        const [err] = await electron.SetProfileData(this.#profileId, accessorId, data);
         if (err) throw new IPCError(err.message);
     }
     
-    async setOne(accessor:string, key:string, value:any) {
-        const [err] = await electron.SetProfileData(this.#profileId, accessor, [[key, value]]);
+    async get(accessorId:string, keys:string[]) {
+        const [err, result] = await electron.GetProfileData(this.#profileId, accessorId, keys);
+        if (err) throw new IPCError(err.message);
+        return result;
+    }
+    
+    async setOne(accessorId:string, key:string, value:any) {
+        const [err] = await electron.SetProfileData(this.#profileId, accessorId, [[key, value]]);
         if (err) throw new IPCError(err.message);
     }
 
-    async getOne(accessor:string, key:string) {
-        const [err] = await electron.GetProfileData(this.#profileId, accessor, [key]);
+    async getOne(accessorId:string, key:string) {
+        const [err, result] = await electron.GetProfileData(this.#profileId, accessorId, [key]);
         if (err) throw new IPCError(err.message);
+        return result;
     }
 
     /* get/set Text */

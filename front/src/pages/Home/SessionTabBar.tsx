@@ -4,12 +4,12 @@ import { clamp } from 'utils/math';
 import TabBar from 'components/TabBar';
 import useDiff from 'hooks/useDiff';
 import { ChatSession } from 'types/chat-session';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 
 function SessionBar({
 
 }) {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const {
         sessions,
         currentSession,

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 import { LayoutModes, ThemeModes } from 'types/profile';
 
 function GeneralOptions() {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const {
         configs,
     } = profileContext;

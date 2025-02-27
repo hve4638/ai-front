@@ -13,7 +13,7 @@ import { PromptData } from './types';
 import { PromptInputType } from 'types';
 import { useModals } from 'hooks/useModals';
 import MetadataEditModal from './MetadataEditModal';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 import RTSaveModal from './RTSaveModal';
 import { mapRTMetadataToNode } from 'utils/rt';
 import { RTNodeTree } from 'types/rt-node';
@@ -41,7 +41,7 @@ function SidePanel({
 }:SidePanelProps) {
     const { t } = useTranslation();
     const modals = useModals();
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     
     const save = async ()=>{
         const metadataTree = await profileContext.getRTTree();

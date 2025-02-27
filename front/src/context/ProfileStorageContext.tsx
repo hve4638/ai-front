@@ -3,17 +3,19 @@ import { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 import { LayoutModes, ThemeModes } from 'types/profile';
 
-import Profiles, { type Profile } from 'features/profilesAPI';
+import ProfilesAPI, { type ProfileAPI } from 'api/profiles';
 import { useStorage } from 'hooks/useStorage';
 
-interface RawProfileContextType {
-    profile: Profile;
+interface ProfileStorageContextType {
+    api: ProfileAPI;
 
     /* config.json */
     configs:Configs,
     
     /* data.json */
     sessionIds: string[];
+    // sessionId 목록은 제약 내에서 추가/삭제/변경되므로
+    // 직접 변경하는 대신 ProfileAPI를 통해 작업 후 refetch로 동기화 필요
     refetchSessionIds: ()=>Promise<void>;
     starredModels: string[],
     setStarredModels: SetStateAsync<string[]>,
@@ -27,17 +29,19 @@ interface RawProfileContextType {
     /* shortcut.json */
     shortcuts: Shortcuts;
 }
-
 /**
- * ProfileStorage 관리
+ * 프로필 데이터 관리
+ * 
+ * api 직접 호출을 통한 비동기화 상태는 ProfileEventContext에서 관리
  */
-export const RawProfileContext = createContext<RawProfileContextType|null>(null);
+export const ProfileStorageContext = createContext<ProfileStorageContextType|null>(null);
 
-export function RawProfileContextProvider({
+export function ProfileStorageContextProvider({
     profileId,
     children
 }: {profileId:string, children:React.ReactNode}) {
-    const [profile, setProfile] = useState<Profile>();
+    const [id, setId] = useState<string>();
+    const [api, setAPI] = useState<ProfileAPI>();
     const refetchList:(()=>Promise<void>)[] = [];
     
     const useProfileStorage = useCallback(<T,>(accessor:string, key:string, default_value:T) => {
@@ -45,15 +49,15 @@ export function RawProfileContextProvider({
             encode: (value: any) => value,
             decode: (value: any) => value ?? default_value,
             store: async (key: string, value: any) => {
-                profile?.setData(accessor, key, value);
+                api?.setOne(accessor, key, value);
             },
             load: async (key: string) => {
-                return await profile?.getData(accessor, key);
+                return await api?.getOne(accessor, key);
             },
             onStoreError: (error: unknown) => console.error(error),
             onLoadError: (error: unknown) => console.error(error),
         });
-    }, [profile]);
+    }, [profileId]);
     const useSecretStorage = <T,>(key:string, default_value:T) => {
         const [state, setState, refetch] = useProfileStorage<T>('secret.json', key, default_value);
 
@@ -93,7 +97,6 @@ export function RawProfileContextProvider({
     const settingModelsShowExperimental = useCacheStorage('setting_models_show_experimental', false);
     const settingModelsShowDeprecated = useCacheStorage('setting_models_show_deprecated', false);
 
-
     /* config.json */
     const configFontSize = useConfigStorage('font_size', 18);
     const configThemeMode = useConfigStorage('theme_mode', ThemeModes.SYSTEM_DEFAULT);
@@ -121,7 +124,7 @@ export function RawProfileContextProvider({
         setHistoryEnabled : configHistoryEnabled[1],
         maxHistoryLimitPerSession : configMaxHistoryLimitPerSession[0],
         setMaxHistoryLimitPerSession : configMaxHistoryLimitPerSession[1],
-        maxHistoryStorageDays : configMaxHistoryStorageDays[0],
+        maxHistoryStorageDays : configMaxHistoryStorageDays[0], 
         setMaxHistoryStorageDays : configMaxHistoryStorageDays[1],
         globalShortcutEnabled : configGlobalShortcutEnabled[0],
         setGlobalShortcutEnabled : configGlobalShortcutEnabled[1],
@@ -215,26 +218,28 @@ export function RawProfileContextProvider({
         setGlobalRequestClipboard : scGlobalRequestClipboard[1],
     }
     
+    // 프로필 ID 변경 시
     useLayoutEffect(() => {
         (async () => {
-            const newProfile = await Profiles.getProfile(profileId)
-            setProfile(newProfile);
+            const newProfile = await ProfilesAPI.getProfile(profileId)
+            setAPI(newProfile);
+            setId(profileId);
         })();
     }, [profileId]);
-
     useLayoutEffect(() => {
-        if (profile == null) {
-            return;
-        }
-        else {
-            refetchList.forEach((refetch)=>refetch());
-        }
-    }, [profile]);
+        (async () => {
+            if (!id) return;
+            const promises = refetchList.map((refetch)=>refetch());
+            // for(const promise of promises) {
+            //     await promise;
+            // }
+        })();
+    }, [id]);
     
     return (
-        <RawProfileContext.Provider
+        <ProfileStorageContext.Provider
             value={{
-                profile: profile!,
+                api : api!,
                 
                 sessionIds, refetchSessionIds,
 
@@ -247,6 +252,6 @@ export function RawProfileContextProvider({
             }}
         >
             {children}
-        </RawProfileContext.Provider>
+        </ProfileStorageContext.Provider>
     )
 }

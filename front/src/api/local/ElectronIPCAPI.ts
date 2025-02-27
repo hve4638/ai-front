@@ -97,26 +97,26 @@ class ElectronIPCAPI {
     //     const [err] = await electron.SetProfileData(profileId, accessor, data);
     //     if (err) throw new IPCError(err.message);
     // }
-    async getProfileDataAsText(profileId:string, accessor:string) {
-        const [err, data] = await electron.GetProfileDataAsText(profileId, accessor);
-        if (err) throw new IPCError(err.message);
+    // async getProfileDataAsText(profileId:string, accessor:string) {
+    //     const [err, data] = await electron.GetProfileDataAsText(profileId, accessor);
+    //     if (err) throw new IPCError(err.message);
 
-        return data;
-    }
-    async setProfileDataAsText(profileId:string, accessor:string, data:string) {
-        const [err] = await electron.SetProfileDataAsText(profileId, accessor, data);
-        if (err) throw new IPCError(err.message);
-    }
-    async getProfileDataAsBinary(profileId:string, accessor:string) {
-        const [err, data] = await electron.GetProfileDataAsBinary(profileId, accessor);
-        if (err) throw new IPCError(err.message);
+    //     return data;
+    // }
+    // async setProfileDataAsText(profileId:string, accessor:string, data:string) {
+    //     const [err] = await electron.SetProfileDataAsText(profileId, accessor, data);
+    //     if (err) throw new IPCError(err.message);
+    // }
+    // async getProfileDataAsBinary(profileId:string, accessor:string) {
+    //     const [err, data] = await electron.GetProfileDataAsBinary(profileId, accessor);
+    //     if (err) throw new IPCError(err.message);
 
-        return data;
-    }
-    async setProfileDataAsBinary(profileId:string, accessor:string, data:Buffer) {
-        const [err] = await electron.SetProfileDataAsBinary(profileId, accessor, data);
-        if (err) throw new IPCError(err.message);
-    }
+    //     return data;
+    // }
+    // async setProfileDataAsBinary(profileId:string, accessor:string, data:Buffer) {
+    //     const [err] = await electron.SetProfileDataAsBinary(profileId, accessor, data);
+    //     if (err) throw new IPCError(err.message);
+    // }
 
     /* 프로필 RT */
     // async getProfileRTTree(profileId:string):Promise<RTMetadataTree> {

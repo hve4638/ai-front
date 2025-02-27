@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ButtonForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 
 function ServerOptions() {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const {
         configs,
     } = profileContext;

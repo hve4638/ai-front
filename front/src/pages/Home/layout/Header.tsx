@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ProfileContext, RawProfileSessionContext, useContextForce } from 'context';
+import { ProfileEventContext, RawProfileSessionContext, useContextForce } from 'context';
 import styles from '../styles.module.scss';
 
 import LocalAPI from 'api/local';
@@ -28,7 +28,7 @@ function Header() {
     const navigate = useNavigate();
     const modals = useModals();
     const { t } = useTranslation();
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const sessionContext = useContextForce(RawProfileSessionContext);
     const {
         starredModels,

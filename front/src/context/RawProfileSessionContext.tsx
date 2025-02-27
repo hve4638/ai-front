@@ -1,14 +1,15 @@
 import React, { useState, createContext, useLayoutEffect, useEffect, useMemo } from 'react';
 import { useContextForce } from './useContextForce';
-import { RawProfileContext } from './RawProfileContext';
+import { ProfileStorageContext } from './ProfileStorageContext';
 import { SetState } from './types';
 import { LayoutModes, ThemeModes } from 'types/profile';
 import { ChatSession } from 'types/chat-session';
-import { ProfileContext } from './ProfileContext';
+import { ProfileEventContext } from './ProfileEventContext';
 import { IProfileSession } from 'features/profilesAPI';
 import { useStorage } from 'hooks/useStorage';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import useSignal from 'hooks/useSignal';
+import useProfile from 'hooks/useProfile';
 
 
 interface RawProfileSessionContextType {
@@ -47,12 +48,12 @@ interface RawProfileSessionContextType {
 /**
  * ProfileSession 관리
  * 
- * 세션 변경 시, 동기화를 위해 sessionId의 변화를 확인 후 값 참조 필요
+ * 세션 변경 시 동기화를 위해 sessionId의 변화를 확인 후 값 참조 필요
  */
 export const RawProfileSessionContext = createContext<RawProfileSessionContextType|null>(null);
 
 export function RawProfileSessionContextProvider({children}: {children:React.ReactNode}) {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useProfile();
     const {
         currentSession,
         getProfileSession,

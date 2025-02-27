@@ -6,7 +6,7 @@ import { MODAL_DISAPPEAR_DURATION } from 'data';
 import { useTranslation } from 'react-i18next';
 import Button from 'components/Button';
 import useLazyThrottle from 'hooks/useLazyThrottle';
-import { ProfileContext, RawProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, ProfileStorageContext, useContextForce } from 'context';
 import classNames from 'classnames';
 import useHotkey from 'hooks/useHotkey';
 
@@ -28,7 +28,7 @@ function MetadataEditModal({
 }:MetadataEditModalProps) {
     const {
         hasRTId
-    } = useContextForce(ProfileContext);
+    } = useContextForce(ProfileEventContext);
     const { t } = useTranslation();
     const [disappear, setDisappear] = useState(true);
     const [currentName, setCurrentName] = useState(metadata.name);

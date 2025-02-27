@@ -1,13 +1,13 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { CheckBoxForm, DropdownForm, HotkeyForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 import ShortcutModal from './ShortcutModal';
 import { shortcutToText } from 'utils/shortcut';
 import { Shortcut } from 'types/shortcut';
 import { Row } from 'components/layout';
 
 function ShortcutOptions() {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const {
         shortcuts,
     } = profileContext;

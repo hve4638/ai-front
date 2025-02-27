@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import ProfilesAPI from 'api/profiles';
 import { ProfileAddButton, ProfileButton, ProfileOptionButton } from 'components/ProfileSelect';
 import NewProfileModal from './NewProfileModal';
 
 import RedIcon from 'assets/img/red.png'
 import useSignal from 'hooks/useSignal';
 import { ProfileMetadata } from './types';
-import Profiles from 'features/profilesAPI';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
 import styles from './styles.module.scss';
@@ -24,17 +24,18 @@ function ProfileSelectPage({
     const [profileIds, setProfileIds] = useState<string[]>([]);
 
     useEffect(() => {
-        Profiles.getProfileIds()
+        ProfilesAPI.getProfileIds()
             .then(async (nextProfileIds) => {
                 console.log('Loaded profiles:', nextProfileIds);
                 
                 const newProfiles:ProfileMetadata[] = [];
                 for (const id of nextProfileIds) {
-                    const profile = await Profiles.getProfile(id);
+                    const profileAPI = await ProfilesAPI.getProfile(id);
+                    const { name, color } = await profileAPI.get('config.json', ['name', 'color']);
                     newProfiles.push({
                         id : id,
-                        name : profile.name,
-                        color : profile.color,
+                        name : name,
+                        color : color,
                     });
                 }
                 setProfileIds(nextProfileIds);
@@ -53,10 +54,12 @@ function ProfileSelectPage({
                 showModal &&
                 <NewProfileModal
                     onSubmit={async (metadata) => {
-                        const id = await Profiles.createProfile();
-                        const profile = await Profiles.getProfile(id);
-                        profile.name = metadata.name;
-                        profile.color = metadata.color;
+                        const id = await ProfilesAPI.createProfile();
+                        const profile = await ProfilesAPI.getProfile(id);
+                        await profile.set('config.json', {
+                            name: metadata.name,
+                            color: metadata.color,
+                        });
                         
                         triggerReloadProfiles();
                     }}
@@ -80,8 +83,7 @@ function ProfileSelectPage({
                             name={metadata.name}
                             image={RedIcon}
                             onClick={async () => {
-                                const profile = await Profiles.getProfile(metadata.id);
-                                // console.log(profile.name);
+                                const profile = await ProfilesAPI.getProfile(metadata.id);
                                 onSelect(metadata.id);
                             }}
                         />

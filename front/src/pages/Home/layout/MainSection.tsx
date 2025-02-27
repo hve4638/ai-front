@@ -2,12 +2,12 @@ import { RawProfileSessionContext } from 'context/RawProfileSessionContext';
 import InputField from 'components/InputField';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { useEffect, useState } from 'react';
-import { ProfileContext, useContextForce } from 'context';
+import { ProfileEventContext, useContextForce } from 'context';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import useDebounce from 'hooks/useDebounce';
 
 function MainSection() {
-    const profileContext = useContextForce(ProfileContext);
+    const profileContext = useContextForce(ProfileEventContext);
     const {
         configs,
         shortcuts,
