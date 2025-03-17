@@ -5,18 +5,21 @@ import { ProfileError } from './errors';
 class SessionControl {
     #storage:IACSubStorage;
 
+    /**
+     * @param storage 
+     */
     constructor(storage:IACSubStorage) {
         this.#storage = storage;
     }
 
     #getCacheAccessor() {
-        return this.#storage.getJSONAccessor('cache.json');
+        return this.#storage.accessAsJSON('cache.json');
     }
     #getDataAccessor() {
-        return this.#storage.getJSONAccessor('data.json');
+        return this.#storage.accessAsJSON('data.json');
     }
     #getConfigAccessor() {
-        return this.#storage.getJSONAccessor('config.json');
+        return this.#storage.accessAsJSON('config.json');
     }
     
     /**

@@ -1,6 +1,8 @@
 {
+    "create_label" : "생성",
     "submit_label" : "확인",
     "cancel_label" : "취소",
+    "prev_label" : "뒤로",
     "error" : {
         "not_found" : "찾을 수 없습니다."
     },
@@ -12,6 +14,7 @@
         "submit_label" : "",
         "save_label" : "저장",
         "save_new_label" : "새로 저장",
+        "add_form_label" : "변수 추가",
         "prompt_default_name" : "새 프롬프트",
         "variable_default_name" : "새 변수",
 
@@ -42,12 +45,15 @@
         }
     },
     "rt" : {
-        "new-rt" : "생성",
-        "create-rt-title" : "새 요청 템플릿",
-        "create-simple-prompt" : "단순 프롬프트",
-        "create-node-flow-mode" : "노드 요청",
-        "rt-create" : "새 템플릿 추가",
-        "rt-edit" : "요청 템플릿 수정"
+        "new_rt" : "생성",
+        "new_rt_title" : "새 요청 템플릿",
+        "select_prompt_only_mode_button" : "단일 프롬프트",
+        "select_flow_mode_button" : "워크플로우",
+        "rt_create" : "새 템플릿 추가",
+        "rt_edit" : "요청 템플릿 수정",
+        "name" : "이름",
+        "identifier" : "내부 식별자",
+        "advanced_button" : "고급"
     }
 }
 

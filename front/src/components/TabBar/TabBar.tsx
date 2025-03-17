@@ -24,7 +24,7 @@ interface AdjacentTabs<T extends TabRequired> {
     right? : TabItem<T>;
 }
 
-function TabBar<T extends TabRequired>({
+function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequired>({
     items,
     focus,
     onFocus,
@@ -34,12 +34,12 @@ function TabBar<T extends TabRequired>({
     onRemove,
     enableHotkey = true,
 }:{
-    focus:T,
+    focus:TRequired,
     items:T[],
     onChangeTabOrder:(items:T[])=>void
     onAdd:()=>void,
     onFocus:(item:T, index:number)=>void,
-    onRemove:(item:T, index:number)=>void,
+    onRemove:(item:TRequired, index:number)=>void,
     onUndoRemove:()=>void,
     enableHotkey?:boolean,
 }) {

@@ -44,7 +44,6 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@hve/chatai": "^0.5.1",
     "better-sqlite3": "^11.3.0",
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",

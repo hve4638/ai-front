@@ -12,6 +12,7 @@ import Button from 'components/Button';
 
 import type { RTNodeTree, RTNode, RTNodeDirectory } from 'types/rt-node'
 import RTTreeView from 'features/rtTreeView';
+import useModalDisappear from 'hooks/useModalDisappear';
 
 type RTSaveModalProps = {
     item:RTNodeTree;
@@ -27,7 +28,7 @@ function RTSaveModal({
     onClose,
 }:RTSaveModalProps) {
     const { t } = useTranslation();
-    const [disappear, setDisappear] = useState(true);
+    const [disappear, close] = useModalDisappear(onClose);
     const [tree, setTree] = useState<RTMetadataTree>(item);
 
     const submit = () => {
@@ -38,17 +39,6 @@ function RTSaveModal({
         onCancel();
         close();
     }
-
-    const close = () => {
-        setDisappear(true);
-        setTimeout(() => {
-            onClose();  
-        }, MODAL_DISAPPEAR_DURATION);
-    }
-
-    useEffect(()=>{
-        setTimeout(()=>setDisappear(false), 1);
-    }, []);
 
     return (
         <Modal
@@ -66,7 +56,7 @@ function RTSaveModal({
             >
                 <ModalHeader
                     hideCloseButton={true}
-                    title={t('prompt.save')}
+                    title={t('prompt_editor.save')}
                 />
                 <Row
                     rowAlign={Align.End}

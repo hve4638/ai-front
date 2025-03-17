@@ -5,17 +5,22 @@ import { ChatSession } from 'types/chat-session';
 import { IProfileSession } from 'features/profilesAPI';
 import useDebounce from 'hooks/useDebounce';
 import type { Configs, SetState, SetStateAsync, Shortcuts } from './types';
+import { ProfileAPI } from 'api/profiles';
+import { ProfileSessionMetadata } from 'types';
 
 interface ProfileEventContextType {
     /* 세션 관리 */
     createSession: () => Promise<void>;
     removeSession: (sessionId:string) => void;
-    reorderSessions: (sessions:ChatSession[]) => void;
+    reorderSessions: (sessionIds:string[]) => void;
     undoRemoveSession: () => void;
 
+    /** @deprecated Legacy */
     sessions: ChatSession[];
+    /** @deprecated Legacy */
     currentSession: ChatSession|undefined;
-    setCurrentSession: (session:ChatSession|string) => void;
+
+    getSessionMetadataList: () => Promise<ProfileSessionMetadata[]>;
 
     /* 모델 즐겨찾기 */
     starredModels:string[];
@@ -45,19 +50,20 @@ export const ProfileEventContext = createContext<ProfileEventContextType|null>(n
 export function ProfileEventContextProvider({children}: {children:React.ReactNode}) {
     const profileStorage = useContextForce(ProfileStorageContext);
     const {
-        api,
         sessionIds, refetchSessionIds,
         lastSessionId, setLastSessionId,
         starredModels, setStarredModels,
 
         shortcuts, configs,
     } = profileStorage;
+    const api = profileStorage.api!; 
 
     const [sessionDict, setSessionDict] = useState<Map<string, ChatSession>>(new Map());
     const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
     const [lastChatSession, setLastChatSession] = useState<ChatSession>();
+    console.log('starredModels', starredModels);
     const starredModelSet = useMemo(()=>new Set(starredModels), [starredModels]);
-
+    
     const values:ProfileEventContextType = {
         sessions : chatSessions,
         currentSession : lastChatSession,
@@ -89,20 +95,40 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
 
             await refetchSessionIds();
         },
-        async reorderSessions(sessions:ChatSession[]) {
-            await api.reorderSessions(sessions.map(item=>item.id));
+        async reorderSessions(sessionIds:string[]) {
+            await api.reorderSessions(sessionIds);
             await refetchSessionIds();
-        },
-        async setCurrentSession(session:ChatSession|string) {
-            const sid = (typeof session === 'string') ? session : session.id;
-    
-            if (sid !== lastSessionId) {
-                await setLastSessionId(sid);
-            }
         },
         async undoRemoveSession() {
             await api.undoRemoveSession();
             await refetchSessionIds();
+        },
+        async getSessionMetadataList() {
+            if (sessionIds == null) {
+                return [];
+            }
+
+            const promises:Promise<ProfileSessionMetadata>[] = sessionIds.map(async (sid) => {
+                const sessionAPI = api.getSessionAPI(sid);
+                const {
+                    name,
+                    color,
+                    delete_lock,
+                    model_id,
+                    rt_id
+                } = await sessionAPI.get('config.json', [
+                    'name', 'color', 'delete_lock', 'model_id', 'rt_id'
+                ]);
+                return {
+                    id : sid,
+                    name : name ?? sid,
+                    color : color,
+                    deleteLock : delete_lock ?? false,
+                    modelId : model_id,
+                    rtId : rt_id,
+                }
+            });
+            return await Promise.all(promises);
         },
 
         /* 모델 즐겨찾기 */
@@ -119,6 +145,7 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
         },
 
         /* 요청 템플릿 */
+
         async getRTTree() { return await api.getRTTree(); },
         async updateRTTree(tree:RTMetadataTree) { await api.updateRTTree(tree); },
         async addRT(metadata:RTMetadata) { return await api.addRT(metadata); },
@@ -129,45 +156,7 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
                 
         configs,
         shortcuts,
-
-
     }
-
-    useEffect(() => {
-        (async ()=>{
-            const newSessions:ChatSession[] = [];
-            if (sessionIds == null) {
-                return;
-            }
-            
-            for (const sid of sessionIds) {
-                if (!sessionDict.has(sid)) {
-                    const sessionAPI = api.getSession(sid);
-                    const {
-                        name,
-                        color,
-                        delete_lock,
-                        model_key,
-                        prompt_key
-                    } = await sessionAPI.get('config.json', [
-                        'name', 'color', 'delete_lock', 'model_key', 'prompt_key'
-                    ]);
-                    const chatSession:ChatSession = {
-                        id : sid,
-                        name : name ?? sid,
-                        color : color,
-                        deleteLock : delete_lock ?? false,
-                        modelKey : model_key,
-                        promptKey : prompt_key,
-                    }
-                    sessionDict.set(sid, chatSession);
-                }
-                newSessions.push(sessionDict.get(sid)!);
-            }
-
-            setChatSessions(newSessions);
-        })();
-    }, [sessionIds]);
 
     useEffect(() => {
         if (lastSessionId === undefined) { // 로딩 중

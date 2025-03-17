@@ -38,7 +38,7 @@ class ProfileAPI {
     async getOne(accessorId:string, key:string) {
         const [err, result] = await electron.GetProfileData(this.#profileId, accessorId, [key]);
         if (err) throw new IPCError(err.message);
-        return result;
+        return result[key];
     }
 
     /* get/set Text */
@@ -64,7 +64,7 @@ class ProfileAPI {
     }
 
     /* 하위 API */
-    getSession(sessionId:string):SessionAPI {
+    getSessionAPI(sessionId:string):SessionAPI {
         if (!(sessionId in this.#sessionAPIs)) {
             this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);
         }

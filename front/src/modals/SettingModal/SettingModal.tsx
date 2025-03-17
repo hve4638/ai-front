@@ -11,6 +11,7 @@ import {
 } from './options';
 import { MODAL_DISAPPEAR_DURATION } from 'data';
 import useHotkey from 'hooks/useHotkey';
+import useModalDisappear from 'hooks/useModalDisappear';
 
 const SETTING_CATEGORY = {
     GENERAL : '일반',
@@ -43,21 +44,8 @@ function SettingModal({
         SETTING_CATEGORY.SERVER,
         SETTING_CATEGORY.DATA,
     ]
-    const [disappear, setDisappear] = useState(true);
+    const [disappear, close] = useModalDisappear(onClose);
     const [currentCategory, setCurrentCategory] = useState<SETTING_CATEGORY>(SETTING_CATEGORY.GENERAL);
-    
-    const close = () => {
-        setDisappear(true);
-        setTimeout(() => {
-            onClose();
-        }, MODAL_DISAPPEAR_DURATION);
-    }
-
-    useEffect(() => {
-        setTimeout(() => {
-            setDisappear(false);
-        }, 0);
-    }, []);
 
     useHotkey({
         'Escape': close,
@@ -129,7 +117,6 @@ function SettingModal({
                         display: 'block',
                         overflowY: 'auto',
                         padding: '0px 8px',
-                        fontSize: '1.0em',
                     }}
                 >
                 {

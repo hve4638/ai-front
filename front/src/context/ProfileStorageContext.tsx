@@ -1,4 +1,4 @@
-import React, { useState, createContext, useLayoutEffect, useCallback } from 'react';
+import React, { useState, createContext, useLayoutEffect, useCallback, useEffect } from 'react';
 import { Configs, SetState, SetStateAsync, Shortcuts } from './types';
 
 import { LayoutModes, ThemeModes } from 'types/profile';
@@ -37,14 +37,16 @@ interface ProfileStorageContextType {
 export const ProfileStorageContext = createContext<ProfileStorageContextType|null>(null);
 
 export function ProfileStorageContextProvider({
-    profileId,
-    children
-}: {profileId:string, children:React.ReactNode}) {
-    const [id, setId] = useState<string>();
-    const [api, setAPI] = useState<ProfileAPI>();
+    id,
+    children,
+}: {
+    id:string,
+    children:React.ReactNode
+}) {
+    const [api, setAPI] = useState<ProfileAPI|null>(null);
     const refetchList:(()=>Promise<void>)[] = [];
     
-    const useProfileStorage = useCallback(<T,>(accessor:string, key:string, default_value:T) => {
+    const useStorageAccess = useCallback(<T,>(accessor:string, key:string, default_value:T) => {
         return useStorage(key, {
             encode: (value: any) => value,
             decode: (value: any) => value ?? default_value,
@@ -52,38 +54,40 @@ export function ProfileStorageContextProvider({
                 api?.setOne(accessor, key, value);
             },
             load: async (key: string) => {
-                return await api?.getOne(accessor, key);
+                const result = await api?.getOne(accessor, key);
+                console.log('read', key, result);
+                return result;
             },
             onStoreError: (error: unknown) => console.error(error),
             onLoadError: (error: unknown) => console.error(error),
-        });
-    }, [profileId]);
+        }, [api]);
+    }, [api]);
     const useSecretStorage = <T,>(key:string, default_value:T) => {
-        const [state, setState, refetch] = useProfileStorage<T>('secret.json', key, default_value);
+        const [state, setState, refetch] = useStorageAccess<T>('secret.json', key, default_value);
 
         refetchList.push(refetch);
         return [state, setState, refetch]
     }
     const useConfigStorage = <T,>(key:string, default_value:T) => {
-        const [state, setState, refetch] = useProfileStorage<T>('config.json', key, default_value);
+        const [state, setState, refetch] = useStorageAccess<T>('config.json', key, default_value);
 
         refetchList.push(refetch);
         return [state, setState, refetch]
     }
     const useDataStorage = <T,>(key:string, default_value:T) => {
-        const [state, setState, refetch] = useProfileStorage<T>('data.json', key, default_value);
+        const [state, setState, refetch] = useStorageAccess<T>('data.json', key, default_value);
         
         refetchList.push(refetch);
         return [state, setState, refetch]
     }
     const useCacheStorage = <T,>(key:string, default_value:T) => {
-        const [state, setState, refetch] = useProfileStorage<T>('cache.json', key, default_value);
+        const [state, setState, refetch] = useStorageAccess<T>('cache.json', key, default_value);
         
         refetchList.push(refetch);
         return [state, setState, refetch]
     }
     const useShortcutStorage = <T,>(key:string, default_value:T) => {
-        const [state, setState, refetch] = useProfileStorage<T>('shortcut.json', key, default_value);
+        const [state, setState, refetch] = useStorageAccess<T>('shortcut.json', key, default_value);
         
         refetchList.push(refetch);
         return [state, setState, refetch]
@@ -107,7 +111,7 @@ export function ProfileStorageContextProvider({
     const configMaxHistoryLimitPerSession = useConfigStorage('max_history_limit_per_session', 10000);
     const configMaxHistoryStorageDays =  useConfigStorage('max_history_storage_days', 0);
     const configGlobalShortcutEnabled = useConfigStorage('global_shortcut_enabled', false);
-    const onlyStarredModels = useConfigStorage('only_starred_models', false);
+    const configOnlyStarredModels = useConfigStorage('only_starred_models', false);
     const configShowActualModelName = useConfigStorage('show_actual_model_name', false);
     const configs:Configs = {
         fontSize : configFontSize[0],
@@ -129,8 +133,8 @@ export function ProfileStorageContextProvider({
         globalShortcutEnabled : configGlobalShortcutEnabled[0],
         setGlobalShortcutEnabled : configGlobalShortcutEnabled[1],
 
-        onlyStarredModels : onlyStarredModels[0],
-        setOnlyStarredModels : onlyStarredModels[1],
+        onlyStarredModels : configOnlyStarredModels[0],
+        setOnlyStarredModels : configOnlyStarredModels[1],
         showActualModelName : configShowActualModelName[0],
         setShowActualModelName : configShowActualModelName[1],
 
@@ -151,6 +155,7 @@ export function ProfileStorageContextProvider({
     /* data.json */
     const [sessionIds, setSessionIds, refetchSessionIds] = useDataStorage<string[]>('sessions', []);
     const [starredModels, setStarredModels, refetchStarredModels] = useDataStorage<string[]>('starred_models', []);
+    console.log('>> sessionIds', sessionIds);
 
     /* shortcut.json */
     const scFontSizeUp = useShortcutStorage('font_size_up', { wheel: -1, ctrl: true });
@@ -219,22 +224,20 @@ export function ProfileStorageContextProvider({
     }
     
     // 프로필 ID 변경 시
-    useLayoutEffect(() => {
-        (async () => {
-            const newProfile = await ProfilesAPI.getProfile(profileId)
-            setAPI(newProfile);
-            setId(profileId);
-        })();
-    }, [profileId]);
-    useLayoutEffect(() => {
-        (async () => {
-            if (!id) return;
-            const promises = refetchList.map((refetch)=>refetch());
-            // for(const promise of promises) {
-            //     await promise;
-            // }
-        })();
+    useEffect(()=>{
+        ProfilesAPI.getProfile(id)
+            .then((api)=>{
+                setAPI(api);
+            });
     }, [id]);
+    useEffect(() => {
+        (async () => {
+            const promises = refetchList.map((refetch)=>refetch());
+            for(const promise of promises) {
+                await promise;
+            }
+        })();
+    }, [api]);
     
     return (
         <ProfileStorageContext.Provider
@@ -251,7 +254,10 @@ export function ProfileStorageContextProvider({
                 shortcuts,
             }}
         >
-            {children}
+            {
+                api != null &&
+                children
+            }
         </ProfileStorageContext.Provider>
     )
 }

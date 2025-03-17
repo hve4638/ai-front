@@ -30,6 +30,7 @@ export default defineConfig({
             alias('pages', 'src/pages'),
             alias('features', 'src/features'),
             alias('locales', 'src/locales'),
+            alias('modals', 'src/modals'),
         ]
     }
 })

@@ -11,6 +11,7 @@ export function TreeNodeItem({
     edited = false,
     added = false,
     fixed = false,
+    onClick = (e) => {},
     onMouseEnter = (e) => {},
     onMouseLeave = (e) => {},
     onRegionMouseEnter = (e, region:Regions) => {},
@@ -143,6 +144,7 @@ export function TreeNodeItem({
             onMouseEnter={mouseEnter}
             onMouseLeave={mouseLeave}
             onMouseMove={mouseMove}
+            onClick={onClick}
         >
             {
                 icon !== '' && (

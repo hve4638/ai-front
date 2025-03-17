@@ -1,1 +1,1 @@
-export const MODAL_DISAPPEAR_DURATION = 200;
+export const MODAL_DISAPPEAR_DURATION = 150;

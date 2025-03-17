@@ -16,25 +16,25 @@ function StringLongForm({
         style={{
             display: 'block',
             margin: '0.5em 0',
-            fontSize: '0.75em'
+            width : '100%'
+            // fontSize: '0.75em'
         }}
     >
         <Row
             style={{
-                height: '1.4em',
-                margin: '0.25em 0'
+                margin: '0.25em 0',
+                paddingLeft : '0.1em',
             }}
         >
-            <div
-                className='noflex undraggable'
-            >
+            <small className='noflex undraggable'>
                 {name}
-            </div>
+            </small>
         </Row>
         <Row
             style={{
                 height: '1.4em',
-                margin: '0.25em 0'
+                margin: '0.25em 0',
+                fontSize: '0.9em',
             }}
         >
             <input

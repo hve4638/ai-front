@@ -5,14 +5,20 @@ import { PROFILE_STORAGE_TREE } from './data';
 describe('Profile', () => {
     let storage:MemACStorage;
     let rtControl:RequestTemplateControl;
-    const NODES:RTMetadata[] = [];
+    const Nodes:RTMetadataNode[] = [];
+    const Metadata:RTMetadata[] = [];
 
     beforeAll(()=>{
         for (let i=0; i<10; i++) {
-            NODES.push({
-                type: 'node',
+            Nodes.push({
                 name: `node${i}`,
                 id: `node${i}`,
+                type : `node`,
+            });
+            Metadata.push({
+                name: `node${i}`,
+                id: `node${i}`,
+                mode : 'prompt_only',
             });
         };
     });
@@ -31,52 +37,52 @@ describe('Profile', () => {
     });
 
     test('addRT()', () => {
-        rtControl.addRT(NODES[0]);
+        rtControl.addRT(Metadata[0]);
         {
-            const expected = [ NODES[0] ];
+            const expected = [ Nodes[0] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
 
-        rtControl.addRT(NODES[1]);
+        rtControl.addRT(Metadata[1]);
         {
-            const expected = [ NODES[0], NODES[1] ];
+            const expected = [ Nodes[0], Nodes[1] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
     });
 
     test('removeRT()', () => {
-        rtControl.addRT(NODES[0]);
-        rtControl.addRT(NODES[1]);
-        rtControl.addRT(NODES[2]);
+        rtControl.addRT(Metadata[0]);
+        rtControl.addRT(Metadata[1]);
+        rtControl.addRT(Metadata[2]);
         {
-            const expected = [ NODES[0], NODES[1], NODES[2] ];
+            const expected = [ Nodes[0], Nodes[1], Nodes[2] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
 
-        rtControl.removeRT(NODES[1].id);
+        rtControl.removeRT(Nodes[1].id);
         {
-            const expected = [ NODES[0], NODES[2] ];
+            const expected = [ Nodes[0], Nodes[2] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
     });
 
     test('updateTree()', () => {
-        rtControl.addRT(NODES[0]);
-        rtControl.addRT(NODES[1]);
-        rtControl.addRT(NODES[2]);
+        rtControl.addRT(Metadata[0]);
+        rtControl.addRT(Metadata[1]);
+        rtControl.addRT(Metadata[2]);
         {
-            const expected = [ NODES[0], NODES[1], NODES[2] ];
+            const expected = [ Nodes[0], Nodes[1], Nodes[2] ];
             const actual = rtControl.getTree();
             expect(actual).toEqual(expected);
         }
 
-        rtControl.updateTree([ NODES[2], NODES[0], NODES[1] ]);
+        rtControl.updateTree([ Nodes[2], Nodes[0], Nodes[1] ]);
         {
-            const expected = [ NODES[2], NODES[0], NODES[1] ];
+            const expected = [ Nodes[2], Nodes[0], Nodes[1] ];
             const actual = rtControl.getTree();
 
             expect(actual).toEqual(expected);
@@ -84,21 +90,21 @@ describe('Profile', () => {
     });
 
     test('updateTree() : 디렉토리 추가', () => {
-        rtControl.addRT(NODES[0]);
-        rtControl.addRT(NODES[1]);
-        rtControl.addRT(NODES[2]);
+        rtControl.addRT(Metadata[0]);
+        rtControl.addRT(Metadata[1]);
+        rtControl.addRT(Metadata[2]);
         {
-            const expected = [ NODES[0], NODES[1], NODES[2] ];
+            const expected = [ Nodes[0], Nodes[1], Nodes[2] ];
             const actual = rtControl.getTree();
 
             expect(actual).toEqual(expected);
         }
         const changed:RTMetadataTree = [
-            NODES[2],
+            Nodes[2],
             {
                 type: 'directory',
                 name: 'dir1',
-                children: [ NODES[0], NODES[1] ],
+                children: [ Nodes[0], Nodes[1] ],
             },
         ];
         rtControl.updateTree(changed);
@@ -115,11 +121,11 @@ describe('Profile', () => {
             name: 'dir1',
             children: [],
         };
-        rtControl.addRT(NODES[0]);
+        rtControl.addRT(Metadata[0]);
         
         {
             const expected:RTMetadataTree = [
-                NODES[0],
+                Nodes[0],
                 emptyDir,
             ]
             rtControl.updateTree(expected);
@@ -130,7 +136,7 @@ describe('Profile', () => {
         {
             const expected:RTMetadataTree = [
                 emptyDir,
-                NODES[0],
+                Nodes[0],
             ]
             rtControl.updateTree(expected);
             
@@ -140,15 +146,15 @@ describe('Profile', () => {
     });
 
     test('removeTree() : RT 삭제 후 빈 디렉토리 허용', () => {
-        rtControl.addRT(NODES[0]);
-        rtControl.addRT(NODES[1]);
+        rtControl.addRT(Metadata[0]);
+        rtControl.addRT(Metadata[1]);
         
         const changed:RTMetadataTree = [
-            NODES[0], 
+            Nodes[0], 
             {
                 type: 'directory',
                 name: 'dir1',
-                children: [ NODES[1] ],
+                children: [ Nodes[1] ],
             },
         ];
         rtControl.updateTree(changed);
@@ -158,10 +164,10 @@ describe('Profile', () => {
             expect(actual).toEqual(expected);
         }
         
-        rtControl.removeRT(NODES[1].id);
+        rtControl.removeRT(Nodes[1].id);
         {
             const expected = [
-                NODES[0], 
+                Nodes[0], 
                 {
                     type: 'directory',
                     name: 'dir1',
@@ -176,34 +182,34 @@ describe('Profile', () => {
     test('hasId()', () => {
         const expectTrue = (...indexes:number[]) => {
             for (const i of indexes) {
-                expect(rtControl.hasId(NODES[i].id)).toBe(true);
+                expect(rtControl.hasId(Nodes[i].id)).toBe(true);
             }
         }
         const expectFalse = (...indexes:number[]) => {
             for (const i of indexes) {
-                expect(rtControl.hasId(NODES[i].id)).toBe(false);
+                expect(rtControl.hasId(Nodes[i].id)).toBe(false);
             }
         }
 
         expectFalse(0, 1, 2);
 
-        rtControl.addRT(NODES[0]);
-        rtControl.addRT(NODES[1]);
+        rtControl.addRT(Metadata[0]);
+        rtControl.addRT(Metadata[1]);
         expectTrue(0, 1);
         expectFalse(2);
 
-        rtControl.addRT(NODES[2]);
+        rtControl.addRT(Metadata[2]);
         expectTrue(0, 1, 2);
         
-        rtControl.removeRT(NODES[2].id);
+        rtControl.removeRT(Nodes[2].id);
         expectTrue(0, 1);
         expectFalse(2);
 
-        rtControl.removeRT(NODES[0].id);
+        rtControl.removeRT(Nodes[0].id);
         expectTrue(1);
         expectFalse(0, 2);
 
-        rtControl.removeRT(NODES[1].id);
+        rtControl.removeRT(Nodes[1].id);
         expectFalse(0, 1, 2);
     });
 
@@ -219,27 +225,27 @@ describe('Profile', () => {
 
     test('changeId()', () => {
         const expectTrue = (...indexes:number[]) => {
-            const expected = indexes.map((i)=>rtControl.hasId(NODES[i].id))
+            const expected = indexes.map((i)=>rtControl.hasId(Nodes[i].id))
 
             expect(expected).toEqual(indexes.map(()=>true));
         }
         const expectFalse = (...indexes:number[]) => {
             for (const i of indexes) {
                 expect([
-                    i, rtControl.hasId(NODES[i].id)
+                    i, rtControl.hasId(Nodes[i].id)
                 ]).toEqual([
                     i, false
                 ]);
             }
         }
 
-        rtControl.addRT({...NODES[0]});
-        rtControl.addRT({...NODES[1]});
-        rtControl.addRT({...NODES[2]});
+        rtControl.addRT({...Metadata[0]});
+        rtControl.addRT({...Metadata[1]});
+        rtControl.addRT({...Metadata[2]});
         expectTrue(0, 1, 2);
         expectFalse(3, 4, 5);
 
-        rtControl.changeId(NODES[0].id, NODES[3].id);
+        rtControl.changeId(Nodes[0].id, Nodes[3].id);
         expectTrue(1, 2, 3);
         expectFalse(0, 4, 5);
     });

@@ -130,6 +130,9 @@ class Profile {
     changeRTId(oldRTId:string, newRTId:string) {
         return this.#rtControl.changeId(oldRTId, newRTId);
     }
+    updateRTMetadata(rtId:string) {
+        return this.#rtControl.updateRTMetadata(rtId);
+    }
     
     /* 직접 접근 */
     accessAsJSON(identifier:string) {

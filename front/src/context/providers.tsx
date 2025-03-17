@@ -1,16 +1,16 @@
-import {ProfileStorageContextProvider} from './ProfileStorageContext';
-import {ProfileEventContextProvider} from './ProfileEventContext';
-import { RawProfileSessionContextProvider } from './RawProfileSessionContext';
-// import MemoryContextProvider from './MemoryContext';
-//import SessionContextProvider from './SessionContext';
+import { ProfileStorageContextProvider } from './ProfileStorageContext';
+import { ProfileEventContextProvider } from './ProfileEventContext';
+import { ProfileSessionContextProvider } from './ProfileSessionContext';
 
 export function Providers({children, profileId}: {children:React.ReactNode, profileId:string}) {
     return (
-        <ProfileStorageContextProvider profileId={profileId}>
+        <ProfileStorageContextProvider
+            id={profileId}
+        >
             <ProfileEventContextProvider>
-                <RawProfileSessionContextProvider>
+                <ProfileSessionContextProvider>
                     {children}
-                </RawProfileSessionContextProvider>
+                </ProfileSessionContextProvider>
             </ProfileEventContextProvider>
         </ProfileStorageContextProvider>
     );

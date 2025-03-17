@@ -1,4 +1,9 @@
-export enum IPCCommand {
+/**
+ * electron에서 ipcRenderer.invoke() 를 통해 front로 노출시킬 명령어
+ * 
+ * share/ipc-command.d.ts 와 electron/types/ipc.ts 는 동일하게 유지되어야 함
+ */
+export enum IPCInvokerName {
     Echo = 'Echo',
     OpenBrowser = 'OpenBrowser',
     GetChatAIModels = 'GetChatAIModels',
@@ -74,6 +79,10 @@ export enum IPCCommand {
     ChangeProfileRTId = 'ChangeProfileRTId',
     GetProfileRTData = 'GetProfileRTData',
     SetProfileRTData = 'SetProfileRTData',
+    ReflectProfileRTMetadata = 'ReflectProfileRTMetadata',
+
+    /* 프로필 RT 요청 */
+    RequestProfileRT = 'RequestProfileRT',
 }
 
 export {};

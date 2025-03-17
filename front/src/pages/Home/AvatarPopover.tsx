@@ -34,15 +34,6 @@ function AvatarPopover({
                     width: '12em',
                 }}
             >
-                <DivButton onClick={()=>onClickEditRequestTemplate()}>
-                    <GoogleFontIcon
-                        value='edit_square'
-                        style={{
-                            marginRight: '0.25em',
-                        }}
-                    />
-                    <span>요청 템플릿 수정</span>
-                </DivButton>
                 <DivButton onClick={()=>onClickSetting()}>
                     <GoogleFontIcon
                         value='settings'
@@ -51,6 +42,15 @@ function AvatarPopover({
                         }}
                     />
                     <span>설정</span>
+                </DivButton>
+                <DivButton onClick={()=>onClickEditRequestTemplate()}>
+                    <GoogleFontIcon
+                        value='edit_square'
+                        style={{
+                            marginRight: '0.25em',
+                        }}
+                    />
+                    <span>요청 템플릿 수정</span>
                 </DivButton>
                 <hr/>
                 <DivButton onClick={()=>onClickChangeProfile()}>

@@ -73,7 +73,7 @@ class ProfileAPI {
     async updateRTTree(tree:RTMetadataTree) {
         await LocalAPI.updateProfileRTTree(this.#id, tree);
     }
-    async addRT(metadata:RTMetadata) {
+    async addRT(metadata:RTMetadataNode) {
         await LocalAPI.addProfileRT(this.#id, metadata);
     }
     async removeRT(rtId:string) {

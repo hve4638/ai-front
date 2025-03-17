@@ -2,7 +2,7 @@ import { ReactElement, useCallback, useState } from 'react';
 import Header from './layout/Header';
 import SessionTabBar from './SessionTabBar';
 import MainSection from './layout/MainSection';
-import SettingModal from '../SettingModal';
+import SettingModal from '../../modals/SettingModal';
 import ShortcutHandler from 'pages/ShortcutHandler';
 import { ModalProvider } from 'hooks/useModals';
 

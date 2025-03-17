@@ -4,14 +4,14 @@ function model(name:string, value:string, flags:ChatAIModelFlags):Omit<ChatAIMod
 function model(value:string, flags:ChatAIModelFlags):Omit<ChatAIModel, 'id'>;
 
 function model(
-    name:string,
+    displayName:string,
     arg1?:string|ChatAIModelFlags|undefined,
     arg2?:ChatAIModelFlags|undefined
-):Omit<ChatAIModel, 'id'> {
-    let value:string;
+):Omit<ChatAIModel, 'id'|'providerName'|'providerDisplayName'> {
+    let name:string;
     let flags:ChatAIModelFlags;
     if (typeof(arg1) === 'string') {
-        value = arg1;
+        name = arg1;
         if (arg2) {
             flags = arg2;
         }
@@ -20,15 +20,15 @@ function model(
         }
     }
     else if (typeof(arg1) === 'object') {
-        value = name;
+        name = displayName;
         flags = arg1;
     }
     else {
-        value = name;
+        name = displayName;
         flags = {};
     }
 
-    return { name, value, flags };
+    return { name, displayName, flags };
 }
 
 export default model;

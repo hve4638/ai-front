@@ -15,7 +15,7 @@ function get():IPCInterface {
         ...profileRT(),
         ...profileSession(),
         ...profileSessionHistory(),
-    };
+    } as any;
 }
 
 export default get;

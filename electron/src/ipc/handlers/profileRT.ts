@@ -1,5 +1,5 @@
 import * as utils from '@utils';
-import { IPCCommand } from 'types';
+import { IPCInvokerName } from 'types';
 
 import {
     profiles,
@@ -19,7 +19,7 @@ function handler() {
 
     return {
         /*  */
-        [IPCCommand.GenerateProfileRTId]: async (profileId: string) => {
+        [IPCInvokerName.GenerateProfileRTId]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const rtId = profile.generateRTId();
 
@@ -27,13 +27,13 @@ function handler() {
         },
 
         /* 트리 */
-        [IPCCommand.GetProfileRTTree]: async (profileId: string) => {
+        [IPCInvokerName.GetProfileRTTree]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const tree = profile.getRTTree();
 
             return [null, tree] as const;
         },
-        [IPCCommand.UpdateProfileRTTree]: async (profileId: string, tree: any) => {
+        [IPCInvokerName.UpdateProfileRTTree]: async (profileId: string, tree: any) => {
             const profile = profiles.getProfile(profileId);
             profile.updateRTTree(tree);
             saveProfile(profile);
@@ -42,14 +42,14 @@ function handler() {
         },
 
         /* RT 컨트롤 */
-        [IPCCommand.AddProfileRT]: async (profileId: string, metadata: RTMetadata) => {
+        [IPCInvokerName.AddProfileRT]: async (profileId: string, metadata: RTMetadata) => {
             const profile = profiles.getProfile(profileId);
             profile.addRT(metadata);
             saveProfile(profile);
 
             return [null] as const;
         },
-        [IPCCommand.RemoveProfileRT]: async (profileId: string, promptId: string) => {
+        [IPCInvokerName.RemoveProfileRT]: async (profileId: string, promptId: string) => {
             const profile = profiles.getProfile(profileId);
             profile.removeRT(promptId);
             saveProfile(profile);
@@ -58,24 +58,32 @@ function handler() {
         },
 
         /* RT 데이터 */
-        [IPCCommand.SetProfileData]: async (profileId: string, rtId: string, accessorId: string, data:KeyValueInput) => {
+        [IPCInvokerName.SetProfileRTData]: async (profileId: string, rtId: string, accessorId: string, data:KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
-            return profile.setRTData(rtId, accessorId, data);
+            const result = profile.setRTData(rtId, accessorId, data);
+            return [null, result] as const;
         },
-        [IPCCommand.GetProfileRTData]: async (profileId: string, rtId: string, accessorId: string, keys:string[]) => {
+        [IPCInvokerName.GetProfileRTData]: async (profileId: string, rtId: string, accessorId: string, keys:string[]) => {
             const profile = profiles.getProfile(profileId);
-            return profile.getRTData(rtId, accessorId, keys);
+            const result = profile.getRTData(rtId, accessorId, keys);
+            return [null, result] as const;
+        },
+        [IPCInvokerName.ReflectProfileRTMetadata]: async (profileId: string, rtId: string) => {
+            const profile = profiles.getProfile(profileId);
+            profile.updateRTMetadata(rtId);
+            
+            return [null] as const;
         },
 
         /* RT 모드 */
-        [IPCCommand.GetProfileRTMode]: async (profileId: string, rtId: string) => {
+        [IPCInvokerName.GetProfileRTMode]: async (profileId: string, rtId: string) => {
             const profile = profiles.getProfile(profileId);
             const mode = profile.getRTMode(rtId);
 
             return [null, mode] as const;
         },
-        [IPCCommand.SetProfileRTMode]: async (profileId: string, rtId: string, mode: RTMode) => {
-            const profile = profiles.getProfile(profileId);
+        [IPCInvokerName.SetProfileRTMode]: async (profileId: string, rtId: string, mode: RTMode) => {
+            const profile = profiles.getProfile(profileId)
             profile.setRTMode(rtId, mode);
             saveProfile(profile);
 
@@ -83,29 +91,40 @@ function handler() {
         },
 
         
-        [IPCCommand.GetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, keys:string[]) => {
+        [IPCInvokerName.GetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, keys:string[]) => {
             const profile = profiles.getProfile(profileId);
             const data = profile.getRTPromptData(rtId, promptId, keys);
 
             return [null, data] as const;
         },
-        [IPCCommand.SetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, data:KeyValueInput) => {
+        [IPCInvokerName.SetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, data:KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
             profile.setRTPromptData(rtId, promptId, data);
 
             return [null] as const;
         },
 
-        [IPCCommand.HasProfileRTId]: async (profileId: string, rtId: string) => {
+        [IPCInvokerName.HasProfileRTId]: async (profileId: string, rtId: string) => {
             const profile = profiles.getProfile(profileId);
             const exists = profile.hasRTId(rtId);
 
             return [null, exists] as const;
         },
-        [IPCCommand.ChangeProfileRTId]: async (profileId: string, oldRTId: string, newRTId: string) => {
+        [IPCInvokerName.ChangeProfileRTId]: async (profileId: string, oldRTId: string, newRTId: string) => {
             const profile = profiles.getProfile(profileId);
             profile.changeRTId(oldRTId, newRTId);
             saveProfile(profile);
+
+            return [null] as const;
+        },
+
+        /* RT 요청 */
+        [IPCInvokerName.RequestProfileRT]: async (profileId: string, rtId: string, input:RTInput) => {
+            // let token;
+            // const profile = profiles.getProfile(profileId);
+            // const request = profile.getRTRequest(rtId);
+
+            // return [null, request] as const;
 
             return [null] as const;
         },

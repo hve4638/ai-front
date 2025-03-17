@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ProfileEventContext, RawProfileSessionContext, useContextForce } from 'context';
 import styles from '../styles.module.scss';
+
+import { ProfileEventContext, useContextForce } from 'context';
 
 import LocalAPI from 'api/local';
 import { Align, Flex, Row } from 'components/layout';
@@ -13,13 +14,15 @@ import {
     AnthropicIcon,
     GoogleVertexAIIcon,
 } from 'components/Icons'
-import AddPromptModal from '../AddPromptModal';
 import { useTranslation } from 'react-i18next';
 import { mapRTMetadataTree } from 'utils/rt';
 import AvatarPopover from '../AvatarPopover';
-import RTEditModal from '../RTEditModal';
 import { useModals } from 'hooks/useModals';
-import SettingModal from 'pages/SettingModal';
+
+import SettingModal from 'modals/SettingModal';
+import RTEditModal from 'modals/RTEditModal';
+import NewRTModal from 'modals/NewRTModal';
+import { useProfileSession } from 'hooks/context';
 
 
 const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
@@ -29,15 +32,14 @@ function Header() {
     const modals = useModals();
     const { t } = useTranslation();
     const profileContext = useContextForce(ProfileEventContext);
-    const sessionContext = useContextForce(RawProfileSessionContext);
     const {
         starredModels,
         isModelStarred,
         configs,
     } = profileContext;
     const {
-        modelKey, setModelKey
-    } = sessionContext;
+        rtId, setRtId
+    } = useProfileSession();
     const [allModles, setAllModels] = useState<ChatAIModels>([]);
     const [models, setModels] = useState<DropdownItemList[]>([]);
 
@@ -48,7 +50,6 @@ function Header() {
     const [rtDropdownItems, setRTDropdownItems] = useState<(DropdownItem|DropdownItemList)[]>([]);
     const [rtDropdownSelected, setRTDropdownSelected] = useState<string>('');
     
-
     const renderPromptName = useCallback((item: DropdownItem|DropdownItemList, parentList?: DropdownItemList|undefined)=>{
         let prefixIcon = <></>
         if ('key' in item && item.key === CREATE_NEW_PROMPT) {
@@ -123,7 +124,6 @@ function Header() {
         LocalAPI.getChatAIModels()
             .then((models)=>{
                 setAllModels(models);
-                console.log(models);
             });
         profileContext.getRTTree()
             .then((tree)=>{
@@ -162,7 +162,7 @@ function Header() {
                 category.list.forEach((model:ChatAIModel)=>{
                     if (!configs.onlyStarredModels || isModelStarred(model.id)) {
                         nextProvider.list.push({
-                            name: configs.showActualModelName ? model.value : model.name,
+                            name: configs.showActualModelName ? model.name : model.displayName,
                             key: model.id,
                         });
                     }
@@ -204,14 +204,14 @@ function Header() {
                     renderItem={renderModelName}
                     renderSelectedItem={renderSelectedModelName}
                     items={models}
-                    value={modelKey}
+                    value={rtId}
                     onChange={(item)=>{
-                        setModelKey(item.key);
+                        setRtId(item.key);
                     }}
                     onItemNotFound={()=>{
                         if (models.length === 0) return;
 
-                        setModelKey(models[0].list[0].key);
+                        setRtId(models[0].list[0].key);
                     }}
                 />
                 <Flex/>
@@ -223,16 +223,16 @@ function Header() {
                     items={[
                         ...rtDropdownItems,
                         {
-                            name: t('rt.new-rt'),
+                            name: t('rt.new_rt'),
                             key : CREATE_NEW_PROMPT,
                         }
                     ]}
                     value={rtDropdownSelected}
                     renderItem={renderPromptName}
                     onChange={(item)=>{
-                        modals.open(AddPromptModal, {
-                            onAddPrompt: (type:any) => {
-                                navigate('/prompts/new');
+                        modals.open(NewRTModal, {
+                            onAddRT: (rtId:string, mode:RTMode) => {
+                                navigate(`/prompts/${rtId}/edit`);
                             }
                         });
                     }}
@@ -291,7 +291,7 @@ function Header() {
                                 }}
                                 onClickChangeProfile={()=>{
                                     // @TODO
-                                }}
+                                }} 
 
                                 onClickOutside={(e)=>setShowAvatarPopover(false)}
                             />

@@ -14,6 +14,7 @@ type PromptTreeModalProps = {
     style?: React.CSSProperties;
     tree:RTNodeTree;
     onChange?: (item:RTNodeTree) => void;
+    onClick?: (rtId:string) => void;
     
     relocatable?: boolean;
     hideBackground ?: boolean;
@@ -23,6 +24,7 @@ function RTTreeModal({
     className='',
     style={},
     tree,
+    onClick=()=>{},
     onChange=()=>{},
     relocatable=false,
     hideBackground=false,
@@ -138,6 +140,9 @@ function RTTreeModal({
                             node : node,
                             offsets : offsets as TreeOffsets,
                         });
+                    }}
+                    onClick={() => {
+                        onClick(node.id);
                     }}
                 />
             );

@@ -1,4 +1,4 @@
-import '@shared/ipctype.d.ts';
+import '@shared/types.d.ts';
 
 declare global {
     interface Window {

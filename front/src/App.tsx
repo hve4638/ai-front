@@ -15,7 +15,7 @@ const LoadPhase = {
     LOADING_PROFILE_METADATA : 2,
     SELECT_PROFILE : 3,
     ENTRYPOINT : 10,
-}
+};
 type LoadPhase = typeof LoadPhase[keyof typeof LoadPhase];
 
 function App() {
@@ -33,7 +33,9 @@ function App() {
                 case LoadPhase.INIT_MASTER_KEY:
                     break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
+                    console.log('LOADING_PROFILE_METADATA');
                     const lastProfile = await Profiles.getLastProfile();
+                    console.log('LOADING_PROFILE_METADATA? END');
 
                     if (lastProfile == null) {
                         setProfile(null);
@@ -89,7 +91,15 @@ function App() {
                 currentState == LoadPhase.INIT_MASTER_KEY &&
                 <MasterKeyInitailize
                     onFinished={() => {
-                        setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
+                        console.log('MASTER')
+                        setCurrentState(prev=>{
+                            if (prev === LoadPhase.INIT_MASTER_KEY) {
+                                return LoadPhase.LOADING_PROFILE_METADATA;
+                            }
+                            else {
+                                return prev;
+                            }
+                        });
                     }}
                 />
             }
@@ -98,7 +108,14 @@ function App() {
                 <ProfileSelectPage
                     onSelect={async (id) => {
                         await Profiles.setLastProfile(id);
-                        setCurrentState(LoadPhase.LOADING_PROFILE_METADATA);
+                        setCurrentState(prev=>{
+                            if (prev === LoadPhase.SELECT_PROFILE) {
+                                return LoadPhase.LOADING_PROFILE_METADATA;
+                            }
+                            else {
+                                return prev;
+                            }
+                        });
                     }}
                 />
             }

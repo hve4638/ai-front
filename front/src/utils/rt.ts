@@ -4,14 +4,14 @@ type RTNodeOptions = Omit<RTNode, 'type'|'id'|'name'>;
 
 type mapRTMetadataTreeOptions<TNode, TDirectory> = {
     mapDirectory : (item:RTMetadataDirectory, children:TNode[])=>TDirectory;
-    mapNode : (item:RTMetadata)=>TNode;
+    mapNode : (item:RTMetadataNode)=>TNode;
 }
 
 export function mapRTMetadataTree<TNode, TDirectory>(
     items:RTMetadataTree,
     options:mapRTMetadataTreeOptions<TNode, TDirectory>
 ) {
-    return items.map((item:RTMetadata|RTMetadataDirectory)=>{
+    return items.map((item:RTMetadataNode|RTMetadataDirectory)=>{
         if (item.type === 'directory') {
             return options.mapDirectory(item, mapRTMetadataTree(item.children, options));
         }
@@ -23,7 +23,7 @@ export function mapRTMetadataTree<TNode, TDirectory>(
 
 export function mapRTMetadataToNode(
     metadataTree:RTMetadataTree,
-    mapOption:(mt:RTMetadata)=>RTNodeOptions = (mt)=>({}),
+    mapOption:(mt:RTMetadataNode)=>RTNodeOptions = (mt)=>({}),
 ) {
     const mapNode = (item:RTNode) => {
         return {
@@ -31,10 +31,10 @@ export function mapRTMetadataToNode(
             name : item.name,
             id : item.id,
             ...mapOption(item),
-        } as RTMetadata;
+        } as RTMetadataNode;
     }
 
-    const rtTree:RTNodeTree = metadataTree.map((item:RTMetadata|RTMetadataDirectory)=>{
+    const rtTree:RTNodeTree = metadataTree.map((item:RTMetadataNode|RTMetadataDirectory)=>{
         if (item.type === 'directory') {
             return {
                 type : 'directory',
@@ -57,7 +57,7 @@ export function mapRTNodeToMetadata(
             type : 'node',
             name : item.name,
             id : item.id,
-        } as RTMetadata;
+        } as RTMetadataNode;
     }
 
     const tree:RTMetadataTree = metadataTree.map(

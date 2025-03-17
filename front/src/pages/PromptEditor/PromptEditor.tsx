@@ -4,8 +4,6 @@ import classNames from 'classnames';
 import styles from './styles.module.scss';
 import { useTranslation } from "react-i18next";
 
-import { ProfileEventContext, useContextForce } from 'context';
-
 import useSignal from 'hooks/useSignal';
 import EditorSection from './EditorSection';
 import SidePanel from './SidePanel';
@@ -14,6 +12,9 @@ import { PromptInputType } from 'types';
 import { PromptData, PromptEditMode } from './types';
 import { ModalProvider } from 'hooks/useModals';
 import { PromptEditAction } from './types/prompt-editor';
+import useProfile from 'hooks/context/useProfile';
+import { useRT } from 'hooks/context';
+import { useNavigate } from 'react-router';
 
 type PromptEditorProps = {
     action : PromptEditAction;
@@ -25,28 +26,29 @@ function PromptEditor({
     action
 }:PromptEditorProps) {
     const { t } = useTranslation();
-    const { id } = useParams();
-    const profileContext = useContextForce(ProfileEventContext);
-    const [loaded, setLoaded] = useState(false);
-    const promptActionRef = useRef(action);
-    const [refreshSignal, sendRefreshSignal] = useSignal();
+    const { rtId } = useParams();
+    const navigate = useNavigate();
+    const profile = useProfile();
+    const rt = useRT();
     
+    const [_, sendRefreshSignal] = useSignal();
+    const [loaded, setLoaded] = useState(false);
+
+    const promptActionRef = useRef(action);
     const promptData = useRef<PromptData>({
         name: t('prompt_editor.prompt_default_name'),
-        id: id ?? '0',
-        vars: [],
+        id: rtId ?? '0',
+        forms: [],
         inputType: 'NORMAL',
-        promptContent: '',
+        contents: '',
     });
-
-    const vars = promptData.current.vars;
 
     const addNewPromptVar = () => {
         let varName = '';
         let i = 0;
         while (true) {
             let candidateName = `variable_${i}`;    
-            if (vars.some((item)=>item.name === candidateName)) {
+            if (promptData.current.forms.some((item)=>item.name === candidateName)) {
                 i++;
             }
             else {
@@ -63,53 +65,19 @@ function PromptEditor({
             default_value: '',
             placeholder: '',
         }
-        promptData.current?.vars.push(newPromptVar);
+        promptData.current?.forms.push(newPromptVar);
         sendRefreshSignal();
+        return newPromptVar;
     }
 
     // NEW 인 경우 프롬프트 ID 초기화
     useEffect(()=>{
         (async ()=>{
-            const currentAction = promptActionRef.current;
-            switch(promptActionRef.current) {
-                case PromptEditAction.NEW:
-                {
-                    const newId = await profileContext.generateRTId();
-                    promptData.current = {
-                        name: t('prompt_editor.prompt_default_name'),
-                        id: newId,
-                        vars: [],
-                        inputType: 'NORMAL',
-                        promptContent: '',
-                    }
-                    break;
-                }
-                case PromptEditAction.EDIT:
-                {
-                    if (id == null) {
-                        console.error('rtId is not provided');
-                        return;
-                    }
-                    const inputType = await profileContext.getRTMode(id);
-                    const promptText = await profileContext.getRTPromptText(id);
-                    promptData.current = {
-                        name: metadata.name,
-                        id: id,
-                        vars: [],
-                        inputType: 'NORMAL',
-                        promptContent: promptText,
-                    }
-                    setLoaded(true);
-                    sendRefreshSignal();
-                    break;
-                }
-            }
-
+            promptData.current = await rt.loadPromptData('default');
             setLoaded(true);
             sendRefreshSignal();
         })();
     }, []);
-
 
     if (!loaded) {
         return <></>
@@ -120,20 +88,23 @@ function PromptEditor({
                 className={styles['prompt-editor']}
             >
                 <EditorSection
-                
+                    promptData={promptData.current}
                 />
                 <SidePanel
                     promptData={promptData.current}
                     onRefresh={()=>sendRefreshSignal()}
+                    onSave={async (tree:RTMetadataTree)=>{
+                        // not implemented
+                    }}
                     onBack={()=>{
-                        console.log('click back');
+                        navigate('/');
                     }}
 
                     onAddPromptVarClick={()=>{
-                        addNewPromptVar();
+                        return addNewPromptVar();
                     }}
                     onRemovePromptVarClick={(promptVar:PromptVar)=>{
-                        promptData.current.vars = vars.filter((item)=>item.name !== promptVar.name);
+                        promptData.current.forms = promptData.current.forms.filter((item)=>item.name !== promptVar.name);
                         sendRefreshSignal();
                     }}
                     onChangeInputType={(inputType:PromptInputType)=>{

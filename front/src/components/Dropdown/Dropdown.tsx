@@ -134,6 +134,10 @@ function Dropdown({
                 className='dropdown-header flex'
                 onClick={() => setIsOpen(prev => !prev)}
                 ref={headerRef}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    
+                }}
             >
                 {currentName}
                 <GoogleFontIcon value='arrow_drop_down'/>

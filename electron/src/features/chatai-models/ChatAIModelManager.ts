@@ -1,5 +1,5 @@
 import ModelProvider from './ModelProvider';
-import { Models } from '@hve/chatai';
+import { KnownProvider } from '@hve/chatai';
 import {
     initOpenAIProvider,
     initGeminiProvider,
@@ -10,13 +10,12 @@ import {
 class ChatAIModelManager {
     #provdierNames: string[] = [];
     #providers: Map<string, ModelProvider> = new Map();
-    #modelIds:Map<string, string> = new Map();
-    #models:ChatAIModels;
+    #modelIds:Map<string, ChatAIModel> = new Map();
+    #models:ChatAIModels = [];
 
     constructor() {
-        this.#initialize();
+        this.#loadDefaultModel();
 
-        this.#models = [];
         for (const providerName of this.#provdierNames) {
             const provider = this.#providers.get(providerName) as ModelProvider;
             const providerModel:ChatAIModelProviders = {
@@ -27,27 +26,27 @@ class ChatAIModelManager {
 
             for (const category of provider.categories) {
                 for (const modelItem of category.list) {
-                    this.#modelIds.set(modelItem.id, modelItem.name);
+                    this.#modelIds.set(modelItem.id, modelItem);
                 }
             }
         }
     }
 
-    #initialize() {
-        const openAIProvider = this.#addProvider('OpenAI', Models.OPENAI_GPT);
+    #loadDefaultModel() {
+        const openAIProvider = this.#addProvider('OpenAI', KnownProvider.OpenAI);
         initOpenAIProvider(openAIProvider);
-
-        const geminiProvider = this.#addProvider('Google', Models.GOOGLE_GEMINI);
+        
+        const geminiProvider = this.#addProvider('Google', KnownProvider.Google);
         initGeminiProvider(geminiProvider);
 
-        const claudeProvider = this.#addProvider('Anthropic', Models.CLAUDE);
+        const claudeProvider = this.#addProvider('Anthropic', KnownProvider.Anthropic);
         initClaudeProvider(claudeProvider);
 
-        const vertexAIProvider = this.#addProvider('VertexAI', Models.GOOGLE_VERTEXAI);
+        const vertexAIProvider = this.#addProvider('VertexAI', KnownProvider.VertexAI);
         initVertexAIProvider(vertexAIProvider);
     }
 
-    #addProvider(name:string, providerId: Models) {
+    #addProvider(name:string, providerId: KnownProvider) {
         if (this.#providers.has(name)) {
             return this.#providers.get(name) as ModelProvider;
         }
@@ -59,6 +58,10 @@ class ChatAIModelManager {
 
             return provider;
         }
+    }
+
+    getModel(id:string):ChatAIModel|undefined {
+        return this.#modelIds.get(id);
     }
 
     get models() {

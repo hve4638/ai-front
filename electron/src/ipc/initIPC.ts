@@ -1,17 +1,17 @@
 import { ipcMain } from 'electron';
-import { IPCCommand } from 'types';
+import { IPCInvokerName } from 'types';
 import getHandlers from './handlers';
 
 export function initIPC() {
     const handlers = getHandlers();
 
     for(const ping in handlers) {
-        const handler = handlers[ping as IPCCommand];
-        handleIPC(ping as IPCCommand, handler);
+        const handler = handlers[ping as IPCInvokerName];
+        handleIPC(ping as IPCInvokerName, handler);
     }
 }
 
-function handleIPC(ping:IPCCommand, callback:any) {
+function handleIPC(ping:IPCInvokerName, callback:any) {
     ipcMain.handle(ping, async (event: any, ...args: any) => {
         console.log(`[IPC] ${ping}`, ...args);
         try {
@@ -19,6 +19,7 @@ function handleIPC(ping:IPCCommand, callback:any) {
             return result;
         }
         catch (error:any) {
+            console.error(`[IPC] ${ping} error`, error);
             return [makeErrorStruct(error)];
         }
     });

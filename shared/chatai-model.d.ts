@@ -1,4 +1,3 @@
-
 declare global {
     type ChatAIModelFlags = {
         featured? : boolean;
@@ -12,7 +11,9 @@ declare global {
     type ChatAIModel = {
         id: string;
         name: string;
-        value: string;
+        displayName: string;
+        providerName: string;
+        providerDisplayName: string;
         flags : ChatAIModelFlags;
     }
     type ChatAIMoedelCategory = {

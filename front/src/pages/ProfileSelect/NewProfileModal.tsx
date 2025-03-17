@@ -100,7 +100,7 @@ function NewProfileModal({
                                 boxSizing: 'content-box',
                                 padding: '2px 0.5em',
                                 /// @TODO : 하드코딩된 폰트 사이즈
-                                fontSize: '16px',
+                                // fontSize: '16px',
                                 height: '1.5em'
                             }}
                             value={name}

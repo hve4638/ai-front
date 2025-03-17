@@ -1,5 +1,5 @@
 import * as utils from '@utils';
-import { IPCCommand } from 'types';
+import { IPCInvokerName } from 'types';
 
 import {
     profiles,
@@ -19,14 +19,14 @@ function handler() {
 
     return {
         /* 프로필 세션 */
-        [IPCCommand.AddProfileSession]: async (profileId: string) => {
+        [IPCInvokerName.AddProfileSession]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const sid = profile.createSession();
 
             saveProfile(profile);
             return [null, sid] as const;
         },
-        [IPCCommand.RemoveProfileSession]: async (profileId: string, sessionId: string) => {
+        [IPCInvokerName.RemoveProfileSession]: async (profileId: string, sessionId: string) => {
             const profile = profiles.getProfile(profileId);
             profile.removeSession(sessionId);
 
@@ -38,7 +38,7 @@ function handler() {
 
             return [null] as const;
         },
-        [IPCCommand.UndoRemoveProfileSession]: async (profileId: string) => {
+        [IPCInvokerName.UndoRemoveProfileSession]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const sid = profile.undoRemoveSession();
 
@@ -55,7 +55,7 @@ function handler() {
                 return [null, sid] as const;
             }
         },
-        [IPCCommand.ReorderProfileSessions]: async (profileId: string, newTabs: string[]) => {
+        [IPCInvokerName.ReorderProfileSessions]: async (profileId: string, newTabs: string[]) => {
             const profile = profiles.getProfile(profileId);
             profile.reorderSessions(newTabs);
 
@@ -67,7 +67,7 @@ function handler() {
 
             return [null] as const;
         },
-        [IPCCommand.GetProfileSessionIds]: async (profileId: string) => {
+        [IPCInvokerName.GetProfileSessionIds]: async (profileId: string) => {
             const profile = profiles.getProfile(profileId);
             const sessions = profile.getSessionIds();
 
@@ -75,13 +75,13 @@ function handler() {
         },
 
         /* 프로필 세션 저장소 */
-        [IPCCommand.GetProfileSessionData]: async (profileId: string, sessionId: string, id: string, keys: string[]) => {
+        [IPCInvokerName.GetProfileSessionData]: async (profileId: string, sessionId: string, id: string, keys: string[]) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(`session:${sessionId}:${id}`);
             
-            return [null, accessor.get(keys)] as const;
+            return [null, accessor.get(...keys)] as const;
         },
-        [IPCCommand.SetProfileSessionData]: async (profileId: string, sessionId: string, accessId: string, data:KeyValueInput) => {
+        [IPCInvokerName.SetProfileSessionData]: async (profileId: string, sessionId: string, accessId: string, data:KeyValueInput) => {
             const profile = profiles.getProfile(profileId);
             const accessor = profile.getJSONAccessor(`session:${sessionId}:${accessId}`);
 

@@ -6,10 +6,17 @@ import { CBFParser, CBFFail } from '@hve/cbf';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import { calcTextPosition } from 'utils';
 import styles from './styles.module.scss';
+import { PromptData } from './types';
 
 const parser = new CBFParser();
 
-function EditorSection() {
+type EditorSectionProps = {
+    promptData:PromptData;
+}
+
+function EditorSection({
+    promptData,
+}:EditorSectionProps) {
     const { t } = useTranslation();
     const monaco = useMonaco();
     const editorRef = useRef<any>(null);
@@ -87,7 +94,9 @@ function EditorSection() {
                 theme='vs-dark'
                 width='100%'
                 height='100%'
+                value={promptData.contents}
                 onChange={(value)=>{
+                    promptData.contents = value ?? '';
                     lint(value ?? '');
                 }}
                 onMount={

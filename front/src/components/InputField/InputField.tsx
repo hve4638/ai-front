@@ -32,7 +32,6 @@ function InputField({
                 value={text}
                 onChange={(e) => onChange(e.target.value)}
             />
-            
             {
                 children != null &&
                 children

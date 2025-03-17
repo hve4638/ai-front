@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { IPCCommand } from 'types';
+import { IPCInvokerName } from 'types';
 
 const ipcExports = Object.fromEntries(
-    Object.entries(IPCCommand).map(
+    Object.entries(IPCInvokerName).map(
         ([_, ping]) => [
             ping,
             (...args: any) => ipcRenderer.invoke(ping, ...args)

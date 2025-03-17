@@ -1,10 +1,11 @@
 import { Flex, Row } from "components/layout";
-import { useEffect } from "react";
+import { LegacyRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface NumberFormProps {
     name:string;
     width?:string;
     value:number;
+    lazy?:boolean;
     onChange:(x:number)=>void;
     allowDecimal?:boolean;
 }
@@ -14,11 +15,22 @@ function NumberForm({
     width,
     value,
     onChange,
+    lazy=false,
     allowDecimal=false
 }:NumberFormProps) {
-    useEffect(()=>{
-        
-    }, [allowDecimal]);
+    const [current, setCurrent] = useState<string>(value.toString());
+    useLayoutEffect(()=>{
+        setCurrent(value.toString());
+    }, [value]);
+
+    const commitChange = (value:string) => {
+        if (allowDecimal) {
+            onChange(parseFloat(value))
+        }
+        else {
+            onChange(parseInt(value))
+        }
+    }
 
     return (
         <Row
@@ -34,17 +46,18 @@ function NumberForm({
             <input
                 className='input-number'
                 type='number'
-                value={value}
+                value={current}
                 style={{
                     width
                 }}
                 onChange={(e)=>{
-                    if (allowDecimal) {
-                        onChange(parseFloat(e.target.value))
-                    }
-                    else {
-                        onChange(parseInt(e.target.value))
-                    }
+                    setCurrent(e.target.value);
+                }}
+                onBlur={()=>{
+                    commitChange(current);
+                }}
+                onKeyDown={(e)=>{
+                    if (e.key === 'Enter') commitChange(current);
                 }}
             />
         </Row>

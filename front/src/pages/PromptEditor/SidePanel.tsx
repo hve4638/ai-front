@@ -13,27 +13,30 @@ import { PromptData } from './types';
 import { PromptInputType } from 'types';
 import { useModals } from 'hooks/useModals';
 import MetadataEditModal from './MetadataEditModal';
-import { ProfileEventContext, useContextForce } from 'context';
 import RTSaveModal from './RTSaveModal';
 import { mapRTMetadataToNode } from 'utils/rt';
 import { RTNodeTree } from 'types/rt-node';
 import VarEditModal from './VarEditModal';
 import useHotkey from 'hooks/useHotkey';
+import { useProfile, useRT } from 'hooks/context';
 
 type SidePanelProps = {
     promptData:PromptData;
+    onSave: (tree:RTMetadataTree)=>Promise<void>;
     onBack : ()=>void;
 
     onChangeInputType: (inputType:PromptInputType)=>void;
     onRefresh: ()=>void;
-    onAddPromptVarClick: ()=>void;
+    onAddPromptVarClick: ()=>PromptVar;
     onRemovePromptVarClick: (promptVar:PromptVar)=>void;
 }
 
 function SidePanel({
     promptData,
-    
+
+    onSave,
     onBack,
+    
     onRefresh,
     onChangeInputType,
     onAddPromptVarClick,
@@ -41,31 +44,18 @@ function SidePanel({
 }:SidePanelProps) {
     const { t } = useTranslation();
     const modals = useModals();
-    const profileContext = useContextForce(ProfileEventContext);
+    const profile = useProfile();
+    const rt = useRT();
     
     const save = async ()=>{
-        const metadataTree = await profileContext.getRTTree();
-        const prevRTTree = mapRTMetadataToNode(metadataTree);
-        const rtTree = [
-            ...prevRTTree,
-            {
-                type : 'node',
-                name : promptData.name,
-                id : promptData.id,
-                added : true,
-                edited : false,
-            }
-        ] as RTNodeTree;
-
-        modals.open(RTSaveModal, {
-            item: rtTree,
-            onConfirm : async (tree:RTMetadataTree)=>{
-                // if (currentEditMode === PromptEditMode.NEW) {
-                //     await saveNewPrompt(tree);
-                // }
-            },
-            onCancel : ()=>{}
-        });
+        rt.savePromptData('default', {
+            name : promptData.name,
+            id : promptData.id,
+            forms : promptData.forms,
+            inputType : promptData.inputType,
+            contents : promptData.contents,
+        })
+        await rt.reflectMetadata();
     }
     
     useHotkey({
@@ -92,14 +82,14 @@ function SidePanel({
             }}
             columnAlign={Align.Center}
         >
-            <div
+            <strong
                 style={{
                     display: 'block',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                 }}
-            >{promptData.name}</div>
+            >{promptData.name}</strong>
             <Flex/>
             <GoogleFontIcon
                 enableHoverEffect={true}
@@ -115,7 +105,7 @@ function SidePanel({
                         metadata: promptData,
                         onChange: async (next)=>{
                             // id 중복 검사
-                            if (promptData.id === next.id || !await profileContext.hasRTId(next.id)) {
+                            if (promptData.id === next.id || !await profile.hasRTId(next.id)) {
                                 promptData.name = next.name;
                                 promptData.id = next.id;
                                 onRefresh();
@@ -162,7 +152,7 @@ function SidePanel({
             style={{
                 marginBottom: '4px'
             }}
-        >변수</h2>
+        >{'변수'}</h2>
         <div
             style={{
                 display: 'block',
@@ -171,7 +161,7 @@ function SidePanel({
             }}
         >
         {
-            promptData.vars.map((item, index)=>(
+            promptData.forms.map((item, index)=>(
                 <Row
                     className={
                         classNames(
@@ -220,7 +210,11 @@ function SidePanel({
                 styles['add-var-button']
             )}
             onClick={()=>{
-                onAddPromptVarClick();
+                const promptVar = onAddPromptVarClick();
+                modals.open(VarEditModal, {
+                    promptVar: promptVar,
+                    onRefresh: onRefresh,
+                });
             }}
         >
             <GoogleFontIcon
@@ -231,7 +225,7 @@ function SidePanel({
                     marginLeft: '0.5em',
                 }}
             >
-                변수 추가
+                {t('prompt_editor.add_form_label')}
             </span>
         </div>
         <Flex/>
@@ -251,10 +245,10 @@ function SidePanel({
                 }}
                 onClick={save}
             >
-                { t('prompt.save_new') }
+                { t('prompt_editor.save_label') }
             </Button>
         </Row>
-    </Column>;
+    </Column>
 }
 
 export default SidePanel;

@@ -4,6 +4,7 @@ import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import classNames from 'classnames';
 import ModalBackground from './ModalBackground';
 import ModalBox from './ModalBox';
+import FocusLock from 'react-focus-lock';
 
 function Modal({
     children,
@@ -30,23 +31,27 @@ function Modal({
     
     return (
     <>
-        <ModalBackground
-            className={backgroundClassName}
-            style={backgroundStyle}
-            disappear={disappear}
-            enableRoundedBackground={enableRoundedBackground}
+        <FocusLock
+            returnFocus={true}
         >
-            <ModalBox
-                className={className}
-                style={style}
+            <ModalBackground
+                className={backgroundClassName}
+                style={backgroundStyle}
                 disappear={disappear}
+                enableRoundedBackground={enableRoundedBackground}
             >
+                <ModalBox
+                    className={className}
+                    style={style}
+                    disappear={disappear}
+                >
                 {
                     children != null &&
                     children
                 }
-            </ModalBox>
-        </ModalBackground>
+                </ModalBox>
+            </ModalBackground>
+        </FocusLock>
     </>
     );
 }

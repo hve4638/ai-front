@@ -64,11 +64,10 @@ export function ProfileAddButton({
 
 export function ProfileOptionButton() {
     return (
-        <div
+        <small
             className='row center'
             style={{
                 padding: '4px 0',
-                fontSize: '0.85em',
             }}
         >
             <span
@@ -82,6 +81,6 @@ export function ProfileOptionButton() {
                 />
                 <em>편집</em>
             </span>
-        </div>
+        </small>
     );
 }

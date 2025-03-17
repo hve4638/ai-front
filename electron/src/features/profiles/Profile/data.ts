@@ -16,7 +16,7 @@ export const PROFILE_STORAGE_TREE = {
                 '*' : StorageAccess.JSON({
                     'id' : JSONType.string,
                     'name' : JSONType.string,
-                    'inputType' : JSONType.string,
+                    'input_type' : JSONType.string,
                     'forms' : JSONType.array,
                     'contents' : JSONType.string,
                 }),
@@ -26,13 +26,20 @@ export const PROFILE_STORAGE_TREE = {
     'session' : {
         '*' : {
             'data.json' : StorageAccess.JSON({
-                'sessions' : JSONType.array,
+                
             }),
             'config.json' : StorageAccess.JSON({
-                'removed_session_limit' : JSONType.number,
+                'name' : JSONType.string,
+                'color' : JSONType.string,
+                'model_id' : JSONType.string,
+                'rt_id' : JSONType.string,
+                'delete_lock' : JSONType.boolean,
             }),
             'cache.json' : StorageAccess.JSON({
-                'removed_sessions' : JSONType.array,
+                'input' : JSONType.string,
+                'output' : JSONType.string,
+                'token_count' : JSONType.number,
+                'warning_message' : JSONType.string,
             }),
             'history' : StorageAccess.Custom('history'),
         }

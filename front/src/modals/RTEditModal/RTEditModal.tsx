@@ -1,14 +1,16 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
+import { ProfileEventContext, useContextForce } from 'context';
+
 import Button from 'components/Button';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { Align, Grid, Row } from 'components/layout';
 import { Modal, ModalHeader } from 'components/Modal';
-import { ProfileEventContext, useContextForce } from 'context';
 import RTTreeView from 'features/rtTreeView';
 import useHotkey from 'hooks/useHotkey';
 import useModalDisappear from 'hooks/useModalDisappear';
 import { useTranslation } from 'react-i18next';
 import { RTNodeTree } from 'types/rt-node';
+import { useNavigate } from 'react-router';
 
 type RTEditModalProps = {
     onClickCreateNewRT: () => void;
@@ -21,6 +23,7 @@ function RTEditModal({
     isFocused,
     onClose
 }:RTEditModalProps) {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const profileContext = useContextForce(ProfileEventContext);
     const [disappear, close] = useModalDisappear(onClose);
@@ -29,8 +32,6 @@ function RTEditModal({
 
     useLayoutEffect(()=>{
         profileContext.getRTTree().then((tree)=>{
-            console.log('tree');
-            console.log(tree);
             setTree(tree);
         });
     }, []);
@@ -54,7 +55,7 @@ function RTEditModal({
                 }}
             >
                 <ModalHeader
-                    title={t('rt.rt-edit')}
+                    title={t('rt.rt_edit')}
                     onClose={close}
                 />
                 <Row
@@ -73,6 +74,10 @@ function RTEditModal({
                 <RTTreeView
                     tree={tree}
                     onChange={(next)=>setTree(next)}
+                    onClick={(rtId:string)=>{
+                        console.log('rtId', rtId);
+                        navigate(`/prompts/${rtId}/edit`);
+                    }}
                 />
                 <div/>
                 <Row
@@ -87,7 +92,7 @@ function RTEditModal({
                             minWidth: '80px',
                             height: '100%'
                         }}
-                    >{t('rt.rt-create')}</Button>
+                    >{t('rt.rt_create')}</Button>
                 </Row>
             </Grid>
         </Modal>

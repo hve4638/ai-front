@@ -9,13 +9,15 @@ class ModelProvider {
 
     addModels(
         name:string,
-        models:Omit<ChatAIModel, 'id'>[]=[]
+        models:Omit<ChatAIModel, 'id'|'providerName'|'providerDisplayName'>[]=[]
     ) {
         const list = models.map((model) => {
             return {
-                id: `${this.#providerName}:${model.value}`,
+                id: `${this.#providerName}:${model.name}`,
                 name: model.name,
-                value: model.value,
+                displayName: model.displayName,
+                providerName: this.#providerName,
+                providerDisplayName: this.#providerName,
                 flags: model.flags,
             } as ChatAIModel;
         });

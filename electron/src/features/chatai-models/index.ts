@@ -1,4 +1,4 @@
-import ChatAIModels from "./ChatAIModels"
+import ChatAIModels from "./ChatAIModelManager"
 
 const chatAIModels = new ChatAIModels();
 

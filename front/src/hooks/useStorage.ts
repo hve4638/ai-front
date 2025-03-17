@@ -18,7 +18,8 @@ export function useStorage<T>(
         onLoadError = (error: unknown) => console.error(error),
         store,
         load,
-    }:ExtraArgs<T>
+    }:ExtraArgs<T>,
+    deps:any[]|undefined = undefined
 ): [any, (value: any)=>Promise<void>, ()=>Promise<void>] {
     const [cacheValue, setCacheValue] = useState<any>(undefined);
 
@@ -54,7 +55,7 @@ export function useStorage<T>(
 
     useEffect(() => {
         refetchCache();
-    }, []);
+    }, deps);
 
     return [cacheValue, writeValue, refetchCache];
 };

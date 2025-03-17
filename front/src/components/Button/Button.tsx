@@ -24,7 +24,9 @@ function Button({
                     { disabled : disabled }
                 )
             }
-            style={style}
+            style={{
+                ...style,
+            }}
             onClick={()=>onClick()}
         >
             {

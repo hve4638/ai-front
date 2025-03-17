@@ -15,25 +15,21 @@ class RTControl {
     }
 
     /** request-template의 entrypoint 접근자 */
-    #getEntrypointAccessor() {
-        return this.#storage.getJSONAccessor('index.json');
-    }
-    
-    #getCacheAccessor() {
-        return this.#storage.getJSONAccessor('cache.json');
+    #accessEntrypoint() {
+        return this.#storage.accessAsJSON('index.json');
     }
 
-    #getRTPromptDataAccessor(rtId:string, promptId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`${rtId}:prompts:${promptId}.json`);
+    #accessPromptData(rtId:string, promptId:string):IJSONAccessor {
+        return this.#storage.accessAsJSON(`${rtId}:prompts:${promptId}.json`);
     }
 
-    #getRTIndexAccessor(rtId:string):IJSONAccessor {
-        return this.#storage.getJSONAccessor(`${rtId}:index.json`);
+    #accessRTIndex(rtId:string):IJSONAccessor {
+        return this.#storage.accessAsJSON(`${rtId}:index.json`);
     }
 
     #loadData() {
         if (this.#loaded) return;
-        const prompts = this.#getEntrypointAccessor();
+        const prompts = this.#accessEntrypoint();
         this.#tree = prompts.getOne('tree') ?? [];
         this.#rtIds = prompts.getOne('ids') ?? [];
         
@@ -41,7 +37,7 @@ class RTControl {
     }
 
     #storeData() {
-        const prompts = this.#getEntrypointAccessor();
+        const prompts = this.#accessEntrypoint();
         prompts.set({
             'tree' :  this.#tree,
             'ids' : this.#rtIds,
@@ -121,6 +117,10 @@ class RTControl {
         this.#storeData();
     }
     
+    /**
+     * 새 RT 추가 및 RTTree 반영
+     * @param metadata 
+     */
     addRT(metadata:RTMetadata) {
         this.#loadData();
 
@@ -128,7 +128,7 @@ class RTControl {
             throw rtIdAlreadyExistsError(metadata.id);
         }
 
-        const indexAccessor = this.#getRTIndexAccessor(metadata.id);
+        const indexAccessor = this.#accessRTIndex(metadata.id);
 
         indexAccessor.setOne('name', metadata.name);
         this.#rtIds.push(metadata.id);
@@ -140,6 +140,10 @@ class RTControl {
         this.#storeData();
     }
     
+    /**
+     * RT 제거 및 RTTree 반영
+     * @param metadata 
+     */
     removeRT(rtId:string) {
         this.#loadData();
         
@@ -153,13 +157,18 @@ class RTControl {
         this.#storeData();
     }
 
+    /**
+     * RT ID 변경
+     * @param oldRTId 
+     * @param newRTId 
+     */
     changeId(oldRTId:string, newRTId:string) {
         this.#loadData();
         
         if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
         if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
 
-        this.#storage.moveAccessor(`${oldRTId}`, `${newRTId}`);
+        this.#storage.move(`${oldRTId}`, `${newRTId}`);
 
         const metadata = this.#findRTMetadata(this.#tree, oldRTId);
         if (metadata) {
@@ -194,10 +203,10 @@ class RTControl {
         return rtId;
     }
 
-    #findRTMetadata(tree:RTMetadataTree, rtId:string):RTMetadata|null {
+    #findRTMetadata(tree:RTMetadataTree, rtId:string):RTMetadataNode|null {
         const item = tree.find((item)=>(item.type !== 'directory' && item.id === rtId));
         if (item) {
-            return item as RTMetadata;
+            return item as RTMetadataNode;
         }
 
         for (const index in tree) {
@@ -229,13 +238,13 @@ class RTControl {
     }
 
     getRTMode(rtId:string):RTMode {
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
-        return indexAccessor.getOne('mode') ?? 'simple';
+        const indexAccessor = this.#accessRTIndex(rtId);
+        return indexAccessor.getOne('mode') ?? 'prompt_only';
     }
     setRTMode(rtId:string, mode:RTMode) {
-        const indexAccessor = this.#getRTIndexAccessor(rtId);
+        const indexAccessor = this.#accessRTIndex(rtId);
         switch(mode) {
-            case 'simple':
+            case 'prompt_only':
             case 'flow':
                 indexAccessor.setOne('mode', mode);
             default:
@@ -243,41 +252,59 @@ class RTControl {
         }
     }
 
+    /**
+     * RT 프롬프트 데이터 설정
+     * 
+     * @param rtId 
+     * @param promptId 
+     * @param data 
+     */
     setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
         this.#loadData();
-        const promptDataAccessor = this.#getRTPromptDataAccessor(rtId, promptId);
+        const promptDataAccessor = this.#accessPromptData(rtId, promptId);
+        promptDataAccessor.set(data);
 
-        const names = promptDataAccessor.set(data);
-        if (names.includes('name')) {
-            this.#updateRTNameInTree(rtId, promptDataAccessor.getOne('name'));
-        }
-        if (names.includes('id')) {
-            const newId = promptDataAccessor.getOne('id');
-            if (newId && newId !== promptId) {
-                const newPromptDataAccessor = this.#getRTPromptDataAccessor(rtId, newId);
+        // 이름 변경 시 <rt>/index.json도 업데이트
+        // if (keys.includes('name')) {
+        //     const { name, mode } = promptDataAccessor.get(['name', 'mode']);
+        //     if (mode === 'prompt_only') {
+        //         this.#accessRTIndex(rtId).setOne('name', name);
+        //         this.#updateRTNameInTree(rtId, name);
+        //     }
+        // }
+        // if (keys.includes('id')) {
+        //     const newId = promptDataAccessor.getOne('id');
+        //     if (newId && newId !== promptId) {
+        //         const newPromptDataAccessor = this.#accessPromptData(rtId, newId);
                 
-                newPromptDataAccessor.set(promptDataAccessor.getAll());
+        //         newPromptDataAccessor.set(promptDataAccessor.getAll());
 
-                promptDataAccessor.drop();
-                newPromptDataAccessor.commit();
-            }
-        }
+        //         promptDataAccessor.drop();
+        //         newPromptDataAccessor.commit();
+        //     }
+        // }
     }
 
     getRTPromptData(rtId:string, promptId:string, keys:string[]) {
-        const indexAccessor = this.#getRTPromptDataAccessor(rtId, promptId);
+        this.#loadData();
+        const indexAccessor = this.#accessPromptData(rtId, promptId);
         
-        return indexAccessor.get(keys);
+        return indexAccessor.get(...keys);
     }
     
     /* RAW 접근 */
     getRTData(rtId:string, accessId:string, keys:string[]):any {
         const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
-        return accessor.get(keys);
+        return accessor.get(...keys);
     }
     setRTData(rtId:string, accessId:string, data:KeyValueInput) {
         const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
         return accessor.set(data);
+    }
+
+    updateRTMetadata(rtId:string) {
+        const name = this.#accessRTIndex(rtId).getOne('name');
+        this.#updateRTNameInTree(rtId, name);
     }
 }
 
