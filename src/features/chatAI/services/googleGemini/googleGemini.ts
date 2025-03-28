@@ -82,11 +82,14 @@ export class GoogleGemini implements AIModel {
         });
 
         let safety;
-        if (config.modelname === 'gemini-2.0-flash-exp') {
-            safety = GENIMI_OPTION_SAFETY_OFF;
-        }
-        else {
-            safety = GENIMI_OPTION_SAFETY;
+        switch (config.modelname) {
+            case 'gemini-2.0-flash-exp':
+            case 'gemini-2.5-pro-exp-03-25':
+                safety = GENIMI_OPTION_SAFETY_OFF;
+                break;
+            default:
+                safety = GENIMI_OPTION_SAFETY;
+                break;
         }
         
         const body = {
