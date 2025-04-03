@@ -1,6 +1,6 @@
 import ChatAI from '@hve/chatai';
 import PromptTemplate, { CBFResult } from '@hve/prompt-template';
-import { type Profile } from '@features/profiles';
+import { type Profile } from '@/features/profiles';
 
 import { GlobalNodeOption, WorkLog, type ChatRequestForm } from './types';
 import { BUILT_IN_VARS } from './data';

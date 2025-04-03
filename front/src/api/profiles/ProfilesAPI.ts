@@ -1,8 +1,19 @@
 import { IPCError } from 'api/error';
-import Profile from './ProfileAPI'
+import ProfileAPI from './ProfileAPI'
 
 class ProfilesAPI {
-    #profiles:Record<string, Profile> = {};
+    #profiles:Record<string, ProfileAPI> = {};
+
+    static #instance:ProfilesAPI|null = null;
+
+    static getInstance() {
+        if (!this.#instance) {
+            this.#instance = new ProfilesAPI();
+        }
+        return this.#instance;
+    }
+
+    private constructor() {}
 
     async getProfileIds() {
         const [err, profiles] = await window.electron.GetProfileList();
@@ -30,11 +41,14 @@ class ProfilesAPI {
        const [err] = await window.electron.DeleteProfile(id);
        if (err) throw new IPCError(err.message);
    }
-    async getProfile(id:string):Promise<Profile> {
+    async getProfile(id:string):Promise<ProfileAPI> {
         if (!(id in this.#profiles)) {
-            this.#profiles[id] = new Profile(id);
+            this.#profiles[id] = new ProfileAPI(id);
         }
         return this.#profiles[id];
+    }
+    getMockProfile():ProfileAPI {
+        return ProfileAPI.getMock();
     }
 
     expireCache() {

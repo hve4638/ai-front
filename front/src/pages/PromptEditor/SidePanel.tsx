@@ -11,7 +11,7 @@ import Button from 'components/Button';
 import { DropdownForm } from 'components/Forms';
 import { PromptData } from './types';
 import { PromptInputType } from 'types';
-import { useModals } from 'hooks/useModals';
+import { useModal } from 'hooks/useModal';
 import MetadataEditModal from './MetadataEditModal';
 import RTSaveModal from './RTSaveModal';
 import { mapRTMetadataToNode } from 'utils/rt';
@@ -43,7 +43,7 @@ function SidePanel({
     onRemovePromptVarClick,
 }:SidePanelProps) {
     const { t } = useTranslation();
-    const modals = useModals();
+    const modals = useModal();
     const profile = useProfile();
     const rt = useRT();
     

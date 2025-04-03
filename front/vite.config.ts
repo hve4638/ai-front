@@ -16,7 +16,6 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: [
-            
             alias('@', 'src'),
             alias('data', 'src/data'),
             alias('components', 'src/components'),

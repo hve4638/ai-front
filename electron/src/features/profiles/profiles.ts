@@ -21,38 +21,39 @@ class Profiles {
         }
         this.#storage.register({
             'profiles.json' : StorageAccess.JSON({
-                'profiles' : JSONType.array,
-                'last_profile' : JSONType.string,
+                'profiles' : JSONType.Array(),
+                'last_profile' : JSONType.String(),
+                'next_profile_id' : JSONType.Number(),
             }),
             '*' : StorageAccess.Custom('profile'),
         });
         this.#storage.addAccessEvent('profile', {
-            init(fullPath) {
-                return new Profile(fullPath);
+            async init(fullPath) {
+                return Profile.From(fullPath);
             },
-            save(ac) {
-                ac.commit();
+            async save(ac) {
+                await ac.commit();
             }
         });
 
         this.loadMetadata();
     }
 
-    #getProfileAcessor(identifier:string) {
-        return this.#storage.access(identifier, 'profile') as Profile;
+    async #acccessAsProfile(identifier:string) {
+        return await this.#storage.access(identifier, 'profile') as Profile;
     }
-
-    loadMetadata() {
-        const accessor = this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
+    
+    async loadMetadata() {
+        const accessor = await this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
         
         this.#profileIdentifiers = accessor.getOne('profiles') ?? [];
         this.#lastProfileId = accessor.getOne('last_profile') ?? null;
         this.#nextProfileId = accessor.getOne('next_profile_id') ?? 0;
     }
 
-    saveMetadata() {
+    async saveMetadata() {
         console.log('loadMetadata', this.#lastProfileId);
-        const accessor = this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
+        const accessor = await this.#storage.accessAsJSON(PROFILES_METADATA_PATH);
         
         accessor.setOne('profiles', this.#profileIdentifiers);
         accessor.setOne('last_profile', this.#lastProfileId);
@@ -66,12 +67,16 @@ class Profiles {
         return this.#profileIdentifiers;
     }
 
-    createProfile() {
+    async createProfile() {
         const identifier = this.#makeNewProfileId();
         this.#profileIdentifiers.push(identifier);
 
-        const profile = this.#getProfileAcessor(identifier);
-        profile.accessAsJSON('config.json').setOne('name', 'New Profile');
+        const profile = await this.#acccessAsProfile(identifier);
+        const sessionId=  await profile.createSession();
+        const ac = await profile.accessAsJSON('config.json')
+        ac.setOne('name', 'New Profile');
+
+        await profile.setSelectedSession(sessionId);
 
         return identifier;
     }
@@ -99,16 +104,16 @@ class Profiles {
         }
     }
 
-    deleteProfile(identifier: string) {
-        const accessor = this.#getProfileAcessor(identifier);
-        accessor.drop();
+    async deleteProfile(identifier: string) {
+        const accessor = await this.#acccessAsProfile(identifier);
+        await accessor.drop();
     }
 
-    getProfile(profileId:string):Profile {
+    async getProfile(profileId:string):Promise<Profile> {
         if (!this.#existsProfileId(profileId)) {
             throw new ProfileError(`Profile not found '${profileId}'`);
         }
-        return this.#getProfileAcessor(profileId);
+        return await this.#acccessAsProfile(profileId);
     }
 
     #existsProfileId(identifier:string) {
@@ -122,18 +127,17 @@ class Profiles {
         else {
             throw new ProfileError(`Profile not found: ${id}`);
         }
-        
     }
 
     getLastProfileId() {
         return this.#lastProfileId;
     }
     
-    saveAll() {
+    async saveAll() {
         this.saveMetadata();
-        this.#profileIdentifiers.forEach((identifier) => {
-            const profile = this.#getProfileAcessor(identifier);
-            profile.commit();
+        this.#profileIdentifiers.forEach(async (identifier) => {
+            const profile = await this.#acccessAsProfile(identifier);
+            await profile.commit();
         });
     }
 }

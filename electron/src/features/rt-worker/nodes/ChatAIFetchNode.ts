@@ -3,7 +3,7 @@ import { GlobalNodeOption, WorkLog } from '../types';
 import { BUILT_IN_VARS, HOOKS } from '../data';
 import WorkNode from './Node';
 import ChatAI, { KnownProvider } from '@hve/chatai';
-import ChatAIModels from '@features/chatai-models';
+import ChatAIModels from '@/features/chatai-models';
 
 type ChatAIFetchNodeInput = {
     prompt:Generator<CBFResult>;

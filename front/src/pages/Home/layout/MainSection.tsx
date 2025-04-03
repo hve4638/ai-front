@@ -1,5 +1,5 @@
 import InputField from 'components/InputField';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon';
 import { useEffect, useState } from 'react';
 import { ProfileEventContext, useContextForce } from 'context';
 import useLazyThrottle from 'hooks/useLazyThrottle';
@@ -24,11 +24,10 @@ function MainSection() {
         setInput(inputText);
     }, 300);
     
-    console.log ('MainSection sessionId : ', sessionId);
     useEffect(() => {
-        console.log('input update : ', input);
         setInputText(input);
     }, [sessionId]);
+
 
     return (
         <>
@@ -54,6 +53,7 @@ function MainSection() {
                         className='floating-button'
                         value='send'
                         style={{
+                            cursor : 'pointer',
                             fontSize: '40px',
                             position: 'absolute',
                             right: '10px',

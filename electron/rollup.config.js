@@ -12,6 +12,7 @@ export default [
         dir: "dist",  // 출력 디렉토리
         format: 'cjs',
         preserveModules: true,
+        sourcemap: true,
       },
     ],
     plugins: [

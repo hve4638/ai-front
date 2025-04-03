@@ -19,25 +19,25 @@ class RTControl {
         return this.#storage.accessAsJSON('index.json');
     }
 
-    #accessPromptData(rtId:string, promptId:string):IJSONAccessor {
-        return this.#storage.accessAsJSON(`${rtId}:prompts:${promptId}.json`);
+    async #accessPromptData(rtId:string, promptId:string):Promise<IJSONAccessor> {
+        return await this.#storage.accessAsJSON(`${rtId}:prompts:${promptId}.json`);
     }
 
-    #accessRTIndex(rtId:string):IJSONAccessor {
-        return this.#storage.accessAsJSON(`${rtId}:index.json`);
+    async #accessRTIndex(rtId:string):Promise<IJSONAccessor> {
+        return await this.#storage.accessAsJSON(`${rtId}:index.json`);
     }
 
-    #loadData() {
+    async #loadData() {
         if (this.#loaded) return;
-        const prompts = this.#accessEntrypoint();
+        const prompts = await this.#accessEntrypoint();
         this.#tree = prompts.getOne('tree') ?? [];
         this.#rtIds = prompts.getOne('ids') ?? [];
         
         this.#loaded = true;
     }
 
-    #storeData() {
-        const prompts = this.#accessEntrypoint();
+    async #storeData() {
+        const prompts = await this.#accessEntrypoint();
         prompts.set({
             'tree' :  this.#tree,
             'ids' : this.#rtIds,
@@ -64,7 +64,7 @@ class RTControl {
         return this.#rtIds.includes(rtId);
     }
 
-    #updateRTNameInTree(rtId:string, newName:string) {
+    async #updateRTNameInTree(rtId:string, newName:string) {
         try {
             for (const item of this.#tree) {
                 if (item.type === 'directory') {
@@ -82,12 +82,12 @@ class RTControl {
             }
         }
         finally {
-            this.#storeData();
+            await this.#storeData();
         }
     }
     
-    getTree():RTMetadataTree {
-        this.#loadData();
+    async getTree():Promise<RTMetadataTree> {
+        await this.#loadData();
         
         return this.#tree;
     }
@@ -101,8 +101,8 @@ class RTControl {
      * 
      * 새 디렉토리는 updateTree를 통해 바로 추가 및 제거할 수 있으며 빈 디렉토리도 허용된다.
      */
-    updateTree(newTree:RTMetadataTree) {
-        this.#loadData();
+    async updateTree(newTree:RTMetadataTree) {
+        await this.#loadData();
         
         this.#tree = newTree;
         const prevIds = this.#getRTIds(this.#tree);
@@ -114,21 +114,21 @@ class RTControl {
             }
         }
         this.#tree = newTree;
-        this.#storeData();
+        await this.#storeData();
     }
     
     /**
      * 새 RT 추가 및 RTTree 반영
      * @param metadata 
      */
-    addRT(metadata:RTMetadata) {
-        this.#loadData();
+    async addRT(metadata:RTMetadata) {
+        await this.#loadData();
 
         if (this.#hasId(metadata.id)) {
             throw rtIdAlreadyExistsError(metadata.id);
         }
 
-        const indexAccessor = this.#accessRTIndex(metadata.id);
+        const indexAccessor = await this.#accessRTIndex(metadata.id);
 
         indexAccessor.setOne('name', metadata.name);
         this.#rtIds.push(metadata.id);
@@ -137,14 +137,14 @@ class RTControl {
             id : metadata.id,
             name : metadata.name
         });
-        this.#storeData();
+        await this.#storeData();
     }
     
     /**
      * RT 제거 및 RTTree 반영
      * @param metadata 
      */
-    removeRT(rtId:string) {
+    async removeRT(rtId:string) {
         this.#loadData();
         
         if (!this.#hasId(rtId)) {
@@ -162,13 +162,13 @@ class RTControl {
      * @param oldRTId 
      * @param newRTId 
      */
-    changeId(oldRTId:string, newRTId:string) {
-        this.#loadData();
+    async changeId(oldRTId:string, newRTId:string) {
+        await this.#loadData();
         
         if (!this.#hasId(oldRTId)) throw invalidRTIdError(oldRTId);
         if (this.#hasId(newRTId)) throw rtIdAlreadyExistsError(newRTId);
 
-        this.#storage.move(`${oldRTId}`, `${newRTId}`);
+        await this.#storage.move(`${oldRTId}`, `${newRTId}`);
 
         const metadata = this.#findRTMetadata(this.#tree, oldRTId);
         if (metadata) {
@@ -179,19 +179,19 @@ class RTControl {
             this.#rtIds = newIds;
         }
 
-        this.#storeData();
+        await this.#storeData();
     }
 
-    hasId(rtId:string):boolean {
-        this.#loadData();
+    async hasId(rtId:string):Promise<boolean> {
+        await this.#loadData();
         return this.#hasId(rtId);
     }
 
     /**
      * 사용되지 않는 RT ID 생성
      */
-    generateId():string {
-        this.#loadData();
+    async generateId():Promise<string> {
+        await this.#loadData();
         
         let rtId:string;
         let index = this.#lastNewRTIdIndex;
@@ -237,12 +237,12 @@ class RTControl {
         return newTree;
     }
 
-    getRTMode(rtId:string):RTMode {
-        const indexAccessor = this.#accessRTIndex(rtId);
+    async getRTMode(rtId:string):Promise<RTMode> {
+        const indexAccessor = await this.#accessRTIndex(rtId);
         return indexAccessor.getOne('mode') ?? 'prompt_only';
     }
-    setRTMode(rtId:string, mode:RTMode) {
-        const indexAccessor = this.#accessRTIndex(rtId);
+    async setRTMode(rtId:string, mode:RTMode) {
+        const indexAccessor = await this.#accessRTIndex(rtId);
         switch(mode) {
             case 'prompt_only':
             case 'flow':
@@ -259,51 +259,33 @@ class RTControl {
      * @param promptId 
      * @param data 
      */
-    setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
+    async setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
         this.#loadData();
-        const promptDataAccessor = this.#accessPromptData(rtId, promptId);
+        const promptDataAccessor = await this.#accessPromptData(rtId, promptId);
         promptDataAccessor.set(data);
-
-        // 이름 변경 시 <rt>/index.json도 업데이트
-        // if (keys.includes('name')) {
-        //     const { name, mode } = promptDataAccessor.get(['name', 'mode']);
-        //     if (mode === 'prompt_only') {
-        //         this.#accessRTIndex(rtId).setOne('name', name);
-        //         this.#updateRTNameInTree(rtId, name);
-        //     }
-        // }
-        // if (keys.includes('id')) {
-        //     const newId = promptDataAccessor.getOne('id');
-        //     if (newId && newId !== promptId) {
-        //         const newPromptDataAccessor = this.#accessPromptData(rtId, newId);
-                
-        //         newPromptDataAccessor.set(promptDataAccessor.getAll());
-
-        //         promptDataAccessor.drop();
-        //         newPromptDataAccessor.commit();
-        //     }
-        // }
     }
 
-    getRTPromptData(rtId:string, promptId:string, keys:string[]) {
+    async getRTPromptData(rtId:string, promptId:string, keys:string[]) {
         this.#loadData();
-        const indexAccessor = this.#accessPromptData(rtId, promptId);
+        const indexAccessor = await this.#accessPromptData(rtId, promptId);
         
         return indexAccessor.get(...keys);
     }
     
     /* RAW 접근 */
-    getRTData(rtId:string, accessId:string, keys:string[]):any {
-        const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
+    async getRTData(rtId:string, accessId:string, keys:string[]):Promise<any> {
+        const accessor = await this.#storage.accessAsJSON(`${rtId}:${accessId}`);
         return accessor.get(...keys);
     }
-    setRTData(rtId:string, accessId:string, data:KeyValueInput) {
-        const accessor = this.#storage.accessAsJSON(`${rtId}:${accessId}`);
+    async setRTData(rtId:string, accessId:string, data:KeyValueInput) {
+        const accessor = await this.#storage.accessAsJSON(`${rtId}:${accessId}`);
         return accessor.set(data);
     }
 
-    updateRTMetadata(rtId:string) {
-        const name = this.#accessRTIndex(rtId).getOne('name');
+    async updateRTMetadata(rtId:string) {
+        const ac = await this.#accessRTIndex(rtId);
+        const name = ac.getOne('name');
+
         this.#updateRTNameInTree(rtId, name);
     }
 }

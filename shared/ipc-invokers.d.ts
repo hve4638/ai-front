@@ -15,9 +15,6 @@ export enum IPCInvokerName {
 
     /* 마스터 키 */
     InitMasterKey = 'InitMasterKey',
-    CheckMasterKeyExistence = 'CheckMasterKeyExistence',
-    ValidateMasterKey = 'ValidateMasterKey',
-    GenerateMasterKey = 'GenerateMasterKey',
     ResetMasterKey = 'ResetMasterKey',
     RecoverMasterKey = 'RecoverMasterKey',
 
@@ -37,10 +34,15 @@ export enum IPCInvokerName {
     /* 프로필 저장소 */
     GetProfileData = 'GetProfileData',
     SetProfileData = 'SetProfileData',
+    PushProfileDataToArray = 'PushProfileDataToArray',
     GetProfileDataAsText = 'GetProfileDataAsText',
     SetProfileDataAsText = 'SetProfileDataAsText',
     GetProfileDataAsBinary = 'GetProfileDataAsBinary',
     SetProfileDataAsBinary = 'SetProfileDataAsBinary',
+    VerifyProfileDataAsSecret = 'VerifyProfileDataAsSecret',
+    SetProfileDataAsSecret = 'SetProfileDataAsSecret',
+    RemoveProfileDataAsSecret = 'RemoveProfileDataAsSecret',
+    PushProfileDataToArrayAsSecret = 'PushProfileDataToArrayAsSecret',
     
     /* 프로필 프롬프트 */
     GetProfilePromptTree = 'GetProfilePromptTree',
@@ -54,7 +56,7 @@ export enum IPCInvokerName {
     GetProfileSessionIds = 'GetProfileSessionIds',
     ReorderProfileSessions = 'ReorderProfileSessions',
     UndoRemoveProfileSession = 'UndoRemoveProfileSession',
-
+    
     /* 프로필 세션 저장소 */
     GetProfileSessionData = 'GetProfileSessionData',
     SetProfileSessionData = 'SetProfileSessionData',
@@ -83,6 +85,7 @@ export enum IPCInvokerName {
 
     /* 프로필 RT 요청 */
     RequestProfileRT = 'RequestProfileRT',
+    AbortRequestProfileRT = 'AbortRequestProfileRT',
 }
 
 export {};

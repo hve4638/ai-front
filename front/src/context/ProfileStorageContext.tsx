@@ -5,6 +5,7 @@ import { LayoutModes, ThemeModes } from 'types/profile';
 
 import ProfilesAPI, { type ProfileAPI } from 'api/profiles';
 import { useStorage } from 'hooks/useStorage';
+import { APIKeyMetadata } from 'types/apikey-metadata';
 
 interface ProfileStorageContextType {
     api: ProfileAPI;
@@ -14,11 +15,13 @@ interface ProfileStorageContextType {
     
     /* data.json */
     sessionIds: string[];
-    // sessionId 목록은 제약 내에서 추가/삭제/변경되므로
-    // 직접 변경하는 대신 ProfileAPI를 통해 작업 후 refetch로 동기화 필요
+    // sessionIds 는 종속성 문제로 직접 변경하는 대신 ProfileAPI에 요청 후 refetch로 동기화 필요
     refetchSessionIds: ()=>Promise<void>;
     starredModels: string[],
     setStarredModels: SetStateAsync<string[]>,
+    apiKeysMetadata: Record<string, APIKeyMetadata[]>,
+    // apiKeysMetadata는 종속성 문제로 직접 변경하는 대신 ProfileAPI에 요청 후 refetch로 동기화 필요
+    refetchAPIKeysMetadata: ()=>Promise<void>;
 
     /* cache.json */
     promptVariables: any;
@@ -55,7 +58,6 @@ export function ProfileStorageContextProvider({
             },
             load: async (key: string) => {
                 const result = await api?.getOne(accessor, key);
-                console.log('read', key, result);
                 return result;
             },
             onStoreError: (error: unknown) => console.error(error),
@@ -155,7 +157,7 @@ export function ProfileStorageContextProvider({
     /* data.json */
     const [sessionIds, setSessionIds, refetchSessionIds] = useDataStorage<string[]>('sessions', []);
     const [starredModels, setStarredModels, refetchStarredModels] = useDataStorage<string[]>('starred_models', []);
-    console.log('>> sessionIds', sessionIds);
+    const [apiKeysMetadata, setAPIKeysMetadata, refetchAPIKeysMetadata] = useDataStorage<Record<string, APIKeyMetadata[]>>('api_keys', {});
 
     /* shortcut.json */
     const scFontSizeUp = useShortcutStorage('font_size_up', { wheel: -1, ctrl: true });
@@ -249,6 +251,7 @@ export function ProfileStorageContextProvider({
                 lastSessionId, setLastSessionId,
                 promptVariables, setPromptVariables,
                 starredModels, setStarredModels,
+                apiKeysMetadata, refetchAPIKeysMetadata,
                 
                 configs,
                 shortcuts,

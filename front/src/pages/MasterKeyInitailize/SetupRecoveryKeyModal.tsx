@@ -8,6 +8,7 @@ import Button from "components/Button";
 import classNames from "classnames";
 import ReactLoading from 'react-loading';
 import { MODAL_DISAPPEAR_DURATION } from "data";
+import useModalDisappear from "hooks/useModalDisappear";
 
 interface RecoveryKeySetupModalProps {
     onSubmit: (recoveryKey:string) => Promise<boolean>;
@@ -18,22 +19,20 @@ function RecoveryKeySetupModal({
     onSubmit,
     onClose,
 }:RecoveryKeySetupModalProps) {
-    const [disappear, setDisappear] = useState(true);
+    const [disappear, close] = useModalDisappear(onClose);
     const [loading, setLoading] = useState(false);
     const [recoveryKey, setRecoveryKey] = useState('');
-    const valid = useMemo(()=>recoveryKey.length >= 5, [recoveryKey]);
+    const valid = useMemo(()=>recoveryKey.length >= 4, [recoveryKey]);
 
-    useEffect(()=>{
-        setTimeout(() => {
-            setDisappear(false);
-        }, 1);
-    }, []);
-
-    const close = () => {
-        setDisappear(true);
-        setTimeout(() => {
-            onClose();
-        }, MODAL_DISAPPEAR_DURATION);
+    const submit = async ()=>{
+        if (!valid || loading) return;
+        setLoading(true);
+        
+        const b = await onSubmit(recoveryKey);
+        setLoading(false);
+        if (b) {
+            close();
+        }
     }
 
     return (
@@ -67,6 +66,13 @@ function RecoveryKeySetupModal({
                     className='input-number flex'
                     value={recoveryKey}
                     onChange={(e)=>setRecoveryKey(e.target.value)}
+                    onKeyDown={(e)=>{
+                        if (e.key === 'Enter') {
+                            submit();
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }                        
+                    }}
                 />
             </Row>
             <div
@@ -110,16 +116,7 @@ function RecoveryKeySetupModal({
                         width: '96px',
                         height: '100%',
                     }}
-                    onClick={async ()=>{
-                        if (!valid || loading) return;
-                        setLoading(true);
-                        
-                        const b = await onSubmit(recoveryKey);
-                        setLoading(false);
-                        if (b) {
-                            close();
-                        }
-                    }}
+                    onClick={submit}
                 >확인</Button>
             </Row>
         </Modal>

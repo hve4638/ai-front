@@ -18,8 +18,6 @@ function SessionBar({
     } = useProfileStorage();
     const profile = useProfile();
     const {
-        sessions,
-        currentSession,
         getSessionMetadataList,
     } = profile;
 
@@ -48,6 +46,10 @@ function SessionBar({
                 setSessionMetadataList(list);
             });
     }, [sessionIds]);
+
+    useLayoutEffect(()=>{
+        console.log('sessionMetadataList', sessionMetadataList);
+    }, [sessionMetadataList]);
 
     return (
         <TabBar

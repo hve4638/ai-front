@@ -1,6 +1,7 @@
 {
     "create_label" : "생성",
     "submit_label" : "확인",
+    "confirm_label" : "확인",
     "cancel_label" : "취소",
     "prev_label" : "뒤로",
     "error" : {

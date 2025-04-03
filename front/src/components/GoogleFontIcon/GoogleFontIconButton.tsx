@@ -1,8 +1,9 @@
+import classNames from 'classnames';
 import React from 'react';
 
 interface GoogleFontIconProps {
     className?:string;
-    showHoverEffect?:boolean;
+    enableHoverEffect?:boolean;
     value:string;
     selected?:boolean;
     style?:React.CSSProperties;
@@ -11,17 +12,22 @@ interface GoogleFontIconProps {
 }
 
 function GoogleFontIconButton({
-    className='', value, selected=false, onClick = ()=>{}, onMouseDown = (e)=>{},
+    className='',
+    value,
+    selected=false,
+    enableHoverEffect=false,
+    onClick = ()=>{},
+    onMouseDown = (e)=>{},
     style = {}
 }:GoogleFontIconProps) {
     return (
         <label
-            className={`font-button-container undraggable center ${className}`}
+            className={classNames('font-button-container undraggable center', className)}
             onClick={(e)=>onClick(e)}
             onMouseDown={(e)=>onMouseDown(e)}
             style={style}
         >
-            <span className={`material-symbols-outlined font-button${selected ? ' selected' : ''}`}>
+            <span className={classNames('material-symbols-outlined font-button', {selected, 'hover-effect':enableHoverEffect})}>
                 {value}
             </span>
         </label>

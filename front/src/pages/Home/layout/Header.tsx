@@ -17,7 +17,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { mapRTMetadataTree } from 'utils/rt';
 import AvatarPopover from '../AvatarPopover';
-import { useModals } from 'hooks/useModals';
+import { useModal } from 'hooks/useModal';
 
 import SettingModal from 'modals/SettingModal';
 import RTEditModal from 'modals/RTEditModal';
@@ -29,7 +29,7 @@ const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
 
 function Header() {
     const navigate = useNavigate();
-    const modals = useModals();
+    const modals = useModal();
     const { t } = useTranslation();
     const profileContext = useContextForce(ProfileEventContext);
     const {

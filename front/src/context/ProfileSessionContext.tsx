@@ -8,7 +8,6 @@ import useSignal from 'hooks/useSignal';
 import { useStorage } from 'hooks/useStorage';
 import { useProfile } from 'hooks/context';
 
-
 interface RawProfileSessionContextType {
     profileSession: IProfileSession|undefined;
     sessionId:string;
@@ -35,6 +34,8 @@ interface RawProfileSessionContextType {
 
 /**
  * ProfileSession 관리
+ * 
+ * '현재 세션' 관리. 전체 세션 처리는 상위 Context에서 관리
  * 
  * 세션 변경 시 동기화를 위해 sessionId의 변화를 확인 후 값 참조 필요
  */

@@ -19,7 +19,9 @@ function handleIPC(ping:IPCInvokerName, callback:any) {
             return result;
         }
         catch (error:any) {
-            console.error(`[IPC] ${ping} error`, error);
+            console.error(`[IPC][ERROR] ${ping}`, ...args);
+            console.error(error);
+            
             return [makeErrorStruct(error)];
         }
     });

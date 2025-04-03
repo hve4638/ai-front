@@ -16,27 +16,24 @@ class ElectronIPCAPI {
 
         return models;
     }
+    async addRequestListener(listener) {
+        const [err, bindId] = await electron.AddRequestListener(listener);
+        if (err) throw new IPCError(err.message);
 
+        return bindId;
+    }
+    async removeRequestListener(listener) {
+        await electron.RemoveRequestListener(listener);
+    }
+
+    /* 마스터 키 */
     async initMasterKey() {
-        const [err] = await electron.InitMasterKey();
+        const [err, result] = await electron.InitMasterKey();
         if (err) throw new IPCError(err.message);
+        return result;
     }
-    async isMasterKeyExists() {
-        const [err, exists] = await electron.CheckMasterKeyExistence();
-        if (err) throw new IPCError(err.message);
-        return exists;
-    }
-    async validateMasterKey() {
-        const [err, isValid] = await electron.ValidateMasterKey();
-        if (err) throw new IPCError(err.message);
-        return isValid;
-    }
-    async generateMasterKey(recoveryKey: string) {
-        const [err] = await electron.GenerateMasterKey(recoveryKey);
-        if (err) throw new IPCError(err.message);
-    }
-    async resetMasterKey() {
-        const [err] = await electron.ResetMasterKey();
+    async resetMasterKey(recoveryKey:string) {
+        const [err] = await electron.ResetMasterKey(recoveryKey);
         if (err) throw new IPCError(err.message);
     }
     async recoverMasterKey(recoveryKey: string) {

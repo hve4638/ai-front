@@ -13,7 +13,19 @@ class ProfileAPI {
         this.#profileId = id;
     }
 
-
+    static getMock() {
+        const source = new ProfileAPI('--mock');
+        const mock = {};
+        const proto = Object.getPrototypeOf(source);
+        Object.getOwnPropertyNames(proto).forEach(key => {
+            if (key !== 'constructor' && typeof source[key] === 'function') {
+                mock[key] = (...args:unknown[]) => undefined;
+            }
+        });
+    
+        return mock as ProfileAPI;
+    }
+    
     get id() {
         return this.#profileId;
     }
@@ -63,6 +75,21 @@ class ProfileAPI {
         if (err) throw new IPCError(err.message);
     }
 
+    /* secret IO */
+    async hasSecret(accessorId:string, keys:string[]) {
+        const [err, result] = await electron.VerifyProfileDataAsSecret(this.#profileId, accessorId, keys);
+        if (err) throw new IPCError(err.message);
+        return result;
+    }
+    async setSecret(accessorId:string, data:KeyValueInput) {
+        const [err] = await electron.SetProfileDataAsSecret(this.#profileId, accessorId, data);
+        if (err) throw new IPCError(err.message);
+    }
+    async removeSecret(accessorId:string, keys:string[]) {
+        const [err] = await electron.RemoveProfileDataAsSecret(this.#profileId, accessorId, keys);
+        if (err) throw new IPCError(err.message);
+    }
+    
     /* 하위 API */
     getSessionAPI(sessionId:string):SessionAPI {
         if (!(sessionId in this.#sessionAPIs)) {

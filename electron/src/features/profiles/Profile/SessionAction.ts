@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { ACStorage, IACSubStorage } from 'ac-storage';
 import { ProfileError } from './errors';
 
-class SessionControl {
+class SessionAction {
     #storage:IACSubStorage;
 
     /**
@@ -12,25 +12,25 @@ class SessionControl {
         this.#storage = storage;
     }
 
-    #getCacheAccessor() {
-        return this.#storage.accessAsJSON('cache.json');
+    async #getCacheAccessor() {
+        return await this.#storage.accessAsJSON('cache.json');
     }
-    #getDataAccessor() {
-        return this.#storage.accessAsJSON('data.json');
+    async #getDataAccessor() {
+        return await this.#storage.accessAsJSON('data.json');
     }
-    #getConfigAccessor() {
-        return this.#storage.accessAsJSON('config.json');
+    async #getConfigAccessor() {
+        return await this.#storage.accessAsJSON('config.json');
     }
     
     /**
      * 새 세션 생성
     */
-    createSession():string {
-        const data = this.#getDataAccessor();
-        const cache = this.#getCacheAccessor();
+    async createSession():Promise<string> {
+        const data = await this.#getDataAccessor();
+        const cache = await this.#getCacheAccessor();
 
         const sessions:string[] = data.getOne('sessions') ?? [];
-        const removedSessions:string[] = cache.getOne('removed_sessions') ?? [];  
+        const removedSessions:string[] = cache.getOne('removed_sessions') ?? []; 
         let num = 0;
         let sid:string;
         while(true) {
@@ -50,10 +50,10 @@ class SessionControl {
      * 지정 세션 삭제
      * @param sid 
      */
-    removeSession(sid:string) {
-        const config = this.#getConfigAccessor();
-        const data = this.#getDataAccessor();
-        const cache = this.#getCacheAccessor();
+    async removeSession(sid:string) {
+        const config = await this.#getConfigAccessor();
+        const data = await this.#getDataAccessor();
+        const cache = await this.#getCacheAccessor();
 
         let sessions:string[] = data.getOne('sessions') ?? [];
         if (sessions.includes(sid)) {
@@ -76,13 +76,18 @@ class SessionControl {
         }
     }
 
+    async setSelectedSession(sid:string) {
+        const cache = await this.#getCacheAccessor();
+        cache.setOne('last_session_id', sid);
+    }
+
     /**
      * 가장 최근에 삭제한 세션을 복구하고 세션 ID를 반환, 복구할 세션이 없으면 null 반환
      * @returns 
      */
-    undoRemoveSession():string|null {
-        const data = this.#getDataAccessor();
-        const cache = this.#getCacheAccessor();
+    async undoRemoveSession():Promise<string|null> {
+        const data = await this.#getDataAccessor();
+        const cache = await this.#getCacheAccessor();
         
         const removedSessions:string[] = cache.getOne('removed_sessions') ?? []
         const lastRemovedSession = removedSessions.pop();
@@ -98,9 +103,9 @@ class SessionControl {
         }
     }
 
-    permanentRemoveSession(sid:string) {
-        const data = this.#getDataAccessor();
-        const cache = this.#getCacheAccessor();
+    async permanentRemoveSession(sid:string) {
+        const data = await this.#getDataAccessor();
+        const cache = await this.#getCacheAccessor();
 
         const sessions = data.getOne('sessions') ?? [];
         const removedSessions = cache.getOne('removed_sessions') ?? [];
@@ -121,7 +126,7 @@ class SessionControl {
         }
     }
 
-    removeOrphanSessions(sessionPath:string) {
+    async removeOrphanSessions(sessionPath:string) {
         if (!fs.existsSync(sessionPath)) {
             return [];
         }
@@ -134,8 +139,8 @@ class SessionControl {
             }
         }
         else {
-            const data = this.#getDataAccessor();
-            const cache = this.#getCacheAccessor();
+            const data = await this.#getDataAccessor();
+            const cache = await this.#getCacheAccessor();
             const sessions = data.getOne('sessions');
             const removedSessions = cache.getOne('removed_sessions');
 
@@ -155,8 +160,8 @@ class SessionControl {
      * 세션 순서 변경 시 이전의 세션 아이디가 모두 유지되어야 함
      * @param newSessionIds 
      */
-    reorderSessions(newSessionIds:string[]) {
-        const data = this.#getDataAccessor();
+    async reorderSessions(newSessionIds:string[]) {
+        const data = await this.#getDataAccessor();
 
         const prevSet = new Set(data.getOne('sessions') ?? [])
         const valid = newSessionIds.every((sid)=>prevSet.has(sid));
@@ -165,11 +170,11 @@ class SessionControl {
         }
     }
 
-    getSessionIds():string[] {
-        const data = this.#getDataAccessor();
+    async getSessionIds():Promise<string[]> {
+        const data = await this.#getDataAccessor();
         
         return data.getOne('sessions') ?? [];
     }
 }
 
-export default SessionControl;
+export default SessionAction;

@@ -9,6 +9,7 @@ import classNames from 'classnames';
 
 import styles from './styles.module.scss';
 import { MODAL_DISAPPEAR_DURATION } from 'data';
+import useModalDisappear from 'hooks/useModalDisappear';
 
 
 function NewProfileModal({
@@ -19,27 +20,17 @@ function NewProfileModal({
     onClose: () => void
 }) {
     const [name, setName] = useState('');
-    const [disappear, setDisappear] = useState(true);
+    const [disappear, close] = useModalDisappear(onClose);
     const inputRef = useRef<HTMLInputElement>(null);
-
-    const onExit = () => {
-        setDisappear(true);
-        setTimeout(() => {
-            onClose();
-        }, MODAL_DISAPPEAR_DURATION);
-    }
 
     useEffect(() => {
         inputRef.current?.focus();
 
         const keyDownHandler = (e)=>{
             if (e.key === 'Escape') {
-                onExit();
+                close();
             }
         }
-        setTimeout(() => {
-            setDisappear(false);
-        }, 0);
 
         window.addEventListener('keydown', keyDownHandler);
         return () => {
@@ -55,10 +46,7 @@ function NewProfileModal({
                 title='프로필 추가'
                 onClose={
                     () => {
-                        setDisappear(true);
-                        setTimeout(() => {
-                            onClose();
-                        }, MODAL_DISAPPEAR_DURATION);
+                        close();
                     }
                 }
             />
@@ -99,8 +87,6 @@ function NewProfileModal({
                             style={{
                                 boxSizing: 'content-box',
                                 padding: '2px 0.5em',
-                                /// @TODO : 하드코딩된 폰트 사이즈
-                                // fontSize: '16px',
                                 height: '1.5em'
                             }}
                             value={name}
@@ -135,10 +121,7 @@ function NewProfileModal({
                                 color: 'lightgray'
                             }
                             onSubmit(metadata)
-                            setDisappear(true);
-                            setTimeout(() => {
-                                onClose();
-                            }, MODAL_DISAPPEAR_DURATION);
+                            close();
                         }}
                         disabled={name.length === 0}
                     >
@@ -152,10 +135,7 @@ function NewProfileModal({
                             height : '100%'
                         }}
                         onClick={() => {
-                            setDisappear(true);
-                            setTimeout(() => {
-                                onClose();
-                            }, MODAL_DISAPPEAR_DURATION);
+                            close();
                         }}
                     >
                         취소

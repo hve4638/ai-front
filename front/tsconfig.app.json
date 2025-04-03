@@ -33,6 +33,7 @@
     
     "baseUrl": "src",
     "paths" : {
+      "@/*": ["*"],
       "@shared/*": ["../../shared/*"]
     }
   },

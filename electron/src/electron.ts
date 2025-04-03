@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, globalShortcut } from 'electron';
+import { app, BrowserWindow, Menu, globalShortcut, ipcMain } from 'electron';
 import * as electronLocalshortcut from 'electron-localshortcut';
 import { throttle } from './utils';
 
@@ -6,6 +6,8 @@ import type Profiles from './features/profiles';
 import { IACStorage } from 'ac-storage';
 
 import * as staticPath from './static-path'
+import { IPCListenerName } from '../../shared/ipc-listener';
+import { IPCListenerPing } from './data';
 
 interface ElectronAppDependencies {
     globalStorage:IACStorage,
@@ -17,7 +19,7 @@ interface ElectronAppOptions {
     devUrl?: string;
 }
 
-export function openElectronApp(
+export async function openElectronApp(
     dependencies: ElectronAppDependencies,
     options : ElectronAppOptions
 ) {
@@ -30,7 +32,7 @@ export function openElectronApp(
         devUrl = ''
     } = options;
     
-    const cacheAccessor = globalStorage.accessAsJSON('cache.json');
+    const cacheAccessor = await globalStorage.accessAsJSON('cache.json');
     const [width, height] = cacheAccessor.getOne('lastsize') ?? [1280, 900];
     const [minWidth, minHeight] = [500, 500];
 
@@ -72,11 +74,17 @@ export function openElectronApp(
         electronLocalshortcut.register(win, 'F5', () => {
             win.reload();
         });
+
+        console.log('registering shortcuts');
+        setInterval(()=>{
+            win.webContents.send(IPCListenerPing.Request, 'Hello!');
+            console.log('hello?')
+        }, 200);
     }
     
-    app.on('window-all-closed', function () {
-        globalStorage.commit();
-        profiles.saveAll();
+    app.on('window-all-closed', async function() {
+        await globalStorage.commitAll();
+        await profiles.saveAll();
         app.quit();
     });
     

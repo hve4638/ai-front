@@ -27,6 +27,14 @@ h3 {
 h4, h5 {
     font-size: 1em;
 }
+hr {
+    width : auto;
+    box-sizing: content-box;
+    margin: 0.25em 0.25em;
+
+    border: none;
+    border-top: 1px solid rgb(53, 55, 64);
+}
 
 small {
     font-size: 0.75em;

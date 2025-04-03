@@ -4,7 +4,7 @@ import SessionTabBar from './SessionTabBar';
 import MainSection from './layout/MainSection';
 import SettingModal from '../../modals/SettingModal';
 import ShortcutHandler from 'pages/ShortcutHandler';
-import { ModalProvider } from 'hooks/useModals';
+import { ModalProvider } from 'hooks/useModal';
 
 function HomePage() {
     return (

@@ -1,4 +1,4 @@
-import type { Profile } from "@features/profiles";
+import type { Profile } from "@/features/profiles";
 
 export type ChatRequestForm = {
     bulitInVars : Record<string, any>;

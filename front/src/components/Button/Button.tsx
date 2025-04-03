@@ -24,10 +24,15 @@ function Button({
                     { disabled : disabled }
                 )
             }
+            tabIndex={disabled ? -1 : 0}
             style={{
                 ...style,
             }}
-            onClick={()=>onClick()}
+            onClick={()=>{
+                if (!disabled) {
+                    onClick();
+                }
+            }}
         >
             {
                 children != null &&

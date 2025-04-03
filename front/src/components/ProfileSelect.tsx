@@ -21,6 +21,12 @@ export function ProfileButton({
                 margin: '2px 0'
             }}
             onClick={(e)=>onClick(name, identifier)}
+            tabIndex={0}
+            onKeyDown={(e)=>{
+                if (e.key === 'Enter') {
+                    onClick(name, identifier);
+                }
+            }}
         >
             <div
                 className='center'

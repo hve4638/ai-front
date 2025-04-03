@@ -6,10 +6,13 @@ import {
     MemACStorage,
     StorageAccess,
 } from 'ac-storage';
-import HistoryAccessor from '../HistoryAccessor';
-import SessionControl from './SessionControl';
+import { SecretJSONAccessor, MemSecretJSONAccessor, HistoryAccessor } from '@/features/acstorage-accessor';
+import { masterKeyManager } from '@/registry';
+import SessionAction from './SessionAction';
 import RTControl from './RTControl';
 import { PROFILE_STORAGE_TREE } from './data';
+import { ProfileError } from './errors';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -18,14 +21,22 @@ class Profile {
     /** Profile 디렉토리 경로 */
     #basePath:string|null;
     #storage:ACStorage;
-    #sessionControl:SessionControl;
+    #sessionControl:SessionAction;
     #rtControl:RTControl;
     #dropped:boolean = false;
+
+    #personalKey:string;
  
-    constructor(profilePath:string|null) {
+    static async From(profilePath:string|null) {
+        const profile = new Profile(profilePath);
+        await profile.initialize();
+        return profile;
+    }
+
+    private constructor(profilePath:string|null) {
         this.#basePath = profilePath;
         if (this.#basePath) {
-            fs.mkdirSync(this.#basePath, {recursive: true});    
+            fs.mkdirSync(this.#basePath, {recursive: true});
             this.#storage = new ACStorage(this.#basePath);
         }
         else {
@@ -34,47 +45,89 @@ class Profile {
         
         this.#storage.register(PROFILE_STORAGE_TREE);
         this.#storage.addAccessEvent('history', {
-            init: (fullPath) => new HistoryAccessor(fullPath),
-            save: (ac) => ac.commit(),
-            destroy: (ac) => ac.drop(),
+            async init(fullPath) {
+                return new HistoryAccessor(fullPath)
+            },
+            async save(ac) {
+                return await ac.commit();
+            },
+            async destroy(ac) {
+                await ac.drop();
+            }
+        });
+        this.#storage.addAccessEvent('secret-json', {
+            async init(fullPath, tree) {
+                if (fullPath) {
+                    return new SecretJSONAccessor(fullPath, tree)
+                }
+                else {
+                    return new MemSecretJSONAccessor(tree);
+                }
+            },
+            async exists(ac) { return await ac.hasExistingData() },
+            async load(ac) { return await ac.load() },
+            async save(ac) { return await ac.save() },
+            async destroy(ac) { return await ac.drop() },
         });
         
-        
-        this.#sessionControl = new SessionControl(
+        this.#sessionControl = new SessionAction(
             this.#storage
         );
         this.#rtControl = new RTControl(
             this.#storage.subStorage('request-template')
         );
+        this.#personalKey = '';
     }
-    commit(): void {
-        this.#storage.commit();
+    async initialize() {
+        this.#personalKey = await this.#readPersonalKey();
+    }
+
+    async #readPersonalKey():Promise<string> {
+        const masterKey = masterKeyManager.masterKey;
+        if (!masterKey) throw new ProfileError('Master key is not initialized');
+
+        const uniqueAC = await this.#storage.access('unique', 'secret-json') as SecretJSONAccessor;
+        uniqueAC.initializeKey(masterKey);
+        let key = await uniqueAC.getOne('personal-key') as string|undefined;
+        if (key == undefined) {
+            key = uuidv4().trim();
+            uniqueAC.setOne('personal-key', key);
+        }
+        return key;
+    }
+
+    async commit(): Promise<void> {
+        await this.#storage.commit();
     }
     drop(): void {
         if (this.#basePath) fs.rmSync(this.#basePath, {recursive: true});
     }
-    get path(): string {
+    get path():string {
         return this.#basePath ?? '';
     }
     
     /* 세션 */
-    createSession():string {
+    async createSession():Promise<string> {
         return this.#sessionControl.createSession();
     }
-    
-    removeSession(sid:string) {
-        this.#sessionControl.removeSession(sid);
+
+    async removeSession(sid:string):Promise<void> {
+        await this.#sessionControl.removeSession(sid);
     }
 
-    undoRemoveSession():string|null {
-        return this.#sessionControl.undoRemoveSession();
+    async undoRemoveSession():Promise<string|null> {
+        return await this.#sessionControl.undoRemoveSession();
     }
 
-    permanentRemoveSession(sid:string) {
+    async setSelectedSession(sid:string) {
+        await this.#sessionControl.setSelectedSession(sid);
+    }
+
+    async permanentRemoveSession(sid:string) {
         this.#sessionControl.permanentRemoveSession(sid);
     }
 
-    removeOrphanSessions() {
+    async removeOrphanSessions() {
         if (!this.#basePath) return;
         
         const sessionPath = path.join(this.#basePath, 'session');
@@ -82,90 +135,75 @@ class Profile {
         this.#sessionControl.removeOrphanSessions(sessionPath);
     }
 
-    reorderSessions(newSessionIds:string[]) {
+    async reorderSessions(newSessionIds:string[]) {
         this.#sessionControl.reorderSessions(newSessionIds);
     }
 
-    getSessionIds():string[] {
-        return this.#sessionControl.getSessionIds();
+    async getSessionIds():Promise<string[]> {
+        return await this.#sessionControl.getSessionIds();
     }
 
     /* 요청 템플릿 */
-    getRTData(rtId:string, accessId:string, keys:string[]):any {
+    async getRTData(rtId:string, accessId:string, keys:string[]):Promise<any> {
         return this.#rtControl.getRTData(rtId, accessId, keys);
     }
-    setRTData(rtId:string, accessId:string, data:KeyValueInput) {
+    async setRTData(rtId:string, accessId:string, data:KeyValueInput) {
         return this.#rtControl.setRTData(rtId, accessId, data);
     }
-    getRTTree() {
+    async getRTTree() {
         return this.#rtControl.getTree();
     }
-    updateRTTree(newTree:RTMetadataTree) {
+    async updateRTTree(newTree:RTMetadataTree) {
         this.#rtControl.updateTree(newTree);
     }
-    addRT(metadata:RTMetadata) {
+    async addRT(metadata:RTMetadata) {
         this.#rtControl.addRT(metadata);
     }
-    removeRT(rtId:string) {
+    async removeRT(rtId:string) {
         this.#rtControl.removeRT(rtId);
     }
-    getRTMode(rtId:string):RTMode {
-        return this.#rtControl.getRTMode(rtId);
+    async getRTMode(rtId:string):Promise<RTMode> {
+        return await this.#rtControl.getRTMode(rtId);
     }
-    setRTMode(rtId:string, mode:RTMode) {
-        this.#rtControl.setRTMode(rtId, mode);
+    async setRTMode(rtId:string, mode:RTMode) {
+        await this.#rtControl.setRTMode(rtId, mode);
     }
-    getRTPromptData(rtId:string, promptId:string, keys:string[]) {
-        return this.#rtControl.getRTPromptData(rtId, promptId, keys);
+    async getRTPromptData(rtId:string, promptId:string, keys:string[]) {
+        return await this.#rtControl.getRTPromptData(rtId, promptId, keys);
     }
-    setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
-        this.#rtControl.setRTPromptData(rtId, promptId, data);
+    async setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
+        await this.#rtControl.setRTPromptData(rtId, promptId, data);
     }
-    hasRTId(rtId:string):boolean {
-        return this.#rtControl.hasId(rtId);
+    async hasRTId(rtId:string):Promise<boolean> {
+        return await this.#rtControl.hasId(rtId);
     }
-    generateRTId():string {
-        return this.#rtControl.generateId();
+    async generateRTId():Promise<string> {
+        return await this.#rtControl.generateId();
     }
-    changeRTId(oldRTId:string, newRTId:string) {
+    async changeRTId(oldRTId:string, newRTId:string) {
         return this.#rtControl.changeId(oldRTId, newRTId);
     }
-    updateRTMetadata(rtId:string) {
+    async updateRTMetadata(rtId:string) {
         return this.#rtControl.updateRTMetadata(rtId);
     }
     
     /* 직접 접근 */
-    accessAsJSON(identifier:string) {
-        return this.#storage.accessAsJSON(identifier);
+    async accessAsJSON(identifier:string) {
+        return await this.#storage.accessAsJSON(identifier);
     }
-    accessAsText(identifier:string) {
-        return this.#storage.accessAsText(identifier);
+    async accessAsText(identifier:string) {
+        return await this.#storage.accessAsText(identifier);
     }
-    accessAsBinary(identifier:string) {
-        return this.#storage.accessAsBinary(identifier);
+    async accessAsBinary(identifier:string) {
+        return await this.#storage.accessAsBinary(identifier);
     }
-    accessAsHistory(id:string):HistoryAccessor {
-        return this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
+    async accessAsHistory(id:string) {
+        return await this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
     }
-
-    /** @deprecated use accessAsJSON() instead */
-    getJSONAccessor(identifier:string) {
-        return this.#storage.accessAsJSON(identifier);
-    }
-
-    /** @deprecated use accessAsTEXT() instead */
-    getTextAccessor(identifier:string) {
-        return this.#storage.accessAsText(identifier);
-    }
-
-    /** @deprecated use accessAsBinary() instead */
-    getBinaryAccessor(identifier:string) {
-        return this.#storage.accessAsBinary(identifier);
-    }
-
-    /** @deprecated use accessAsHistory() instead */
-    getHistoryAccessor(id:string):HistoryAccessor {
-        return this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
+    async accessAsSecret(identifier:string) {
+        const ac = await this.#storage.access(identifier, 'secret-json') as SecretJSONAccessor;
+        ac.initializeKey(this.#personalKey);
+        return ac;
     }
 }
 

@@ -1,12 +1,14 @@
 import './chatai-model';
 import './prompt-form';
 import './rt';
-import { IPCInvokerName } from './ipc'
+import { IPCInvokerName } from './ipc-invokers'
+import { IPCListenerName } from './ipc-listeners';
 
 declare global {
-    type ElectronResultSync<T> = readonly [Error|null, T];
-    type ElectronResult<T> = Promise<readonly [Error]|readonly [null, T]>;
-    type ElectronNoResult = Promise<readonly [Error|null]>;
+    type ElectronError = {name:string, message:string, [key:string]:any};
+    type ElectronResultSync<T> = readonly [ElectronError|null, T];
+    type ElectronResult<T> = Promise<readonly [ElectronError]|readonly [null, T]>;
+    type ElectronNoResult = Promise<readonly [ElectronError|null]>;
 
     type KeyValueInput = [string, any][] | Record<string, any>;
 
@@ -19,20 +21,14 @@ declare global {
         date_end? : number;
     }
 
-    /**
-     * front로 노출되는 window.electron 인터페이스
-     */
-    type IPCInterface = {
+    type IPCInvokeIntrerface = {
         [IPCInvokerName.Echo]: (message:string) => ElectronResult<string>;
         [IPCInvokerName.OpenBrowser]: (url:string) => ElectronNoResult;
         [IPCInvokerName.GetChatAIModels]: () => ElectronResult<ChatAIModels>;
     
         /* 마스터 키 */
-        [IPCInvokerName.InitMasterKey]: () => ElectronNoResult;
-        [IPCInvokerName.CheckMasterKeyExistence]: () => ElectronResult<boolean>;
-        [IPCInvokerName.ValidateMasterKey]: () => ElectronResult<boolean>;
-        [IPCInvokerName.GenerateMasterKey]: (recoveryKey:string) => ElectronNoResult;
-        [IPCInvokerName.ResetMasterKey]: () => ElectronNoResult;
+        [IPCInvokerName.InitMasterKey]: () => ElectronResult<'normal'|'need-recovery'|'no-data'|'invalid-data'>;
+        [IPCInvokerName.ResetMasterKey]: (recoveryKey:string) => ElectronNoResult;
         [IPCInvokerName.RecoverMasterKey]: (recoveryKey:string) => ElectronResult<boolean>;
     
         /* 전역 스토리지 */
@@ -49,13 +45,19 @@ declare global {
         [IPCInvokerName.SetLastProfile]: (id:string|null) => ElectronNoResult;
     
         /* 프로필 저장소 */
-        [IPCInvokerName.GetProfileData]: (profileId:string, accessor:string, keys:string[]) => ElectronResult<any>;
-        [IPCInvokerName.SetProfileData]: (profileId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
+        [IPCInvokerName.GetProfileData]: (profileId:string, accessor:string, keys:string[]) => ElectronResult<Record<string, any>>;
+        [IPCInvokerName.SetProfileData]: (profileId:string, accessor:string, data:KeyValueInput) => ElectronNoResult;
+        // [IPCInvokerName.PushProfileDataToArray]: (profileId:string, accessor:string, data:KeyValueInput) => ElectronResult<string[]>;
         [IPCInvokerName.GetProfileDataAsText]: (profileId:string, accessor:string) => ElectronResult<string>;
         [IPCInvokerName.SetProfileDataAsText]: (profileId:string, accessor:string, value:string) => ElectronNoResult;
         [IPCInvokerName.GetProfileDataAsBinary]: (profileId:string, accessor:string) => ElectronResult<Buffer>;
         [IPCInvokerName.SetProfileDataAsBinary]: (profileId:string, accessor:string, content:Buffer) => ElectronNoResult;
-    
+
+        [IPCInvokerName.VerifyProfileDataAsSecret]: (profileId:string, accessor:string, keys:string[]) => ElectronResult<boolean[]>;
+        [IPCInvokerName.SetProfileDataAsSecret]: (profileId:string, accessor:string, data:KeyValueInput) => ElectronNoResult;
+        [IPCInvokerName.RemoveProfileDataAsSecret]: (profileId:string, accessor:string, keys:string[]) => ElectronNoResult;
+        // [IPCInvokerName.PushProfileDataToArrayAsSecret]: (profileId:string, accessor:string, data:KeyValueInput) => ElectronResult<string[]>;
+        
         /* 프로필 RT */
         [IPCInvokerName.GetProfileRTTree]: (profileId:string) => ElectronResult<RTMetadataTree>;
         [IPCInvokerName.UpdateProfileRTTree]: (profileId:string, tree:RTMetadataTree) => ElectronNoResult;
@@ -68,12 +70,13 @@ declare global {
         [IPCInvokerName.HasProfileRTId]: (profileId:string, rtId:string) => ElectronResult<boolean>;
         [IPCInvokerName.GenerateProfileRTId]: (profileId:string) => ElectronResult<string>;
         [IPCInvokerName.ChangeProfileRTId]: (profileId:string, oldRTId:string, newRTId:string) => ElectronNoResult;
-        [IPCInvokerName.GetProfileRTData]: (profileId:string, rtId:string, accessor:string, keys:string[]) => ElectronResult<Record<string, any>>;
-        [IPCInvokerName.SetProfileRTData]: (profileId:string, rtId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
+        [IPCInvokerName.GetProfileRTData]: (profileId:string, rtId:string, accessId:string, keys:string[]) => ElectronResult<Record<string, any>>;
+        [IPCInvokerName.SetProfileRTData]: (profileId:string, rtId:string, accessId:string, key:KeyValueInput) => ElectronResult<string[]>;
         [IPCInvokerName.ReflectProfileRTMetadata]: (profileId:string, rtId:string) => ElectronNoResult;
 
         /* 프로필 RT 요청 */
         [IPCInvokerName.RequestProfileRT]: (profileId:string, rtId:string, input:RTInput) => ElectronResult<string>;
+        [IPCInvokerName.AbortRequestProfileRT]: (profileId:string, rtId:string) => ElectronResult<void>;
     
         /* 프로필 세션 */
         [IPCInvokerName.AddProfileSession]: (profileId:string) => ElectronResult<string>;
@@ -92,6 +95,15 @@ declare global {
         [IPCInvokerName.DeleteProfileSessionHistory]: (profileId:string, sessionId:string, historyKey:number) => ElectronNoResult;
         [IPCInvokerName.DeleteAllProfileSessionHistory]: (profileId:string, sessionId:string) => ElectronNoResult;
     }
+
+    type IPCListenerInterface = {
+        [IPCListenerName.AddRequestListener]: (listener:(event:any)=>void) => ElectronResult<number>;
+        [IPCListenerName.RemoveRequestListener]: (bindId:number) => ElectronNoResult;
+    }
+    /**
+     * front로 노출되는 window.electron 인터페이스
+     */
+    type IPCInterface = IPCInvokeIntrerface & IPCListenerInterface;
 }
 
 

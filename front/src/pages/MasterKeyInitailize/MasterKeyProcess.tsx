@@ -4,49 +4,56 @@ import SetupRecoveryKeyModal from './SetupRecoveryKeyModal';
 import useSignal from 'hooks/useSignal';
 import RecoveryModal from './RecoveryModal';
 
-function MasterKeyInitailize({
+function MasterKeyProcess({
     onFinished
 }: { onFinished: () => void }) {
     const [refreshSignal, sendRefreshSignal] = useSignal();
-    const [initializeMode, setInitializeMode] = useState(false);
+    const [resetMode, setResetMode] = useState(false);
     const [recoveryMode, setRecoveryMode] = useState(false);
+    const [forceReset, setForceReset] = useState(false);
 
     useEffect(() => {
         (async ()=>{
-            setInitializeMode(false);
+            setResetMode(false);
             setRecoveryMode(false);
-            await LocalAPI.initMasterKey()
-            const exists = await LocalAPI.isMasterKeyExists()
-            if (!exists) {
-                setInitializeMode(true);
-                setRecoveryMode(false);
+            if (forceReset) {
+                setForceReset(false);
+                setResetMode(true);
+                setForceReset(false);
                 return;
             }
 
-            const isValid = await LocalAPI.validateMasterKey()
-            if (!isValid) {
-                setInitializeMode(false);
-                setRecoveryMode(true);
-                return;
+            const masterKeyState = await LocalAPI.initMasterKey()
+            switch (masterKeyState) {
+                case 'no-data':
+                case 'invalid-data':
+                    setResetMode(true);
+                    setRecoveryMode(false);
+                    return;
+                case 'need-recovery':
+                    setResetMode(false);
+                    setRecoveryMode(true);
+                    return;
+                case 'normal':
+                    setResetMode(false);
+                    setRecoveryMode(false);
+                    onFinished();
+                    return;
             }
-
-            setRecoveryMode(false);
-            setInitializeMode(false);
-            onFinished();
         })()
     }, [refreshSignal])
 
     return (
         <div>
         {
-            initializeMode &&
+            resetMode &&
             <SetupRecoveryKeyModal
                 onSubmit={async (recoveryKey:string)=>{
-                    await LocalAPI.generateMasterKey(recoveryKey);
+                    await LocalAPI.resetMasterKey(recoveryKey);
                     return true;
                 }}
                 onClose = {()=>{
-                    setInitializeMode(false);
+                    setResetMode(false);
                     sendRefreshSignal();
                 }}
             />
@@ -59,7 +66,7 @@ function MasterKeyInitailize({
                     return success;
                 }}
                 onReset={async ()=>{
-                    await LocalAPI.resetMasterKey();
+                    setForceReset(true);
                 }}
                 onClose={()=>{
                     setRecoveryMode(false);
@@ -71,4 +78,4 @@ function MasterKeyInitailize({
     );
 }
 
-export default MasterKeyInitailize;
+export default MasterKeyProcess;

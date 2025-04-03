@@ -6,7 +6,7 @@ import profileRT from './profileRT'
 import profileSession from './profileSession'
 import profileSessionHistory from './profileSessionHistory';
 
-function get():IPCInterface {
+function get():IPCInvokeIntrerface {
     return {
         ...general(),
         ...masterKey(),
@@ -15,7 +15,7 @@ function get():IPCInterface {
         ...profileRT(),
         ...profileSession(),
         ...profileSessionHistory(),
-    } as any;
+    };
 }
 
 export default get;

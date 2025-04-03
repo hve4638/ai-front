@@ -6,7 +6,6 @@ import './index.css'
 import 'assets/style/index.scss'
 import 'locales';
 
-import 'wicg-inert'; // inert 속성을 위한 polyfill
 
 const testMode = import.meta.env['VITE_TEST']?.toUpperCase() === 'TRUE'
 if (testMode) {

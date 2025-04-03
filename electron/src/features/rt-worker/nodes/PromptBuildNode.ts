@@ -32,7 +32,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
             input_type,
             forms : requiredForms,
             contents,
-        } = profile.getRTPromptData(rtId, 'default', ['input_type', 'forms', 'contents']);
+        } = await profile.getRTPromptData(rtId, 'default', ['input_type', 'forms', 'contents']);
     
         const { nodes, errors } = PromptTemplate.build(contents);
         if (errors.length > 0) {

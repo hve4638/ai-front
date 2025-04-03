@@ -35,7 +35,7 @@ class ChatAIModelManager {
     #loadDefaultModel() {
         const openAIProvider = this.#addProvider('OpenAI', KnownProvider.OpenAI);
         initOpenAIProvider(openAIProvider);
-        
+
         const geminiProvider = this.#addProvider('Google', KnownProvider.Google);
         initGeminiProvider(geminiProvider);
 
@@ -63,7 +63,7 @@ class ChatAIModelManager {
     getModel(id:string):ChatAIModel|undefined {
         return this.#modelIds.get(id);
     }
-
+    
     get models() {
         return this.#models;
     }

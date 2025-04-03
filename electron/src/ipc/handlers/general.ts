@@ -1,6 +1,6 @@
 import * as utils from '@utils';
 import { IPCInvokerName } from 'types';
-import ChatAIModels from '@features/chatai-models';
+import ChatAIModels from '@/features/chatai-models';
 
 function handler() {
     return {

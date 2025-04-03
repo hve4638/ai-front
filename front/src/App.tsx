@@ -8,6 +8,8 @@ import ProfileSelectPage from 'pages/ProfileSelect';
 import Home from 'pages/Home';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 import Hub from 'pages/Hub';
+import { ModalProvider } from 'hooks/useModal';
+import RequestAPI from 'api/request';
 
 const LoadPhase = {
     BEGIN : 0,
@@ -33,9 +35,7 @@ function App() {
                 case LoadPhase.INIT_MASTER_KEY:
                     break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
-                    console.log('LOADING_PROFILE_METADATA');
                     const lastProfile = await Profiles.getLastProfile();
-                    console.log('LOADING_PROFILE_METADATA? END');
 
                     if (lastProfile == null) {
                         setProfile(null);
@@ -68,6 +68,14 @@ function App() {
         };
     }, []);
 
+    useEffect(() => {
+        RequestAPI.register();
+        
+        return () => {
+            RequestAPI.unregister();
+        };
+    }, []);
+
     return (
         <div
             className={
@@ -89,19 +97,20 @@ function App() {
             }
             {
                 currentState == LoadPhase.INIT_MASTER_KEY &&
-                <MasterKeyInitailize
-                    onFinished={() => {
-                        console.log('MASTER')
-                        setCurrentState(prev=>{
-                            if (prev === LoadPhase.INIT_MASTER_KEY) {
-                                return LoadPhase.LOADING_PROFILE_METADATA;
-                            }
-                            else {
-                                return prev;
-                            }
-                        });
-                    }}
-                />
+                <ModalProvider>
+                    <MasterKeyInitailize
+                        onFinished={() => {
+                            setCurrentState(prev=>{
+                                if (prev === LoadPhase.INIT_MASTER_KEY) {
+                                    return LoadPhase.LOADING_PROFILE_METADATA;
+                                }
+                                else {
+                                    return prev;
+                                }
+                            });
+                        }}
+                    />
+                </ModalProvider>
             }
             {
                 currentState == LoadPhase.SELECT_PROFILE &&
@@ -129,4 +138,4 @@ function App() {
     )
 }
 
-export default App
+export default App;

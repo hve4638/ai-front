@@ -10,6 +10,10 @@
   cursor: default;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .box {
   display: flex;
   border: 1px solid #ccc;

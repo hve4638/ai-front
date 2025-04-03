@@ -2,11 +2,9 @@ import React, { useState, createContext, useLayoutEffect, useEffect, useMemo } f
 import { useContextForce } from './useContextForce';
 import { ProfileStorageContext } from './ProfileStorageContext';
 import { ChatSession } from 'types/chat-session';
-import { IProfileSession } from 'features/profilesAPI';
-import useDebounce from 'hooks/useDebounce';
 import type { Configs, SetState, SetStateAsync, Shortcuts } from './types';
-import { ProfileAPI } from 'api/profiles';
 import { ProfileSessionMetadata } from 'types';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ProfileEventContextType {
     /* 세션 관리 */
@@ -27,6 +25,11 @@ interface ProfileEventContextType {
     isModelStarred: (key:string)=>boolean;
     starModel: (key:string)=>void;
     unstarModel: (key:string)=>void;
+
+    /* API 키 메타데이터 */
+    addAPIKey: (provider:'openai'|'anthropic'|'google', apiKey:string) => Promise<void>;
+    removeAPIKey: (provider:'openai'|'anthropic'|'google'|'vertexai', index:number) => Promise<void>;
+    changeAPIKeyType: (provider:'openai'|'anthropic'|'google'|'vertexai', index:number, type:'primary'|'secondary') => Promise<void>;
     
     /* 요청 템플릿 */
     getRTTree: () => Promise<RTMetadataTree>;
@@ -61,8 +64,16 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
     const [sessionDict, setSessionDict] = useState<Map<string, ChatSession>>(new Map());
     const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
     const [lastChatSession, setLastChatSession] = useState<ChatSession>();
-    console.log('starredModels', starredModels);
     const starredModelSet = useMemo(()=>new Set(starredModels), [starredModels]);
+
+    const maskSecretKey = (key:string) => {
+        if (key.length <= 16) {
+            return key.length === 0 ? '' : '*'.repeat(key.length);
+        }
+        else {
+            return `${key.slice(0, 3)}...${key.slice(-4)}`;
+        }
+    }
     
     const values:ProfileEventContextType = {
         sessions : chatSessions,
@@ -145,7 +156,6 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
         },
 
         /* 요청 템플릿 */
-
         async getRTTree() { return await api.getRTTree(); },
         async updateRTTree(tree:RTMetadataTree) { await api.updateRTTree(tree); },
         async addRT(metadata:RTMetadata) { return await api.addRT(metadata); },
@@ -153,6 +163,60 @@ export function ProfileEventContextProvider({children}: {children:React.ReactNod
         async generateRTId() { return await api.generateRTId(); },
         async changeRTId(oldId:string, newId:string) { return await api.changeRTId(oldId, newId); },
         async hasRTId(id:string) { return await api.hasRTId(id); },
+
+        /* API 키 */
+        async addAPIKey(provider:'openai'|'anthropic'|'google', apiKey:string) {
+            let secretId:string;
+            while (true) {
+                secretId = uuidv4();
+                const exist = await api.hasSecret('secret.json', [secretId]);
+                if (!exist[0]) {
+                    break;
+                }
+                console.error(`secret id duplicated: ${secretId}`);
+            }
+            
+            const displayName = maskSecretKey(apiKey);
+            await api.setSecret('secret.json', [[secretId, apiKey]]);
+            await api.setOne('data.json', `api_keys.${provider}`, [
+                ...(profileStorage.apiKeysMetadata[provider] ?? []),
+                {
+                    secret_id : secretId,
+                    display_name : displayName,
+                    activate : true,
+                    type : 'primary',
+                    last_access : -1,
+                }
+            ]);
+            await profileStorage.refetchAPIKeysMetadata();
+        },
+        async removeAPIKey(provider:'openai'|'anthropic'|'google'|'vertexai', index:number) {
+            const providerAPIKeysMetadata = profileStorage.apiKeysMetadata[provider];
+            if (providerAPIKeysMetadata == null) return;
+
+            const target = providerAPIKeysMetadata[index];
+            if (target == null) return;
+
+            const next = [...providerAPIKeysMetadata];
+            next.splice(index, 1);
+
+            const targetSecretId = target.secret_id;
+            await api.removeSecret('secret.json', [targetSecretId]);
+            await api.setOne('data.json', `api_keys.${provider}`, next);
+            await profileStorage.refetchAPIKeysMetadata();
+        },
+        async changeAPIKeyType(provider:'openai'|'anthropic'|'google'|'vertexai', index:number, type:'primary'|'secondary') {
+            const providerAPIKeysMetadata = profileStorage.apiKeysMetadata[provider];
+            if (providerAPIKeysMetadata == null) return;
+
+            const target = providerAPIKeysMetadata[index];
+            if (target == null) return;
+
+            target.type = type;
+            
+            await api.setOne('data.json', `api_keys.${provider}`, providerAPIKeysMetadata);
+            await profileStorage.refetchAPIKeysMetadata();
+        },
                 
         configs,
         shortcuts,

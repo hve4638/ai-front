@@ -17,7 +17,7 @@ type ModalData = {
 
 const ModalContext = createContext<ModalContextType|null>(null);
 
-export function useModals() {
+export function useModal() {
     const modalContext = useContext(ModalContext);
 
     if (!modalContext) {

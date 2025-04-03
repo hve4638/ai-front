@@ -10,7 +10,7 @@ import SidePanel from './SidePanel';
 
 import { PromptInputType } from 'types';
 import { PromptData, PromptEditMode } from './types';
-import { ModalProvider } from 'hooks/useModals';
+import { ModalProvider } from 'hooks/useModal';
 import { PromptEditAction } from './types/prompt-editor';
 import useProfile from 'hooks/context/useProfile';
 import { useRT } from 'hooks/context';

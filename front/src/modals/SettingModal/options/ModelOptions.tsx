@@ -262,8 +262,8 @@ function ModelOptions() {
                                             >
                                                 {
                                                     configs.showActualModelName
-                                                    ? option.value
-                                                    : option.name
+                                                    ? option.name
+                                                    : option.displayName
                                                 }
                                             </span>
                                             {

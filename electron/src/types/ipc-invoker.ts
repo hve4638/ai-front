@@ -15,9 +15,6 @@ export enum IPCInvokerName {
 
     /* 마스터 키 */
     InitMasterKey = 'InitMasterKey',
-    CheckMasterKeyExistence = 'CheckMasterKeyExistence',
-    ValidateMasterKey = 'ValidateMasterKey',
-    GenerateMasterKey = 'GenerateMasterKey',
     ResetMasterKey = 'ResetMasterKey',
     RecoverMasterKey = 'RecoverMasterKey',
 
@@ -37,10 +34,15 @@ export enum IPCInvokerName {
     /* 프로필 저장소 */
     GetProfileData = 'GetProfileData',
     SetProfileData = 'SetProfileData',
+    PushProfileDataToArray = 'PushProfileDataToArray',
     GetProfileDataAsText = 'GetProfileDataAsText',
     SetProfileDataAsText = 'SetProfileDataAsText',
     GetProfileDataAsBinary = 'GetProfileDataAsBinary',
     SetProfileDataAsBinary = 'SetProfileDataAsBinary',
+    VerifyProfileDataAsSecret = 'VerifyProfileDataAsSecret',
+    SetProfileDataAsSecret = 'SetProfileDataAsSecret',
+    RemoveProfileDataAsSecret = 'RemoveProfileDataAsSecret',
+    PushProfileDataToArrayAsSecret = 'PushProfileDataToArrayAsSecret',
     
     /* 프로필 프롬프트 */
     GetProfilePromptTree = 'GetProfilePromptTree',

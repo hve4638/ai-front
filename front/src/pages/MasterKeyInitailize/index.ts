@@ -1,3 +1,3 @@
-import MasterKeyInitailize from './MasterKeyInitailize';
+import MasterKeyInitailize from './MasterKeyProcess';
 
 export default MasterKeyInitailize;
