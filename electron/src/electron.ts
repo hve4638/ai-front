@@ -6,7 +6,6 @@ import type Profiles from './features/profiles';
 import { IACStorage } from 'ac-storage';
 
 import * as staticPath from './static-path'
-import { IPCListenerName } from '../../shared/ipc-listener';
 import { IPCListenerPing } from './data';
 
 interface ElectronAppDependencies {
@@ -75,11 +74,11 @@ export async function openElectronApp(
             win.reload();
         });
 
-        console.log('registering shortcuts');
-        setInterval(()=>{
-            win.webContents.send(IPCListenerPing.Request, 'Hello!');
-            console.log('hello?')
-        }, 200);
+        // console.log('registering shortcuts');
+        // setInterval(()=>{
+        //     win.webContents.send(IPCListenerPing.Request, 'Hello!');
+        //     console.log('hello?')
+        // }, 200);
     }
     
     app.on('window-all-closed', async function() {

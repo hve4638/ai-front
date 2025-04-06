@@ -1,9 +1,8 @@
 import { create } from 'zustand'
-import { useProfileAPIStore } from './useProfileAPIStore';
 import { Shortcut } from '@/types/shortcut';
 import { LayoutModes, ThemeModes } from '@/types/profile';
-import { UpdateMethods } from './types';
-import { makeSetter } from './utils';
+import { RefetchMethods, UpdateMethods } from './types';
+import { profileStoreTool } from './utils';
 
 interface ConfigFields {
     font_size: number;
@@ -35,24 +34,25 @@ const defaultConfig:ConfigFields = {
 
 interface ConfigState extends ConfigFields {
     update: UpdateMethods<ConfigFields>;
+    refetch: RefetchMethods<ConfigFields>;
+    refetchAll : () => Promise<void>;
 }
 
-const setter = makeSetter<ConfigFields>('config.json');
 
-export const useConfigStore = create<ConfigState>((set)=>({
-    ...defaultConfig,
+export const useConfigStore = create<ConfigState>((set, get)=>{
+    const {
+        update,
+        refetch,
+        refetchAll
+    } = profileStoreTool<ConfigFields>(set, get, 'config.json', defaultConfig);
 
-    update : {
-        font_size: setter<number>(set, 'font_size'),
-        theme_mode: setter<ThemeModes>(set, 'theme_mode'),
-        layout_mode: setter<LayoutModes>(set, 'layout_mode'),
-        remember_deleted_session_count: setter<number>(set, 'remember_deleted_session_count'),
-        confirm_on_session_close: setter<boolean>(set, 'confirm_on_session_close'),
-        history_enabled: setter<boolean>(set, 'history_enabled'),
-        max_history_limit_per_session: setter<number>(set, 'max_history_limit_per_session'),
-        max_history_storage_days: setter<number>(set, 'max_history_storage_days'),
-        global_shortcut_enabled: setter<boolean>(set, 'global_shortcut_enabled'),
-        only_starred_models: setter<boolean>(set, 'only_starred_models'),
-        show_actual_model_name: setter<boolean>(set, 'show_actual_model_name'),
-    }
-}));
+    return {
+        ...defaultConfig,
+        
+        update,
+        refetch,
+        refetchAll,
+    };
+});
+
+export default useConfigStore;

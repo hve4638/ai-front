@@ -2,8 +2,6 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import styles from '../styles.module.scss';
 
-import { ProfileEventContext, useContextForce } from 'context';
-
 import LocalAPI from 'api/local';
 import { Align, Flex, Row } from 'components/layout';
 import Dropdown, { DropdownItem, DropdownItemList } from 'components/Dropdown';
@@ -22,8 +20,7 @@ import { useModal } from 'hooks/useModal';
 import SettingModal from 'modals/SettingModal';
 import RTEditModal from 'modals/RTEditModal';
 import NewRTModal from 'modals/NewRTModal';
-import { useProfileSession } from 'hooks/context';
-
+import { useConfigStore, useDataStore, useProfileEvent, useSessionStore } from '@/stores';
 
 const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
 
@@ -31,15 +28,11 @@ function Header() {
     const navigate = useNavigate();
     const modals = useModal();
     const { t } = useTranslation();
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        starredModels,
-        isModelStarred,
-        configs,
-    } = profileContext;
-    const {
-        rtId, setRtId
-    } = useProfileSession();
+    const configs = useConfigStore();
+    const dataState = useDataStore();
+    const { isModelStarred, getRTTree } = useProfileEvent();
+    const sessionState = useSessionStore();
+    
     const [allModles, setAllModels] = useState<ChatAIModels>([]);
     const [models, setModels] = useState<DropdownItemList[]>([]);
 
@@ -125,7 +118,7 @@ function Header() {
             .then((models)=>{
                 setAllModels(models);
             });
-        profileContext.getRTTree()
+        getRTTree()
             .then((tree)=>{
                 setRTMetadataTree(tree);
             });
@@ -160,9 +153,9 @@ function Header() {
             };
             provider.list.forEach((category:ChatAIMoedelCategory)=>{
                 category.list.forEach((model:ChatAIModel)=>{
-                    if (!configs.onlyStarredModels || isModelStarred(model.id)) {
+                    if (!configs.only_starred_models || isModelStarred(model.id)) {
                         nextProvider.list.push({
-                            name: configs.showActualModelName ? model.name : model.displayName,
+                            name: configs.show_actual_model_name ? model.name : model.displayName,
                             key: model.id,
                         });
                     }
@@ -177,9 +170,9 @@ function Header() {
         setModels(nextModels);
     }, [
         allModles,
-        starredModels,
-        configs.onlyStarredModels,
-        configs.showActualModelName
+        dataState.starred_models,
+        configs.only_starred_models,
+        configs.show_actual_model_name
     ]);
 
     return (
@@ -204,14 +197,14 @@ function Header() {
                     renderItem={renderModelName}
                     renderSelectedItem={renderSelectedModelName}
                     items={models}
-                    value={rtId}
+                    value={sessionState.rt_id}
                     onChange={(item)=>{
-                        setRtId(item.key);
+                        sessionState.update.rt_id(item.key);
                     }}
                     onItemNotFound={()=>{
                         if (models.length === 0) return;
 
-                        setRtId(models[0].list[0].key);
+                        sessionState.update.rt_id(models[0].list[0].key);
                     }}
                 />
                 <Flex/>

@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { ButtonForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileEventContext, useContextForce } from 'context';
+import { useConfigStore } from '@/stores';
 
 function ServerOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        configs,
-    } = profileContext;
     const [enabled, setEnabled] = useState(false);
     const [port, setPort] = useState(4000);
 

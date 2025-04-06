@@ -1,15 +1,13 @@
 import { useEffect, useMemo } from 'react';
-import { ProfileEventContext, useContextForce } from 'context';
 import { useModal } from 'hooks/useModal';
 import { Shortcut } from 'types/shortcut';
+import { useConfigStore, useProfileEvent } from '@/stores';
+import useShortcutStore from '@/stores/useShortcutStore';
 
 function ShortcutHandler() {
     const modals = useModal();
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        shortcuts,
-        configs,
-    } = profileContext;
+    const shortcuts = useShortcutStore();
+    const configs = useConfigStore();
 
     const addHandler = (shortcut:Shortcut, callback) => {
         if (shortcut == null) return ()=>{};
@@ -53,37 +51,41 @@ function ShortcutHandler() {
     };
     
     useEffect(() => {
-        return addHandler(shortcuts.fontSizeUp, () => {
-            configs.setFontSize(prev=>Math.min(prev+1, 48));
+        return addHandler(shortcuts.font_size_up, () => {
+            configs.update.font_size(prev=>{
+                const next = prev+1;
+                return next > 48 ? prev : next;
+            });
         })
     },[
-        shortcuts.fontSizeUp,
-        configs.setFontSize,
+        shortcuts.font_size_up,
     ]);
 
     useEffect(() => {
-        return addHandler(shortcuts.fontSizeDown, () => {
-            configs.setFontSize(prev=>Math.max(prev-1, 6));
+        return addHandler(shortcuts.font_size_down, () => {
+            configs.update.font_size(prev=>{
+                const next = prev-1;
+                return next < 6 ? prev : next;
+            });
         })
     },[
-        shortcuts.fontSizeDown,
-        configs.setFontSize,
+        shortcuts.font_size_down,
     ]);
 
     useEffect(() => {
-        return addHandler(shortcuts.sendRequest, () => {
+        return addHandler(shortcuts.send_request, () => {
             
         })
     },[
-        shortcuts.sendRequest,
+        shortcuts.send_request,
     ]);
 
     useEffect(() => {
-        return addHandler(shortcuts.copyResponse, () => {
+        return addHandler(shortcuts.copy_response, () => {
             
         })
     },[
-        shortcuts.copyResponse,
+        shortcuts.copy_response,
     ]);
 
     return (<></>);

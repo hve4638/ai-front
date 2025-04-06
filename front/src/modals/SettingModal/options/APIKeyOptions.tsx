@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { useProfile, useProfileStorage } from 'hooks/context';
 import DivButton from 'components/DivButton';
 import { useModal } from 'hooks/useModal';
 import StringInputModal from 'modals/StringInputModal';
@@ -8,18 +7,14 @@ import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon'
 import { Align, Flex, Row } from 'components/layout';
 import Dropdown from 'components/Dropdown';
 import { APIKeyMetadata } from 'types/apikey-metadata';
+import { useDataStore, useProfileEvent } from '@/stores';
 
 
 function APIKeyOptions() {
-    const modal = useModal();
-    const profile = useProfile();
-    const profileStorage = useProfileStorage();
-    const {
-        apiKeysMetadata,
-        refetchAPIKeysMetadata
-    } = profileStorage;
+    const profile = useProfileEvent();
+    const dataStore = useDataStore();
 
-    const openAIAPIs = apiKeysMetadata['openai'] ?? [];
+    const openAIAPIs = dataStore.api_keys_metadata['openai'] ?? [];
 
     return (
         <>
@@ -48,7 +43,7 @@ function APIKeyOptions() {
             />
             <div style={{height: '1em'}}/>
             <b className='undraggable'>Anthropic Claude</b>
-            {/* <hr/> */}
+            
             <AddAPIKeyButton
                 title='Anthropic API 키'
                 onAddAPIKey={async (apiKey)=>{

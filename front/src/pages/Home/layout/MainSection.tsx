@@ -1,32 +1,24 @@
 import InputField from 'components/InputField';
 import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon';
 import { useEffect, useState } from 'react';
-import { ProfileEventContext, useContextForce } from 'context';
 import useLazyThrottle from 'hooks/useLazyThrottle';
-import useDebounce from 'hooks/useDebounce';
-import { useProfile, useProfileSession } from 'hooks/context';
+import { useCacheStore, useConfigStore, useSessionStore } from '@/stores';
 
 function MainSection() {
-    const {
-        configs,
-        shortcuts,
-    } = useProfile();
-    const {
-        sessionId,
-        input, setInput,
-        output, setOutput,
-    } = useProfileSession();
+    const configState = useConfigStore();
+    const { last_session_id } = useCacheStore();
+    const sessionState = useSessionStore();
     const [inputText, setInputText] = useState('');
 
     // @TODO : 도중 세션 변경시 마지막 변경이 반영되지 않는 문제
     // 문제가 해결된다면 throttle을 debounce로 변경하는 것이 성능 상 좋음
     const setInputTextThrottle = useLazyThrottle(() => {
-        setInput(inputText);
+        sessionState.update.input(inputText);
     }, 300);
     
     useEffect(() => {
-        setInputText(input);
-    }, [sessionId]);
+        setInputText(sessionState.input);
+    }, [last_session_id]);
 
 
     return (
@@ -34,7 +26,7 @@ function MainSection() {
             <div
                 className='row flex'
                 style={{
-                    fontSize: `${configs.fontSize}px`,
+                    fontSize: `${configState.font_size}px`,
                 }}
             >
                 <InputField
@@ -67,8 +59,8 @@ function MainSection() {
                         margin: '8px 16px 16px 8px',
                         padding: '12px',
                     }}
-                    text={output ?? ''}
-                    onChange={setOutput}
+                    text={sessionState.output ?? ''}
+                    onChange={sessionState.update.output}
                     readonly={true}
                 />
 

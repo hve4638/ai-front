@@ -4,9 +4,6 @@ import { clamp } from 'utils/math';
 import Tab from './Tab';
 import SessionAddButton from './TabAddButton';
 import useDiff from 'hooks/useDiff';
-import { ChatSession } from 'types/chat-session';
-import { ProfileEventContext, useContextForce } from 'context';
-import useLazyThrottle from 'hooks/useLazyThrottle';
 import useDebounce from 'hooks/useDebounce';
 
 type TabRequired = {

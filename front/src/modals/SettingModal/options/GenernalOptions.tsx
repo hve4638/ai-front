@@ -1,21 +1,18 @@
 import { useState } from 'react';
 import { CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileEventContext, useContextForce } from 'context';
 import { LayoutModes, ThemeModes } from 'types/profile';
+import { useConfigStore } from '@/stores';
 
 function GeneralOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        configs,
-    } = profileContext;
+    const config = useConfigStore();
 
     return (
         <>
             <NumberForm
                 name='폰트 크기'
                 width='4em'
-                value={configs.fontSize}
-                onChange={configs.setFontSize}
+                value={config.font_size}
+                onChange={config.update.font_size}
             />
             <DropdownForm
                 name='레이아웃 설정'
@@ -26,12 +23,12 @@ function GeneralOptions() {
                         { name: '세로', key: LayoutModes.HORIZONTAL },
                     ]
                 }
-                value={configs.layoutMode}
+                value={config.layout_mode}
                 onChange={(item)=>{
-                    configs.setLayoutMode(item.key as LayoutModes);
+                    config.update.layout_mode(item.key as LayoutModes);
                 }}
                 onItemNotFound={()=>{
-                    configs.setLayoutMode(LayoutModes.AUTO);
+                    config.update.layout_mode(LayoutModes.AUTO);
                 }}
             />
             <DropdownForm
@@ -43,27 +40,24 @@ function GeneralOptions() {
                         { name: '어두운 테마', key: ThemeModes.DARK },
                     ]
                 }
-                value={configs.themeMode}
+                value={config.theme_mode}
                 onChange={(item)=>{
-                    configs.setThemeMode(item.key as ThemeModes);
+                    config.update.theme_mode(item.key as ThemeModes);
                 }}
                 onItemNotFound={()=>{
-                    configs.setThemeMode(ThemeModes.SYSTEM_DEFAULT);
+                    config.update.theme_mode(ThemeModes.SYSTEM_DEFAULT);
                 }}
             />
-            {/* <ToggleSwitchForm
-                name='프리셋 고정 해제 시 확인 메시지 표시'
-            /> */}
             <CheckBoxForm
                 name='탭 삭제 시 확인 메시지 표시'
-                checked={configs.confirmOnSessionClose}
-                onChange={configs.setConfirmOnSessionClose}
+                checked={config.confirm_on_session_close}
+                onChange={config.update.confirm_on_session_close}
             />
             <NumberForm
                 name='삭제된 세션 최대 기억 수'
                 width='4em'
-                value={configs.rememberDeletedSessionCount}
-                onChange={configs.setRememberDeletedSessionCount}
+                value={config.remember_deleted_session_count}
+                onChange={config.update.remember_deleted_session_count}
             />
             
             

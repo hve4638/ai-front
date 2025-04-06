@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
 import LocalAPI from 'api/local';
-import Providers from 'context';
 import useSignal from 'hooks/useSignal';
 import LoadPage from 'features/loading';
-import Profiles from 'features/profilesAPI';
 import ProfileSelectPage from 'pages/ProfileSelect';
-import Home from 'pages/Home';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 import Hub from 'pages/Hub';
 import { ModalProvider } from 'hooks/useModal';
-import RequestAPI from 'api/request';
+import { useProfileAPIStore, useCacheStore } from '@/stores';
 
 const LoadPhase = {
     BEGIN : 0,
@@ -24,6 +21,9 @@ function App() {
     const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.BEGIN);
     const [retrySignal, sendRetrySignal] = useSignal();
     const [profile, setProfile] = useState<string|null>(null);
+    const profileAPIStore = useProfileAPIStore();
+    const last_session_id = useCacheStore(state=>state.last_session_id)
+    const updateCache = useCacheStore(state=>state.update)
 
     useEffect(() => {
         (async ()=> {
@@ -35,14 +35,12 @@ function App() {
                 case LoadPhase.INIT_MASTER_KEY:
                     break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
-                    const lastProfile = await Profiles.getLastProfile();
-
-                    if (lastProfile == null) {
+                    if (last_session_id == null) {
                         setProfile(null);
                         setCurrentState(LoadPhase.SELECT_PROFILE);
                     }
                     else {
-                        setProfile(lastProfile);
+                        setProfile(last_session_id);
                         setCurrentState(LoadPhase.ENTRYPOINT);
                     }
                     break;
@@ -55,7 +53,7 @@ function App() {
                     break;
             }
         })();
-    }, [currentState, retrySignal]);
+    }, [currentState, retrySignal, profileAPIStore.api]);
     
     useEffect(() => {
         const handleBeforeUnload = (event) => {
@@ -69,13 +67,13 @@ function App() {
     }, []);
 
     useEffect(() => {
-        RequestAPI.register();
+        // RequestAPI.register();
         
-        return () => {
-            RequestAPI.unregister();
-        };
+        // return () => {
+        //     RequestAPI.unregister();
+        // };
     }, []);
-
+          
     return (
         <div
             className={
@@ -115,8 +113,10 @@ function App() {
             {
                 currentState == LoadPhase.SELECT_PROFILE &&
                 <ProfileSelectPage
-                    onSelect={async (id) => {
-                        await Profiles.setLastProfile(id);
+                    onSelect={async (id:string) => {
+                        await profileAPIStore.setAPI(id);
+                        await updateCache.last_session_id(id);
+
                         setCurrentState(prev=>{
                             if (prev === LoadPhase.SELECT_PROFILE) {
                                 return LoadPhase.LOADING_PROFILE_METADATA;
@@ -130,9 +130,7 @@ function App() {
             }
             {
                 currentState == LoadPhase.ENTRYPOINT &&
-                <Providers profileId={profile!}>
-                    <Hub/>
-                </Providers>
+                <Hub/>
             }            
         </div>
     )

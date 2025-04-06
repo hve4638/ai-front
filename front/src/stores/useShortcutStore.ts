@@ -1,8 +1,7 @@
 import { create } from 'zustand'
-import { useProfileAPIStore } from './useProfileAPIStore';
 import { Shortcut } from '@/types/shortcut';
-import { UpdateMethods } from './types';
-import { makeSetter } from './utils';
+import { RefetchMethods, UpdateMethods } from './types';
+import { profileStoreTool } from './utils';
 
 const defaultShortcuts = {
     font_size_up : { wheel: -1, ctrl: true },
@@ -34,65 +33,26 @@ type ShortcutFields = Record<ShortcutKeys, Shortcut>;
 
 interface ShortcutState extends ShortcutFields {
     update: UpdateMethods<ShortcutFields>;
+    refetch: RefetchMethods<ShortcutFields>;
+    refetchAll : () => Promise<void>;
 }
 
-const setter = makeSetter<ShortcutFields>('shortcuts.json');
+const ACCESSOR_ID = 'shortcuts.json';
 
-export const useShortcutStore = create<ShortcutState>((set)=>({
-    ...defaultShortcuts,
+export const useShortcutStore = create<ShortcutState>((set, get)=>{
+    const {
+        update,
+        refetch,
+        refetchAll
+    } = profileStoreTool<ShortcutFields>(set, get, ACCESSOR_ID, defaultShortcuts);
 
-    update : {
-        font_size_up : setter<Shortcut>(set, 'font_size_up'),
-        font_size_down : setter<Shortcut>(set, 'font_size_down'),
-        send_request : setter<Shortcut>(set, 'send_request'),
-        copy_response : setter<Shortcut>(set, 'copy_response'),
-        next_tab : setter<Shortcut>(set, 'next_tab'),
-        prev_tab : setter<Shortcut>(set, 'prev_tab'),
-        create_tab : setter<Shortcut>(set, 'create_tab'),
-        remove_tab : setter<Shortcut>(set, 'remove_tab'),
-        undo_remove_tab : setter<Shortcut>(set, 'undo_remove_tab'),
-        tab1 : setter<Shortcut>(set, 'tab1'),
-        tab2 : setter<Shortcut>(set, 'tab2'),
-        tab3 : setter<Shortcut>(set, 'tab3'),
-        tab4 : setter<Shortcut>(set, 'tab4'),
-        tab5 : setter<Shortcut>(set, 'tab5'),
-        tab6 : setter<Shortcut>(set, 'tab6'),
-        tab7 : setter<Shortcut>(set, 'tab7'),
-        tab8 : setter<Shortcut>(set, 'tab8'),
-        tab9 : setter<Shortcut>(set, 'tab9'),
-
-        global_toggle_screen_activation: setter<Shortcut>(set, 'global_toggle_screen_activation'),
-        global_request_clipboard: setter<Shortcut>(set, 'global_request_clipboard')
-    },
-    refetchAll: async () => {
-        const { api } = useProfileAPIStore.getState();
-        const result:Record<string, unknown> = await api.get('shortcuts.json', [
-            'font_size_up',
-            'font_size_down',
-            'send_request',
-            'copy_response',
-            'next_tab',
-            'prev_tab',
-            'create_tab',
-            'remove_tab',
-            'undo_remove_tab',
-            'tab1',
-            'tab2',
-            'tab3',
-            'tab4',
-            'tab5',
-            'tab6',
-            'tab7',
-            'tab8',
-            'tab9',
-
-            'global_toggle_screen_activation',
-            'global_request_clipboard'
-        ]);
-
-        for (const key in result) {
-            result[key] ??= defaultShortcuts[key];
-        }
-        set(result);
+    return {
+        ...defaultShortcuts,
+    
+        update,
+        refetch,
+        refetchAll,
     }
-}));
+});
+
+export default useShortcutStore;

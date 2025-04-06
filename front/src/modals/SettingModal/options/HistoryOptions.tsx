@@ -1,24 +1,21 @@
+import { useConfigStore } from '@/stores';
 import { CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileEventContext, useContextForce } from 'context';
 
 function HistoryOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        configs,
-    } = profileContext;
+    const configs = useConfigStore();
 
     return (
         <>
             <CheckBoxForm
                 name='기록 활성화'
-                checked={configs.historyEnabled}
-                onChange={configs.setHistoryEnabled}
+                checked={configs.history_enabled}
+                onChange={configs.update.history_enabled}
             />
             <NumberForm
                 name='세션 당 최대 저장 기록 수'
                 width='6em'
-                value={configs.maxHistoryLimitPerSession}
-                onChange={configs.setMaxHistoryLimitPerSession}
+                value={configs.max_history_limit_per_session}
+                onChange={configs.update.max_history_limit_per_session}
             />
             <DropdownForm
                 name='최대 저장 일수'
@@ -33,10 +30,8 @@ function HistoryOptions() {
                         { name: '1년', key: '365' },
                     ]
                 }
-                value={String(configs.maxHistoryStorageDays)}
-                onChange={(item)=>{
-                    configs.setMaxHistoryStorageDays(Number(item.key));
-                }}
+                value={String(configs.max_history_storage_days)}
+                onChange={(item)=>configs.update.max_history_storage_days(Number(item.key))}
             />
         </>
     )

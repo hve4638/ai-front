@@ -1,13 +1,11 @@
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { Modal, ModalHeader } from 'components/Modal';
-import { Align, Center, Column, Grid, Row } from 'components/layout';
 import useHotkey from 'hooks/useHotkey';
 import useModalDisappear from 'hooks/useModalDisappear';
 import { useTranslation } from 'react-i18next';
 import RTSelectWidget from './RTSelectWidget';
 import { useState } from 'react';
 import EditMetadataWidget from './EditMetadataWidget';
-import { useProfile } from 'hooks/context';
+import { useProfileEvent } from '@/stores';
 
 const enum NewRTModalStep {
     SelectRTType = 0,
@@ -27,7 +25,7 @@ function NewRTModal({
     isFocused,
     onClose = ()=>{},
 }:NewRTModalProps) {
-    const profile = useProfile();
+    const profile = useProfileEvent();
     const { t } = useTranslation();
     const [disappear, close] = useModalDisappear(onClose);
     const [step, setStep] = useState<NewRTModalStep>(NewRTModalStep.SelectRTType);

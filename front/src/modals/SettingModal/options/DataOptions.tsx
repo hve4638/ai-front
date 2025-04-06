@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
 import ButtonForm from 'components/Forms/ButtonForm';
-import { ProfileEventContext, useContextForce } from 'context';
+import { useProfileEvent } from '@/stores';
 
 function DataOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        configs,
-    } = profileContext;
-
     return (
         <>
             <b>백업</b>

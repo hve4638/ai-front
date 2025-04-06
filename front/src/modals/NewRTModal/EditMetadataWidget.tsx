@@ -1,9 +1,11 @@
-import Button from "components/Button";
-import { StringLongForm } from "components/Forms";
-import { Align, Column, Row } from "components/layout";
-import { useProfile } from "hooks/context";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useProfileEvent } from '@/stores';
+import Button from 'components/Button';
+import { StringLongForm } from 'components/Forms';
+import { Align, Column, Row } from 'components/layout';
+
 
 type Metadata = {
     name : string;
@@ -18,7 +20,7 @@ type EditMetadataWidgetProps = {
 function EditMetadataWidget({
     onPrev, onConfirm
 }:EditMetadataWidgetProps) {
-    const profile = useProfile();
+    const profile = useProfileEvent();
     const { t } = useTranslation();
     const [name, setName] = useState<string>('');
     const [id, setId] = useState<string>('');

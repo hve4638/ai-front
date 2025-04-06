@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import classNames from 'classnames';
 import styles from './styles.module.scss';
 import { useTranslation } from "react-i18next";
 
@@ -9,12 +8,12 @@ import EditorSection from './EditorSection';
 import SidePanel from './SidePanel';
 
 import { PromptInputType } from 'types';
-import { PromptData, PromptEditMode } from './types';
+import { PromptEditMode } from './types';
+import { PromptData } from '@/types';
 import { ModalProvider } from 'hooks/useModal';
 import { PromptEditAction } from './types/prompt-editor';
-import useProfile from 'hooks/context/useProfile';
-import { useRT } from 'hooks/context';
 import { useNavigate } from 'react-router';
+import { useRTStore } from '@/stores';
 
 type PromptEditorProps = {
     action : PromptEditAction;
@@ -28,8 +27,7 @@ function PromptEditor({
     const { t } = useTranslation();
     const { rtId } = useParams();
     const navigate = useNavigate();
-    const profile = useProfile();
-    const rt = useRT();
+    const rtState = useRTStore();
     
     const [_, sendRefreshSignal] = useSignal();
     const [loaded, setLoaded] = useState(false);
@@ -73,7 +71,7 @@ function PromptEditor({
     // NEW 인 경우 프롬프트 ID 초기화
     useEffect(()=>{
         (async ()=>{
-            promptData.current = await rt.loadPromptData('default');
+            promptData.current = await rtState.get.promptdata('default');
             setLoaded(true);
             sendRefreshSignal();
         })();

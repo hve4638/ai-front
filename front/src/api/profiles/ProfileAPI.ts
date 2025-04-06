@@ -22,12 +22,17 @@ class ProfileAPI {
                 mock[key] = (...args:unknown[]) => undefined;
             }
         });
+        mock['isMock'] = () => true;
     
         return mock as ProfileAPI;
     }
     
     get id() {
         return this.#profileId;
+    }
+
+    isMock() {
+        return false;
     }
 
     /* get/set JSON */

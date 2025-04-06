@@ -1,31 +1,28 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { CheckBoxForm, DropdownForm, HotkeyForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileEventContext, useContextForce } from 'context';
+import { useLayoutEffect, useState } from 'react';
+import { CheckBoxForm, HotkeyForm } from 'components/Forms';
 import ShortcutModal from './ShortcutModal';
 import { shortcutToText } from 'utils/shortcut';
 import { Shortcut } from 'types/shortcut';
-import { Row } from 'components/layout';
+import useShortcutStore from '@/stores/useShortcutStore';
 
 function ShortcutOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
-    const {
-        shortcuts,
-    } = profileContext;
+    const shortcuts = useShortcutStore();
+
     const [enabledGlobalHotkey, setEnabledGlobalHotkey] = useState(true);
     const [showShortcutModal, setShowShortcutModal] = useState(false);
     const [localSc, setLocalSc] = useState<[string, Shortcut][]>([]);
 
     useLayoutEffect(()=>{
         const list:[string, Shortcut][] = [
-            ['폰트 크기 확대', shortcuts.fontSizeUp],
-            ['폰트 크기 축소', shortcuts.fontSizeDown],
-            ['요청 전송', shortcuts.sendRequest],
-            ['출력 복사', shortcuts.copyResponse],
-            ['다음 세션', shortcuts.nextTab],
-            ['이전 세션', shortcuts.prevTab],
-            ['세션 생성', shortcuts.createTab],
-            ['세션 삭제', shortcuts.removeTab],
-            ['삭제 삭제 취소', shortcuts.undoRemoveTab],
+            ['폰트 크기 확대', shortcuts.font_size_up],
+            ['폰트 크기 축소', shortcuts.font_size_down],
+            ['요청 전송', shortcuts.send_request],
+            ['출력 복사', shortcuts.copy_response],
+            ['다음 세션', shortcuts.next_tab],
+            ['이전 세션', shortcuts.prev_tab],
+            ['세션 생성', shortcuts.create_tab],
+            ['세션 삭제', shortcuts.remove_tab],
+            ['삭제 삭제 취소', shortcuts.undo_remove_tab],
             ['세션 1 전환', shortcuts.tab1],
             ['세션 2 전환', shortcuts.tab2],
             ['세션 3 전환', shortcuts.tab3],
@@ -77,7 +74,7 @@ function ShortcutOptions() {
             {
                 showShortcutModal &&
                 <ShortcutModal
-                    initValue={shortcuts.fontSizeUp}
+                    initValue={shortcuts.font_size_up}
                     name={'폰트 크기 확대'}
                     onChange={(shortcut)=>{
                         ;

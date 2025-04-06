@@ -1,12 +1,9 @@
 import { create } from 'zustand'
-
-import { LayoutModes, ThemeModes } from 'types/profile';
-import { useProfileAPIStore } from './useProfileAPIStore';
-import { UpdateMethods } from './types';
-import { makeSetter } from './utils';
+import { RefetchMethods, UpdateMethods } from './types';
+import { profileStoreTool } from './utils';
 
 interface CacheFields {
-    last_session_id : number|null,
+    last_session_id : string|null,
     prompt_variables : unknown,
     setting_models_show_featured : boolean,
     setting_models_show_snapshot : boolean,
@@ -25,18 +22,27 @@ const defaultCache:CacheFields = {
 
 interface ProfileState extends CacheFields {
     update : UpdateMethods<CacheFields>;
+    refetch : RefetchMethods<CacheFields>;
+    refetchAll : () => Promise<void>;
 }
 
-const setter = makeSetter<CacheFields>('cache.json');
+const ACCESSOR_ID = 'cache.json';
 
-export const useProfileCacheStore = create<ProfileState>((set)=>({
-    ...defaultCache,
-    update : {
-        last_session_id : setter<number|null>(set, 'last_session_id'),
-        prompt_variables : setter<unknown>(set, 'prompt_variables'),
-        setting_models_show_featured : setter<boolean>(set, 'setting_models_show_featured'),
-        setting_models_show_snapshot : setter<boolean>(set, 'setting_models_show_snapshot'),
-        setting_models_show_experimental : setter<boolean>(set, 'setting_models_show_experimental'),
-        setting_models_show_deprecated : setter<boolean>(set, 'setting_models_show_deprecated'),
-    }
-}))
+const useCacheStore = create<ProfileState>(
+    (set, get)=>{
+    const {
+        update,
+        refetch,
+        refetchAll
+    } = profileStoreTool<CacheFields>(set, get, ACCESSOR_ID, defaultCache);
+
+    return {
+        ...defaultCache,
+        
+        update,
+        refetch,
+        refetchAll
+    };
+});
+
+export default useCacheStore;

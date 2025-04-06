@@ -10,6 +10,7 @@ import { GoogleFontIcon } from 'components/GoogleFontIcon';
 
 import styles from './styles.module.scss';
 import classNames from 'classnames';
+import { useProfileAPIStore } from '@/stores/useProfileAPIStore';
 
 interface ProfileSelectPageProps {
     onSelect: (profileName: string) => void;
@@ -83,7 +84,6 @@ function ProfileSelectPage({
                             name={metadata.name}
                             image={RedIcon}
                             onClick={async () => {
-                                const profile = await ProfilesAPI.getProfile(metadata.id);
                                 onSelect(metadata.id);
                             }}
                         />

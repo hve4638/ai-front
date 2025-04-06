@@ -1,25 +1,14 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Align, Center, Column, Flex, MouseDrag, Row } from 'components/layout';
-import { clamp } from 'utils/math';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import TabBar from 'components/TabBar';
-import useDiff from 'hooks/useDiff';
-import { ChatSession } from 'types/chat-session';
-import { ProfileEventContext, useContextForce } from 'context';
-import { useProfile, useProfileStorage } from 'hooks/context';
 import { ProfileSessionMetadata } from 'types';
+import { useCacheStore, useDataStore, useProfileEvent } from '@/stores';
 
 function SessionBar({
 
 }) {
-    const {
-        sessionIds,
-        lastSessionId,
-        setLastSessionId,
-    } = useProfileStorage();
-    const profile = useProfile();
-    const {
-        getSessionMetadataList,
-    } = profile;
+    const cacheState = useCacheStore();
+    const dataState = useDataStore();
+    const eventState = useProfileEvent();
 
     const [sessionMetadataList, setSessionMetadataList] = useState<ProfileSessionMetadata[]>([]);
     const tabItems = useMemo(()=>sessionMetadataList.map((metadata)=>({...metadata, key:metadata.id})), [sessionMetadataList]);
@@ -29,23 +18,25 @@ function SessionBar({
             id: 'empty',
             name: 'empty',
         };
-        if (!lastSessionId) return empty;
+        if (!cacheState.last_session_id) return empty;
         
-        const target = sessionMetadataList.find((item)=>item.id === lastSessionId);
+        const target = sessionMetadataList.find((item)=>item.id === cacheState.last_session_id);
         if (!target) return empty;
 
         return {
             ...target,
             key: target.id,
         };
-    }, [sessionMetadataList, lastSessionId]);
+    }, [sessionMetadataList, cacheState.last_session_id]);
 
     useLayoutEffect(()=>{
-        getSessionMetadataList()
+        eventState.getSessionMetadataList()
             .then((list)=>{
                 setSessionMetadataList(list);
             });
-    }, [sessionIds]);
+    }, [
+        dataState.sessions
+    ]);
 
     useLayoutEffect(()=>{
         console.log('sessionMetadataList', sessionMetadataList);
@@ -56,19 +47,19 @@ function SessionBar({
             items={tabItems}
             focus={focusTab}
             onFocus={(item, index)=>{
-                setLastSessionId(item.id);
+                cacheState.update.last_session_id(item.id);
             }}
             onAdd={()=>{
-                profile.createSession();
+                eventState.createSession();
             }}
             onRemove={(item, index)=>{
-                profile.removeSession(item.id);
+                eventState.removeSession(item.id);
             }}
             onChangeTabOrder={(list:ProfileSessionMetadata[])=>{
-                profile.reorderSessions(list.map(item=>item.id));
+                eventState.reorderSessions(list.map(item=>item.id));
             }}
             onUndoRemove={()=>{
-                profile.undoRemoveSession();
+                eventState.undoRemoveSession();
             }}
         />
     );

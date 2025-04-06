@@ -1,32 +1,41 @@
 import { create } from 'zustand'
-import { useProfileAPIStore } from './useProfileAPIStore';
-import { UpdateMethods } from './types';
-import { makeSetter } from './utils';
+import { RefetchMethods, UpdateMethods } from './types';
+import { profileStoreTool } from './utils';
+import { APIKeyMetadata } from '@/types/apikey-metadata';
+import useProfileAPIStore from './useProfileAPIStore';
 
 interface DataFields {
-    sessions : any[],
-    starred_models : any[],
-    api_keys : Record<string, string>,
+    sessions : string[];
+    starred_models : string[];
+    api_keys_metadata : Record<string, APIKeyMetadata[]>;
 }
 
 const defaultData:DataFields = {
     sessions : [],
     starred_models : [],
-    api_keys : {},
+    api_keys_metadata : {},
 }
 
 interface DataState extends DataFields {
     update : UpdateMethods<DataFields>;
+    refetch : RefetchMethods<DataFields>;
+    refetchAll : () => Promise<void>;
 }
 
-const setter = makeSetter<DataFields>('data.json');
+export const useDataStore = create<DataState>((set, get)=>{
+    const {
+        update,
+        refetch,
+        refetchAll
+    } = profileStoreTool<DataFields>(set, get, 'data.json', defaultData);
+    
+    return {
+        ...defaultData,
 
-export const useDataStore = create<DataState>((set)=>({
-    ...defaultData,
-    update : {
-        sessions : setter<any[]>(set, 'sessions'),
-        starred_models : setter<any[]>(set, 'starred_models'),
-        api_keys : setter<Record<string, string>>(set, 'api_keys'),
-    },
-}));
+        update,
+        refetch,
+        refetchAll,
+    }
+});
 
+export default useDataStore;

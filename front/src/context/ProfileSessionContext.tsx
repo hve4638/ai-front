@@ -6,7 +6,6 @@ import { ProfileStorageContext, useContextForce } from 'context';
 
 import useSignal from 'hooks/useSignal';
 import { useStorage } from 'hooks/useStorage';
-import { useProfile } from 'hooks/context';
 
 interface RawProfileSessionContextType {
     profileSession: IProfileSession|undefined;

@@ -1,24 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from "react-i18next";
 import styles from './styles.module.scss';
 
-import { calcTextPosition } from 'utils';
 import { Align, Column, Flex, Grid, Row } from "components/layout";
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
-import { TextInput } from 'components/Input';
 import Button from 'components/Button';
 import { DropdownForm } from 'components/Forms';
-import { PromptData } from './types';
+import { PromptData } from '@/types';
 import { PromptInputType } from 'types';
 import { useModal } from 'hooks/useModal';
 import MetadataEditModal from './MetadataEditModal';
-import RTSaveModal from './RTSaveModal';
-import { mapRTMetadataToNode } from 'utils/rt';
-import { RTNodeTree } from 'types/rt-node';
 import VarEditModal from './VarEditModal';
 import useHotkey from 'hooks/useHotkey';
-import { useProfile, useRT } from 'hooks/context';
+import { useProfileEvent, useRTStore } from '@/stores';
 
 type SidePanelProps = {
     promptData:PromptData;
@@ -44,18 +38,17 @@ function SidePanel({
 }:SidePanelProps) {
     const { t } = useTranslation();
     const modals = useModal();
-    const profile = useProfile();
-    const rt = useRT();
+    const { hasRTId } = useProfileEvent();
+    const rtState = useRTStore();
     
     const save = async ()=>{
-        rt.savePromptData('default', {
+        rtState.update.promptdata('default', {
             name : promptData.name,
             id : promptData.id,
             forms : promptData.forms,
             inputType : promptData.inputType,
             contents : promptData.contents,
         })
-        await rt.reflectMetadata();
     }
     
     useHotkey({
@@ -105,7 +98,7 @@ function SidePanel({
                         metadata: promptData,
                         onChange: async (next)=>{
                             // id 중복 검사
-                            if (promptData.id === next.id || !await profile.hasRTId(next.id)) {
+                            if (promptData.id === next.id || !await hasRTId(next.id)) {
                                 promptData.name = next.name;
                                 promptData.id = next.id;
                                 onRefresh();

@@ -1,19 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ButtonForm, CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { ProfileEventContext, useContextForce } from 'context';
 import { Align, Column, Flex, Row } from 'components/layout';
 import LocalAPI from 'api/local';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import CheckBox from 'components/CheckBox';
+import { useCacheStore, useConfigStore, useProfileEvent } from '@/stores';
 
 function ModelOptions() {
-    const profileContext = useContextForce(ProfileEventContext);
+    const configs = useConfigStore();
+    const caches = useCacheStore();
     const {
-        configs,
         isModelStarred,
         starModel,
         unstarModel,
-    } = profileContext;
+    } = useProfileEvent();
 
     const [allModels, setAllModels] = useState<ChatAIModels>([]);
     const [models, setModels] = useState<ChatAIModels>([]);
@@ -26,7 +26,7 @@ function ModelOptions() {
             .then((models)=>{
                 setAllModels(models);
             });
-    }, [])
+    }, []);
 
     useLayoutEffect(()=>{
         const newProviders:ChatAIModelProviders[] = [];
@@ -46,7 +46,7 @@ function ModelOptions() {
                         return;
                     }
                     // '주 모델만' 활성화 시 featured 모델만 표시
-                    if (configs.settingModelsShowFeatured) {
+                    if (caches.setting_models_show_featured) {
                         return;
                     }
                      // '스냅샷', '실험적', '비권장'이 아니라면 표시 
@@ -61,17 +61,17 @@ function ModelOptions() {
                     // '비권장' 우선 확인
                     // '비권장' 태그가 있으면 다른 태그 조건이 있어도 표시하지 않음
                     else if (
-                        (!configs.settingModelsShowDeprecated) && 
+                        (!caches.setting_models_show_deprecated) && 
                         (model.flags.deprecated || model.flags.legacy)
                     ) {
                         return;
                     }
                     // 옵션 체크
                     else if (
-                        (model.flags.snapshot && configs.settingModelsShowSnapshot) ||
-                        (model.flags.experimental && configs.settingModelsShowExperimental) ||
-                        (model.flags.deprecated && configs.settingModelsShowDeprecated) ||
-                        (model.flags.legacy && configs.settingModelsShowDeprecated)
+                        (model.flags.snapshot && caches.setting_models_show_snapshot) ||
+                        (model.flags.experimental && caches.setting_models_show_experimental) ||
+                        (model.flags.deprecated && caches.setting_models_show_deprecated) ||
+                        (model.flags.legacy && caches.setting_models_show_deprecated)
                     ) {
                         newModels.push(model);
                     }
@@ -87,10 +87,10 @@ function ModelOptions() {
         setModels(newProviders);
     }, [
         allModels,
-        configs.settingModelsShowFeatured,
-        configs.settingModelsShowDeprecated,
-        configs.settingModelsShowExperimental,
-        configs.settingModelsShowSnapshot
+        caches.setting_models_show_featured,
+        caches.setting_models_show_deprecated,
+        caches.setting_models_show_experimental,
+        caches.setting_models_show_snapshot
     ]);
 
     useLayoutEffect(()=>{
@@ -120,51 +120,52 @@ function ModelOptions() {
                 <span>모델</span>
                 <Flex/>
                 <ModelCheckBox
-                    checked={configs.settingModelsShowFeatured}
+                    checked={caches.setting_models_show_featured}
                     onChange={(enabled)=>{
                         if (enabled) {
                             previousOptions.current = {}
                             const prev = previousOptions.current;
-                            prev['snapshot'] = configs.settingModelsShowSnapshot;
-                            prev['experimental'] = configs.settingModelsShowExperimental;
-                            prev['deprecated'] = configs.settingModelsShowDeprecated;
+                            prev['snapshot'] = caches.setting_models_show_snapshot;
+                            prev['experimental'] = caches.setting_models_show_experimental;
+                            prev['deprecated'] = caches.setting_models_show_deprecated;
 
-                            configs.setSettingModelsShowSnapshot(false);
-                            configs.setSettingModelsShowExperimental(false);
-                            configs.setSettingModelsShowDeprecated(false);
-                            configs.setSettingModelsShowFeatured(enabled);
+                            caches.update.setting_models_show_featured(enabled);
+                            caches.update.setting_models_show_snapshot(false);
+                            caches.update.setting_models_show_experimental(false);
+                            caches.update.setting_models_show_deprecated(false);
                         }
                         else {
                             const prev = previousOptions.current;
-                            configs.setSettingModelsShowSnapshot(prev['snapshot'] ?? false);
-                            configs.setSettingModelsShowExperimental(prev['experimental'] ?? false);
-                            configs.setSettingModelsShowDeprecated(prev['deprecated'] ?? false);
-                            configs.setSettingModelsShowFeatured(enabled);
+                            
+                            caches.update.setting_models_show_featured(enabled);
+                            caches.update.setting_models_show_snapshot(prev['snapshot'] ?? false);
+                            caches.update.setting_models_show_experimental(prev['experimental'] ?? false);
+                            caches.update.setting_models_show_deprecated(prev['deprecated'] ?? false);
                         }
                     }}
                 >주 모델만</ModelCheckBox>
                 <div style={{width:'8px'}}/>
                 <ModelCheckBox
-                    checked={configs.settingModelsShowSnapshot}
+                    checked={caches.setting_models_show_snapshot}
                     onChange={(value)=>{
-                        configs.setSettingModelsShowFeatured(false);
-                        configs.setSettingModelsShowSnapshot(value);
+                        caches.update.setting_models_show_featured(false);
+                        caches.update.setting_models_show_snapshot(value);
                     }}
                 >스냅샷</ModelCheckBox>
                 <div style={{width:'8px'}}/>
                 <ModelCheckBox
-                    checked={configs.settingModelsShowExperimental}
+                    checked={caches.setting_models_show_experimental}
                     onChange={(value)=>{
-                        configs.setSettingModelsShowFeatured(false);
-                        configs.setSettingModelsShowExperimental(value);
+                        caches.update.setting_models_show_featured(false);
+                        caches.update.setting_models_show_experimental(value);
                     }}
                 >실험적</ModelCheckBox>
                 <div style={{width:'8px'}}/>
                 <ModelCheckBox
-                    checked={configs.settingModelsShowDeprecated}
+                    checked={caches.setting_models_show_deprecated}
                     onChange={(value)=>{
-                        configs.setSettingModelsShowFeatured(false);
-                        configs.setSettingModelsShowDeprecated(value);
+                        caches.update.setting_models_show_featured(false);
+                        caches.update.setting_models_show_deprecated(value);
                     }}
                 >비권장</ModelCheckBox>
             </Row>
@@ -261,7 +262,7 @@ function ModelOptions() {
                                                 className='noflex'
                                             >
                                                 {
-                                                    configs.showActualModelName
+                                                    configs.show_actual_model_name
                                                     ? option.name
                                                     : option.displayName
                                                 }
@@ -332,8 +333,8 @@ function ModelOptions() {
                         margin: '0px',
                         height: '100%',
                     }}
-                    checked={configs.onlyStarredModels}
-                    onChange={(value)=>configs.setOnlyStarredModels(value)}
+                    checked={configs.only_starred_models}
+                    onChange={(value)=>configs.update.only_starred_models(value)}
                 />
                 <CheckBoxForm
                     name='모델의 실제 명칭 표시'
@@ -342,8 +343,8 @@ function ModelOptions() {
                         margin: '0px',
                         height: '100%',
                     }}
-                    checked={configs.showActualModelName}
-                    onChange={(value)=>configs.setShowActualModelName(value)}
+                    checked={configs.show_actual_model_name}
+                    onChange={(value)=>configs.update.show_actual_model_name(value)}
                 />
             </div>
         </div>
