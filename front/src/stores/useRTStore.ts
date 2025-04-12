@@ -24,7 +24,7 @@ function getRTAPI(rtId:string|null) {
     return api.getRT(rtId);
 }
 
-export const useRTStore = create<RTState>((set, get)=>({
+const useRTStore = create<RTState>((set, get)=>({
     id : null,
     get: {
         mode: async () => {
@@ -93,5 +93,3 @@ export const useRTStore = create<RTState>((set, get)=>({
         }
     }
 }));
-
-export default useRTStore;

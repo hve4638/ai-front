@@ -6,7 +6,7 @@ export type ChatRequestForm = {
     modelId:string;
 }
 
-export type GlobalNodeOption = {
+export type GlobalRTFlowData = {
     profile:Profile;
     rtId:string;
     modelId:string;

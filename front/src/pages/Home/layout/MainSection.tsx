@@ -1,12 +1,12 @@
 import InputField from 'components/InputField';
 import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import useLazyThrottle from 'hooks/useLazyThrottle';
-import { useCacheStore, useConfigStore, useSessionStore } from '@/stores';
+import { useCacheStore, useConfigStore, useSessionStore, useShortcutSignalStore } from '@/stores';
+import { use } from 'i18next';
 
 function MainSection() {
     const configState = useConfigStore();
-    const { last_session_id } = useCacheStore();
     const sessionState = useSessionStore();
     const [inputText, setInputText] = useState('');
 
@@ -14,12 +14,22 @@ function MainSection() {
     // 문제가 해결된다면 throttle을 debounce로 변경하는 것이 성능 상 좋음
     const setInputTextThrottle = useLazyThrottle(() => {
         sessionState.update.input(inputText);
-    }, 300);
+    }, 100);
     
-    useEffect(() => {
+    useLayoutEffect(() => {
         setInputText(sessionState.input);
-    }, [last_session_id]);
+    }, [sessionState.deps.last_session_id]);
 
+    useEffect(()=>{
+        const unsubscribes = [
+            useShortcutSignalStore.subscribe(
+                state=>state.send_request,
+                ()=>sessionState.actions.request(),
+            ),
+        ]
+
+        return ()=>unsubscribes.forEach(unsubscribe=>unsubscribe());
+    }, [])
 
     return (
         <>
@@ -50,6 +60,9 @@ function MainSection() {
                             position: 'absolute',
                             right: '10px',
                             bottom: '10px',
+                        }}
+                        onClick={()=>{
+                            sessionState.actions.request();
                         }}
                     />
                 </InputField>

@@ -102,7 +102,8 @@ function MouseDrag({
                 if (e.button === 0) {
                     setDragging(true);
     
-                    const {x, y} = getMousePosition(e);
+                    // @TODO : 마우스 문제 해결
+                    const {x, y} = getMousePosition(e as unknown as MouseEvent);
                     prevPos.x = x;
                     prevPos.y = y;
                     onDragBegin(x, y);

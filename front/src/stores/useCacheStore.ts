@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { subscribeWithSelector } from 'zustand/middleware'
 import { RefetchMethods, UpdateMethods } from './types';
 import { profileStoreTool } from './utils';
 
@@ -28,21 +29,22 @@ interface ProfileState extends CacheFields {
 
 const ACCESSOR_ID = 'cache.json';
 
-const useCacheStore = create<ProfileState>(
-    (set, get)=>{
-    const {
-        update,
-        refetch,
-        refetchAll
-    } = profileStoreTool<CacheFields>(set, get, ACCESSOR_ID, defaultCache);
+const useCacheStore = create<ProfileState, [['zustand/subscribeWithSelector', never]]>(
+    subscribeWithSelector((set, get)=>{
+        const {
+            update,
+            refetch,
+            refetchAll
+        } = profileStoreTool<CacheFields>(set, get, ACCESSOR_ID, defaultCache);
+    
+        return {
+            ...defaultCache,
+            update,
+            refetch,
+            refetchAll
+        }
+    })
+);
 
-    return {
-        ...defaultCache,
-        
-        update,
-        refetch,
-        refetchAll
-    };
-});
 
 export default useCacheStore;

@@ -1,17 +1,26 @@
 import { IPCError } from 'api/error';
 import LocalAPI from 'api/local';
 import Channel from '@hve/channel';
+import { v7 as uuidv7 } from 'uuid';
 
-interface ResultData {
-    type : 'result'|'stream'|'done';
-    data : unknown;
-}
-
+/**
+ * RT 요청 수행 API
+ * 
+ * Electron-Front 간 IPC 통신 중계
+ * 
+ * 더 높은 계층에서의 처리는 RequestManager에서 수행
+ */
 class RequestAPI {
+    static instance: RequestAPI | null = null;
     #bindId: number|null = null;
-    #channels = new Map<string, Channel<ResultData>>();
+    #channels = new Map<string, Channel<RequestRTData>>();
 
-    constructor() {}
+    static getInstance() {
+        RequestAPI.instance ??= new RequestAPI();
+        return RequestAPI.instance;
+    }
+
+    private constructor() {}
 
     async register() {
         if (this.#bindId) return;
@@ -26,10 +35,12 @@ class RequestAPI {
         this.#bindId = null;
     }
 
-    #setCh(profileId:string, chId:string) {
-        this.#channels.set(chId, new Channel<ResultData>());
+    #openCh(chId:string) {
+        if (!this.#channels.get(chId)) {
+            this.#channels.set(chId, new Channel<RequestRTData>());
+        }
     }
-
+    
     #getCh(chId:string) {
         const ch = this.#channels.get(chId);
         if (!ch) throw new Error(`Response channel is closed : '${chId}'`);
@@ -37,36 +48,34 @@ class RequestAPI {
         return ch;
     }
 
-    #removeCh(profileId:string, chId:string) {
+    #closeCh(chId:string) {
         this.#channels.delete(chId);
     }
 
     async request(profileId:string, rtId:string, input:RTInput):Promise<string> {
-        const [err, chId] = await window.electron.RequestProfileRT(profileId, rtId, input);
-        if (err) throw new IPCError(err.message);
+        const chId = uuidv7();
+        this.#openCh(chId);
 
-        this.#setCh(profileId, chId);
+        const [err] = await window.electron.RequestProfileRT(chId, profileId, rtId, input);
+        if (err) throw new IPCError(err.message);
 
         return chId;
     }
 
-    async response(profileId:string, chId:string) {
+    async response(chId:string) {
         let ch = this.#getCh(chId);
         const result = await ch.consume();
-        if (result.type == 'done') {
-            this.#removeCh(profileId, chId);
+
+        if (result.type == 'close') {
+            this.#closeCh(chId);
         }
         return result;
     }
     
-    #onRequest(event:any, chId:string, message: any) {
-        let ch = this.#getCh(chId);
-        if (!ch) {
-            ch = new Channel<ResultData>();
-            this.#channels.set(chId, ch);
-        }
+    #onRequest(event:any, chId:string, data: RequestRTData) {
+        const ch = this.#getCh(chId);
 
-        ch.produce(message);
+        ch.produce(data);
     }
 }
 

@@ -5,6 +5,7 @@ import useDataStore from './useDataStore';
 import { ProfileSessionMetadata } from '@/types';
 
 import { v7 } from 'uuid';
+import useConfigStore from './useConfigStore';
 
 type ProviderName = 'openai'|'anthropic'|'google';
 
@@ -36,14 +37,20 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
     const state:ProfileEventState = {
         async createSession() {
             const { api } = useProfileAPIStore.getState();
-            const { update : updateCache } = useCacheStore.getState();
+            const { update : updateCacheState } = useCacheStore.getState();
+            const { refetch : refetchDataState } = useDataStore.getState();
+
             const sid = await api.createSession();
-            updateCache.last_session_id(sid);
+            await Promise.all([
+                updateCacheState.last_session_id(sid),
+                refetchDataState.sessions(),
+            ]);
         },
         async removeSession(sessionId:string) {
             const { api } = useProfileAPIStore.getState();
             const { sessions } = useDataStore.getState();
             const { update : updateCache, last_session_id } = useCacheStore.getState();
+            const { refetch : refetchDataState } = useDataStore.getState();
             await api.removeSession(sessionId);
             
             // 세션 0개는 허용되지 않으므로 제거 후 새 세션 생성
@@ -54,15 +61,16 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             else if (sessionId === last_session_id) {
                 const prevIndex = sessions.indexOf(sessionId);
                 if (prevIndex < 0) {
-                    updateCache.last_session_id(sessions[0]);
+                    await updateCache.last_session_id(sessions[0]);
                 }
                 else if (prevIndex === 0) {
-                    updateCache.last_session_id(sessions[1]);
+                    await updateCache.last_session_id(sessions[1]);
                 }
                 else {
-                    updateCache.last_session_id(sessions[prevIndex - 1]);
+                    await updateCache.last_session_id(sessions[prevIndex - 1]);
                 }
             }
+            await refetchDataState.sessions();
         },
         async reorderSessions(sessionIds:string[]) {
             const { api } = useProfileAPIStore.getState();
@@ -88,11 +96,15 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             const promises:ProfileSessionMetadata[] = await Promise.all(
                 sessions.map(async (sid) => {
                     const sessionAPI = api.getSessionAPI(sid);
-                    const {
-                        name, color, delete_lock, model_id, rt_id
-                    } = await sessionAPI.get('config.json', [
+                    const configPromise = sessionAPI.get('config.json', [
                         'name', 'color', 'delete_lock', 'model_id', 'rt_id'
                     ]);
+                    const cachePromise = sessionAPI.get('cache.json', [
+                        'state'
+                    ]);
+                    const { name, color, delete_lock, model_id, rt_id } = await configPromise;
+                    const { state } = await cachePromise;
+                    
                     return {
                         id : sid,
                         name : name ?? sid,
@@ -100,6 +112,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
                         deleteLock : delete_lock ?? false,
                         modelId : model_id,
                         rtId : rt_id,
+                        state: state ?? 'idle',
                     }
                 })
             )

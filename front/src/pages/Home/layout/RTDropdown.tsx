@@ -1,0 +1,111 @@
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
+
+import { useProfileEvent, useSessionStore } from '@/stores';
+import Dropdown, { DropdownItem, DropdownItemList } from '@/components/Dropdown';
+import { GoogleFontIcon } from '@/components/GoogleFontIcon';
+
+import { useModal } from '@/hooks/useModal';
+import NewRTModal from '@/modals/NewRTModal';
+import { mapRTMetadataTree } from '@/utils/rt';
+import DivButton from '@/components/DivButton';
+
+const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
+
+function RTDropdown() {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const modal = useModal();
+    const profileEvent = useProfileEvent();
+    const rtId = useSessionStore(state=>state.rt_id);
+    const updateSessionState = useSessionStore(state=>state.update);
+    
+    const [tree, setTree] = useState<RTMetadataTree>([]);
+    const dropdownItems:(DropdownItem|DropdownItemList)[] = useMemo(()=>{
+        return mapRTMetadataTree<DropdownItem, DropdownItemList>(tree, {
+            mapDirectory : (item, children)=>{
+                return {
+                    name: item.name,
+                    list: children,
+                };
+            },
+            mapNode : (item)=>({
+                name: item.name,
+                key: item.id,
+            }),
+        });
+    }, [tree]);
+
+    const openNewRTModal = ()=>{
+        modal.open(NewRTModal, {
+            onAddRT: (rtId:string, mode:RTMode) => {
+                navigate(`/workflow/${rtId}`);
+            }
+        });
+    }
+
+    useEffect(()=>{
+        profileEvent.getRTTree()
+            .then((tree)=>{
+                setTree(tree);
+            });
+    }, []);
+    
+    return (
+        dropdownItems.length === 0
+        ? <>
+            <DivButton
+                onClick={openNewRTModal}
+            >
+                <GoogleFontIcon value='add' style={{marginRight:'4px'}}/>
+                <span>새 요청 템플릿</span>
+            </DivButton>
+        </>
+        : <Dropdown
+            style={{
+                minWidth: '48px',
+            }}
+            items={[
+                ...dropdownItems,
+                {
+                    name: t('rt.new_rt'),
+                    key : CREATE_NEW_PROMPT,
+                }
+            ]}
+            value={rtId}
+            renderItem={renderRTDropdownItem}
+            onChange={(item)=>{
+                if (item.key === CREATE_NEW_PROMPT) {
+                    openNewRTModal();
+                }
+                else {
+                    updateSessionState.rt_id(item.key);
+                }
+            }}
+            onItemNotFound={()=>{
+                if (dropdownItems.length === 0) return;
+                else if ('key' in dropdownItems[0]) {
+                    updateSessionState.rt_id(dropdownItems[0].key);
+                }
+                else if ('list' in dropdownItems[0]) {
+                    updateSessionState.rt_id(dropdownItems[0].list[0].key);
+                }
+            }}
+        />
+    );
+}
+
+function renderRTDropdownItem(item: DropdownItem|DropdownItemList, parentList?: DropdownItemList|undefined) {
+    let prefixIcon = <></>
+    if ('key' in item && item.key === CREATE_NEW_PROMPT) {
+        prefixIcon = <GoogleFontIcon value='add' style={{marginRight:'4px'}}/>
+    }
+    
+    return (<>
+        {prefixIcon}
+        <span>{item.name}</span>
+    </>);
+}
+
+export default RTDropdown;

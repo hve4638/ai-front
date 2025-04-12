@@ -5,7 +5,6 @@ import styles from '../styles.module.scss';
 import LocalAPI from 'api/local';
 import { Align, Flex, Row } from 'components/layout';
 import Dropdown, { DropdownItem, DropdownItemList } from 'components/Dropdown';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import {
     OpenAIIcon,
     GoogleIcon,
@@ -13,173 +12,24 @@ import {
     GoogleVertexAIIcon,
 } from 'components/Icons'
 import { useTranslation } from 'react-i18next';
-import { mapRTMetadataTree } from 'utils/rt';
 import AvatarPopover from '../AvatarPopover';
 import { useModal } from 'hooks/useModal';
 
 import SettingModal from 'modals/SettingModal';
 import RTEditModal from 'modals/RTEditModal';
-import NewRTModal from 'modals/NewRTModal';
 import { useConfigStore, useDataStore, useProfileEvent, useSessionStore } from '@/stores';
-
-const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
+import RTDropdown from './RTDropdown';
+import ModelDropdown from './ModelDropdown';
 
 function Header() {
-    const navigate = useNavigate();
-    const modals = useModal();
-    const { t } = useTranslation();
-    const configs = useConfigStore();
-    const dataState = useDataStore();
-    const { isModelStarred, getRTTree } = useProfileEvent();
-    const sessionState = useSessionStore();
-    
-    const [allModles, setAllModels] = useState<ChatAIModels>([]);
-    const [models, setModels] = useState<DropdownItemList[]>([]);
+    const modal = useModal();
 
     const [showAvatarPopover, setShowAvatarPopover] = useState(false);
-
-    // 요청 템플릿
-    const [rtMetadataTree, setRTMetadataTree] = useState<RTMetadataTree>([]);
-    const [rtDropdownItems, setRTDropdownItems] = useState<(DropdownItem|DropdownItemList)[]>([]);
-    const [rtDropdownSelected, setRTDropdownSelected] = useState<string>('');
-    
-    const renderPromptName = useCallback((item: DropdownItem|DropdownItemList, parentList?: DropdownItemList|undefined)=>{
-        let prefixIcon = <></>
-        if ('key' in item && item.key === CREATE_NEW_PROMPT) {
-            prefixIcon = <GoogleFontIcon value='add' style={{marginRight:'4px'}}/>
-        }
-        
-        return (<>
-            {prefixIcon}
-            <span>{item.name}</span>
-        </>);
-    }, []);
-
-    const renderModelName = useCallback((item: DropdownItem|DropdownItemList, parentList?: DropdownItemList|undefined)=>{
-        let prefixIcon = <></>
-        if (!parentList && 'list' in item) {
-            switch (item.name) {
-                case 'Google':
-                    prefixIcon = <GoogleIcon style={{marginRight:'8px'}}/>
-                    break;
-                case 'Anthropic':
-                    prefixIcon = <AnthropicIcon style={{marginRight:'8px'}}/>
-                    break;
-                case 'OpenAI':
-                    prefixIcon = <OpenAIIcon style={{marginRight:'8px'}}/>
-                    break;
-                case 'VertexAI':
-                    prefixIcon = <GoogleVertexAIIcon style={{marginRight:'8px'}}/>
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return (
-            <>
-                {prefixIcon}
-                <span>{item.name}</span>
-            </>
-        )
-    }, []);
-
-    const renderSelectedModelName = useCallback((item: DropdownItem, parentList?: DropdownItemList|undefined)=>{
-        let prefixIcon = <></>
-        switch (parentList?.name) {
-            case 'Google':
-                prefixIcon = <GoogleIcon style={{marginRight:'8px'}}/>
-                break;
-            case 'Anthropic':
-                prefixIcon = <AnthropicIcon style={{marginRight:'8px'}}/>
-                break;
-            case 'OpenAI':
-                prefixIcon = <OpenAIIcon style={{marginRight:'8px'}}/>
-                break;
-            case 'VertexAI':
-                prefixIcon = <GoogleVertexAIIcon style={{marginRight:'8px'}}/>
-                break;
-            default:
-                break;
-        }
-
-        return (
-            <>
-                {prefixIcon}
-                <span>{item.name}</span>
-            </>
-        )
-    }, []);
-
-    useEffect(()=>{
-        // @TODO : LocalAPI를 직접 호출해서는 안됨
-        // 추후 ProfileContext를 통해서 호출하도록 변경 필요
-        LocalAPI.getChatAIModels()
-            .then((models)=>{
-                setAllModels(models);
-            });
-        getRTTree()
-            .then((tree)=>{
-                setRTMetadataTree(tree);
-            });
-    }, []);
-
-    // 요청 템플릿 드롭다운 갱신
-    useLayoutEffect(()=>{
-        const items = mapRTMetadataTree<DropdownItem, DropdownItemList>(rtMetadataTree, {
-            mapDirectory : (item, children)=>{
-                return {
-                    name: item.name,
-                    list: children,
-                };
-            },
-            mapNode : (item)=>({
-                name: item.name,
-                key: item.id,
-
-            }),
-        });
-        setRTDropdownItems(items);
-    }, [rtMetadataTree]);
-
-    // 모델 드롭다운 갱신
-    useLayoutEffect(()=>{
-        const nextModels:DropdownItemList[] = [];
-
-        allModles.forEach((provider)=>{
-            const nextProvider:DropdownItemList = {
-                name: provider.name,
-                list: [],
-            };
-            provider.list.forEach((category:ChatAIMoedelCategory)=>{
-                category.list.forEach((model:ChatAIModel)=>{
-                    if (!configs.only_starred_models || isModelStarred(model.id)) {
-                        nextProvider.list.push({
-                            name: configs.show_actual_model_name ? model.name : model.displayName,
-                            key: model.id,
-                        });
-                    }
-                });
-            });
-
-            if (nextProvider.list.length > 0) {
-                nextModels.push(nextProvider);
-            }
-        })
-
-        setModels(nextModels);
-    }, [
-        allModles,
-        dataState.starred_models,
-        configs.only_starred_models,
-        configs.show_actual_model_name
-    ]);
 
     return (
         <header
             id='app-header'
             style={{
-                // margin: '0px 16px 0px 16px',
                 padding: '8px 8px 0px 8px',
                 height: '40px',
                 fontSize: '16px',
@@ -190,55 +40,9 @@ function Header() {
                     margin: '0px 8px',
                 }}
             >
-                <Dropdown
-                    style={{
-                        minWidth: '48px',
-                    }}
-                    renderItem={renderModelName}
-                    renderSelectedItem={renderSelectedModelName}
-                    items={models}
-                    value={sessionState.rt_id}
-                    onChange={(item)=>{
-                        sessionState.update.rt_id(item.key);
-                    }}
-                    onItemNotFound={()=>{
-                        if (models.length === 0) return;
-
-                        sessionState.update.rt_id(models[0].list[0].key);
-                    }}
-                />
+                <ModelDropdown/>
                 <Flex/>
-                
-                <Dropdown
-                    style={{
-                        minWidth: '48px',
-                    }}
-                    items={[
-                        ...rtDropdownItems,
-                        {
-                            name: t('rt.new_rt'),
-                            key : CREATE_NEW_PROMPT,
-                        }
-                    ]}
-                    value={rtDropdownSelected}
-                    renderItem={renderPromptName}
-                    onChange={(item)=>{
-                        modals.open(NewRTModal, {
-                            onAddRT: (rtId:string, mode:RTMode) => {
-                                navigate(`/prompts/${rtId}/edit`);
-                            }
-                        });
-                    }}
-                    onItemNotFound={()=>{
-                        if (rtDropdownItems.length === 0) return;
-                        else if ('key' in rtDropdownItems[0]) {
-                            setRTDropdownSelected(rtDropdownItems[0].key);
-                        }
-                        else  if ('list' in rtDropdownItems[0]) {
-                            setRTDropdownSelected(rtDropdownItems[0].list[0].key);
-                        }
-                    }}
-                />
+                <RTDropdown/>
             </Flex>
             
             <Flex
@@ -249,7 +53,6 @@ function Header() {
                 <Row
                     className='flex'
                     columnAlign={Align.Center}
-                    
                 >
                     <Flex/>
                     {/* 변수 */}
@@ -270,7 +73,7 @@ function Header() {
                             showAvatarPopover &&
                             <AvatarPopover
                                 onClickEditRequestTemplate={()=>{
-                                    modals.open(RTEditModal, {
+                                    modal.open(RTEditModal, {
                                         onClickCreateNewRT:()=>{
                                             // @TODO
                                         }
@@ -278,7 +81,7 @@ function Header() {
                                     setShowAvatarPopover(false);
                                 }}
                                 onClickSetting={()=>{
-                                    modals.open(SettingModal, {});
+                                    modal.open(SettingModal, {});
 
                                     setShowAvatarPopover(false);
                                 }}

@@ -11,7 +11,7 @@
         /* Type Checking */
         "strict": true,
         "noImplicitAny" : false, // 암시적 any 타입 허용
-        "exactOptionalPropertyTypes" : true, // 선택 필드에 대한 undefined 금지
+        "exactOptionalPropertyTypes" : false, // 선택 필드에 대한 undefined 금지
         "noImplicitReturns": false, // 모든 코드 경로에서 반환이 리턴 타입과 일치하는지 확인
         "noFallthroughCasesInSwitch": false, // switch fall-through 허용
         "noUncheckedIndexedAccess" : false, // 배열및 객체 필드 접근시 undefined 체크 없음

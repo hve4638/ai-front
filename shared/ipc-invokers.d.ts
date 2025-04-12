@@ -56,7 +56,7 @@ export enum IPCInvokerName {
     GetProfileSessionIds = 'GetProfileSessionIds',
     ReorderProfileSessions = 'ReorderProfileSessions',
     UndoRemoveProfileSession = 'UndoRemoveProfileSession',
-    
+
     /* 프로필 세션 저장소 */
     GetProfileSessionData = 'GetProfileSessionData',
     SetProfileSessionData = 'SetProfileSessionData',
@@ -85,7 +85,7 @@ export enum IPCInvokerName {
 
     /* 프로필 RT 요청 */
     RequestProfileRT = 'RequestProfileRT',
-    AbortRequestProfileRT = 'AbortRequestProfileRT',
+    AbortProfileRTRequest = 'AbortProfileRTRequest',
 }
 
 export {};

@@ -6,7 +6,7 @@ import { CBFParser, CBFFail } from '@hve/cbf';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import { calcTextPosition } from 'utils';
 import styles from './styles.module.scss';
-import { PromptData } from './types';
+import { PromptData } from '@/types';
 
 const parser = new CBFParser();
 

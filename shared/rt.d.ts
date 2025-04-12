@@ -7,7 +7,6 @@ declare global {
         mode : RTMode;
     }
     
-
     /**
      * RT 트리 구조
      */
@@ -38,6 +37,7 @@ declare global {
     type RTInput = {
         message : RTInputMessage[];
         form: Record<string, any>;
+        modelId: string;
     }
     type RTInputMessage = {
         type : 'chat';

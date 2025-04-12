@@ -6,11 +6,6 @@ import NewProfileModal from './NewProfileModal';
 import RedIcon from 'assets/img/red.png'
 import useSignal from 'hooks/useSignal';
 import { ProfileMetadata } from './types';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
-
-import styles from './styles.module.scss';
-import classNames from 'classnames';
-import { useProfileAPIStore } from '@/stores/useProfileAPIStore';
 
 interface ProfileSelectPageProps {
     onSelect: (profileName: string) => void;

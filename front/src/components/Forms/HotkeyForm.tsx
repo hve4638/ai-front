@@ -29,6 +29,7 @@ function HotkeyForm({
                 height: '2em',
                 margin: 'auto',
             }}
+            onClick={onClick}
         >
             {text}
         </button>

@@ -4,6 +4,7 @@ import { IPCInvokerName } from 'types';
 import {
     profiles,
 } from '@/registry';
+import * as registry from '@/registry';
 import Profile from '@/features/profiles/Profile';
 
 function handler() {
@@ -118,16 +119,16 @@ function handler() {
             return [null] as const;
         },
 
-        // /* RT 요청 */
-        [IPCInvokerName.RequestProfileRT]: async (profileId: string, rtId: string, input:RTInput) => {
-            // let token;
-            // const profile = profiles.getProfile(profileId);
-            // const request = profile.getRTRequest(rtId);
+        /* RT 요청 */
+        [IPCInvokerName.RequestProfileRT]: async (token:string, profileId: string, rtId: string, input:RTInput) => {
+            const profile = await profiles.getProfile(profileId);
+            await registry.rtWorker.request(token, profile, rtId, input);
 
-            // return [null, request] as const;
-
-            return [null, 'Not Implementation'] as const;
+            return [null] as const;
         },
+        [IPCInvokerName.AbortProfileRTRequest]: async (token:string) => {
+            return [null] as const;
+        }
     }
 }
 

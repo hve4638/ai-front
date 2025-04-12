@@ -1,14 +1,16 @@
 import * as path from 'node:path';
-import { openElectronApp } from './electron';
-import { initIPC } from './ipc';
-import ProgramPath from './features/program-path';
-import { setRegistry } from './registry';
- 
 import { personal, localAppdata } from 'win-known-folders';
 import { ACStorage, IACStorage, JSONType, MemACStorage, StorageAccess } from 'ac-storage';
-import FetchContainer from '@/features/fetch-container';
+
+import { setRegistry } from '@/registry';
+import { initIPC } from '@/ipc';
+ 
+import ProgramPath from '@/features/program-path';
 import Profiles from '@/features/profiles';
 import MasterKeyManager, { MockMasterKeyManager } from '@/features/master-key';
+import FetchContainer from '@/features/fetch-container';
+import RTWorker from '@/features/rt-worker';
+import ElectronApp from '@/features/elctron-app';
 
 const documentPath = personal('cp949') ?? process.env['USERPROFILE']+'/documents' ?? './';
 const programPath = new ProgramPath(path.join(documentPath, 'Afron'));
@@ -22,13 +24,24 @@ const inMemoryStorageMode = getEnv('IN_MEMORY');
 const devMode = getEnv('DEV');
 
 async function main() {
-    console.log('ENTRYPOINT');
     programPath.makeRequiredDirectory();
-    
+
+    await initRegistry();
+    initIPC();
+
+    const electronApp = new ElectronApp({
+        devMode : devMode,
+        devUrl : 'http://localhost:3600',
+    });
+    // const win = await electronApp.buildBrowserWindow();
+    await electronApp.run();
+}
+
+async function initRegistry() {
     let globalStorage: IACStorage;
     let masterKeyManager:MasterKeyManager;
     if (inMemoryStorageMode) {
-        console.log('in-memory storage');
+        console.log('IN MEMORY STORAGE');
         globalStorage = new MemACStorage();
         masterKeyManager = new MockMasterKeyManager();
     }
@@ -61,24 +74,14 @@ async function main() {
     }
 
     const fetchContainer = new FetchContainer();
-
+    const rtWorker = new RTWorker();
     setRegistry({
         fetchContainer,
         globalStorage,
         profiles,
         masterKeyManager,
-    })
-    const appDependencies = {
-        globalStorage,
-        profiles,
-        masterKeyManager,
-    }
-    const appOptions = {
-        devMode : devMode,
-        devUrl : 'http://localhost:3600',
-    }
-    initIPC();
-    await openElectronApp(appDependencies, appOptions);
+        rtWorker,
+    });
 }
 
 main();

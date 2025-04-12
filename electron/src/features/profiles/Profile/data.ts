@@ -10,13 +10,32 @@ export const PROFILE_STORAGE_TREE = {
             'index.json' : StorageAccess.JSON({
                 'id' : JSONType.String(),
                 'name' : JSONType.String(),
-                'mode' : JSONType.String()
+                'mode' : JSONType.Union('prompt_only', 'flow').default_value('prompt_only'),
+                'input_type' : JSONType.Union('normal', 'chat').default_value('normal'),
+            }), 
+            'flow.json' : StorageAccess.JSON({
+                'nodes' : JSONType.Array({
+                    'id' : JSONType.Number(),
+                    'node' : JSONType.String(),
+                    'option' : JSONType.Struct(),
+                    'link_to' : {
+                        '*' : JSONType.Array({
+                            'id' : JSONType.Number(),
+                            'input' : JSONType.String(),
+                        }),
+                    },
+                    'addition' : {
+                        'x' : JSONType.Number(),
+                        'y' : JSONType.Number(),
+                    },
+                }),
+                'entrypoint_node' : JSONType.Number(),
             }),
             'prompts' : {
                 '*' : StorageAccess.JSON({
                     'id' : JSONType.String(),
                     'name' : JSONType.String(),
-                    'input_type' : JSONType.String(),
+                    'input_type' : JSONType.Union('normal', 'chat'),
                     'forms' : JSONType.Array(),
                     'contents' : JSONType.String(),
                 }),
@@ -40,6 +59,7 @@ export const PROFILE_STORAGE_TREE = {
                 'output' : JSONType.String(),
                 'token_count' : JSONType.Number(),
                 'warning_message' : JSONType.String(),
+                'state' : JSONType.String(),
             }),
             'history' : StorageAccess.Custom('history'),
         }
@@ -78,7 +98,7 @@ export const PROFILE_STORAGE_TREE = {
         'confirm_on_session_close' : JSONType.Bool(),
         'global_shortcut_enabled' : JSONType.Bool(),
     }),
-    'shortcut.json' : StorageAccess.JSON(),
+    'shortcuts.json' : StorageAccess.JSON(),
     'metadata.json' : StorageAccess.JSON({
 
     }),

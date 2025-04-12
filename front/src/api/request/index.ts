@@ -1,5 +1,5 @@
-import RequestAPISingleton from './RequestAPI';
+import RequestAPI from './RequestAPI';
 
-const RequestAPI = new RequestAPISingleton();
+const RequestAPIInstance = RequestAPI.getInstance();
 
-export default RequestAPI;
+export default RequestAPIInstance;

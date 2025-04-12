@@ -6,6 +6,7 @@ interface GridProps {
     children?: React.ReactNode;
     rows: string;
     columns: string;
+    tabIndex?: number;
 
     onClick?: ()=>void;
 }
@@ -17,6 +18,7 @@ function Grid({
     columns,
     onClick,
     children,
+    tabIndex = -1,
 }:GridProps) {
     return (
         <div
@@ -28,6 +30,7 @@ function Grid({
                 ...style,
             }}
             onClick={onClick}
+            tabIndex={tabIndex}
         >
             {children}
         </div>

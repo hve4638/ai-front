@@ -22,7 +22,7 @@ class Profiles {
         this.#storage.register({
             'profiles.json' : StorageAccess.JSON({
                 'profiles' : JSONType.Array(),
-                'last_profile' : JSONType.String(),
+                'last_profile' : JSONType.String().nullable(),
                 'next_profile_id' : JSONType.Number(),
             }),
             '*' : StorageAccess.Custom('profile'),

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
-import LocalAPI from 'api/local';
-import useSignal from 'hooks/useSignal';
-import LoadPage from 'features/loading';
+import LocalAPI from '@/api/local';
+import ProfilesAPI from '@/api/profiles';
+import RequestAPI from '@/api/request';
+
+import { useProfileAPIStore, useCacheStore, subscribeStates } from '@/stores';
+
+import useSignal from '@/hooks/useSignal';
+import LoadPage from '@/features/loading';
 import ProfileSelectPage from 'pages/ProfileSelect';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 import Hub from 'pages/Hub';
 import { ModalProvider } from 'hooks/useModal';
-import { useProfileAPIStore, useCacheStore } from '@/stores';
 
 const LoadPhase = {
     BEGIN : 0,
@@ -21,9 +25,8 @@ function App() {
     const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.BEGIN);
     const [retrySignal, sendRetrySignal] = useSignal();
     const [profile, setProfile] = useState<string|null>(null);
-    const profileAPIStore = useProfileAPIStore();
-    const last_session_id = useCacheStore(state=>state.last_session_id)
-    const updateCache = useCacheStore(state=>state.update)
+    const apiState = useProfileAPIStore();
+    const last_session_id = useCacheStore(state=>state.last_session_id);
 
     useEffect(() => {
         (async ()=> {
@@ -35,12 +38,16 @@ function App() {
                 case LoadPhase.INIT_MASTER_KEY:
                     break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
-                    if (last_session_id == null) {
+                    const lastProfileId = await ProfilesAPI.getLastProfile();
+
+                    if (lastProfileId == null) {
                         setProfile(null);
                         setCurrentState(LoadPhase.SELECT_PROFILE);
                     }
                     else {
-                        setProfile(last_session_id);
+                        apiState.setAPI(lastProfileId);
+
+                        setProfile(lastProfileId);
                         setCurrentState(LoadPhase.ENTRYPOINT);
                     }
                     break;
@@ -53,7 +60,7 @@ function App() {
                     break;
             }
         })();
-    }, [currentState, retrySignal, profileAPIStore.api]);
+    }, [currentState, retrySignal, apiState.api]);
     
     useEffect(() => {
         const handleBeforeUnload = (event) => {
@@ -67,11 +74,16 @@ function App() {
     }, []);
 
     useEffect(() => {
-        // RequestAPI.register();
-        
-        // return () => {
-        //     RequestAPI.unregister();
-        // };
+        // Zustand State 의존성 관련 구독
+        return subscribeStates();
+    }, []);
+
+    useEffect(() => {
+        RequestAPI.register();
+
+        return () => {
+            RequestAPI.unregister();
+        }
     }, []);
           
     return (
@@ -114,9 +126,9 @@ function App() {
                 currentState == LoadPhase.SELECT_PROFILE &&
                 <ProfileSelectPage
                     onSelect={async (id:string) => {
-                        await profileAPIStore.setAPI(id);
-                        await updateCache.last_session_id(id);
-
+                        await apiState.setAPI(id);
+                        await ProfilesAPI.setLastProfile(id);
+                        
                         setCurrentState(prev=>{
                             if (prev === LoadPhase.SELECT_PROFILE) {
                                 return LoadPhase.LOADING_PROFILE_METADATA;

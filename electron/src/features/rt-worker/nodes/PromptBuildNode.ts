@@ -1,50 +1,56 @@
-import PromptTemplate, { CBFResult } from '@hve/prompt-template';
-import { Chat, ChatRole } from '@hve/chatai';
-import { GlobalNodeOption, WorkLog } from '../types';
+import { PromptTemplate, CBFFail,  type CBFResult } from '@hve/prompt-template';
+import { Chat, ChatRole, ChatType } from '@hve/chatai';
+import { GlobalRTFlowData, WorkLog } from '../types';
 import { BUILT_IN_VARS, HOOKS } from '../data';
-import WorkNode from './Node';
+import WorkNode, { NodeData } from './WorkNode';
+import { PromptMessages } from './node-types';
+import { WorkNodeStop } from './errors';
 
 export type PromptBuildNodeInput = {
-    message:RTInputMessage[];
-    form:Record<string, any>;
+    input?:string;
+    chat?:RTInputMessage[];
 }
 export type PromptBuildNodeOutput = {
-    prompt:Generator<CBFResult>;
+    promptMessage:PromptMessages;
 }
 export type PromptBuildNodeOption = {
     promptId:string;
+    form : {
+        [key:string]: { link:true, src:string, value?:unknown } | { link?:false, value:unknown };
+    };
 }
 
 class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption>  {
-    async process(
-        input:PromptBuildNodeInput,
-        nodeOption:PromptBuildNodeOption,
-        globalOption:GlobalNodeOption,
-        workLog:WorkLog[]
+    override async process(
+        {
+            input,
+            chat,
+        }:PromptBuildNodeInput,
     ) {
         const {
-            profile, rtId
-        } = globalOption;
+            profile, rtId,
+        } = this.nodeData.flowData;
         const {
-            promptId
-        } = nodeOption;
+            logger,
+        } = this.nodeData;
         const {
             input_type,
             forms : requiredForms,
             contents,
-        } = await profile.getRTPromptData(rtId, 'default', ['input_type', 'forms', 'contents']);
-    
+        } = await profile.getRTPromptData(rtId, this.option.promptId, ['input_type', 'forms', 'contents']);
+
         const { nodes, errors } = PromptTemplate.build(contents);
         if (errors.length > 0) {
-            workLog.push({ type : 'node_error', nodeId : 0, message : errors.map(e=>e.message) });
+            logger.nodeError(this.nodeId, errors.map(e=>e.message));
+            throw new WorkNodeStop();
         }
     
         const additionalBuiltInVars = {};
-        if (input_type === 'chat') {
-            additionalBuiltInVars['chat'] = input.message;
+        if (input_type === 'CHAT') {
+            additionalBuiltInVars['chat'] = chat;
         }
-        else if (input_type === 'normal') {
-            additionalBuiltInVars['input'] = input.message.at(-1)?.message ?? '';
+        else if (input_type === 'NORMAL') {
+            additionalBuiltInVars['input'] = input;
         }
     
         const generator = PromptTemplate.execute(nodes, {
@@ -52,32 +58,32 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
                 ...BUILT_IN_VARS,
                 ...additionalBuiltInVars,
             },
-            vars : input.form,
+            vars : {},
             hook : HOOKS,
         });
 
-        const message:{ role:string, content:any[] }[] = [];
+        const promptMessage:PromptMessages = [];
         for (const result of generator) {
             switch(result.type) {
                 case 'ROLE':
                     switch(result.role.toLowerCase()) {
                         case 'user':
-                            message.push(ChatRole.User());
+                            promptMessage.push(ChatRole.User());
                             break;
                         case 'assistant':
-                        case 'bot': // alias
-                            message.push(ChatRole.Assistant());
+                        case 'bot':
+                            promptMessage.push(ChatRole.Assistant());
                             break;
                         case 'system':
-                            message.push(ChatRole.System());
+                            promptMessage.push(ChatRole.System());
                             break;
                     }
                     break;
                 case 'TEXT':
-                    if (message.length === 0) {
-                        message.push(ChatRole.User());
+                    if (promptMessage.length === 0) {
+                        promptMessage.push(ChatRole.User());
                     }
-                    message.at(-1)?.content.push(result.text);
+                    promptMessage.at(-1)?.content.push(Chat.Text(result.text));
                     break;
                 case 'IMAGE':
                     throw new Error();
@@ -86,9 +92,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
                     break;
             }
         }
-        return {
-            prompt : generator,
-        };
+        return { promptMessage };
     }
 }
 

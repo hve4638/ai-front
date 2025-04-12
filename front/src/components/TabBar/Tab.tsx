@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Align, Center, Column, Flex, Row } from 'components/layout';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { SpinnerCircular } from 'spinners-react';
 
 interface TabProps {
     className?:string;
@@ -8,6 +9,7 @@ interface TabProps {
     name:string;
     widthPx : number;
     enabled? : boolean;
+    loading? : boolean;
     noAnimation? : boolean;
     x:number;
     onClick? : () => void;
@@ -19,6 +21,7 @@ function Tab({
     style={},
     name,
     enabled=false,
+    loading=false,
     noAnimation=false,
     widthPx,
     x,
@@ -61,10 +64,21 @@ function Tab({
                         textOverflow: 'ellipsis',
                     }}
                 >
-                    {name}
+                    {name + '#'}
                 </span>
             }
             <Flex/>
+            <Center
+                style={{
+                    marginRight : '0.25em',
+                }}
+            >
+                <SpinnerCircular
+                    size={'1em'}
+                    thickness={100}
+                    color='white'
+                />
+            </Center>
             <Column
                 columnAlign={Align.Center}
             >

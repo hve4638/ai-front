@@ -1,6 +1,7 @@
 import './chatai-model';
 import './prompt-form';
 import './rt';
+import './ipc-data';
 import { IPCInvokerName } from './ipc-invokers'
 import { IPCListenerName } from './ipc-listeners';
 
@@ -75,8 +76,8 @@ declare global {
         [IPCInvokerName.ReflectProfileRTMetadata]: (profileId:string, rtId:string) => ElectronNoResult;
 
         /* 프로필 RT 요청 */
-        [IPCInvokerName.RequestProfileRT]: (profileId:string, rtId:string, input:RTInput) => ElectronResult<string>;
-        [IPCInvokerName.AbortRequestProfileRT]: (profileId:string, rtId:string) => ElectronResult<void>;
+        [IPCInvokerName.RequestProfileRT]: (token:string, profileId:string, rtId:string, input:RTInput) => ElectronNoResult;
+        [IPCInvokerName.AbortProfileRTRequest]: (token:string) => ElectronNoResult;
     
         /* 프로필 세션 */
         [IPCInvokerName.AddProfileSession]: (profileId:string) => ElectronResult<string>;
@@ -97,7 +98,7 @@ declare global {
     }
 
     type IPCListenerInterface = {
-        [IPCListenerName.AddRequestListener]: (listener:(event:any)=>void) => ElectronResult<number>;
+        [IPCListenerName.AddRequestListener]: (listener:(event:any, token:string, data:any)=>void) => ElectronResult<number>;
         [IPCListenerName.RemoveRequestListener]: (bindId:number) => ElectronNoResult;
     }
     /**

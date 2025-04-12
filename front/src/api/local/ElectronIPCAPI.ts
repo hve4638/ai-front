@@ -3,6 +3,15 @@ import { IPCError } from 'api/error';
 const electron = window.electron;
 
 class ElectronIPCAPI {
+    static instance: ElectronIPCAPI|null = null;
+
+    static getInstance() {
+        ElectronIPCAPI.instance ??= new ElectronIPCAPI();
+        return ElectronIPCAPI.instance;
+    }
+
+    private constructor() {}
+
     async echo(message:any) {
         const [_, data] = await electron.Echo(message);
         return data;

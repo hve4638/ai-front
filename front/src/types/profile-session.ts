@@ -5,4 +5,5 @@ export interface ProfileSessionMetadata {
     deleteLock:boolean;
     modelId:string;
     rtId:string;
+    state: 'idle'| 'loading' | 'error' | 'done';
 }

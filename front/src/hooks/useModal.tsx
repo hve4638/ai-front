@@ -30,7 +30,7 @@ export function ModalProvider({children}: {children:React.ReactNode}) {
     const counter = useRef(0);
     const [modals, setModals] = useState<ModalData[]>([]);
 
-    const openModal = <P extends {}>(modal:ModalComponentType<P>, props:Omit<P, 'onClose'|'isFocused'>) => {
+    const openModalLegacy = <P extends {}>(modal:ModalComponentType<P>, props:Omit<P, 'onClose'|'isFocused'>) => {
         const data:ModalData = {
             component:modal,
             key: counter.current++,
@@ -41,7 +41,7 @@ export function ModalProvider({children}: {children:React.ReactNode}) {
 
     return (
         <ModalContext.Provider value={{
-            open : openModal,
+            open : openModalLegacy,
             count : modals.length,
         }}>
             {children}

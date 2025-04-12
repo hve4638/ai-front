@@ -70,6 +70,8 @@ function ShortcutModal({
         return false;
     }, [shortcut]);
 
+    console.log('INIT:', initValue);
+
     const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -163,8 +165,9 @@ function ShortcutModal({
                 <ModalHeader
                     title='단축키 설정'
                     className='noflex'
+                    onClose={close}
                 />
-                <span className='shortcut-description undraggable'>키 조합을 입력하세요</span>
+                <span className='shortcut-description undraggable'> </span>
                 <Column
                     columnAlign={Align.Center}
                     rowAlign={Align.Center}

@@ -13,7 +13,7 @@ import { PromptData } from '@/types';
 import { ModalProvider } from 'hooks/useModal';
 import { PromptEditAction } from './types/prompt-editor';
 import { useNavigate } from 'react-router';
-import { useRTStore } from '@/stores';
+import { RTStoreContext, useContextForce } from '@/context';
 
 type PromptEditorProps = {
     action : PromptEditAction;
@@ -27,7 +27,7 @@ function PromptEditor({
     const { t } = useTranslation();
     const { rtId } = useParams();
     const navigate = useNavigate();
-    const rtState = useRTStore();
+    const rtState = useContextForce(RTStoreContext);
     
     const [_, sendRefreshSignal] = useSignal();
     const [loaded, setLoaded] = useState(false);

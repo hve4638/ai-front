@@ -59,6 +59,7 @@ function RTTypeButton({
                 padding : '0.5em',
             }}
             onClick={onClick}
+            tabIndex={0}
         >
             <Center>
                 <GoogleFontIcon

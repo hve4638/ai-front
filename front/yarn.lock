@@ -1417,19 +1417,19 @@
   dependencies:
     "@swc/core" "^1.7.26"
 
-"@xyflow/react@^12.3.6":
-  version "12.3.6"
-  resolved "https://registry.npmjs.org/@xyflow/react/-/react-12.3.6.tgz"
-  integrity sha512-9GS+cz8hDZahpvTrVCmySAEgKUL8oN4b2q1DluHrKtkqhAMWfH2s7kblhbM4Y4Y4SUnH2lt4drXKZ/4/Lot/2Q==
+"@xyflow/react@^12.5.5":
+  version "12.5.5"
+  resolved "https://registry.yarnpkg.com/@xyflow/react/-/react-12.5.5.tgz#8533fdec4f178ff65a7d20d125abc4b5cef257d5"
+  integrity sha512-mAtHuS4ktYBL1ph5AJt7X/VmpzzlmQBN3+OXxyT/1PzxwrVto6AKc3caerfxzwBsg3cA4J8lB63F3WLAuPMmHw==
   dependencies:
-    "@xyflow/system" "0.0.47"
+    "@xyflow/system" "0.0.55"
     classcat "^5.0.3"
     zustand "^4.4.0"
 
-"@xyflow/system@0.0.47":
-  version "0.0.47"
-  resolved "https://registry.npmjs.org/@xyflow/system/-/system-0.0.47.tgz"
-  integrity sha512-aUXJPIvsCFxGX70ccRG8LPsR+A8ExYXfh/noYNpqn8udKerrLdSHxMG2VsvUrQ1PGex10fOpbJwFU4A+I/Xv8w==
+"@xyflow/system@0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@xyflow/system/-/system-0.0.55.tgz#fc02fb9a2f9b3de3b878b2fe9b02a0e7865f1819"
+  integrity sha512-6cngWlE4oMXm+zrsbJxerP3wUNUFJcv/cE5kDfu0qO55OWK3fAeSOLW9td3xEVQlomjIW5knds1MzeMnBeCfqw==
   dependencies:
     "@types/d3-drag" "^3.0.7"
     "@types/d3-selection" "^3.0.10"
@@ -4004,6 +4004,11 @@ space-separated-tokens@^2.0.0:
   version "2.0.2"
   resolved "https://registry.npmjs.org/space-separated-tokens/-/space-separated-tokens-2.0.2.tgz"
   integrity sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==
+
+spinners-react@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/spinners-react/-/spinners-react-1.0.10.tgz#84db9ca6f6675054db3e2d34f69489dfebaf1f4a"
+  integrity sha512-VZy4IhnIVTw8tcsuWtUGz1VfRK4EDnnlIVd88ezkfiDQyYlmo+QbIAjJD1BRghTBr5RJBULuJ4MIPsJapTp1xw==
 
 sprintf-js@~1.0.2:
   version "1.0.3"

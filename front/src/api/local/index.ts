@@ -1,6 +1,6 @@
 import { ILocalAPI } from './interface';
 import ElectronIPCAPI from './ElectronIPCAPI';
 
-const LocalAPI:ElectronIPCAPI = new ElectronIPCAPI();
+const LocalAPIInstance:ElectronIPCAPI = ElectronIPCAPI.getInstance();
 
-export default LocalAPI;
+export default LocalAPIInstance;

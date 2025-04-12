@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Align, Center, Column, Flex, MouseDrag, Row } from 'components/layout';
 import { clamp } from 'utils/math';
-import Tab from './Tab';
+import TabCore from './TabCore';
 import SessionAddButton from './TabAddButton';
 import useDiff from 'hooks/useDiff';
 import useDebounce from 'hooks/useDebounce';
-
-type TabRequired = {
-    name?:string;
-    key:string;
-}
+import TabContainer from './TabContainer';
+import type { TabRequired, TabBarProps } from './types';
+import { useShortcutSignalStore } from '@/stores';
 
 interface TabItem<T extends TabRequired> {
     index : number;
@@ -30,16 +28,8 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
     onUndoRemove,
     onRemove,
     enableHotkey = true,
-}:{
-    focus:TRequired,
-    items:T[],
-    onChangeTabOrder:(items:T[])=>void
-    onAdd:()=>void,
-    onFocus:(item:T, index:number)=>void,
-    onRemove:(item:TRequired, index:number)=>void,
-    onUndoRemove:()=>void,
-    enableHotkey?:boolean,
-}) {
+    tabRender,
+}:TabBarProps<T, TRequired>) {
     const tabBarRef = useRef<HTMLDivElement>(null);
     const [tabBarSize, setTabBarSize] = useState<number>(600);
     const [tabSize, setTabSize] = useState<number>(200);
@@ -55,8 +45,9 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
 
     const [draggingTabX, setDraggingTabX] = useState<number>(0);
 
-    // 엄밀한 탭 이동 범위
+    // strict 엄밀한 탭 이동 범위
     const tabXHardRange = useMemo(()=>[0, (items.length-1) * tabSize], [items, tabSize]);
+
     // 확장 탭 이동 범위, 이 범위를 벗어나면 HardRange로 범위가 좁혀짐
     // 범위를 벗어나면 튕기는 효과를 주기 위함
     const tabXSoftRange = useMemo(()=>[-18, (items.length-1) * tabSize+18], [items, tabSize]);
@@ -152,6 +143,12 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
         }
     }
 
+    const changeFocusIndex = (index:number) => {
+        if (index < tabs.length) {
+            onFocus(tabs[index].item, index);
+        }
+    }
+
     useEffect(() => {
         const resizeHandler = ()=>{
             const rect = tabBarRef.current?.getBoundingClientRect();
@@ -169,57 +166,86 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
         }
     }, [items]);
 
-    useEffect(()=>{
-        const keyDownHandler = (e:KeyboardEvent)=>{
-            const key = e.key.toLowerCase();
 
-            if (e.ctrlKey) {
-                if (key === 't') {
-                    if (e.shiftKey) {
-                        onUndoRemove();
-                    }
-                    else {
-                        onAdd();
-                    }
-                    e.preventDefault();
-                }
-                else if (key === 'w') {
-                    onRemove(focus, tabs.findIndex(tab=>tab.item.key === focus.key));
-                    e.preventDefault();
-                }
-                else if (key === 'tab') {
+    useEffect(()=>{
+        const unsubscribes = [
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.create_tab,
+                ()=>onAdd(),
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.remove_tab,
+                ()=>onRemove(focus as unknown as T, tabs.findIndex(tab=>tab.item.key === focus.key))
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.undo_remove_tab,
+                ()=>onUndoRemove(),
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.next_tab,
+                ()=>{
                     const index = tabs.findIndex(tab=>tab.item.key === focus.key);
-                    let nextIndex = e.shiftKey ? index - 1 : index + 1;
+                    let nextIndex = index + 1;
+                    nextIndex %= tabs.length;
+
+                    onFocus(tabs[nextIndex].item, nextIndex);
+                }
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.prev_tab,
+                ()=>{
+                    const index = tabs.findIndex(tab=>tab.item.key === focus.key);
+                    let nextIndex = index - 1;
                     if (nextIndex < 0) {
                         nextIndex += tabs.length;
                     }
-                    else {
-                        nextIndex %= tabs.length;
-                    }
 
                     onFocus(tabs[nextIndex].item, nextIndex);
-                    e.preventDefault();
                 }
-                else {
-                    const num  = key.charCodeAt(0) - 48;
-                    if (num >= 1 && num <= 9) {
-                        const index = num-1;
-                        if (index < tabs.length) {
-                            onFocus(tabs[index].item, index);
-                            e.preventDefault();
-                        }
-                    }
-                }
-            }
-        }
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab1,
+                ()=>changeFocusIndex(0)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab2,
+                ()=>changeFocusIndex(1)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab3,
+                ()=>changeFocusIndex(2)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab4,
+                ()=>changeFocusIndex(3)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab5,
+                ()=>changeFocusIndex(4)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab6,
+                ()=>changeFocusIndex(5)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab7,
+                ()=>changeFocusIndex(6)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab8,
+                ()=>changeFocusIndex(7)
+            ),
+            useShortcutSignalStore.subscribe(
+                (signal)=>signal.tab9,
+                ()=>changeFocusIndex(8)
+            ),
+        ]
 
-        if (enableHotkey) {
-            window.addEventListener('keydown', keyDownHandler);
-            return ()=>{
-                window.removeEventListener('keydown', keyDownHandler);
-            }
+        return () => {
+            unsubscribes.forEach((unsub)=>unsub());
         }
-    }, [enableHotkey, tabs, focus]);
+    }, [enableHotkey, tabs, focus])
+
 
     return (
         <Row
@@ -232,8 +258,15 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
             rowAlign={Align.Start}
         >
             {
-                tabs.map((tab, index) => (
-                    <MouseDrag
+                tabs.map((tab, index) => {
+                    const onClick = () => {
+                        onFocus(tab.item, tab.index);
+                    }
+                    const onClose = () => {
+                        onRemove(tab.item, tab.index);
+                    }
+
+                    return (<MouseDrag
                         key={tab.item.key}
                         onDragBegin={(x, y) => {
                             onDragBegin(tab, x);
@@ -246,7 +279,7 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
                         }}
                         relative={false}
                     >
-                        <Tab
+                        <TabContainer
                             noAnimation={noAnimation}
                             style={
                                 (
@@ -268,15 +301,21 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
                                 clamp(draggingTabX, tabXRange[0], tabXRange[1]) :
                                 tab.index * tabSize
                             }
-                            onClick={()=>{
-                                onFocus(tab.item, tab.index);
-                            }}
-                            onClose={()=>{
-                                onRemove(tab.item, tab.index);
-                            }}
-                        />
-                    </MouseDrag>
-                ))
+                            onClick={onClick}
+                            onClose={onClose}
+                        >
+                        {
+                            tabRender({
+                                item: tab.item,
+                                widthPx : tabSize,
+                                selected : tab.item.key == focus.key,
+                                onClick : onClick,
+                                onClose : onClose,
+                            })
+                        }
+                        </TabContainer>
+                    </MouseDrag>);
+                })
             }
             <SessionAddButton
                 x={tabs.length * tabSize}

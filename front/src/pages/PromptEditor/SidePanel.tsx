@@ -12,7 +12,8 @@ import { useModal } from 'hooks/useModal';
 import MetadataEditModal from './MetadataEditModal';
 import VarEditModal from './VarEditModal';
 import useHotkey from 'hooks/useHotkey';
-import { useProfileEvent, useRTStore } from '@/stores';
+import { useProfileEvent } from '@/stores';
+import { RTStoreContext, useContextForce } from '@/context';
 
 type SidePanelProps = {
     promptData:PromptData;
@@ -37,9 +38,9 @@ function SidePanel({
     onRemovePromptVarClick,
 }:SidePanelProps) {
     const { t } = useTranslation();
-    const modals = useModal();
+    const modal = useModal();
     const { hasRTId } = useProfileEvent();
-    const rtState = useRTStore();
+    const rtState = useContextForce(RTStoreContext);
     
     const save = async ()=>{
         rtState.update.promptdata('default', {
@@ -58,7 +59,7 @@ function SidePanel({
                 return true;
             }
         }
-    }, modals.count === 0, [save]);
+    }, modal.count === 0, [save]);
     
     return <Column
         className={styles['edit-panel']}
@@ -94,7 +95,7 @@ function SidePanel({
                 }}
                 value='edit'
                 onClick={()=>{
-                    modals.open(MetadataEditModal, {
+                    modal.open(MetadataEditModal, {
                         metadata: promptData,
                         onChange: async (next)=>{
                             // id 중복 검사
@@ -168,7 +169,7 @@ function SidePanel({
                         padding: '4px 8px'
                     }}
                     onClick={()=>{
-                        modals.open(VarEditModal, {
+                        modal.open(VarEditModal, {
                             promptVar: item,
                             onRefresh: onRefresh,
                         });
@@ -204,7 +205,7 @@ function SidePanel({
             )}
             onClick={()=>{
                 const promptVar = onAddPromptVarClick();
-                modals.open(VarEditModal, {
+                modal.open(VarEditModal, {
                     promptVar: promptVar,
                     onRefresh: onRefresh,
                 });

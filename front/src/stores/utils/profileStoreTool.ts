@@ -26,7 +26,7 @@ export function profileStoreTool<FIELDS extends object>(set:ZustandSet<FIELDS>, 
                 set({ [name]: value } as Partial<FIELDS>);
                 await api.set(accessorId, { [name]: value });
             }
-        }
+        } 
     }
     const refetcher = (name:keyof FIELDS) => {
         return async () => {
