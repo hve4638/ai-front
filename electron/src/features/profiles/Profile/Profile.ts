@@ -7,7 +7,7 @@ import {
     StorageAccess,
 } from 'ac-storage';
 import { SecretJSONAccessor, MemSecretJSONAccessor, HistoryAccessor } from '@/features/acstorage-accessor';
-import { masterKeyManager } from '@/registry';
+import runtime from '@/runtime';
 import SessionAction from './SessionAction';
 import RTControl from './RTControl';
 import { PROFILE_STORAGE_TREE } from './data';
@@ -83,7 +83,7 @@ class Profile {
     }
 
     async #readPersonalKey():Promise<string> {
-        const masterKey = masterKeyManager.masterKey;
+        const masterKey = runtime.masterKeyManager.masterKey;
         if (!masterKey) throw new ProfileError('Master key is not initialized');
 
         const uniqueAC = await this.#storage.access('unique', 'secret-json') as SecretJSONAccessor;
@@ -186,6 +186,10 @@ class Profile {
     async updateRTMetadata(rtId:string) {
         return this.#rtControl.updateRTMetadata(rtId);
     }
+
+    async accessAsHistory(sessionId:string) {
+        return await this.#storage.access(`session:${sessionId}:history`, 'history') as HistoryAccessor;
+    }
     
     /* 직접 접근 */
     async accessAsJSON(identifier:string) {
@@ -196,9 +200,6 @@ class Profile {
     }
     async accessAsBinary(identifier:string) {
         return await this.#storage.accessAsBinary(identifier);
-    }
-    async accessAsHistory(id:string) {
-        return await this.#storage.access(`history:${id}`, 'history') as HistoryAccessor;
     }
     async accessAsSecret(identifier:string) {
         const ac = await this.#storage.access(identifier, 'secret-json') as SecretJSONAccessor;

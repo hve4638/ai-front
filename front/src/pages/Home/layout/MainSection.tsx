@@ -4,11 +4,13 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import { useCacheStore, useConfigStore, useSessionStore, useShortcutSignalStore } from '@/stores';
 import { use } from 'i18next';
+import classNames from 'classnames';
 
 function MainSection() {
     const configState = useConfigStore();
     const sessionState = useSessionStore();
     const [inputText, setInputText] = useState('');
+    const color = useSessionStore(state=>state.color);
 
     // @TODO : 도중 세션 변경시 마지막 변경이 반영되지 않는 문제
     // 문제가 해결된다면 throttle을 debounce로 변경하는 것이 성능 상 좋음
@@ -26,15 +28,29 @@ function MainSection() {
                 state=>state.send_request,
                 ()=>sessionState.actions.request(),
             ),
-        ]
+            useShortcutSignalStore.subscribe(
+                state=>state.copy_response,
+                ()=>{
+                    if (sessionState.output) {
+                        navigator.clipboard.writeText(sessionState.output);
+                    }
+                },
+            ),
+        ];
 
         return ()=>unsubscribes.forEach(unsubscribe=>unsubscribe());
-    }, [])
+    }, []);
 
     return (
         <>
             <div
-                className='row flex'
+                className={
+                    classNames(
+                        'row',
+                        'flex',
+                        'body',
+                        `palette-${color}`
+                    )}
                 style={{
                     fontSize: `${configState.font_size}px`,
                 }}
@@ -73,8 +89,8 @@ function MainSection() {
                         padding: '12px',
                     }}
                     text={sessionState.output ?? ''}
-                    onChange={sessionState.update.output}
-                    readonly={true}
+                    onChange={()=>{}}
+                    tabIndex={-1}
                 />
 
             </div>

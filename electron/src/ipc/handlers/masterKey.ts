@@ -1,12 +1,12 @@
 import { MasterKeyInitResult } from '@/features/master-key';
-import { masterKeyManager } from '@/registry';
+import runtime from '@/runtime';
 import { IPCInvokerName } from 'types';
 
 function handler() {
     return {
         /* 마스터키 */
         [IPCInvokerName.InitMasterKey] : async () => {
-            const result = await masterKeyManager.init();
+            const result = await runtime.masterKeyManager.init();
             switch(result) {
                 case MasterKeyInitResult.InvalidData:
                     return [null, 'invalid-data'] as const;
@@ -21,11 +21,11 @@ function handler() {
             }
         },
         [IPCInvokerName.ResetMasterKey] : async (recoveryKey:string) => {
-            await masterKeyManager.resetKey(recoveryKey);
+            await runtime.masterKeyManager.resetKey(recoveryKey);
             return [null] as const;
         }, 
         [IPCInvokerName.RecoverMasterKey] : async (recoveryKey:string) => {
-            const success = await masterKeyManager.recoveryMasterKey(recoveryKey);
+            const success = await runtime.masterKeyManager.recoveryMasterKey(recoveryKey);
             return [null, success] as const;
         },
     }

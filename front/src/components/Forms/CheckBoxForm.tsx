@@ -1,5 +1,5 @@
 import CheckBox from "components/CheckBox";
-import { Flex, Row } from "components/layout";
+import { Center, Flex, Row } from "components/layout";
 
 interface CheckBoxFormProps {
     name:string;
@@ -31,13 +31,23 @@ function CheckBoxForm({
             {name}
         </span>
         <Flex/>
-        <CheckBox
+        <Center
             style={{
                 height: '100%',
+                padding: '0.2em',
             }}
-            checked={checked}
-            onChange={onChange}
-        />
+        >
+            <input
+                type='checkbox'
+                style={{
+                    height: '100%',
+                    aspectRatio: '1/1',
+                }}
+                checked={checked}
+                onChange={(e)=>onChange(e.target.checked)}
+                tabIndex={0}
+            />
+        </Center>
     </Row>
   );
 }

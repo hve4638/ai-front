@@ -5,20 +5,39 @@ import styles from './styles.module.scss';
 import { Column } from 'components/layout';
 import DivButton from 'components/DivButton';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { useModal } from '@/hooks/useModal';
+import RTEditModal from '@/modals/RTEditModal';
+import SettingModal from '@/modals/SettingModal';
+import { useSignalStore } from '@/stores';
 
 type AvatarPopoverProps = {
-    onClickOutside: (e:MouseEvent) => void;
-    onClickEditRequestTemplate: () => void;
-    onClickSetting: () => void;
-    onClickChangeProfile: () => void;
+    onClose: () => void;
 }
 
 function AvatarPopover({
-    onClickOutside,
-    onClickEditRequestTemplate,
-    onClickSetting,
-    onClickChangeProfile,
+    onClose,
 }:AvatarPopoverProps) {
+    const modal = useModal();
+    const signal = useSignalStore(state=>state.signal);
+
+    const clickEditRTButton = () => {
+        modal.open(RTEditModal, {
+            onClickCreateNewRT:()=>{
+                // @TODO
+            }
+        });
+        onClose();
+    }
+    
+    const clickSettingButton = () => {
+        modal.open(SettingModal, {});
+        onClose();
+    }
+
+    const clickChangeProfileButton = () => {
+        signal.change_profile();
+    }
+    
     return (
         <Popover
             className={
@@ -27,7 +46,7 @@ function AvatarPopover({
                     'undraggable',
                 )
             }
-            onClickOutside={onClickOutside}
+            onClickOutside={onClose}
         >
             <Column
                 style={{
@@ -37,7 +56,7 @@ function AvatarPopover({
                 }}
             >
                 <DivButton
-                    onClick={()=>onClickSetting()}
+                    onClick={()=>clickSettingButton()}
                     style={{ width : '100%'}}
                 >
                     <GoogleFontIcon
@@ -49,7 +68,7 @@ function AvatarPopover({
                     <span>설정</span>
                 </DivButton>
                 <DivButton
-                    onClick={()=>onClickEditRequestTemplate()}
+                    onClick={()=>clickEditRTButton()}
                     style={{ width : '100%'}}
                 >
                     <GoogleFontIcon
@@ -62,7 +81,7 @@ function AvatarPopover({
                 </DivButton>
                 <hr/>
                 <DivButton
-                    onClick={()=>onClickChangeProfile()}
+                    onClick={()=>clickChangeProfileButton()}
                     style={{ width : '100%'}}
                 >
                     <GoogleFontIcon

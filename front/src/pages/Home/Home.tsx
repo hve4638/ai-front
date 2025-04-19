@@ -1,6 +1,8 @@
-import Header from './layout/Header';
-import SessionTabBar from './SessionTabBar';
-import MainSection from './layout/MainSection';
+import {
+    Header,
+    MainSection,
+    SessionTabBar
+} from './layout';
 import ShortcutHandler from 'pages/ShortcutHandler';
 import { ModalProvider } from 'hooks/useModal';
 

@@ -2,18 +2,20 @@ import classNames from "classnames";
 import { GoogleFontIcon } from "components/GoogleFontIcon";
 import { Flex, Row } from "components/layout";
 
+interface ModalHeaderProps {
+    className?: string;
+    style?: React.CSSProperties;
+    onClose?: () => void;
+    hideCloseButton?: boolean;
+    children?: React.ReactNode;
+}
+
 function ModalHeader({
-    title,
     className,
     onClose = () => {},
     hideCloseButton = false,
-}: {
-    title?: string,
-    className?: string,
-    style?: React.CSSProperties,
-    onClose?: () => void,
-    hideCloseButton?: boolean,
-}) {
+    children,
+}:ModalHeaderProps) {
     return (
         <Row
             className={classNames('flex', className)}
@@ -22,13 +24,13 @@ function ModalHeader({
             }}
         >
             {
-                title != null &&
+                children != null &&
                 <h1
                     className='center undraggable'
                     style={{
                         margin : '4px'
                     }}
-                >{title}</h1>
+                >{children}</h1>
             }
             <Flex/>
             {

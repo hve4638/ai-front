@@ -21,7 +21,7 @@ function getRTAPI(rtId:string|null) {
     if (rtId == null) return null;
 
     const { api } = useProfileAPIStore.getState();
-    return api.getRT(rtId);
+    return api.getRTAPI(rtId);
 }
 
 export function createRTStore(rtId:string) {

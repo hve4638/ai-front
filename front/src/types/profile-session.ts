@@ -1,6 +1,7 @@
 export interface ProfileSessionMetadata {
     id:string;
-    name?:string;
+    displayName?:string;
+    name:string;
     color?:string;
     deleteLock:boolean;
     modelId:string;

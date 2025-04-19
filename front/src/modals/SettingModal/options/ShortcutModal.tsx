@@ -1,3 +1,4 @@
+import useHotkey from '@/hooks/useHotkey';
 import classNames from 'classnames';
 import Button from 'components/Button';
 import { Modal, ModalHeader } from 'components/Modal';
@@ -70,12 +71,14 @@ function ShortcutModal({
         return false;
     }, [shortcut]);
 
-    console.log('INIT:', initValue);
-
     const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
+        if (e.key === 'Escape') {
+            onClose();
+            return;
+        }
         if (e.key === 'Control') return;
         if (e.key === 'Shift') return;
         if (e.key === 'Meta') return;
@@ -121,6 +124,13 @@ function ShortcutModal({
         }
     }
 
+    useHotkey({
+        'Escape' : ()=>{
+            onClose();
+            return true;
+        }
+    }, true, [onClose])
+
     useEffect(() => {
         setDisappear(false);
     }, []);
@@ -162,11 +172,7 @@ function ShortcutModal({
                     minHeight: '220px',
                 }}
             >
-                <ModalHeader
-                    title='단축키 설정'
-                    className='noflex'
-                    onClose={close}
-                />
+                <ModalHeader className='noflex' onClose={close}>단축키 설정</ModalHeader>
                 <span className='shortcut-description undraggable'> </span>
                 <Column
                     columnAlign={Align.Center}

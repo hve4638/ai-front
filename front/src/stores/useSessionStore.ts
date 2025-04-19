@@ -16,6 +16,7 @@ interface SessionConfigFields {
     name:string|null;
     model_id:string;
     rt_id:string;
+    color:string;
 }
 
 const defaultCache:SessionCacheFields = {
@@ -29,6 +30,7 @@ const defaultConfig:SessionConfigFields = {
     name : null,
     model_id : '',
     rt_id : '',
+    color: 'default',
 }
 
 type SessionFields = SessionCacheFields & SessionConfigFields;

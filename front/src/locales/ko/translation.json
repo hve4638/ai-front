@@ -7,6 +7,28 @@
     "error" : {
         "not_found" : "찾을 수 없습니다."
     },
+    "shortcut" : {
+        "font_size_up" : "폰트 크기 확대",
+        "font_size_down" : "폰트 크기 축소",
+        "send_request" : "요청 전송",
+        "copy_response" : "응답 복사",
+        "next_tab" : "다음 세션",
+        "prev_tab" : "이전 세션",
+        "create_tab" : "세션 생성",
+        "remove_tab" : "세션 닫기",
+        "undo_remove_tab" : "세션 삭제 취소",
+        "tab1" : "세션 1 전환",
+        "tab2" : "세션 2 전환",
+        "tab3" : "세션 3 전환",
+        "tab4" : "세션 4 전환",
+        "tab5" : "세션 5 전환",
+        "tab6" : "세션 6 전환",
+        "tab7" : "세션 7 전환",
+        "tab8" : "세션 8 전환",
+        "tab9" : "세션 9 전환",
+        "toggle_screen" : "화면 활성화/비활성화",
+        "paste_clipboard_into_input" : "클립보드 입력에 복사"
+    },
     "prompt_editor" : {
         "title" : "편집",
         "metadata_edit_title" : "메타데이터 편집",
@@ -55,6 +77,12 @@
         "name" : "이름",
         "identifier" : "내부 식별자",
         "advanced_button" : "고급"
+    },
+    "session" : {
+        "default_name" : "새 세션"
+    },
+    "history" : {
+        "title" : "기록"
     }
 }
 

@@ -232,13 +232,8 @@ function RTTreeModal({
                     height: '100%',
                 }}
             >
-                <ModalHeader
-                    hideCloseButton={true}
-                    title={t('prompt.save')}
-                />
-                <Row
-                    rowAlign={Align.End}
-                >
+                <ModalHeader hideCloseButton={true}>{t('prompt.save')}</ModalHeader>
+                <Row rowAlign={Align.End}>
                     <GoogleFontIcon
                         value='create_new_folder'
                         enableHoverEffect={true}

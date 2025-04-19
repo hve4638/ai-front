@@ -160,10 +160,7 @@ function ShortcutModal({
                     minHeight: '220px',
                 }}
             >
-                <ModalHeader
-                    title='단축키 설정'
-                    className='noflex'
-                />
+                <ModalHeader className='noflex'>단축키 설정</ModalHeader>
                 <span className='shortcut-description undraggable'>키 조합을 입력하세요</span>
                 <Column
                     columnAlign={Align.Center}

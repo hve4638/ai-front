@@ -1,14 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ButtonForm, CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { Align, Column, Flex, Row } from 'components/layout';
+import { Align, Center, Column, Flex, Row } from 'components/layout';
 import LocalAPI from 'api/local';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import CheckBox from 'components/CheckBox';
-import { useCacheStore, useConfigStore, useProfileEvent } from '@/stores';
+import { useCacheStore, useConfigStore, useDataStore, useProfileEvent } from '@/stores';
 
 function ModelOptions() {
     const configs = useConfigStore();
     const caches = useCacheStore();
+    const starred_models = useDataStore(state=>state.starred_models);
     const {
         isModelStarred,
         starModel,
@@ -381,7 +382,26 @@ function ModelCheckBox({
     return (
         <>
             <span>{children}</span>
-            <CheckBox
+            <Center
+                style={{
+                    height: '100%',
+                    marginLeft: '2px',
+                    padding: '0.25em',
+                    aspectRatio: '1/1',
+                }}
+            >
+                <input
+                    type='checkbox'
+                    style={{
+                        height: '100%',
+                        aspectRatio: '1/1',
+                    }}
+                    checked={checked}
+                    onChange={(e)=>onChange(e.target.checked)}
+                    tabIndex={0}
+                />
+            </Center>
+            {/* <CheckBox
                 style={{
                     fontSize : '0.9em',
                     width: '0.9em',
@@ -390,7 +410,7 @@ function ModelCheckBox({
                 }}
                 checked={checked}
                 onChange={onChange}
-            />
+            /> */}
         </>
     )
 }

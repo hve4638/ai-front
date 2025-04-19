@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 
 function alias(find:string, replacement:string) {
     return {
@@ -13,7 +14,10 @@ export default defineConfig({
     server: {
         port : 3600,
     },
-    plugins: [react()],
+    plugins: [
+        react(),
+        tailwindcss(),
+    ],
     resolve: {
         alias: [
             alias('@', 'src'),

@@ -52,11 +52,11 @@ class RequestAPI {
         this.#channels.delete(chId);
     }
 
-    async request(profileId:string, rtId:string, input:RTInput):Promise<string> {
+    async request(profileId:string, input:RTInput):Promise<string> {
         const chId = uuidv7();
         this.#openCh(chId);
 
-        const [err] = await window.electron.RequestProfileRT(chId, profileId, rtId, input);
+        const [err] = await window.electron.RequestProfileRT(chId, profileId, input);
         if (err) throw new IPCError(err.message);
 
         return chId;

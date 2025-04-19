@@ -2,7 +2,6 @@ import { BrowserWindow } from 'electron';
 import { IPCListenerPing } from '@/data';
 import { ChatAIResult } from '@hve/chatai';
 
-
 class RTSender {
     constructor(private browserWindowRef:WeakRef<BrowserWindow>, private token: string) {
 

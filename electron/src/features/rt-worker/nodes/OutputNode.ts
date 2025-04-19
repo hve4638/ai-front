@@ -1,3 +1,4 @@
+import { HistoryAccessor } from '@/features/acstorage-accessor';
 import WorkNode from './WorkNode';
 
 export type PromptBuildNodeInput = {
@@ -12,11 +13,20 @@ export type PromptBuildNodeOption = {
 
 class OutputNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption>  {
     override async process(
-        input:PromptBuildNodeInput,
+        nodeInput:PromptBuildNodeInput,
     ) {
-        const { output } = input;
+        const { sender, historyRequired } = this.nodeData;
+        const { output } = nodeInput;
+        
+        historyRequired.output.push({
+            type: 'text',
+            text: output,
+            data: null,
+            token_count: 0,
+        });
 
-        this.nodeData.sender.sendResult(output);
+
+        sender.sendResult(output);
 
         return {};
     }

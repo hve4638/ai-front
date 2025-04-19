@@ -15,18 +15,46 @@ export type InputNodeOption = {
 class InputNode extends WorkNode<InputNodeInput, InputNodeOutput, InputNodeOption>  {
     override async process({}) {
         const { inputType } = this.option;
-        const { message, form } = this.nodeData.rtInput;
+        const { form, input } = this.nodeData.rtInput;
+
+        this.nodeData.historyRequired.input.push({
+            type: 'text',
+            text: input,
+            data: '',
+            token_count: 0,
+        });
 
         if (inputType === 'chat') { 
-            const { message } = this.nodeData.rtInput;
+            const { chat } = this.nodeData.rtInput;
+            this.nodeData.historyRequired.chat_type = 'chat';
+
+            if (!chat) throw new Error('Chat is not defined in input.');
+
+            const merged: RTInputMessage[] = [
+                ...chat,
+                {
+                    type: 'chat',
+                    message: [
+                        {
+                            type: 'text',
+                            value: input,
+                        }
+                    ]
+                }
+            ]
+            
             return {
-                chat: message as unknown as RTInputMessage[],
+                input: input,
+                chat: merged,
                 form: form,
             };
         }
         else if (inputType === 'normal') {
+            this.nodeData.historyRequired.chat_type = 'normal';
+
             return {
-                input: message.at(-1)?.message[0].value ?? '',
+                input: input,
+                chat: [],
                 form: form,
             };
         }

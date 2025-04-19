@@ -15,7 +15,7 @@ function get():IPCInvokeIntrerface {
         ...profileRT(),
         ...profileSession(),
         ...profileSessionHistory(),
-    };
+    } satisfies IPCInvokeIntrerface;
 }
 
 export default get;

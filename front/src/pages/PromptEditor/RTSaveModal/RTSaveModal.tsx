@@ -54,10 +54,7 @@ function RTSaveModal({
                     height: '100%',
                 }}
             >
-                <ModalHeader
-                    hideCloseButton={true}
-                    title={t('prompt_editor.save')}
-                />
+                <ModalHeader hideCloseButton={true}>{t('prompt_editor.save')}</ModalHeader>
                 <Row
                     rowAlign={Align.End}
                 >

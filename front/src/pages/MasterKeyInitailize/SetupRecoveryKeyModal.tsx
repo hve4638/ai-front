@@ -43,10 +43,7 @@ function RecoveryKeySetupModal({
                 minWidth: '400px',
             }}
         >
-            <ModalHeader
-                title='복구 키 설정'
-                hideCloseButton={true}
-            />
+            <ModalHeader hideCloseButton={true}>복구 키 설정</ModalHeader>
             <Row
                 style={{
                     height: '1.4em',

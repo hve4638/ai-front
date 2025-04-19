@@ -32,21 +32,17 @@ function NewRTModal({
     const [rtMode, setRTMode] = useState<RTMode>('prompt_only');
 
     useHotkey({
-        'Escape': close,
+        'Escape' : close,
     }, isFocused, []);
 
     return (
         <Modal
             disappear={disappear}
             style={{
-                minWidth: '400px',
                 width: 'auto',
             }}
         >
-            <ModalHeader
-                title={t('rt.new_rt_title')}
-                onClose={close}
-            />
+            <ModalHeader onClose={close}>{t('rt.new_rt_title')}</ModalHeader>
             {
                 step === NewRTModalStep.SelectRTType &&
                 <RTSelectWidget

@@ -44,10 +44,7 @@ function StringInputModal({
                 minWidth: '400px',
             }}
         >
-            <ModalHeader
-                title={title}
-                hideCloseButton={true}
-            />
+            <ModalHeader hideCloseButton={true}>{title}</ModalHeader>
             <div style={{height: '1em'}}/>
             <div className={classNames('undraggable')}>
             {

@@ -54,10 +54,7 @@ function RTEditModal({
                     height: '100%',
                 }}
             >
-                <ModalHeader
-                    title={t('rt.rt_edit')}
-                    onClose={close}
-                />
+                <ModalHeader onClose={close}>{t('rt.rt_edit')}</ModalHeader>
                 <Row
                     rowAlign={Align.End}
                 >
@@ -76,7 +73,7 @@ function RTEditModal({
                     onChange={(next)=>setTree(next)}
                     onClick={(rtId:string)=>{
                         console.log('rtId', rtId);
-                        navigate(`/prompts/${rtId}/edit`);
+                        navigate(`/prompt/${rtId}`);
                     }}
                 />
                 <div/>

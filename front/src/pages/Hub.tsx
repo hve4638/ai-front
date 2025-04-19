@@ -13,9 +13,9 @@ function Hub() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home/>}/>
-                <Route path="/prompts">
+                <Route path="/prompt">
                     <Route
-                        path=":rtId/edit"
+                        path=":rtId"
                         element={
                             <RTStoreContextProvider>
                                 <PromptEditor

@@ -4,8 +4,10 @@ import { ProfileSessionMetadata } from '@/types';
 import TabBar from '@/components/TabBar';
 import { TabRequired } from '@/components/TabBar/types';
 import SessionTab from './SessionTab';
+import { useTranslation } from 'react-i18next';
 
-function SessionTabBar({}) {
+function SessionTabBar() {
+    const { t } = useTranslation();
     const eventState = useProfileEvent();
     const updateCacheState = useCacheStore(state=>state.update);
     const sessions = useDataStore(state=>state.sessions);
@@ -37,6 +39,9 @@ function SessionTabBar({}) {
     useEffect(()=>{
         eventState.getSessionMetadataList()
             .then((list)=>{
+                list.forEach((item)=>{
+                    item.displayName ??= t('session.default_name');
+                });
                 setSessionMetadataList(list);
             });
     }, [ sessions, refreshSignal ]);

@@ -1,6 +1,7 @@
 import useCacheStore from './useCacheStore';
 import useConfigStore from './useConfigStore';
 import useDataStore from './useDataStore';
+import { useHistoryStore } from './useHistoryStore';
 import useProfileAPIStore from './useProfileAPIStore';
 import useSessionStore from './useSessionStore';
 import useShortcutStore from './useShortcutStore';
@@ -15,6 +16,7 @@ export function subscribeStates() {
                 useDataStore.getState().refetchAll();
                 useConfigStore.getState().refetchAll();
                 useShortcutStore.getState().refetchAll();
+                useHistoryStore.getState().clear();
                 
                 const sessionState = useSessionStore.getState();
                 sessionState.updateDeps.api(api);

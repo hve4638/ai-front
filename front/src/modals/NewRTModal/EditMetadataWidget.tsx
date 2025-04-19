@@ -56,6 +56,9 @@ function EditMetadataWidget({
 
     return (
         <Column
+            style={{
+                minWidth: '400px',
+            }}
         >
             <StringLongForm
                 name={t('rt.name')}

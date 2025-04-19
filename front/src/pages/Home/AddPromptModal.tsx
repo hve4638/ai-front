@@ -37,10 +37,7 @@ function AddPromptModal({
                 width: 'auto',
             }}
         >
-            <ModalHeader
-                title={t('rt.create-rt-title')}
-                onClose={close}
-            />
+            <ModalHeader onClose={close}>{t('rt.create-rt-title')}</ModalHeader>
             <Row
                 rowAlign={Align.Start}
                 columnAlign={Align.Center}

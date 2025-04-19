@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, globalShortcut, ipcMain } from 'electron';
 import * as electronLocalshortcut from 'electron-localshortcut';
 import { throttle } from '@/utils';
-import * as registry from '@/registry';
+import runtime from '@/runtime';
 
 import * as staticPath from '@/static-path'
 
@@ -16,14 +16,8 @@ const DEFAULT_WINDOW_SIZE = [1280, 900];
 class ElectronApp {
     win:BrowserWindow|null = null;
 
-    constructor(
-        protected options: ElectronAppOptions
-    ) {
-
-    }
-
     private async buildBrowserWindow():Promise<BrowserWindow> {
-        const cacheAC = await registry.globalStorage.accessAsJSON('cache.json');
+        const cacheAC = await runtime.globalStorage.accessAsJSON('cache.json');
         const [width, height] = cacheAC.getOne('lastsize') ?? DEFAULT_WINDOW_SIZE;
         const [minWidth, minHeight] = MINIMUM_WINDOW_SIZE;
 
@@ -48,17 +42,19 @@ class ElectronApp {
             throw new Error('BrowserWindow is not created yet. Call buildBrowserWindow() first.');
         }
         const win = this.win;
-        registry.rtWorker.setBrowserWindowRef(new WeakRef(win));
+        runtime.rtWorker.setBrowserWindowRef(new WeakRef(win));
+
         const {
-            devMode,
-            devUrl = ''
-        } = this.options;
-        const cacheAC = await registry.globalStorage.accessAsJSON('cache.json');
+            dev, devUrl, showDevTool
+        } = runtime.env;
+        // const devMode = runtime.env.dev;
+        // const devUrl = runtime.env.devUrl;
+        const cacheAC = await runtime.globalStorage.accessAsJSON('cache.json');
 
 
-        if (devMode) {
-            console.log(`DEV MODE`);
-            console.log(`Entrypoint : ${devUrl}`);
+        if (dev) {
+            console.info(`DEV MODE`);
+            console.info(`Entrypoint : ${devUrl}`);
 
             electronLocalshortcut.register(win, 'F12', () => {
                 win.webContents.toggleDevTools();
@@ -68,6 +64,10 @@ class ElectronApp {
             });
             
             win.loadURL(devUrl);
+
+            if (showDevTool) {
+                win.webContents.openDevTools({ mode: 'detach' });
+            }
         }
         else {
             win.loadURL(`file://${staticPath.STATIC_ENTRYPOINT}`);
@@ -84,8 +84,8 @@ class ElectronApp {
         
         app.on('window-all-closed', async function() {
             try {
-                await registry.globalStorage.commitAll();
-                await registry.profiles.saveAll();
+                await runtime.globalStorage.commitAll();
+                await runtime.profiles.saveAll();
             }
             finally {
                 app.quit();

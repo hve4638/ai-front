@@ -92,10 +92,7 @@ function VarEditModal({
                 className={styles['var-editor-modal']}
                 disappear={disappear}
             >
-                <ModalHeader
-                    title='변수 편집'
-                    onClose={()=>close()}
-                />
+                <ModalHeader onClose={close}>변수 편집</ModalHeader>
                 <DropdownForm
                     name='타입'
                     value={promptVar.type}
@@ -142,12 +139,11 @@ function VarEditModal({
                         disappear={disappear}
                     >
                         <ModalHeader
-                            title='필드 편집'
                             onClose={()=>{
                                 fieldRef.current = null;
                                 sendRefreshSignal();
                             }}
-                        />
+                        >필드 편집</ModalHeader>
                         <DropdownForm
                             name='타입'
                             value={fieldRef.current.type}

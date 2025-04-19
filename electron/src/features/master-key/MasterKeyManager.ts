@@ -87,6 +87,10 @@ class MasterKeyManager {
         this.#masterKey = masterKey;
     }
 
+    async mockResetKey(masterKey:string) {
+        this.#masterKey = masterKey;
+    }
+
     async recoveryMasterKey(recoveryKey:string):Promise<boolean> {
         if (!this.#rawEncryptionData) throw new Error('Not initialized');
         if (!this.#hardwareKey) throw new Error('Not initialized');

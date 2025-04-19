@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-import { useProfileEvent, useSessionStore } from '@/stores';
+import { useProfileAPIStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
 import Dropdown, { DropdownItem, DropdownItemList } from '@/components/Dropdown';
 import { GoogleFontIcon } from '@/components/GoogleFontIcon';
 
@@ -19,6 +19,9 @@ function RTDropdown() {
     const modal = useModal();
     const profileEvent = useProfileEvent();
     const rtId = useSessionStore(state=>state.rt_id);
+    const name = useSessionStore(state=>state.name);
+    const api = useProfileAPIStore(state=>state.api);
+    const signal = useSignalStore(state=>state.signal);
     const updateSessionState = useSessionStore(state=>state.update);
     
     const [tree, setTree] = useState<RTMetadataTree>([]);
@@ -40,9 +43,17 @@ function RTDropdown() {
     const openNewRTModal = ()=>{
         modal.open(NewRTModal, {
             onAddRT: (rtId:string, mode:RTMode) => {
-                navigate(`/workflow/${rtId}`);
+                navigate(`/prompt/${rtId}`);
             }
         });
+    }
+
+    const changeRT = (rtId:string)=>{
+        updateSessionState.rt_id(rtId);
+        
+        if (name == null || name === '') {
+            signal.session_metadata();
+        }
     }
 
     useEffect(()=>{
@@ -80,16 +91,16 @@ function RTDropdown() {
                     openNewRTModal();
                 }
                 else {
-                    updateSessionState.rt_id(item.key);
+                    changeRT(item.key);
                 }
             }}
             onItemNotFound={()=>{
                 if (dropdownItems.length === 0) return;
                 else if ('key' in dropdownItems[0]) {
-                    updateSessionState.rt_id(dropdownItems[0].key);
+                    changeRT(dropdownItems[0].key);
                 }
                 else if ('list' in dropdownItems[0]) {
-                    updateSessionState.rt_id(dropdownItems[0].list[0].key);
+                    changeRT(dropdownItems[0].list[0].key);
                 }
             }}
         />

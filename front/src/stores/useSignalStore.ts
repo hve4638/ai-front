@@ -3,7 +3,8 @@ import { subscribeWithSelector } from 'zustand/middleware'
 import { ActionMethods } from './types';
 
 interface SignalFields {
-    session_metadata:number;
+    session_metadata: number;
+    change_profile: number;
 }
 
 interface SignalState extends SignalFields {
@@ -13,9 +14,13 @@ interface SignalState extends SignalFields {
 export const useSignalStore = create<SignalState, [['zustand/subscribeWithSelector', never]]>(
     subscribeWithSelector((set)=>({
         session_metadata : 0,
+        change_profile : 0,
         signal : {
             async session_metadata() {
                 set(state=>({ ...state, session_metadata: state.session_metadata+1 }));
+            },
+            async change_profile() {
+                set(state=>({ ...state, change_profile: state.change_profile+1 }));
             },
         },
     }))

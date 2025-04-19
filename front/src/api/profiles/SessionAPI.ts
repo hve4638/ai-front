@@ -26,15 +26,17 @@ class SessionAPI {
     }
 
     /* 히스토리 */
-    async getHistory(condition:any) {
-        const [err, history] = await electron.GetProfileSessionHistory(this.#profileId, this.#sessionId, condition);
+    async getHistoryMetadata(offset:number=0, limit:number=100) {
+        const [err, history] = await electron.GetProfileSessionHistoryMetadata(this.#profileId, this.#sessionId, offset, limit);
         if (err) throw new IPCError(err.message);
 
         return history;
     }
-    async addHistory(history:any) {
-        const [err] = await electron.AddProfileSessionHistory(this.#profileId, this.#sessionId, history);
+    async getHistoryMessage(historyIds:number[]) {
+        const [err, messages] = await electron.GetProfileSessionHistoryMessage(this.#profileId, this.#sessionId, historyIds);
         if (err) throw new IPCError(err.message);
+
+        return messages;
     }
     async deleteHistory(historyKey:number) {
         const [err] = await electron.DeleteProfileSessionHistory(this.#profileId, this.#sessionId, historyKey);

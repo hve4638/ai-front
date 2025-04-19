@@ -13,15 +13,6 @@ declare global {
 
     type KeyValueInput = [string, any][] | Record<string, any>;
 
-    type HistoryCondition = {
-        offset? : number;
-        limit? : number;
-        desc? : boolean;
-        flag? : number;
-        date_begin? : number;
-        date_end? : number;
-    }
-
     type IPCInvokeIntrerface = {
         [IPCInvokerName.Echo]: (message:string) => ElectronResult<string>;
         [IPCInvokerName.OpenBrowser]: (url:string) => ElectronNoResult;
@@ -76,9 +67,9 @@ declare global {
         [IPCInvokerName.ReflectProfileRTMetadata]: (profileId:string, rtId:string) => ElectronNoResult;
 
         /* 프로필 RT 요청 */
-        [IPCInvokerName.RequestProfileRT]: (token:string, profileId:string, rtId:string, input:RTInput) => ElectronNoResult;
+        [IPCInvokerName.RequestProfileRT]: (token:string, profileId:string, input:RTInput) => ElectronNoResult;
         [IPCInvokerName.AbortProfileRTRequest]: (token:string) => ElectronNoResult;
-    
+        
         /* 프로필 세션 */
         [IPCInvokerName.AddProfileSession]: (profileId:string) => ElectronResult<string>;
         [IPCInvokerName.RemoveProfileSession]: (profileId:string, sessionId:string) => ElectronNoResult;
@@ -91,8 +82,9 @@ declare global {
         [IPCInvokerName.SetProfileSessionData]: (profileId:string, sessionId:string, accessor:string, key:KeyValueInput) => ElectronNoResult;
     
         /* 프로필 세션 히스토리 */
-        [IPCInvokerName.GetProfileSessionHistory]: (profileId:string, sessionId:string, condition:HistoryCondition) => ElectronResult<any>;
-        [IPCInvokerName.AddProfileSessionHistory]: (profileId:string, sessionId:string, history:any) => ElectronNoResult;
+        [IPCInvokerName.GetProfileSessionHistoryMetadata]: (profileId:string, sessionId:string, offset:number, limit:number) => ElectronResult<HistoryMetadata[]>;
+        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: (profileId:string, sessionId:string, metadata:string[]) => ElectronResult<HistoryMetadata[]>;
+        [IPCInvokerName.GetProfileSessionHistoryMessage]: (profileId:string, sessionId:string, historyId:number[]) => ElectronResult<HistoryMessage[]>;
         [IPCInvokerName.DeleteProfileSessionHistory]: (profileId:string, sessionId:string, historyKey:number) => ElectronNoResult;
         [IPCInvokerName.DeleteAllProfileSessionHistory]: (profileId:string, sessionId:string) => ElectronNoResult;
     }

@@ -6,7 +6,6 @@ export type RefetchMethods<T> = {
     [K in keyof T]: () => Promise<void>;
 }
 
-
 export type ActionMethods<T> = {
     [K in keyof T]: () => Promise<void>;
 }

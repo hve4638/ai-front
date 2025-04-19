@@ -252,7 +252,7 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
             ref={tabBarRef}
             className='session-bar undraggable relative'
             style={{
-                padding: '0px 0px 0px 8px',
+                // padding: '0px 0px 0px 8px',
                 height: '32px',
             }}
             rowAlign={Align.Start}

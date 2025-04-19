@@ -2,19 +2,13 @@ import { NodeData, OutputNode } from '../nodes';
 import RTWorkflow from './RTWorkflow';
 
 class WorkflowMirror extends RTWorkflow {
-    async process(input:RTInput) {
-        const nodeData:NodeData = {
-            rtInput : input,
-            sender : this.rtSender,
-            logger : this.workLogger,
-            flowData : this.rtFlowdata,
-        }
+    async process(rtInput:RTInput) {
+        const nodeData = this.getNodeData(rtInput);
         this.workLogger.workBegin();
         
         try {
             await new Promise(resolve => setTimeout(resolve, 500));
-            // const outputNode = new OutputNode(-1, nodeData);
-            this.rtSender.sendResult(input.message.at(-1)?.message[0].value ?? 'EMPTY');
+            this.rtSender.sendResult(rtInput.input);
         }
         catch (error) {
             this.rtSender.sendError(`Error: ${error}`);

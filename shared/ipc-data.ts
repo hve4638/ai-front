@@ -14,6 +14,19 @@ declare global {
     } | {
         type : 'close';
     }
+
+    type HistoryMetadata = {
+        id : number;
+        requestType : 'chat'|'normal';
+        createdAt : number;
+        bookmark : boolean;
+    }
+
+    type HistoryMessage = {
+        id : number;
+        input : string;
+        output : string;
+    }
 }
 
 export {}

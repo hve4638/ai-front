@@ -42,14 +42,7 @@ function NewProfileModal({
         <Modal
             disappear={disappear}
         >
-            <ModalHeader
-                title='프로필 추가'
-                onClose={
-                    () => {
-                        close();
-                    }
-                }
-            />
+            <ModalHeader onClose={close}>프로필 추가</ModalHeader>
             <Column
                 style={{
                     padding: '16px 16px 8px 16px'

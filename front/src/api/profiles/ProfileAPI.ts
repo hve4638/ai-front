@@ -102,7 +102,7 @@ class ProfileAPI {
         }
         return this.#sessionAPIs[sessionId] as SessionAPI;
     }
-    getRT(rtId:string):RTAPI {
+    getRTAPI(rtId:string):RTAPI {
         if (!(rtId in this.#rtAPIs)) {
             this.#rtAPIs[rtId] = new RTAPI(this.#profileId, rtId);
         }

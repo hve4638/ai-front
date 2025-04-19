@@ -1,7 +1,7 @@
 import * as utils from '@utils';
 import ChatAIModels from '@/features/chatai-models';
 
-import {  } from '@/registry';
+import {  } from '@/runtime';
 
 function handler() {
     return {

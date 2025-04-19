@@ -10,6 +10,7 @@ export const PROFILE_STORAGE_TREE = {
             'index.json' : StorageAccess.JSON({
                 'id' : JSONType.String(),
                 'name' : JSONType.String(),
+                'uuid' : JSONType.String(),
                 'mode' : JSONType.Union('prompt_only', 'flow').default_value('prompt_only'),
                 'input_type' : JSONType.Union('normal', 'chat').default_value('normal'),
             }), 
@@ -72,6 +73,8 @@ export const PROFILE_STORAGE_TREE = {
         'setting_models_show_deprecated' : JSONType.Bool(),
         'prompt_variables' : JSONType.Struct(),
         'removed_sessions' : JSONType.Array(),
+        
+        'history_search_scope' : JSONType.Union('any', 'input', 'output').default_value('any'),
     }),
     'data.json' : StorageAccess.JSON({
         'sessions' : JSONType.Array(),

@@ -1,8 +1,8 @@
-import { PromptTemplate, CBFFail,  type CBFResult } from '@hve/prompt-template';
-import { Chat, ChatRole, ChatType } from '@hve/chatai';
-import { GlobalRTFlowData, WorkLog } from '../types';
+import { PromptTemplate } from '@hve/prompt-template';
+import { Chat, ChatRole } from '@hve/chatai';
 import { BUILT_IN_VARS, HOOKS } from '../data';
-import WorkNode, { NodeData } from './WorkNode';
+import WorkNode from './WorkNode';
+import type { NodeData } from './types';
 import { PromptMessages } from './node-types';
 import { WorkNodeStop } from './errors';
 
@@ -29,8 +29,6 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
     ) {
         const {
             profile, rtId,
-        } = this.nodeData.flowData;
-        const {
             logger,
         } = this.nodeData;
         const {
@@ -46,10 +44,18 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
         }
     
         const additionalBuiltInVars = {};
-        if (input_type === 'CHAT') {
+        if (input_type === 'chat') {
+            if (chat == null) {
+                logger.nodeError(this.nodeId, [ 'chat is null' ]);
+                throw new WorkNodeStop();
+            }
             additionalBuiltInVars['chat'] = chat;
         }
-        else if (input_type === 'NORMAL') {
+        else if (input_type === 'normal') {
+            if (input == null) {
+                logger.nodeError(this.nodeId, [ 'input is null' ]);
+                throw new WorkNodeStop();
+            }
             additionalBuiltInVars['input'] = input;
         }
     

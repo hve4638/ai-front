@@ -72,10 +72,7 @@ function SettingModal({
                 <div>
                 </div>
                 <div>
-                    <ModalHeader
-                        title={currentCategory}
-                        onClose={close}
-                    />
+                    <ModalHeader onClose={close}>{currentCategory}</ModalHeader>
                 </div>
                 <div
                     className='undraggable'

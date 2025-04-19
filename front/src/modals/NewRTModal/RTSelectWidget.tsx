@@ -17,8 +17,11 @@ function RTSelectWidget(props:RTSelectWidgetProps) {
 
     return (
         <Row
-            rowAlign={Align.Start}
+            rowAlign={Align.Center}
             columnAlign={Align.Center}
+            style={{
+                // minWidth : '400px',
+            }}
         >
             <RTTypeButton
                 value='description'
@@ -51,9 +54,12 @@ function RTTypeButton({
     return (
         <Grid
             className={
-                classNames(style['rt-type-select'], 'undraggable')
+                classNames(
+                    style['rt-type-select'],
+                    'undraggable'
+                )
             }
-            columns='80px'
+            columns='120px'
             rows='64px 16px 4px'
             style={{
                 padding : '0.5em',

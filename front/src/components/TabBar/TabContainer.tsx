@@ -3,6 +3,7 @@ import { Align, Center, Column, Flex, Row } from 'components/layout';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { SpinnerCircular } from 'spinners-react';
 import { TabRender } from './types';
+import classNames from 'classnames';
 
 interface TabProps<T> {
     className?:string;
@@ -31,32 +32,24 @@ function TabContainer<T>({
     onClose = ()=>{},
     children,
 }:TabProps<T>) {
-    const hideTitle = widthPx <= 60;
-    const hideCloseButton = widthPx <= 60 && !enabled;
-
     return (
         <div
             className={
-                'absolute'
-                + (enabled ? ' enabled' : '')
-                + (noAnimation ? ' instant' : '')
-                + ` ${className}`
+                classNames(
+                    'absolute',
+                    'tab-container',
+                    {
+                        enabled,
+                        instant : noAnimation,
+                    },
+                    className
+                )
             }
             style={{
                 width : widthPx + 'px',
                 height : '100%',
                 left : x + 'px',
                 ...style,
-            }}
-            onMouseDown={(e)=>{
-                if (e.button === 0) {
-                    // 좌클릭
-                    onClick()
-                }
-                else if (e.button === 1) {
-                    // 휠클릭
-                    onClose();
-                }
             }}
         >
             {

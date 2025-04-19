@@ -62,7 +62,9 @@ export enum IPCInvokerName {
     SetProfileSessionData = 'SetProfileSessionData',
     
     /* 프로필 세션 히스토리 */
-    GetProfileSessionHistory = 'GetProfileSessionHistory',
+    GetProfileSessionHistoryMetadata = 'GetProfileSessionHistoryMetadata',
+    SearchProfileSessionHistoryMetadata = 'SearchProfileSessionHistoryMetadata',
+    GetProfileSessionHistoryMessage = 'GetProfileSessionHistoryMessage',
     AddProfileSessionHistory = 'AddProfileSessionHistory',
     DeleteProfileSessionHistory = 'DeleteProfileSessionHistory',
     DeleteAllProfileSessionHistory = 'DeleteAllProfileSessionHistory',

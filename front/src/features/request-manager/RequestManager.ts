@@ -22,17 +22,18 @@ class RequestManager {
 
         // @TODO
         // Front(입력)->Electron(저장)->Front(불러옴)->Electron(요청) 구조
-        // 추후 더 나은 구조가 나타난다면 개선필요
+        // 추후 더 나은 구조가 있다면 개선필요
         const { input } = await sessionAPI.get('cache.json', ['input']) as { input: string };
         const { rt_id, model_id } = await sessionAPI.get('config.json', ['rt_id', 'model_id']) as { rt_id: string, model_id: string };
         const rtInput:RTInput = {
-            message : [
-                { type: 'chat', message : [{ type: 'text', value: input }] }
-            ],
+            input : input,
+            chat : [],
             form : {},
             modelId : model_id,
+            rtId: rt_id,
+            sessionId: sessionId,
         };
-        RequestAPI.request(profileId, rt_id, rtInput).then((chId) => {
+        RequestAPI.request(profileId, rtInput).then((chId) => {
             this.handleResponse(chId, sessionAPI);
         });
     }

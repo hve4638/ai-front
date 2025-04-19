@@ -80,10 +80,7 @@ function MetadataEditModal({
         <Modal
             disappear={disappear}
         >
-            <ModalHeader
-                title={t('prompt_editor.metadata_edit_title')}
-                onClose={close}
-            />
+            <ModalHeader onClose={close}>{t('prompt_editor.metadata_edit_title')}</ModalHeader>
             <StringForm
                 name={t('prompt_editor.name_label')}
                 value={currentName}

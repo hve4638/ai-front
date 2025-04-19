@@ -5,7 +5,7 @@ import useDataStore from './useDataStore';
 import { ProfileSessionMetadata } from '@/types';
 
 import { v7 } from 'uuid';
-import useConfigStore from './useConfigStore';
+import i18next from 'i18next';
 
 type ProviderName = 'openai'|'anthropic'|'google';
 
@@ -51,6 +51,13 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             const { sessions } = useDataStore.getState();
             const { update : updateCache, last_session_id } = useCacheStore.getState();
             const { refetch : refetchDataState } = useDataStore.getState();
+            
+            const sessionAPI = api.getSessionAPI(sessionId);
+            const { delete_lock } = await sessionAPI.get('config.json', ['delete_lock']);
+            if (delete_lock) {
+                return;
+            }
+
             await api.removeSession(sessionId);
             
             // 세션 0개는 허용되지 않으므로 제거 후 새 세션 생성
@@ -104,10 +111,24 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
                     ]);
                     const { name, color, delete_lock, model_id, rt_id } = await configPromise;
                     const { state } = await cachePromise;
+
+                    let displayName = name;
+                    if (name == null || name === '') {
+                        if (await api.hasRTId(rt_id)) {
+                            const rtAPI = api.getRTAPI(rt_id);
+                            const rtName = await rtAPI.getOne('index.json', 'name');
+                            
+                            displayName = rtName;
+                        }
+                        else {
+                            displayName = null;
+                        }
+                    }
                     
                     return {
                         id : sid,
-                        name : name ?? sid,
+                        name : name ?? '',
+                        displayName : displayName,
                         color : color,
                         deleteLock : delete_lock ?? false,
                         modelId : model_id,

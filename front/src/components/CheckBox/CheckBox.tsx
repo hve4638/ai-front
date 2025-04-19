@@ -1,4 +1,5 @@
 import React from 'react'
+import { Center } from '../layout';
 
 interface CheckboxProps {
     className?:string;
@@ -15,14 +16,24 @@ export function CheckBox({
     onChange=(x)=>{}
 }:CheckboxProps) {
     return (
-        <label
-            className={
-                `checkbox-container undraggable`
-                + (className ? ` ${className}` : '')
-            }
+        <Center
+            
+            // className={
+            //     `checkbox-container undraggable`
+            //     + (className ? ` ${className}` : '')
+            // }
             style={style}
         >
-            <div
+            <input
+                type='checkbox'
+                style={{
+                    height: '100%',
+                    aspectRatio: '1/1',
+                }}
+                checked={checked}
+                onChange={(e)=>onChange(e.target.checked)}
+            />
+            {/* <div
                 className={
                     'checkbox center'
                     + (checked ? ' checked' : '')
@@ -38,8 +49,8 @@ export function CheckBox({
                         check
                     </span>
                 }
-            </div>
-        </label>
+            </div> */}
+        </Center>
     );
 }
 

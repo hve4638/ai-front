@@ -6,6 +6,7 @@ interface InputFieldProps {
     style?: React.CSSProperties;
     children?: React.ReactNode;
     onChange: (x: string) => void;
+    tabIndex?: number;
     readonly?: boolean;
 }
 
@@ -14,6 +15,7 @@ function InputField({
     className = '',
     style = {},
     text,
+    tabIndex,
     onChange,
     readonly=false
 }: InputFieldProps) {
@@ -31,6 +33,7 @@ function InputField({
                 spellCheck='false'
                 value={text}
                 onChange={(e) => onChange(e.target.value)}
+                tabIndex={tabIndex}
             />
             {
                 children != null &&

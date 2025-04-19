@@ -50,10 +50,7 @@ function RecoveryModal({
                 minWidth: '400px',
             }}
         >
-            <ModalHeader
-                title='복구 키 입력'
-                hideCloseButton={true}
-            />
+            <ModalHeader hideCloseButton={true}>복구 키 입력</ModalHeader>
             <Row
                 style={{
                     height: '1.4em',

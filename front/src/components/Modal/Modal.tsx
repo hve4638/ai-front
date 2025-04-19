@@ -32,6 +32,7 @@ function Modal({
     return (
     <>
         <FocusLock
+            autoFocus={false}
             returnFocus={true}
         >
             <ModalBackground

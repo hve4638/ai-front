@@ -1,0 +1,15 @@
+.popover {
+    position : absolute;
+    z-index: 1;
+    bottom: calc(100% + 4px);
+    right: 0px;
+    padding : 2px 1px;
+}
+
+.popover-card {
+    width : 100%;
+    border: 1px solid var(--avatar-popover-border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    background-color: var(--avatar-popover-bgcolor);
+}

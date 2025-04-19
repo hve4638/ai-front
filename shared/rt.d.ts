@@ -35,9 +35,13 @@ declare global {
     }
 
     type RTInput = {
-        message : RTInputMessage[];
+        input : string;
+        chat? : RTInputMessage[];
+
         form: Record<string, any>;
         modelId: string;
+        rtId: string;
+        sessionId: string|undefined;
     }
     type RTInputMessage = {
         type : 'chat';

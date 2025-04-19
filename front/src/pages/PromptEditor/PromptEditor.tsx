@@ -37,7 +37,7 @@ function PromptEditor({
         name: t('prompt_editor.prompt_default_name'),
         id: rtId ?? '0',
         forms: [],
-        inputType: 'NORMAL',
+        inputType: 'normal',
         contents: '',
     });
 

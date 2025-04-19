@@ -3,7 +3,7 @@ import LocalAPI from '@/api/local';
 import ProfilesAPI from '@/api/profiles';
 import RequestAPI from '@/api/request';
 
-import { useProfileAPIStore, useCacheStore, subscribeStates } from '@/stores';
+import { useProfileAPIStore, useCacheStore, subscribeStates, useSignalStore } from '@/stores';
 
 import useSignal from '@/hooks/useSignal';
 import LoadPage from '@/features/loading';
@@ -11,6 +11,7 @@ import ProfileSelectPage from 'pages/ProfileSelect';
 import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 import Hub from 'pages/Hub';
 import { ModalProvider } from 'hooks/useModal';
+import classNames from 'classnames';
 
 const LoadPhase = {
     BEGIN : 0,
@@ -30,7 +31,6 @@ function App() {
 
     useEffect(() => {
         (async ()=> {
-            console.log('currentState', currentState);
             switch (currentState) {
                 case LoadPhase.BEGIN:
                     setCurrentState(LoadPhase.INIT_MASTER_KEY);
@@ -73,6 +73,16 @@ function App() {
         };
     }, []);
 
+    useEffect(()=>{
+        return useSignalStore.subscribe(
+            (state)=>state.change_profile,
+            (state)=>{
+                setProfile(null);
+                setCurrentState(LoadPhase.SELECT_PROFILE);
+            }
+        )
+    }, []);
+
     useEffect(() => {
         // Zustand State 의존성 관련 구독
         return subscribeStates();
@@ -89,7 +99,9 @@ function App() {
     return (
         <div
             className={
-                'theme-dark fill'
+                classNames(
+                    'theme-dark fill'
+                )
                 // + (layoutMode == LayoutModes.AUTO ? ' layout-auto' : '')
                 // + (layoutMode == LayoutModes.HORIZONTAL ? ' layout-horizontal' : '')
                 // + (layoutMode == LayoutModes.VERTICAL ? ' layout-vertical' : '')
