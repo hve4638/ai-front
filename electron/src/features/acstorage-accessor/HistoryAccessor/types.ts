@@ -11,6 +11,8 @@ export type HistoryRow = {
 
     fetch_count : number;
     create_at : number;
+    
+    form : Record<string, unknown>;
 }
 
 export type MessageRow = {
@@ -39,6 +41,8 @@ export type HistoryRequired = {
         data : null;
         token_count : number;
     }[];
+    form : Record<string, unknown>;
+
     input_token_count : number;
     output_token_count : number;
     create_at : number;
@@ -47,8 +51,5 @@ export type HistoryRequired = {
     rt_id? : string;
     rt_uuid? : string;
     model_id? : string;
-
-    /* optional */
-    raw_response: Record<string, any>;
 };
 

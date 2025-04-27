@@ -5,4 +5,7 @@ export type HistoryData = {
     output : string;
     createdAt : number;
     bookmark : boolean;
+    rtId: string;
+    rtUUID: string;
+    modelId: string;
 }

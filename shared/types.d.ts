@@ -83,7 +83,7 @@ declare global {
     
         /* 프로필 세션 히스토리 */
         [IPCInvokerName.GetProfileSessionHistoryMetadata]: (profileId:string, sessionId:string, offset:number, limit:number) => ElectronResult<HistoryMetadata[]>;
-        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: (profileId:string, sessionId:string, metadata:string[]) => ElectronResult<HistoryMetadata[]>;
+        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: (profileId:string, sessionId:string, offset:number, limit:number, search:HistorySearch) => ElectronResult<HistoryMetadata[]>;
         [IPCInvokerName.GetProfileSessionHistoryMessage]: (profileId:string, sessionId:string, historyId:number[]) => ElectronResult<HistoryMessage[]>;
         [IPCInvokerName.DeleteProfileSessionHistory]: (profileId:string, sessionId:string, historyKey:number) => ElectronNoResult;
         [IPCInvokerName.DeleteAllProfileSessionHistory]: (profileId:string, sessionId:string) => ElectronNoResult;

@@ -12,6 +12,9 @@ interface CacheFields {
     setting_models_show_deprecated : boolean,
 
     history_search_scope : 'any'|'input'|'output',
+    history_apply_rt : boolean,
+    history_apply_model : boolean,
+    history_apply_form : boolean,
 }
 
 const defaultCache:CacheFields = {
@@ -23,6 +26,9 @@ const defaultCache:CacheFields = {
     setting_models_show_deprecated : false,
 
     history_search_scope : 'any',
+    history_apply_rt : false,
+    history_apply_model : false,
+    history_apply_form : false,
 }
 
 interface ProfileState extends CacheFields {

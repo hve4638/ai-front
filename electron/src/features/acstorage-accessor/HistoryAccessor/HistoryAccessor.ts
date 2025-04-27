@@ -17,8 +17,8 @@ class HistoryAccessor implements ICustomAccessor {
             input_token_count, output_token_count,
             rt_id, rt_uuid, model_id,
             fetch_count, create_at,
-            raw_response,
             input, output,
+            form,
         } = historyRequired;
 
         const historyId = this.#dao.insertHistory({
@@ -26,7 +26,7 @@ class HistoryAccessor implements ICustomAccessor {
             input_token_count, output_token_count,
             rt_id, rt_uuid, model_id,
             fetch_count, create_at,
-            raw_response: JSON.stringify(raw_response),
+            form: JSON.stringify(form),
         });
         for (const message of input) {
             if (!message.text) continue;

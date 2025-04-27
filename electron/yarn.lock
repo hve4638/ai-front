@@ -627,9 +627,9 @@
   optionalDependencies:
     global-agent "^3.0.0"
 
-"@electron/node-gyp@git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":
+"@electron/node-gyp@https://github.com/electron/node-gyp#06b29aafb7708acef8b3669835c8a7857ebc92d2":
   version "10.2.0-electron.1"
-  resolved "git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2"
+  resolved "https://github.com/electron/node-gyp#06b29aafb7708acef8b3669835c8a7857ebc92d2"
   dependencies:
     env-paths "^2.2.0"
     exponential-backoff "^3.1.1"
@@ -861,6 +861,13 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
+
+"@hve/json-accessor@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@hve/json-accessor/-/json-accessor-0.3.0.tgz#6d4539481f1a3bd7a2f955c366652c7a1972869d"
+  integrity sha512-Vy9llpVEelatCv5QmL34Q83Bc1l0lipdfPD0/c5s3ubPY9UrJ0pUyr/ADG5TKNCwwtImC9xT/hcWsrGIAXKj0g==
+  dependencies:
+    tree-navigate "^0.3.0"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -1548,6 +1555,15 @@ abbrev@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
+
+ac-storage@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/ac-storage/-/ac-storage-0.11.0.tgz#c292ae1c8ce115feeb3b71fd2bc1a5b2de9ac6b7"
+  integrity sha512-g4GoaSbZfT+hWk1JYpFnDWUXYIniIAr+YMBr9KWmSNDvOFRQzecDVtmy0E8b7paouwV9QjhSUtZXQAxLoY2vPg==
+  dependencies:
+    "@hve/json-accessor" "^0.3.0"
+    fast-deep-equal "^3.1.3"
+    tree-navigate "^0.1.1"
 
 acorn-walk@^8.1.1:
   version "8.3.4"
@@ -2557,6 +2573,11 @@ extract-zip@^2.0.0, extract-zip@^2.0.1:
     yauzl "^2.10.0"
   optionalDependencies:
     "@types/yauzl" "^2.9.1"
+
+fast-deep-equal@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
+  integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
 fast-glob@^3.2.7:
   version "3.3.3"
@@ -5114,6 +5135,16 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+tree-navigate@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/tree-navigate/-/tree-navigate-0.1.2.tgz#da603be64e5f711698a5be116a2a263cd08d6372"
+  integrity sha512-i63Dyw8s1Pp7QwU8etHF45ZdOQZbtjJU8EC93atJCtjYhnmwWFCD8XAbXBojoygBnVei4QmcRTZrBZL3Khpvcw==
+
+tree-navigate@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/tree-navigate/-/tree-navigate-0.3.0.tgz#829d26f68c7c4b8c9cbd56704a1fd7cb9f821327"
+  integrity sha512-PY35XsGqsYHrQcXyF+ecEUsKW2X4zO8ZQRp4cBjfDsmy5pOs/xQBpe86OmzbJoc+yyI7wmT3CRhO71z2T//+aA==
 
 trim-repeated@^1.0.0:
   version "1.0.0"

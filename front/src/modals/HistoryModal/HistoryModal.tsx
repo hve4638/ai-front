@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCacheStore, useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
+import { useCacheStore, useProfileAPIStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
+import { useHistoryStore } from '@/stores/useHistoryStore';
 import { Modal, ModalHeader } from '@/components/Modal';
-import useHotkey from '@/hooks/useHotkey';
+import { Align, Column, Flex, Grid, Row } from '@/components/layout';
 import useModalDisappear from '@/hooks/useModalDisappear';
-import { Column, Flex, Grid, Row } from '@/components/layout';
+import useLazyThrottle from '@/hooks/useLazyThrottle';
+import useHotkey from '@/hooks/useHotkey';
+
 import styles from './styles.module.scss';
 import classNames from 'classnames';
 import HistoryItem from './HistoryItem';
-import { HistoryData } from './types';
-import { useHistoryStore } from '@/stores/useHistoryStore';
-
-const enum NewRTModalStep {
-    SelectRTType = 0,
-    EditMetadata = 1,
-}
+import { HistoryData } from '@/features/session-history';
 
 type NewRTModalProps = {
     isFocused: boolean;
@@ -27,31 +24,45 @@ function HistoryModal({
 }:NewRTModalProps) {
     const { t } = useTranslation();
     const [disappear, close] = useModalDisappear(onClose);
-    const { api } = useProfileAPIStore();
+    const historyState = useHistoryStore();
+    const updateSessionState = useSessionStore(state=>state.update);
     const {
         last_session_id,
+
         history_search_scope,
+        history_apply_rt,
+        history_apply_model,
+        history_apply_form,
         update : updateCacheState,
     } = useCacheStore();
-    const getHistoryStore = useHistoryStore(state=>state.get);
+    const { signal } = useSignalStore();
 
-    // const currentSessionHistory = get(last_session_id);
+    const [searchTextInstant, setSearchTextInstant] = useState<string>('');
+    const [searchText, setSearchText] = useState<string>('');
+
+    const setSearchTextThrottle = useLazyThrottle(()=>{
+        setSearchText(searchTextInstant);
+    }, 250)
+
     const [history, setHistory] = useState<HistoryData[]>([]);
-
-    useEffect(()=>{
-        (async () => {
-            if (!last_session_id) return;
-
-            const { actions } = getHistoryStore(last_session_id).getState();
-            await actions.selectMetadata(0, 100);
     
-            const sessionAPI = api.getSessionAPI(last_session_id);
-            const metadatas = await sessionAPI.getHistoryMetadata();
-            const messages = await sessionAPI.getHistoryMessage(metadatas.map(m=>m.id));
-            
-            console.log('history', messages);
-        })();
-    }, [last_session_id])
+    useEffect(()=>{
+        if (!last_session_id) return;
+
+        const historyCache = historyState.get(last_session_id);
+        if (searchText.length === 0) {
+            historyCache.select(0, 100)
+                .then((result) => {
+                    setHistory(result);  
+                });
+        }
+        else {
+            historyCache.search(0, 100, { text : searchText, searchScope : history_search_scope })
+                .then((result) => {
+                    setHistory(result);  
+                });
+        }
+    }, [last_session_id, searchText, history_search_scope])
 
     useHotkey({
         'Escape' : close,
@@ -68,7 +79,7 @@ function HistoryModal({
             <Grid
                 className={styles['history-container']}
                 columns='1fr'
-                rows='2.5em 0.5em 1.5em 0.75em 1fr'
+                rows='2.5em 0.5em 1.5em 0.75em 1fr 1.5em'
                 style={{
                     height: '100%',
                 }}
@@ -110,6 +121,10 @@ function HistoryModal({
                     <input
                         className={classNames(styles['search-input'])}
                         type='text'
+                        onChange={(e)=>{
+                            setSearchTextInstant(e.target.value);
+                            setSearchTextThrottle();
+                        }}
                     />
                 </Row>
                 <div/>
@@ -125,15 +140,91 @@ function HistoryModal({
                     {
                         history.map((item, index) => (
                             <HistoryItem
-                                key={`${item.id}`}
+                                key={`${item.id}_${index}`}
                                 value={item}
-                                onClick={()=>{}}
+                                onClick={async ()=>{
+                                    const promises:Promise<void>[] = [];
+                                    promises.push(updateSessionState.input(item.input));
+                                    promises.push(updateSessionState.output(item.output));
+                                    if (history_apply_rt) {
+                                        promises.push(updateSessionState.rt_id(item.rtId));
+                                    }
+                                    if (history_apply_model) {
+                                        promises.push(updateSessionState.model_id(item.modelId));
+                                    }
+                                    await Promise.all(promises);
+
+                                    signal.reload_input();
+                                    close();
+                                }}
                             />
                         ))
                     }
                 </Column>
+                <Row
+                    style={{
+                        boxSizing : 'border-box',
+                        padding : '0.5em 0em 0em 0em',
+                        height : '100%',
+                        gap : '1em',
+                    }}
+                    columnAlign={Align.Center}
+                >
+                    <LabeledCheckbox
+                        checked={history_apply_model}
+                        onChange={()=>{
+                            updateCacheState.history_apply_model(!history_apply_model);
+                        }}
+                    >모델 복사</LabeledCheckbox>
+                    <LabeledCheckbox
+                        checked={history_apply_rt}
+                        onChange={()=>{
+                            updateCacheState.history_apply_rt(!history_apply_rt);
+                        }}
+                    >요청 템플릿 복사</LabeledCheckbox>
+                    <LabeledCheckbox
+                        checked={history_apply_form}
+                        onChange={()=>{
+                            updateCacheState.history_apply_form(!history_apply_form);
+                        }}
+                    >변수 복사</LabeledCheckbox>
+                </Row>
             </Grid>
         </Modal>
+    )
+}
+
+type LabeledCheckboxProps= {
+    checked : boolean,
+    onChange : () => void,
+    children? : React.ReactNode,
+}
+
+function LabeledCheckbox({
+    checked,
+    onChange,
+    children=<></>
+}:LabeledCheckboxProps) {
+    return (
+        <Row
+            style={{
+                height : '100%',
+                justifyContent : 'center',
+                gap : '0.1em',
+            }}
+            columnAlign={Align.Center}
+        >
+            <span>{children}</span>
+            <input
+                type='checkbox'
+                checked={checked}
+                onChange={onChange}
+                style={{
+                    height : '100%',
+                    aspectRatio : '1/1',
+                }}
+            />
+        </Row>
     )
 }
 

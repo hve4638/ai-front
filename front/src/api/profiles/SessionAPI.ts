@@ -32,6 +32,12 @@ class SessionAPI {
 
         return history;
     }
+    async searchHistoryMetadata(offset:number=0, limit:number=100, search:HistorySearch) {
+        const [err, history] = await electron.SearchProfileSessionHistoryMetadata(this.#profileId, this.#sessionId, offset, limit, search);
+        if (err) throw new IPCError(err.message);
+
+        return history;
+    }
     async getHistoryMessage(historyIds:number[]) {
         const [err, messages] = await electron.GetProfileSessionHistoryMessage(this.#profileId, this.#sessionId, historyIds);
         if (err) throw new IPCError(err.message);

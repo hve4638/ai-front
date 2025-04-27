@@ -10,17 +10,41 @@ function handler() {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
             const historyRows = accessor.getHistory(offset, limit);
-            const metadatas:HistoryMetadata[] = historyRows.map(row=>({
+            const metadata:HistoryMetadata[] = historyRows.map(row=>({
                 id : row.id,
                 requestType : row.chat_type,
                 createdAt : row.create_at,
                 bookmark : false,
+                rtId : row.rt_id,
+                rtUUID : row.rt_uuid,
+                modelId : row.model_id,
+                form : row.form,
             }));
 
-            return [null, metadatas] as const;
+            return [null, metadata] as const;
         },
-        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: async (profileId: string, sessionId: string) => {
-            return [null, [] as HistoryData[]] as const;
+        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: async (profileId: string, sessionId: string, offset:number, limit:number, condition:HistorySearch) => {
+            const profile = await runtime.profiles.getProfile(profileId);
+            const accessor = await profile.accessAsHistory(sessionId);
+            const rows = accessor.searchHistory({
+                text : condition.text,
+                search_scope : condition.searchScope,
+                regex : false,
+                offset : offset,
+                limit : limit,
+            });
+            const metadata:HistoryMetadata[] = rows.map(row=>({
+                id : row.id,
+                requestType : row.chat_type,
+                createdAt : row.create_at,
+                bookmark : false,
+                rtId : row.rt_id,
+                rtUUID : row.rt_uuid,
+                modelId : row.model_id,
+                form : row.form,
+            }));
+            
+            return [null, metadata] as const;
         },
         [IPCInvokerName.GetProfileSessionHistoryMessage]: async (profileId: string, sessionId: string, historyIds:number[]) => {
             const profile = await runtime.profiles.getProfile(profileId);
@@ -39,11 +63,7 @@ function handler() {
             return [null, messages] as const;
         },
         [IPCInvokerName.AddProfileSessionHistory]: async (profileId: string, sessionId: string, history: any) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const accessor = await profile.accessAsHistory(sessionId);
-            // const history = accessor.get(offset, limit);
-
-            return [null] as const;
+            throw new Error('Not implemented');
         },
         [IPCInvokerName.DeleteProfileSessionHistory]: async (profileId: string, sessionId: string, historyKey: number) => {
             const profile = await runtime.profiles.getProfile(profileId);

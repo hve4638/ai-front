@@ -1,9 +1,9 @@
-import { create, StoreApi, UseBoundStore } from 'zustand';
-import { createHistoryStore, HistoryState } from '@/stores/local'
+import { create } from 'zustand';
+import SessionHistory from '@/features/session-history';
 
 type HistoryStates = {
-    container : Record<string, UseBoundStore<StoreApi<HistoryState>>>,
-    get: (sessionId:string) => UseBoundStore<StoreApi<HistoryState>>;
+    container : Record<string, SessionHistory>;
+    get: (sessionId:string) => SessionHistory;
     remove: (sessionId:string) => void;
     clear: () => void;
 }
@@ -21,7 +21,7 @@ export const useHistoryStore = create<HistoryStates>((set, get)=>({
             return container[sessionId];
         }
         else {
-            const historyStore = createHistoryStore(sessionId);
+            const historyStore = new SessionHistory(sessionId);
             set((state) => ({
                 container : {
                     ...state.container,
@@ -34,6 +34,7 @@ export const useHistoryStore = create<HistoryStates>((set, get)=>({
     remove: (sessionId:string) => {
         const { container } = get();
         const removed = { ...container };
+
         delete removed[sessionId];
         set({ container : removed, });
     },

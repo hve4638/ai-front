@@ -17,7 +17,7 @@ function HistoryItem({
         <Column
             className={classNames(styles['history-list-item'])}
             key={value.id}
-            onClick={()=>{ console.log('click', value.id); }}
+            onClick={()=>onClick(value)}
             style={{
             }}
             columnAlign={Align.SpaceBetween}

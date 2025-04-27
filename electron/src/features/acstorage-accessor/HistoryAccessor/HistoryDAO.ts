@@ -4,8 +4,8 @@ import { HistoryRow, MessageRow } from './types';
 
 export type HistorySearchRow = {
     text : string;
-    search_type : 'input' | 'output' | 'both';
-    date: number|null;
+    search_scope : 'input' | 'output' | 'any';
+    // date?: number;
     regex : boolean;
     
     offset: number;
@@ -16,7 +16,7 @@ type HistoryRowInput = {
     chat_type: 'chat' | 'normal';
     input_token_count: number | null;
     output_token_count: number | null;
-    raw_response: string;
+    form: string;
     rt_id: string;
     rt_uuid: string;
     model_id: string;
@@ -57,7 +57,7 @@ class HistoryDAO {
             input_token_count INTEGER DEFAULT 0,
             output_token_count INTEGER DEFAULT 0,
 
-            raw_response TEXT NOT NULL,
+            form TEXT,
 
             rt_id TEXT NOT NULL,
             rt_uuid TEXT NOT NULL,
@@ -106,7 +106,7 @@ class HistoryDAO {
                     chat_type,
                     input_token_count,
                     output_token_count,
-                    raw_response,
+                    form,
                     rt_id,
                     rt_uuid,
                     model_id,
@@ -116,7 +116,7 @@ class HistoryDAO {
                     $chat_type,
                     $input_token_count,
                     $output_token_count,
-                    $raw_response,
+                    $form,
                     $rt_id,
                     $rt_uuid,
                     $model_id,
@@ -180,70 +180,56 @@ class HistoryDAO {
     searchHistory(search:HistorySearchRow) {
         const params:Record<string, unknown> = {};
         const likeQuery:string[] = [];
-        if (search.text != null && search.text.length > 0) {
-            const texts = search.text.split(' ').map((text) => `%${text}%`);
-
-            if (search.regex) {
-                for (const text of texts) {
-
-                }
-            }
-            else {
-                for (const index in texts) {
-                    const text = texts[index];
-                    const key = `text_${index}`;
-                    params[key] = text;
-
-                    if (search.search_type === 'input') {
-                        likeQuery.push(`input_keywords LIKE $${key}`);
-                    } else if (search.search_type === 'output') {
-                        likeQuery.push(`output_keywords LIKE $${key}`);
-                    } else if (search.search_type === 'both') {
-                        likeQuery.push(`input_keywords LIKE $${key} OR output_keywords LIKE $${key}`);
-                    }
-                }
-            }
-        }
-        const dateQuery:string[] = [];
-        if (search.date != null) {
-            params['date'] = search.date;
-            dateQuery.push(`create_at >= $date`);
-        }
-
-        let like:string|undefined = '';
-        let date:string|undefined;
-        if (likeQuery.length) {
-            like = likeQuery.join(' OR ');
-        }
-        if (dateQuery.length) {
-            date = dateQuery.join(' AND ');
+        if (search.text == null || search.text.trim().length === 0) {
+            return this.selectHistory(search.offset, search.limit);
         }
         
-        let where:string;
-        if (like && date) {
-            where = `WHERE (${like}) AND (${date})`;
-        } else if (like) {
-            where = `WHERE ${like}`;
-        } else if (date) {
-            where = `WHERE ${date}`;
-        } else {
-            where = '';
+        const texts = search.text.split(' ').map((text) => `%${text}%`);
+        if (search.regex) {
+            throw new Error('Not implemented');
+        }
+        else {
+            for (const index in texts) {
+                const key = `text_${index}`;
+                const value = texts[index];
+
+                params[key] = value;
+                
+                likeQuery.push(`messages.text LIKE $${key}`);
+            }
+        }
+
+        let where:string = '';
+        if (likeQuery.length !== 0) {
+            const like = likeQuery.join(' OR ');
+
+            if (search.search_scope === 'input') {
+                where = `WHERE messages.origin = 'in' AND (${like})`;
+            }
+            else if (search.search_scope === 'output') {
+                where = `WHERE messages.origin = 'out' AND (${like})`;
+            }
+            else {
+                where = `WHERE ${like}`;
+            }
         }
 
         const query = this.#db.prepare(
-            `SELECT *
+            `
+            SELECT DISTINCT history.*
             FROM history
+            JOIN messages
+            ON history.id = messages.history_id
             ${where}
-            ORDER BY create_at DESC
             LIMIT $limit
             OFFSET $offset`
         );
-        return query.run({ ...params, offset: search.offset, limit: search.limit });
+        return query.all({ ...params, offset: search.offset, limit: search.limit }) as HistoryRow[];
     }
 
     delete(historyId: number) {
         const query = this.#db.prepare(
-            "DELETE FROM history WHERE id = $id"
+            'DELETE FROM history WHERE id = $id'
         );
         query.run({ id: historyId });
     }

@@ -2,15 +2,17 @@ import InputField from 'components/InputField';
 import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import useLazyThrottle from 'hooks/useLazyThrottle';
-import { useCacheStore, useConfigStore, useSessionStore, useShortcutSignalStore } from '@/stores';
-import { use } from 'i18next';
+import { useCacheStore, useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore } from '@/stores';
+
 import classNames from 'classnames';
 
 function MainSection() {
     const configState = useConfigStore();
     const sessionState = useSessionStore();
-    const [inputText, setInputText] = useState('');
     const color = useSessionStore(state=>state.color);
+    const reloadInputSignal = useSignalStore(state=>state.reload_input);
+
+    const [inputText, setInputText] = useState('');
 
     // @TODO : 도중 세션 변경시 마지막 변경이 반영되지 않는 문제
     // 문제가 해결된다면 throttle을 debounce로 변경하는 것이 성능 상 좋음
@@ -20,8 +22,8 @@ function MainSection() {
     
     useLayoutEffect(() => {
         setInputText(sessionState.input);
-    }, [sessionState.deps.last_session_id]);
-
+    }, [sessionState.deps.last_session_id, reloadInputSignal]);
+    
     useEffect(()=>{
         const unsubscribes = [
             useShortcutSignalStore.subscribe(

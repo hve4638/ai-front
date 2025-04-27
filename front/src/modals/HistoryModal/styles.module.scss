@@ -1,5 +1,5 @@
 :global(.theme-dark) {
-    --history-hover : rgb(118, 118, 118);
+    --history-hover : rgba(118, 118, 118, 0.3);
     --history-search-border-color : rgb(67, 73, 76);
 }
 
@@ -45,6 +45,7 @@
     height : 4em;
     border-radius: 6px;
     transition : background-color 0.15s ease-in-out;
+    background-color: transparent;
     cursor: pointer;
 
     .input {
@@ -64,6 +65,6 @@
     }
 
     &:hover {
-        background-color: var(--border-color);
+        background-color: var(--history-hover);
     }
 }

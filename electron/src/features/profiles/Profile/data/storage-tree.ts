@@ -1,48 +1,8 @@
 import { JSONType, StorageAccess } from 'ac-storage';
+import REQUEST_TEMPLATE_TREE from './request-template-tree';
 
 export const PROFILE_STORAGE_TREE = {
-    'request-template' : {
-        'index.json' : StorageAccess.JSON({
-            'tree' : JSONType.Array(),
-            'ids' : JSONType.Array(),
-        }),
-        '*' : {
-            'index.json' : StorageAccess.JSON({
-                'id' : JSONType.String(),
-                'name' : JSONType.String(),
-                'uuid' : JSONType.String(),
-                'mode' : JSONType.Union('prompt_only', 'flow').default_value('prompt_only'),
-                'input_type' : JSONType.Union('normal', 'chat').default_value('normal'),
-            }), 
-            'flow.json' : StorageAccess.JSON({
-                'nodes' : JSONType.Array({
-                    'id' : JSONType.Number(),
-                    'node' : JSONType.String(),
-                    'option' : JSONType.Struct(),
-                    'link_to' : {
-                        '*' : JSONType.Array({
-                            'id' : JSONType.Number(),
-                            'input' : JSONType.String(),
-                        }),
-                    },
-                    'addition' : {
-                        'x' : JSONType.Number(),
-                        'y' : JSONType.Number(),
-                    },
-                }),
-                'entrypoint_node' : JSONType.Number(),
-            }),
-            'prompts' : {
-                '*' : StorageAccess.JSON({
-                    'id' : JSONType.String(),
-                    'name' : JSONType.String(),
-                    'input_type' : JSONType.Union('normal', 'chat'),
-                    'forms' : JSONType.Array(),
-                    'contents' : JSONType.String(),
-                }),
-            },
-        }
-    },
+    'request-template' : REQUEST_TEMPLATE_TREE,
     'session' : {
         '*' : {
             'data.json' : StorageAccess.JSON({
@@ -72,12 +32,15 @@ export const PROFILE_STORAGE_TREE = {
         'setting_models_show_experimental' : JSONType.Bool(),
         'setting_models_show_deprecated' : JSONType.Bool(),
         'prompt_variables' : JSONType.Struct(),
-        'removed_sessions' : JSONType.Array(),
+        'removed_sessions' : JSONType.Array(JSONType.Number()).strict(),
         
         'history_search_scope' : JSONType.Union('any', 'input', 'output').default_value('any'),
+        'history_apply_rt' : JSONType.Bool().default_value(false),
+        'history_apply_model' : JSONType.Bool().default_value(false),
+        'history_apply_form' : JSONType.Bool().default_value(false),
     }),
     'data.json' : StorageAccess.JSON({
-        'sessions' : JSONType.Array(),
+        'sessions' : JSONType.Array(JSONType.String()).strict(),
         'starred_models' : JSONType.Array(),
         'api_keys' : {
             'openai' : JSONType.Array(),

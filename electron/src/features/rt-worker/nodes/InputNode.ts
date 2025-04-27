@@ -23,7 +23,8 @@ class InputNode extends WorkNode<InputNodeInput, InputNodeOutput, InputNodeOptio
             data: '',
             token_count: 0,
         });
-
+        this.nodeData.historyRequired.form = form;
+        
         if (inputType === 'chat') { 
             const { chat } = this.nodeData.rtInput;
             this.nodeData.historyRequired.chat_type = 'chat';

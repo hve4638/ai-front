@@ -39,7 +39,7 @@ abstract class RTWorkflow {
                 rt_uuid : rtInput.rtId,
                 model_id : rtInput.modelId,
 
-                raw_response : {},
+                form : {},
             }
         }
     }
