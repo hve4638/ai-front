@@ -12,8 +12,10 @@ export const MODEL_CATEGORY = {
     [MODELS.GOOGLE_GEMINI] : {
         name : "Google Gemini",
         models : [
+            { name : "Gemini 2.5 Pro Preview 0506", value: "gemini-2.5-pro-preview-05-06" },
             { name : "Gemini 2.5 Pro Exp 0305", value: "gemini-2.5-pro-exp-03-25" },
             { name : "Gemini 2.0 Pro Exp 0205", value: "gemini-2.0-pro-exp-02-05" },
+            { name : "Gemini 2.5 Flash Preview 0417", value: "gemini-2.5-flash-preview-04-17" },
             { name : "Gemini 2.0 Flash 001", value: "gemini-2.0-flash-001" },
             { name : "Gemini 2.0 Flash Lite Preview 0205", value: "gemini-2.0-flash-lite-preview-02-05" },
             { name : "Gemini 2.0 Flash Thinking Exp", value: "gemini-2.0-flash-thinking-exp" },
@@ -34,6 +36,9 @@ export const MODEL_CATEGORY = {
     [MODELS.OPENAI_GPT] : {
         name: "OpenAI GPT",
         models : [
+            { name : "GPT-4.1", value: "gpt-4.1" },
+            { name : "GPT-4.1 mini", value: "gpt-4.1-mini" },
+            { name : "GPT-4.1 nano", value: "gpt-4.1-nano" },
             { name : "GPT-4o", value: "gpt-4o" },
             { name : "GPT-4o mini", value: "gpt-4o-mini" },
             { name : "GPT-4 Turbo", value: "gpt-4-turbo" },
