@@ -1,0 +1,11 @@
+.dialog-button {
+    
+    &:global(.dimmed) {
+        background-color: transparent;
+    }
+
+    &:global(.highlight) {
+        background-color: rgb(100, 128, 206);
+        border-color : rgb(100, 128, 206); 
+    }   
+}

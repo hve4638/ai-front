@@ -19,11 +19,14 @@ abstract class RTWorkflow {
 
     protected getNodeData(rtInput:RTInput):NodeData {
         return {
-            rtInput : rtInput,
             sender : this.rtSender,
             logger : this.workLogger,
-            rtId : rtInput.rtId,
+
+            input : rtInput.input,
+            chat : rtInput.chat ?? [],
+            form : rtInput.form,
             modelId : rtInput.modelId,
+            rtId : rtInput.rtId,
             profile : this.profile,
             sessionId : rtInput.sessionId,
 

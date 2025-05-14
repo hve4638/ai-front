@@ -13,32 +13,22 @@ function Hub() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home/>}/>
-                <Route path="/prompt">
-                    <Route
-                        path=":rtId"
-                        element={
-                            <RTStoreContextProvider>
-                                <PromptEditor
-                                    mode={PromptEditMode.PromptOnly}
-                                    action={PromptEditAction.EDIT}
-                                />
-                            </RTStoreContextProvider>
-                        }
-                    />
-                    {/* <Route path=":id/show" element={<PromptEditor/>}/> */}
-                </Route>
-                <Route path="/workflow">
-                    <Route
-                        path=":rtId"
-                        element={
-                            <RTStoreContextProvider>
-                                <WorkflowEditor/>
-                            </RTStoreContextProvider>
-                        }
-                    />
-                    {/* <Route path="/:id" element={<PromptEditor/>}/> */}
-                </Route>
-                {/* <Route path="/edit/flow/*" element={<PromptEditor/>}/> */}
+                <Route
+                    path="/prompt/:rtId"
+                    element={
+                        <RTStoreContextProvider>
+                            <PromptEditor/>
+                        </RTStoreContextProvider>
+                    }
+                />
+                <Route
+                    path="/workflow/:rtId/prompt/:promptId"
+                    element={
+                        <RTStoreContextProvider>
+                            <PromptEditor/>
+                        </RTStoreContextProvider>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     )

@@ -1,8 +1,7 @@
 import SessionAPI from './SessionAPI';
-import { IPCError } from 'api/error';
+import LocalAPI from '@/api/local';
+import { IPCError } from '@/api/error';
 import RTAPI from './RTAPI';
-
-const electron = window.electron;
 
 class ProfileAPI {
     #profileId:string;
@@ -35,73 +34,74 @@ class ProfileAPI {
         return false;
     }
 
-    /* get/set JSON */
-    async set(accessorId:string, data:KeyValueInput) {
-        const [err] = await electron.SetProfileData(this.#profileId, accessorId, data);
-        if (err) throw new IPCError(err.message);
+    async getChatAIModels() {
+        return await LocalAPI.profile.getChatAIModels(this.#profileId);
     }
+
+    set = async (accessorId:string, data:KeyValueInput) => await LocalAPI.profileStorage.set(this.#profileId, accessorId, data);
+    get = async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.get(this.#profileId, accessorId, keys);
+    getAsText = async (accessorId:string):Promise<string> => await LocalAPI.profileStorage.getAsText(this.#profileId, accessorId);
+    setAsText = async (accessorId:string, contents:string) => await LocalAPI.profileStorage.setAsText(this.#profileId, accessorId, contents);
+    getAsBinary = async (accessorId:string):Promise<Buffer> => await LocalAPI.profileStorage.getAsBinary(this.#profileId, accessorId);
+    setAsBinary = async (accessorId:string, buffer:Buffer) => await LocalAPI.profileStorage.setAsBinary(this.#profileId, accessorId, buffer);
+    verifyAsSecret = async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.verifyAsSecret(this.#profileId, accessorId, keys);
+    setAsSecret = async (accessorId:string, data:KeyValueInput) => await LocalAPI.profileStorage.setAsSecret(this.#profileId, accessorId, data);
+    removeAsSecret = async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.removeAsSecret(this.#profileId, accessorId, keys);
     
-    async get(accessorId:string, keys:string[]) {
-        const [err, result] = await electron.GetProfileData(this.#profileId, accessorId, keys);
-        if (err) throw new IPCError(err.message);
-        return result;
-    }
+    storage = {
+        /** @deprecated use `verifyAsSecret` instead */
+        hasSecret : async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.verifyAsSecret(this.#profileId, accessorId, keys),
+        /** @deprecated use `setAsSecret` instead */
+        setSecret : async (accessorId:string, data:KeyValueInput) => await LocalAPI.profileStorage.setAsSecret(this.#profileId, accessorId, data),
+        /** @deprecated use `removeAsSecret` instead */
+        removeSecret : async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.removeAsSecret(this.#profileId, accessorId, keys),
+    } as const;
+    sessions = {
+        getIds : async () => await LocalAPI.profileSessions.getIds(this.#profileId),
+        add : async () => await LocalAPI.profileSessions.add(this.#profileId),
+        remove : async (sessionId:string) => await LocalAPI.profileSessions.remove(this.#profileId, sessionId),
+        reorder : async (sessions:string[]) => await LocalAPI.profileSessions.reorder(this.#profileId, sessions),
+        undoRemoved : async () => await LocalAPI.profileSessions.undoRemoved(this.#profileId),
+        
+        /** @deprecated use `add` instead */
+        create : async () => await LocalAPI.profileSessions.add(this.#profileId),
+    } as const;
+    rts = {
+        getTree : async () => LocalAPI.profileRTs.getTree(this.#profileId),
+        updateTree : async (tree:RTMetadataTree) => LocalAPI.profileRTs.updateTree(this.#profileId, tree),
+        generateId : async () => LocalAPI.profileRTs.generateId(this.#profileId),
+        add : async (metadata:RTMetadata) => LocalAPI.profileRTs.add(this.#profileId, metadata),
+        remove : async (rtId:string) => LocalAPI.profileRTs.remove(this.#profileId, rtId),
+        existsId : async (rtId:string) => LocalAPI.profileRTs.existsId(this.#profileId, rtId),
+        changeId : async (oldId:string, newId:string) => LocalAPI.profileRTs.changeId(this.#profileId, oldId, newId),
+        
+        /** @deprecated use `existsId` instead */
+        hasId : async (rtId:string) => LocalAPI.profileRTs.existsId(this.#profileId, rtId),
+    } as const;
     
-    async setOne(accessorId:string, key:string, value:any) {
-        const [err] = await electron.SetProfileData(this.#profileId, accessorId, [[key, value]]);
-        if (err) throw new IPCError(err.message);
-    }
-
-    async getOne(accessorId:string, key:string) {
-        const [err, result] = await electron.GetProfileData(this.#profileId, accessorId, [key]);
-        if (err) throw new IPCError(err.message);
-        return result[key];
-    }
-
-    /* get/set Text */
-    async getAsText(accessorId:string):Promise<string> {
-        const [err, contents] = await electron.GetProfileDataAsText(this.#profileId, accessorId);
-        if (err) throw new IPCError(err.message);
-        return contents;
-    }
-    async setAsText(accessorId:string, contents:string) {
-        const [err] = await electron.SetProfileDataAsText(this.#profileId, accessorId, contents);
-        if (err) throw new IPCError(err.message);
-    }
-
-    /* get/set Binary */
-    async getAsBinary(accessorId:string):Promise<Buffer> {
-        const [err, buffer] = await electron.GetProfileDataAsBinary(this.#profileId, accessorId);
-        if (err) throw new IPCError(err.message);
-        return buffer;
-    }
-    async setAsBinary(accessorId:string, buffer:Buffer) {
-        const [err] = await electron.SetProfileDataAsBinary(this.#profileId, accessorId, buffer);
-        if (err) throw new IPCError(err.message);
-    }
-
-    /* secret IO */
-    async hasSecret(accessorId:string, keys:string[]) {
-        const [err, result] = await electron.VerifyProfileDataAsSecret(this.#profileId, accessorId, keys);
-        if (err) throw new IPCError(err.message);
-        return result;
-    }
-    async setSecret(accessorId:string, data:KeyValueInput) {
-        const [err] = await electron.SetProfileDataAsSecret(this.#profileId, accessorId, data);
-        if (err) throw new IPCError(err.message);
-    }
-    async removeSecret(accessorId:string, keys:string[]) {
-        const [err] = await electron.RemoveProfileDataAsSecret(this.#profileId, accessorId, keys);
-        if (err) throw new IPCError(err.message);
-    }
     
-    /* 하위 API */
+    session(sessionId:string):SessionAPI {
+        if (!(sessionId in this.#sessionAPIs)) {
+            this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);
+        }
+        return this.#sessionAPIs[sessionId] as SessionAPI;
+    }
+    rt(rtId:string):RTAPI {
+        if (!(rtId in this.#rtAPIs)) {
+            this.#rtAPIs[rtId] = new RTAPI(this.#profileId, rtId);
+        }
+        return this.#rtAPIs[rtId] as RTAPI;
+    }
+
+
+    /** @deprecated use `session` instead */
     getSessionAPI(sessionId:string):SessionAPI {
         if (!(sessionId in this.#sessionAPIs)) {
             this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);
         }
         return this.#sessionAPIs[sessionId] as SessionAPI;
     }
+    /** @deprecated use `rt` instead */
     getRTAPI(rtId:string):RTAPI {
         if (!(rtId in this.#rtAPIs)) {
             this.#rtAPIs[rtId] = new RTAPI(this.#profileId, rtId);
@@ -109,67 +109,6 @@ class ProfileAPI {
         return this.#rtAPIs[rtId] as RTAPI;
     }
 
-    /* 세션 */
-    async getSessionIds():Promise<string[]> {
-        const [err, sessionIds] = await electron.GetProfileSessionIds(this.#profileId);
-        if (err) throw new IPCError(err.message);
-
-        return sessionIds;
-    }
-    async createSession() {
-        const [err, sid] = await electron.AddProfileSession(this.#profileId);
-        if (err) throw new IPCError(err.message);
-        return sid;
-    }
-    async removeSession(sessionId:string) {
-        const [err] = await electron.RemoveProfileSession(this.#profileId, sessionId);
-        if (err) throw new IPCError(err.message);
-
-        delete this.#sessionAPIs[sessionId];
-    }
-    async reorderSessions(sessions:string[]):Promise<void> {
-        const [err] = await electron.ReorderProfileSessions(this.#profileId, sessions);
-        if (err) throw new IPCError(err.message);
-    }
-    async undoRemoveSession() {
-        const [err, sid] = await electron.UndoRemoveProfileSession(this.#profileId);
-        if (err) throw new IPCError(err.message);
-
-        return sid;
-    }
-
-    /* RT */
-    async getRTTree():Promise<RTMetadataTree> {
-        const [err, tree] = await window.electron.GetProfileRTTree(this.#profileId);
-        if (err) throw new IPCError(err.message);
-        return tree;
-    }
-    async updateRTTree(tree:RTMetadataTree) {
-        const [err] = await electron.UpdateProfileRTTree(this.#profileId, tree);
-        if (err) throw new IPCError(err.message);
-    }
-    async generateRTId() {
-        const [err, rtId] = await electron.GenerateProfileRTId(this.#profileId);
-        if (err) throw new IPCError(err.message);
-        return rtId;
-    }
-    async addRT(metadata:RTMetadata) {
-        const [err] = await electron.AddProfileRT(this.#profileId, metadata);
-        if (err) throw new IPCError(err.message);
-    }
-    async removeRT(rtId:string) {
-        const [err] = await electron.RemoveProfileRT(this.#profileId, rtId);
-        if (err) throw new IPCError(err.message);
-    }
-    async hasRTId(rtId:string) {
-        const [err, exists] = await electron.HasProfileRTId(this.#profileId, rtId);
-        if (err) throw new IPCError(err.message);
-        return exists;
-    }
-    async changeRTId(oldId:string, newId:string) {
-        const [err] = await electron.ChangeProfileRTId(this.#profileId, oldId, newId);
-        if (err) throw new IPCError(err.message);
-    }
 }
 
 

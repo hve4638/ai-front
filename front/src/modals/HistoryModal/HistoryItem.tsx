@@ -1,8 +1,9 @@
-import { Align, Column } from '@/components/layout';
-import styles from './styles.module.scss';
 import classNames from 'classnames';
-import { HistoryData } from './types';
 
+import { Align, Column } from '@/components/layout';
+import type { HistoryData } from '@/features/session-history';
+
+import styles from './styles.module.scss';
 
 type HistoryItemProps = {
     value: HistoryData;

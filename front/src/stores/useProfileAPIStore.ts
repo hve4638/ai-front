@@ -9,7 +9,7 @@ interface ProfileAPIState {
 const useProfileAPIStore = create<ProfileAPIState>((set, get)=>({
     api: ProfilesAPI.getMockProfile(),
     setAPI : async (profileId: string) => {
-        const api = await ProfilesAPI.getProfile(profileId);
+        const api = ProfilesAPI.profile(profileId);
         set({ api });
     },
 }));

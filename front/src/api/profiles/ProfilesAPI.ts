@@ -1,11 +1,9 @@
 import { IPCError } from 'api/error';
+import LocalAPI from '@/api/local'
 import ProfileAPI from './ProfileAPI'
 
 class ProfilesAPI {
-    #profiles:Record<string, ProfileAPI> = {};
-
     static #instance:ProfilesAPI|null = null;
-
     static getInstance() {
         if (!this.#instance) {
             this.#instance = new ProfilesAPI();
@@ -13,40 +11,30 @@ class ProfilesAPI {
         return this.#instance;
     }
 
+    #profiles:Record<string, ProfileAPI> = {};
+
     private constructor() {}
 
-    async getProfileIds() {
-        const [err, profiles] = await window.electron.GetProfileList();
-        if (err) throw new IPCError(err.message);
-
-        return profiles;
-    }
-    async getLastProfile() {
-        const [err, profile] = await window.electron.GetLastProfile();
-        if (err) throw new IPCError(err.message);
+    async create() { return LocalAPI.profiles.create(); }
+    async delete(id:string) { return LocalAPI.profiles.delete(id); }
+    async getIds() { return LocalAPI.profiles.getIds(); }
+    async getLast() { return LocalAPI.profiles.getLast(); }
+    async setLast(id:string|null) { return LocalAPI.profiles.setLast(id); }
     
-        return profile;
-    }
-    async setLastProfile(id:string|null) {
-        const [err] = await window.electron.SetLastProfile(id);
-        if (err) throw new IPCError(err.message);
-    }
-
-    async createProfile() {
-        const [err, id] = await window.electron.CreateProfile();
-        if (err) throw new IPCError(err.message);
-        return id;
-    }
-    async deleteProfile(id:string) {
-       const [err] = await window.electron.DeleteProfile(id);
-       if (err) throw new IPCError(err.message);
-   }
-    async getProfile(id:string):Promise<ProfileAPI> {
+    /** @deprecated use `profile` instead */
+    getProfile(id:string) {
         if (!(id in this.#profiles)) {
             this.#profiles[id] = new ProfileAPI(id);
         }
         return this.#profiles[id];
     }
+    profile(profileId:string) {
+        if (!(profileId in this.#profiles)) {
+            this.#profiles[profileId] = new ProfileAPI(profileId);
+        }
+        return this.#profiles[profileId];
+    }
+
     getMockProfile():ProfileAPI {
         return ProfileAPI.getMock();
     }

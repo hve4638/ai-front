@@ -1,4 +1,3 @@
-import { IPCError } from 'api/error';
 import LocalAPI from 'api/local';
 import Channel from '@hve/channel';
 import { v7 as uuidv7 } from 'uuid';
@@ -52,12 +51,11 @@ class RequestAPI {
         this.#channels.delete(chId);
     }
 
-    async request(profileId:string, input:RTInput):Promise<string> {
+    async request(profileId:string, sessionId:string):Promise<string> {
         const chId = uuidv7();
         this.#openCh(chId);
 
-        const [err] = await window.electron.RequestProfileRT(chId, profileId, input);
-        if (err) throw new IPCError(err.message);
+        await LocalAPI.request.requestRT(chId, profileId, sessionId);
 
         return chId;
     }

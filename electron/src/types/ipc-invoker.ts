@@ -88,6 +88,12 @@ export enum IPCInvokerName {
     /* 프로필 RT 요청 */
     RequestProfileRT = 'RequestProfileRT',
     AbortProfileRTRequest = 'AbortProfileRTRequest',
+
+    /* 프로필 RT */
+    AddProfileRTNode = 'AddProfileRTNode',
+    RemoveProfileRTNode = 'RemoveProfileRTNode',
+    UpdateProfileRTNode = 'UpdateProfileRTNode',
+    AddProfileRTNodeForm = 'UpdateProfileRTNode',
 }
 
 export {};

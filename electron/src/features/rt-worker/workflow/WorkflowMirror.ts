@@ -3,7 +3,6 @@ import RTWorkflow from './RTWorkflow';
 
 class WorkflowMirror extends RTWorkflow {
     async process(rtInput:RTInput) {
-        const nodeData = this.getNodeData(rtInput);
         this.workLogger.workBegin();
         
         try {

@@ -43,16 +43,16 @@ function RTDropdown() {
     const openNewRTModal = ()=>{
         modal.open(NewRTModal, {
             onAddRT: (rtId:string, mode:RTMode) => {
-                navigate(`/prompt/${rtId}`);
+                navigate(`/workflow/${rtId}/prompt/default`);
             }
         });
     }
 
-    const changeRT = (rtId:string)=>{
-        updateSessionState.rt_id(rtId);
+    const changeRT = async (rtId:string)=>{
+        await updateSessionState.rt_id(rtId);
         
         if (name == null || name === '') {
-            signal.session_metadata();
+            await signal.session_metadata();
         }
     }
 
@@ -91,6 +91,7 @@ function RTDropdown() {
                     openNewRTModal();
                 }
                 else {
+
                     changeRT(item.key);
                 }
             }}

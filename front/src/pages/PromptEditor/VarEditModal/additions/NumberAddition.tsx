@@ -1,4 +1,5 @@
-import { CheckBoxForm, NumberForm, StringForm, StringLongForm } from "components/Forms";
+import { CheckBoxForm, NumberForm } from '@/components/Forms';
+import { useEffect } from 'react';
 
 type PropmtVarNumberOptionProps = {
     promptVar:PromptVarNumber;
@@ -22,12 +23,14 @@ function PropmtVarNumberOption({
         />
         <NumberForm
             name='기본값'
-            value={promptVar.default_value ?? 0}
+            value={promptVar.default_value ?? -1}
             onChange={(value)=>{
-                promptVar.default_value = value;
+                promptVar.default_value = isNaN(value) ? 0 : value;
                 onRefresh();
             }}
             allowDecimal={promptVar.allow_decimal ?? false}
+            
+            width='10em'
         />
     </>
     );

@@ -69,7 +69,7 @@ export enum IPCInvokerName {
     DeleteProfileSessionHistory = 'DeleteProfileSessionHistory',
     DeleteAllProfileSessionHistory = 'DeleteAllProfileSessionHistory',
 
-    /* 프로필 RT */
+    /* 프로필 RT (전역) */
     GetProfileRTTree = 'GetProfileRTTree',
     UpdateProfileRTTree = 'UpdateProfileRTTree',
     AddProfileRT = 'AddProfileRT',
@@ -84,6 +84,24 @@ export enum IPCInvokerName {
     GetProfileRTData = 'GetProfileRTData',
     SetProfileRTData = 'SetProfileRTData',
     ReflectProfileRTMetadata = 'ReflectProfileRTMetadata',
+
+    /* 프로필 RT */
+    AddProfileRTNode = 'AddProfileRTNode',
+    RemoveProfileRTNode = 'RemoveProfileRTNode',
+    UpdateProfileRTNodeData = 'UpdateProfileRTNodeData',
+    ConnectProfileRTNode = 'ConnectProfileRTNode',
+    DisconnectProfileRTNode = 'DisconnectProfileRTNode',
+
+    GetProfileRTMetadata = 'GetProfileRTMetadata',
+    SetProfileRTMetadata = 'SetProfileRTMetadata',
+
+    GetProfileRTPromptMetadata = 'GetProfileRTPromptMetadata',
+    SetProfileRTPromptMetadata = 'SetProfileRTPromptMetadata',
+    GetProfileRTPromptForms = 'GetProfileRTPromptForms',
+    SetProfileRTPromptForm = 'SetProfileRTPromptForm',
+    RemoveProfileRTPromptForm = 'RemoveProfileRTPromptForm',
+    GetProfileRTPromptContents = 'GetProfileRTPromptContents',
+    SetProfileRTPromptContents = 'SetProfileRTPromptContents',
 
     /* 프로필 RT 요청 */
     RequestProfileRT = 'RequestProfileRT',

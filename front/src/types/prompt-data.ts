@@ -1,7 +1,10 @@
 import { PromptInputType } from 'types';
 
 export type PromptData = {
-    id : string;
+    id? : string;
+
+    rtId : string;
+    promptId : string;
     name : string;
     forms : PromptVar[];
     inputType : PromptInputType;

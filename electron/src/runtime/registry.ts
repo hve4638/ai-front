@@ -26,6 +26,6 @@ export function updateRegistry(newRegistry: PartialRuntimeRegistry) {
             else {
                 registry[key] = value;
             }
-        }
+        }5
     }
 }

@@ -19,7 +19,10 @@ export default [
       // resolve(),
       commonjs(),
       json(),
-      typescript({ tsconfig: './tsconfig.json' }),
+      typescript({
+        tsconfig: './tsconfig.json',
+        clean: true,
+      }),
       // terser(),
     ],
     external: ['electron'],

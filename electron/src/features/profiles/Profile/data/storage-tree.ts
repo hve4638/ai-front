@@ -6,7 +6,13 @@ export const PROFILE_STORAGE_TREE = {
     'session' : {
         '*' : {
             'data.json' : StorageAccess.JSON({
-                
+                'forms' : {
+                    // key : rt id
+                    '*' : {
+                        // key : form id
+                        '*' : JSONType.Any(),
+                    }
+                }
             }),
             'config.json' : StorageAccess.JSON({
                 'name' : JSONType.String(),
@@ -31,13 +37,21 @@ export const PROFILE_STORAGE_TREE = {
         'setting_models_show_snapshot' : JSONType.Bool(),
         'setting_models_show_experimental' : JSONType.Bool(),
         'setting_models_show_deprecated' : JSONType.Bool(),
-        'prompt_variables' : JSONType.Struct(),
-        'removed_sessions' : JSONType.Array(JSONType.Number()).strict(),
+
+        'removed_sessions' : JSONType.Array(JSONType.String()).strict(),
         
         'history_search_scope' : JSONType.Union('any', 'input', 'output').default_value('any'),
         'history_apply_rt' : JSONType.Bool().default_value(false),
         'history_apply_model' : JSONType.Bool().default_value(false),
         'history_apply_form' : JSONType.Bool().default_value(false),
+
+        'forms' : {
+            // key : rt id
+            '*' : {
+                // key : form id
+                '*' : JSONType.Any(),
+            }
+        }
     }),
     'data.json' : StorageAccess.JSON({
         'sessions' : JSONType.Array(JSONType.String()).strict(),
@@ -53,9 +67,12 @@ export const PROFILE_STORAGE_TREE = {
         'name' : JSONType.String(),
         'color' : JSONType.String(),
         'font_size' : JSONType.Number(),
-        'theme_mode' : JSONType.String(),
-        'layout_mode' : JSONType.String(),
+        'theme_mode' : JSONType.Union('auto', 'light', 'dark').default_value('auto'),
+        'layout_mode' : JSONType.Union('vertical', 'horizontal').default_value('horizontal'),
         'history_enabled' : JSONType.Bool(),
+        'textarea_padding' : JSONType.Number().default_value(8),
+        'textarea_io_ratio' : JSONType.Array(JSONType.Number()).nullable(), // [input_rate, output_rate]
+
         'max_history_limit_per_session' : JSONType.Number(),
         'max_history_storage_days' : JSONType.Number(),
         'remember_deleted_session_count' : JSONType.Number(),

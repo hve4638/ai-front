@@ -1,4 +1,4 @@
-import { IPCError } from 'api/error';
+import LocalAPI from '@/api/local';
 
 const electron = window.electron;
 
@@ -16,41 +16,25 @@ class SessionAPI {
     }
 
     async get(accessorId:string, keys:string[]) {
-        const [err, data] = await electron.GetProfileSessionData(this.#profileId, this.#sessionId, accessorId, keys);
-        if (err) throw new IPCError(err.message);
-        return data;
+        return LocalAPI.profileSessionStorage.get(this.#profileId, this.#sessionId, accessorId, keys);
     }
     async set(accessorId:string, data:KeyValueInput) {
-        const [err] = await electron.SetProfileSessionData(this.#profileId, this.#sessionId, accessorId, data);
-        if (err) throw new IPCError(err.message);
+        await LocalAPI.profileSessionStorage.set(this.#profileId, this.#sessionId, accessorId, data);
     }
 
-    /* 히스토리 */
-    async getHistoryMetadata(offset:number=0, limit:number=100) {
-        const [err, history] = await electron.GetProfileSessionHistoryMetadata(this.#profileId, this.#sessionId, offset, limit);
-        if (err) throw new IPCError(err.message);
+    async getFormValues(rtId:string) {
+        return LocalAPI.profileSession.getFormValues(this.#profileId, this.#sessionId, rtId);
+    }
+    async setFormValues(rtId:string, data:Record<string, any>) {
+        await LocalAPI.profileSession.setFormValues(this.#profileId, this.#sessionId, rtId, data);
+    }
 
-        return history;
-    }
-    async searchHistoryMetadata(offset:number=0, limit:number=100, search:HistorySearch) {
-        const [err, history] = await electron.SearchProfileSessionHistoryMetadata(this.#profileId, this.#sessionId, offset, limit, search);
-        if (err) throw new IPCError(err.message);
-
-        return history;
-    }
-    async getHistoryMessage(historyIds:number[]) {
-        const [err, messages] = await electron.GetProfileSessionHistoryMessage(this.#profileId, this.#sessionId, historyIds);
-        if (err) throw new IPCError(err.message);
-
-        return messages;
-    }
-    async deleteHistory(historyKey:number) {
-        const [err] = await electron.DeleteProfileSessionHistory(this.#profileId, this.#sessionId, historyKey);
-        if (err) throw new IPCError(err.message);
-    }
-    async deleteAllHistory() {
-        const [err] = await electron.DeleteAllProfileSessionHistory(this.#profileId, this.#sessionId);
-        if (err) throw new IPCError(err.message);
+    history = {
+        get : async (offset:number=0, limit:number=100) => LocalAPI.profileSessionHistory.get(this.#profileId, this.#sessionId, offset, limit),
+        search : async (offset:number=0, limit:number=100, search:HistorySearch) => LocalAPI.profileSessionHistory.search(this.#profileId, this.#sessionId, offset, limit, search),
+        getMessage : async (historyIds:number[]) => LocalAPI.profileSessionHistory.getMessage(this.#profileId, this.#sessionId, historyIds),
+        delete : async (historyKey:number) => LocalAPI.profileSessionHistory.delete(this.#profileId, this.#sessionId, historyKey),
+        deleteAll : async () => LocalAPI.profileSessionHistory.deleteAll(this.#profileId, this.#sessionId),
     }
 }
 

@@ -17,8 +17,6 @@ export function initPromptVar(promptVar:PromptVar|undefined|null) {
             break;
         case 'number':
             promptVar.allow_decimal ??= false;
-            promptVar.minimum_value ??= null;
-            promptVar.maximum_value ??= null;
             break;
         case 'checkbox':
             promptVar.default_value ??= false;
@@ -36,8 +34,6 @@ export function initPromptVar(promptVar:PromptVar|undefined|null) {
             promptVar.fields ??= [];
             break;
         case 'array':
-            promptVar.minimum_length ??= null;
-            promptVar.maximum_length ??= null;
             promptVar.element ??= {
                 display_name: '',
                 name: '',

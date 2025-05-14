@@ -23,7 +23,7 @@ function MasterKeyProcess({
                 return;
             }
 
-            const masterKeyState = await LocalAPI.initMasterKey()
+            const masterKeyState = await LocalAPI.masterKey.init()
             switch (masterKeyState) {
                 case 'no-data':
                 case 'invalid-data':
@@ -49,7 +49,7 @@ function MasterKeyProcess({
             resetMode &&
             <SetupRecoveryKeyModal
                 onSubmit={async (recoveryKey:string)=>{
-                    await LocalAPI.resetMasterKey(recoveryKey);
+                    await LocalAPI.masterKey.reset(recoveryKey);
                     return true;
                 }}
                 onClose = {()=>{
@@ -62,7 +62,7 @@ function MasterKeyProcess({
             recoveryMode &&
             <RecoveryModal
                 onRecovery={async (recoveryKey:string)=>{
-                    const success = await LocalAPI.recoverMasterKey(recoveryKey);
+                    const success = await LocalAPI.masterKey.recover(recoveryKey);
                     return success;
                 }}
                 onReset={async ()=>{

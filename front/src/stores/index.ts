@@ -6,5 +6,6 @@ export { default as useProfileEvent } from './useProfileEvent';
 export { default as useSessionStore } from './useSessionStore';
 export { default as useSignalStore } from './useSignalStore';
 export { default as useShortcutSignalStore } from './useShortcutSignalStore';
+export { default as useChannelStore } from './useChannelStore';
 
 export { subscribeStates } from './subscribeStates';

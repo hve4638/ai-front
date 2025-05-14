@@ -4,17 +4,19 @@ import getHandlers from './handlers';
 import { updateRegistry } from '@/runtime';
 
 export function initIPC() {
-    const handlers = getHandlers();
+    const handlers:IPCInvokerInterface = getHandlers();
 
-    for(const ping in handlers) {
-        const handler = handlers[ping as IPCInvokerName];
-        handleIPC(ping as IPCInvokerName, handler);
+    for(const category in handlers) {
+        for (const invokeKey in handlers[category]) {
+            const handler = handlers[category][invokeKey]
+            handleIPC(`${category}_${invokeKey}`, handler);
+        }
     }
-
+    
     updateRegistry({ ipcFrontAPI : handlers });
 }
 
-function handleIPC(ping:IPCInvokerName, callback:any) {
+function handleIPC(ping:string, callback:any) {
     const handler = async (event: any, ...args: any) => {
         console.log(`[IPC] ${ping}`, ...args);
         try {

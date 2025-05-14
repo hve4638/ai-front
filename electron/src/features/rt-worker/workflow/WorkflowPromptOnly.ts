@@ -3,8 +3,8 @@ import { StringifyChatMLNode } from '../nodes';
 import RTWorkflow from './RTWorkflow';
 
 class RTWorkflowPromptOnly extends RTWorkflow {
-    async process(input:RTInput):Promise<any> {
-        const nodeData = this.getNodeData(input);
+    async process(rtInput:RTInput):Promise<any> {
+        const nodeData = this.getNodeData(rtInput);
 
         const inputNode = new InputNode(0, nodeData, { inputType : 'normal' });
         const promptBuildNode = new PromptBuildNode(1, nodeData, { promptId : 'default', form : {} });
@@ -18,6 +18,7 @@ class RTWorkflowPromptOnly extends RTWorkflow {
             await outputNode.run({ output: chatML });
         }
         finally {
+            console.info('Workflow finished');
             this.rtSender.sendClose();
         }
         

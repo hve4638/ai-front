@@ -1,64 +1,60 @@
-import { Flex, Row } from "components/layout";
-import { LegacyRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Flex, Row } from '@/components/layout';
+import { NumberInput } from '@/components/Input';
+import classNames from 'classnames';
 
 interface NumberFormProps {
     name:string;
-    width?:string;
+
     value:number;
-    lazy?:boolean;
     onChange:(x:number)=>void;
     allowDecimal?:boolean;
+    instantChange?:boolean;
+    
+    className?: string;
+    style?: React.CSSProperties;
+    width?:string;
+    placeholder?: string;
 }
 
 function NumberForm({
     name,
-    width,
     value,
     onChange,
-    lazy=false,
-    allowDecimal=false
-}:NumberFormProps) {
-    const [current, setCurrent] = useState<string>(value.toString());
-    useLayoutEffect(()=>{
-        setCurrent(value.toString());
-    }, [value]);
+    allowDecimal = false,
+    instantChange = false,
 
-    const commitChange = (value:string) => {
-        if (allowDecimal) {
-            onChange(parseFloat(value))
-        }
-        else {
-            onChange(parseInt(value))
-        }
-    }
+    className = '',
+    style = {},
+    width,
+    placeholder = '',
+}:NumberFormProps) {
 
     return (
         <Row
             style={{
+                width: '100%',
                 height: '1.4em',
-                margin: '0.5em 0'
+                // margin: '0.5em 0'
             }}
         >
-            <span className='noflex undraggable'>
+            <span
+                className={classNames('noflex undraggable', className)}
+            >
                 {name}
             </span>
             <Flex/>
-            <input
-                className='input-number'
-                type='number'
-                value={current}
+            <NumberInput
                 style={{
-                    width
+                    ...style,
+                    width,
                 }}
-                onChange={(e)=>{
-                    setCurrent(e.target.value);
-                }}
-                onBlur={()=>{
-                    commitChange(current);
-                }}
-                onKeyDown={(e)=>{
-                    if (e.key === 'Enter') commitChange(current);
-                }}
+
+                onChange={onChange}
+                value={value}
+                allowDecimal={allowDecimal}
+                instantChange={instantChange}
+                placeholder={placeholder}
             />
         </Row>
     );

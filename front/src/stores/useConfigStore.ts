@@ -8,9 +8,13 @@ interface ConfigFields {
     font_size: number;
     theme_mode: ThemeModes;
     layout_mode: LayoutModes;
+    history_enabled: boolean;
+
+    textarea_padding : number;
+    textarea_io_ratio : [number, number];
+    
     remember_deleted_session_count: number;
     confirm_on_session_close: boolean;
-    history_enabled: boolean;
     max_history_limit_per_session: number;
     max_history_storage_days: number;
     global_shortcut_enabled: boolean;
@@ -21,10 +25,13 @@ interface ConfigFields {
 const defaultConfig:ConfigFields = {
     font_size: 18,
     theme_mode: ThemeModes.SYSTEM_DEFAULT,
-    layout_mode: LayoutModes.AUTO,
+    layout_mode: LayoutModes.HORIZONTAL,
+    history_enabled: true,
+
+    textarea_padding : 16,
+    textarea_io_ratio : [2048, 2048],
     remember_deleted_session_count: 30,
     confirm_on_session_close: false,
-    history_enabled: true,
     max_history_limit_per_session: 10000,
     max_history_storage_days: 0,
     global_shortcut_enabled: false,
@@ -33,14 +40,17 @@ const defaultConfig:ConfigFields = {
 };
 
 interface ConfigState extends ConfigFields {
+    commit: RefetchMethods<ConfigFields>;
+    localUpdate: UpdateMethods<ConfigFields>;
     update: UpdateMethods<ConfigFields>;
     refetch: RefetchMethods<ConfigFields>;
     refetchAll : () => Promise<void>;
 }
 
-
 export const useConfigStore = create<ConfigState>((set, get)=>{
     const {
+        commit,
+        localUpdate,
         update,
         refetch,
         refetchAll
@@ -48,7 +58,8 @@ export const useConfigStore = create<ConfigState>((set, get)=>{
 
     return {
         ...defaultConfig,
-        
+        commit,
+        localUpdate,
         update,
         refetch,
         refetchAll,

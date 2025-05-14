@@ -1,20 +1,20 @@
 import runtime from '@/runtime';
-import { IPCInvokerName } from 'types';
 
-function handler() {
+function globalStorage():IPCInvokerGlobalStorage {
     return {
-        [IPCInvokerName.GetGlobalData] : async (identifier:string, key:string[]) => {
+        async get(identifier:string, key:string[]) {
             const accessor = await runtime.globalStorage.accessAsJSON(identifier);
+            const value = accessor.get(...key)
 
-            return [null, accessor.get(...key)] as const;
+            return [null, value];
         },
-        [IPCInvokerName.SetGlobalData] : async (identifier:string, data:KeyValueInput) => {
+        async set(identifier:string, data:KeyValueInput) {
             const accessor = await runtime.globalStorage.accessAsJSON(identifier);
 
             accessor.set(data);
-            return [null] as const;
+            return [null];
         },
     }
 }
 
-export default handler;
+export default globalStorage;

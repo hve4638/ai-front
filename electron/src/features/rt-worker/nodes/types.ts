@@ -4,12 +4,16 @@ import WorkLogger from '../WorkLog';
 import { HistoryRequired } from '@/features/acstorage-accessor/HistoryAccessor';
 
 export type NodeData = {
-    rtInput:RTInput;
     sender:RTSender;
     logger:WorkLogger;
-    rtId: string;
-    modelId: string;
+
     profile: Profile;
-    sessionId: string|undefined;
     historyRequired: HistoryRequired;
+    
+    input: string;
+    chat : RTInputMessage[];
+    form: Record<string, any>;
+    modelId: string;
+    rtId: string;
+    sessionId: string|undefined;
 }

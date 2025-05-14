@@ -20,6 +20,7 @@ function Button({
             className={
                 classNames(
                     'button',
+                    'btn-radius',
                     className,
                     { disabled : disabled }
                 )
@@ -32,6 +33,12 @@ function Button({
                 if (!disabled) {
                     onClick();
                 }
+            }}
+            onKeyDown={(e)=>{
+                if (e.key === 'Enter' && !disabled) {
+                    onClick();
+                    e.stopPropagation();
+                }  
             }}
         >
             {

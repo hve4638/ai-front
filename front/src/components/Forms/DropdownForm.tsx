@@ -1,8 +1,6 @@
-import Dropdown from "components/Dropdown";
-import type { DropdownItem, DropdownItemList } from "components/Dropdown";
-import ToggleSwitch from "components/ToggleSwitch";
-import { Flex, Row } from "components/layout";
-import { useState } from "react";
+import Dropdown from '@/components/Dropdown';
+import type { DropdownItem, DropdownItemList } from '@/components/Dropdown';
+import { Align, Flex, Row } from '@/components/layout';
 
 interface DropdownFormProps {
     name:string;
@@ -24,10 +22,13 @@ function DropdownForm({
         style={{
             width: '100%',
             height: '1.4em',
-            margin: '0.5em 0'
+            lineHeight: '1',
         }}
+        columnAlign={Align.Center}
     >
-        <span className='noflex undraggable'>
+        <span
+            className='noflex undraggable'
+        >
             {name}
         </span>
         <Flex/>

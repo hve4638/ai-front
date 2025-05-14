@@ -2,64 +2,82 @@ import classNames from 'classnames';
 import { useTranslation } from "react-i18next";
 import styles from './styles.module.scss';
 
-import { Align, Column, Flex, Grid, Row } from "components/layout";
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
-import Button from 'components/Button';
-import { DropdownForm } from 'components/Forms';
-import { PromptData } from '@/types';
-import { PromptInputType } from 'types';
-import { useModal } from 'hooks/useModal';
-import MetadataEditModal from './MetadataEditModal';
-import VarEditModal from './VarEditModal';
-import useHotkey from 'hooks/useHotkey';
 import { useProfileEvent } from '@/stores';
 import { RTStoreContext, useContextForce } from '@/context';
 
+import { Align, Column, Flex, Grid, Row } from "@/components/layout";
+import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
+import { DropdownForm } from '@/components/Forms';
+import Button from '@/components/Button';
+
+import { useModal } from '@/hooks/useModal';
+import useHotkey from '@/hooks/useHotkey';
+import MetadataEditModal from './MetadataEditModal';
+import VarEditModal from './VarEditModal';
+
+import type { PromptEditorData, PromptInputType } from '@/types';
+import { EditableText } from '@/components/EditableText';
+import PromptOnlyConfigModal from './PromptOnlyConfigModal';
+
 type SidePanelProps = {
-    promptData:PromptData;
-    onSave: (tree:RTMetadataTree)=>Promise<void>;
+    data:PromptEditorData;
+    saved?:boolean;
+
+    onSave: ()=>Promise<void>;
     onBack : ()=>void;
+    onRefresh: ()=>void;
 
     onChangeInputType: (inputType:PromptInputType)=>void;
-    onRefresh: ()=>void;
-    onAddPromptVarClick: ()=>PromptVar;
-    onRemovePromptVarClick: (promptVar:PromptVar)=>void;
+    onAddPromptVar: ()=>PromptVar;
+    onRemovePromptVar: (promptVar:PromptVar)=>void;
 }
 
 function SidePanel({
-    promptData,
+    data,
+    saved=false,
 
     onSave,
     onBack,
     
     onRefresh,
     onChangeInputType,
-    onAddPromptVarClick,
-    onRemovePromptVarClick,
+    onAddPromptVar,
+    onRemovePromptVar,
 }:SidePanelProps) {
     const { t } = useTranslation();
     const modal = useModal();
-    const { hasRTId } = useProfileEvent();
-    const rtState = useContextForce(RTStoreContext);
-    
-    const save = async ()=>{
-        rtState.update.promptdata('default', {
-            name : promptData.name,
-            id : promptData.id,
-            forms : promptData.forms,
-            inputType : promptData.inputType,
-            contents : promptData.contents,
-        })
+
+    const openVarEditorModal = (promptVar:PromptVar) => {
+        modal.open(VarEditModal, {
+            variables : data.variables,
+            target: promptVar,
+            onRefresh: ()=>{
+                if (!data.changedVariables.includes(promptVar)) {
+                    data.changedVariables.push(promptVar);
+                }
+                console.log('changed', promptVar);
+                onRefresh();
+            },
+        });
+    }
+    const openPromptOnlyConfigModal = () => {
+        modal.open(PromptOnlyConfigModal, {
+            data,
+            onRefresh : () => {
+                console.log('changed');
+                onRefresh();
+            },
+        });
     }
     
     useHotkey({
         's' : (e)=>{
             if (e.ctrlKey) {
-                save();
+                onSave();
                 return true;
             }
         }
-    }, modal.count === 0, [save]);
+    }, modal.count === 0, [onSave]);
     
     return <Column
         className={styles['edit-panel']}
@@ -76,43 +94,35 @@ function SidePanel({
             }}
             columnAlign={Align.Center}
         >
-            <strong
+            <EditableText
+                value={data.name ?? ''}
+                editable={true}
+                onChange={(name)=>{
+                    data.changed.name = true;
+                    data.name = name;
+                    onRefresh();
+                }}
+            />
+            {/* <strong
                 style={{
                     display: 'block',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                 }}
-            >{promptData.name}</strong>
-            <Flex/>
-            <GoogleFontIcon
-                enableHoverEffect={true}
+            >{data.name}</strong> */}
+            <GIconButton
                 className='noflex'
                 style={{
                     fontSize: '1.5em',
                     cursor: 'pointer',
                     margin: '4px'
                 }}
-                value='edit'
-                onClick={()=>{
-                    modal.open(MetadataEditModal, {
-                        metadata: promptData,
-                        onChange: async (next)=>{
-                            // id 중복 검사
-                            if (promptData.id === next.id || !await hasRTId(next.id)) {
-                                promptData.name = next.name;
-                                promptData.id = next.id;
-                                onRefresh();
-                                return true;
-                            }
-                            return false;
-                        }
-                    });
-                    // onEditMetadataClick();
-                }}
+                value='settings'
+                onClick={()=>openPromptOnlyConfigModal()}
+                hoverEffect='circle'
             />
-            <GoogleFontIcon
-                enableHoverEffect={true}
+            <GIconButton
                 className='noflex'
                 style={{
                     fontSize: '1.5em',
@@ -121,26 +131,27 @@ function SidePanel({
                 }}
                 value='close'
                 onClick={()=>onBack()}
+                hoverEffect='square'
             />
         </Row>
         <div style={{height: '1em'}}/>
-        <h2
+        {/* <h2
             className='undraggable'
             style={{
                 marginBottom: '4px'
             }}
-        >{'프롬프트'}</h2>
-        <DropdownForm
+        >{'프롬프트'}</h2> */}
+        {/* <DropdownForm
             name='요청 형태'
-            value={promptData.inputType}
+            value={data.inputType}
             items={[
                 { name: '일반', key: PromptInputType.NORMAL },
                 { name: '채팅', key: PromptInputType.CHAT },
             ]}
             onChange={(select)=>onChangeInputType(select.key as PromptInputType)}
             onItemNotFound={()=>onChangeInputType(PromptInputType.NORMAL)}
-        />
-        <hr/>
+        /> */}
+        {/* <hr/> */}
         <h2
             className='undraggable'
             style={{
@@ -155,8 +166,9 @@ function SidePanel({
             }}
         >
         {
-            promptData.forms.map((item, index)=>(
+            data.variables.map((item, index)=>(
                 <Row
+                    key={index}
                     className={
                         classNames(
                             'undraggable',
@@ -169,10 +181,7 @@ function SidePanel({
                         padding: '4px 8px'
                     }}
                     onClick={()=>{
-                        modal.open(VarEditModal, {
-                            promptVar: item,
-                            onRefresh: onRefresh,
-                        });
+                        openVarEditorModal(item);
                     }}
                 >
                     <span>{item.name}</span>
@@ -191,7 +200,7 @@ function SidePanel({
                             e.preventDefault();
                             e.stopPropagation();
 
-                            onRemovePromptVarClick(item);
+                            onRemovePromptVar(item);
                         }}
                     />
                 </Row>
@@ -204,11 +213,8 @@ function SidePanel({
                 styles['add-var-button']
             )}
             onClick={()=>{
-                const promptVar = onAddPromptVarClick();
-                modal.open(VarEditModal, {
-                    promptVar: promptVar,
-                    onRefresh: onRefresh,
-                });
+                const promptVar = onAddPromptVar();
+                openVarEditorModal(promptVar);
             }}
         >
             <GoogleFontIcon
@@ -232,14 +238,19 @@ function SidePanel({
             }}
         >
             <Button
+                disabled={saved}
                 className={styles['save-button']}
                 style={{
                     width: '100%',
                     height: '100%',
                 }}
-                onClick={save}
+                onClick={onSave}
             >
-                { t('prompt_editor.save_label') }
+            {
+                saved
+                ? t('prompt_editor.saved_label')
+                : t('prompt_editor.save_label')
+            }
             </Button>
         </Row>
     </Column>

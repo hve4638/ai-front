@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
 import DivButton from 'components/DivButton';
 import { useModal } from 'hooks/useModal';
 import StringInputModal from 'modals/StringInputModal';
-import { GoogleFontIcon, GoogleFontIconButton } from 'components/GoogleFontIcon';
+import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { Align, Flex, Row } from 'components/layout';
 import Dropdown from 'components/Dropdown';
 import { APIKeyMetadata } from 'types/apikey-metadata';
@@ -21,6 +20,7 @@ function APIKeyOptions() {
             <Row>
                 <b className='undraggable'>OpenAI</b>
             </Row>
+            <div style={{height: '0.25em'}}/>
             {
                 openAIAPIs.map((item, index)=>(
                     <APIItem
@@ -43,6 +43,7 @@ function APIKeyOptions() {
             />
             <div style={{height: '1em'}}/>
             <b className='undraggable'>Anthropic Claude</b>
+            <div style={{height: '0.25em'}}/>
             
             <AddAPIKeyButton
                 title='Anthropic API 키'
@@ -52,6 +53,7 @@ function APIKeyOptions() {
             />
             <div style={{height: '1em'}}/>
             <b className='undraggable'>Google Gemini</b>
+            <div style={{height: '0.25em'}}/>
             <AddAPIKeyButton
                 title='Google API 키'
                 onAddAPIKey={async (apiKey)=>{
@@ -59,6 +61,7 @@ function APIKeyOptions() {
                 }}/>
             <div style={{height: '1em'}}/>
             <b className='undraggable'>VertexAI</b>
+            <div style={{height: '0.25em'}}/>
             <AddAPIKeyButton
                 title='VertexAI API 키'
                 onAddAPIKey={async (apiKey)=>{

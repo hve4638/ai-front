@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { ButtonForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
-import { useConfigStore } from '@/stores';
+import { NumberForm, ToggleSwitchForm } from '@/components/Forms';
 
 function ServerOptions() {
     const [enabled, setEnabled] = useState(false);

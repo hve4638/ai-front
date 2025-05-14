@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import styles from '../styles.module.scss';
 
 import { Align, Flex, Row } from 'components/layout';
@@ -7,14 +7,26 @@ import { useModal } from 'hooks/useModal';
 
 import RTDropdown from './RTDropdown';
 import ModelDropdown from './ModelDropdown';
-import { useSessionStore } from '@/stores';
+import { useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
 import classNames from 'classnames';
-import { GoogleFontIcon, GoogleFontIconButton } from '@/components/GoogleFontIcon';
+import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
 import HistoryModal from '@/modals/HistoryModal';
+import FormModal from '@/modals/FormModal';
 
 function Header() {
     const modal = useModal();
-    const color = useSessionStore(state=>state.color);
+    const { api } = useProfileAPIStore();
+    const color = useSessionStore(state => state.color);
+    const rt_id = useSessionStore(state => state.rt_id);
+
+    const [showFormButton, setShowFormButton] = useState(false);
+
+    useEffect(() => {
+        api.rt(rt_id).getForms()
+            .then(forms => {
+                setShowFormButton(forms.length > 0);
+            })
+    }, [rt_id]);
 
     const [showAvatarPopover, setShowAvatarPopover] = useState(false);
 
@@ -35,11 +47,11 @@ function Header() {
                     margin: '0px 8px',
                 }}
             >
-                <ModelDropdown/>
-                <Flex/>
-                <RTDropdown/>
+                <ModelDropdown />
+                <Flex />
+                <RTDropdown />
             </Flex>
-            
+
             <Flex
                 style={{
                     margin: '0px 8px',
@@ -52,8 +64,35 @@ function Header() {
                     }}
                     columnAlign={Align.Center}
                 >
-                    {/* 변수 */}
-                    <Flex/>
+                    {
+                        showFormButton &&
+                        <GIconButton
+                            value='edit_note'
+                            style={{
+                                height: '100%',
+                                aspectRatio: '1/1',
+                                fontSize: '2em',
+                            }}
+                            hoverEffect='square'
+                            onClick={() => {
+                                modal.open(FormModal, {})
+                            }}
+
+                        />}
+                    <Flex />
+                    <GIconButton
+                        value='error'
+                        style={{
+                            height: '100%',
+                            aspectRatio: '1/1',
+                            fontSize: '2em',
+                        }}
+                        hoverEffect='circle'
+                        onClick={() => {
+                            modal.open(FormModal, {})
+                        }}
+
+                    />
                     {/* 에러 */}
                     <GoogleFontIcon
                         value='history'
@@ -64,17 +103,15 @@ function Header() {
                             fontSize: '2em',
                             cursor: 'pointer',
                         }}
-                        onClick={()=>{
-                            modal.open(HistoryModal, {
-                                
-                            })
+                        onClick={() => {
+                            modal.open(HistoryModal, {})
                         }}
                     />
                     <div className={styles['avatar-container']}>
                         <label
                             className={styles['avatar-label']}
-                            onClick={()=>{
-                                setShowAvatarPopover(prev=>!prev);
+                            onClick={() => {
+                                setShowAvatarPopover(prev => !prev);
                             }}
                         >
                             <div
@@ -84,7 +121,7 @@ function Header() {
                         {
                             showAvatarPopover &&
                             <AvatarPopover
-                                onClose={()=>setShowAvatarPopover(false)}
+                                onClose={() => setShowAvatarPopover(false)}
                             />
                         }
                     </div>

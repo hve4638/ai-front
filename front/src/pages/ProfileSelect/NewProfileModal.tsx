@@ -4,7 +4,6 @@ import { Align, Column, Flex, Row } from 'components/layout';
 import Button from 'components/Button';
 import { ModalHeader } from 'components/Modal';
 import { TextInput } from 'components/Input';
-import { ButtonForm, StringForm } from 'components/Forms';
 import classNames from 'classnames';
 
 import styles from './styles.module.scss';

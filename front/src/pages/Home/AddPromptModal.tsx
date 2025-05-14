@@ -1,13 +1,10 @@
-import Button from 'components/Button';
-import { StringForm, StringLongForm } from 'components/Forms';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
-import { Modal, ModalHeader } from 'components/Modal';
-import { Align, Center, Column, Grid, Row } from 'components/layout';
-import { MODAL_DISAPPEAR_DURATION } from 'data';
-import useHotkey from 'hooks/useHotkey';
-import useModalDisappear from 'hooks/useModalDisappear';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GoogleFontIcon } from '@/components/GoogleFontIcon';
+import { Modal, ModalHeader } from '@/components/Modal';
+import { Align, Center, Column, Grid, Row } from '@/components/layout';
+
+import useModalDisappear from '@/hooks/useModalDisappear';
+import useHotkey from '@/hooks/useHotkey';
 
 type AddPromptModalProps = {
     onAddPrompt: (type: 'simple'|'node') => void;

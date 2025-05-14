@@ -72,11 +72,13 @@ class Profiles {
         this.#profileIdentifiers.push(identifier);
 
         const profile = await this.#acccessAsProfile(identifier);
-        const sessionId=  await profile.createSession();
+        const sessionId=  await profile.sessions.create();
         const ac = await profile.accessAsJSON('config.json')
         ac.setOne('name', 'New Profile');
 
-        await profile.setSelectedSession(sessionId);
+        await profile.createUsingTemplate({ id: '', name : 'New RT', mode: 'prompt_only' }, 'normal');
+
+        await profile.sessions.setLast(sessionId);
 
         return identifier;
     }

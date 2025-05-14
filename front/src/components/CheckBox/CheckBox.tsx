@@ -17,39 +17,20 @@ export function CheckBox({
 }:CheckboxProps) {
     return (
         <Center
-            
-            // className={
-            //     `checkbox-container undraggable`
-            //     + (className ? ` ${className}` : '')
-            // }
             style={style}
         >
             <input
                 type='checkbox'
+                
+                className={className}
                 style={{
                     height: '100%',
                     aspectRatio: '1/1',
+                    cursor : 'pointer',
                 }}
                 checked={checked}
                 onChange={(e)=>onChange(e.target.checked)}
             />
-            {/* <div
-                className={
-                    'checkbox center'
-                    + (checked ? ' checked' : '')
-                }
-                style={{
-                    cursor: 'pointer',
-                }}
-                onClick={(e)=>onChange(!checked)}
-            >
-                {
-                    checked &&
-                    <span className="material-symbols-outlined">
-                        check
-                    </span>
-                }
-            </div> */}
         </Center>
     );
 }

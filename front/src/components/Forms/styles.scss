@@ -11,7 +11,6 @@ input::-webkit-outer-spin-button {
     width: 7em;
     height : 100%;
     border : 1px solid rgb(138, 138, 138, 0.5);
-    // background-color: rgb(41, 46, 53);
     border-radius: 6px;
 }
 
@@ -29,11 +28,4 @@ button.form-button {
     &:hover {
         background-color: rgb(51, 56, 63);
     }
-}
-
-.string-form {
-    input.warn {
-        border-color: rgb(159, 0, 0);
-    }
-
 }

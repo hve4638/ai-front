@@ -25,7 +25,6 @@ class OutputNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, P
             token_count: 0,
         });
 
-
         sender.sendResult(output);
 
         return {};

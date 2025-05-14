@@ -38,7 +38,7 @@ function App() {
                 case LoadPhase.INIT_MASTER_KEY:
                     break;
                 case LoadPhase.LOADING_PROFILE_METADATA:
-                    const lastProfileId = await ProfilesAPI.getLastProfile();
+                    const lastProfileId = await ProfilesAPI.getLast();
 
                     if (lastProfileId == null) {
                         setProfile(null);
@@ -64,7 +64,7 @@ function App() {
     
     useEffect(() => {
         const handleBeforeUnload = (event) => {
-            LocalAPI.echo('[MESSAGE] UNHANDLE');
+            LocalAPI.general.echo('[MESSAGE] UNHANDLE');
         };
         
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -139,7 +139,7 @@ function App() {
                 <ProfileSelectPage
                     onSelect={async (id:string) => {
                         await apiState.setAPI(id);
-                        await ProfilesAPI.setLastProfile(id);
+                        await ProfilesAPI.setLast(id);
                         
                         setCurrentState(prev=>{
                             if (prev === LoadPhase.SELECT_PROFILE) {

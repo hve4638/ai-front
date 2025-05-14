@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ButtonForm, CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
+import { CheckBoxForm } from 'components/Forms';
 import { Align, Center, Column, Flex, Row } from 'components/layout';
 import LocalAPI from 'api/local';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import CheckBox from 'components/CheckBox';
-import { useCacheStore, useConfigStore, useDataStore, useProfileEvent } from '@/stores';
+import { useCacheStore, useConfigStore, useDataStore, useProfileAPIStore, useProfileEvent } from '@/stores';
 
 function ModelOptions() {
+    const { api } = useProfileAPIStore();
     const configs = useConfigStore();
     const caches = useCacheStore();
     const starred_models = useDataStore(state=>state.starred_models);
@@ -23,7 +24,7 @@ function ModelOptions() {
     const previousOptions = useRef<any>({});
 
     useEffect(()=>{
-        LocalAPI.getChatAIModels()
+        api.getChatAIModels()
             .then((models)=>{
                 setAllModels(models);
             });
@@ -198,7 +199,7 @@ function ModelOptions() {
                             </div>
                             {
                                 index !== models.length - 1 &&
-                                <hr/>
+                                <hr key={provider.name + 'hr'}/>
                             }
                         </>
                     ))

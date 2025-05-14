@@ -1,4 +1,3 @@
-import { ILocalAPI } from './interface';
 import ElectronIPCAPI from './ElectronIPCAPI';
 
 const LocalAPIInstance:ElectronIPCAPI = ElectronIPCAPI.getInstance();

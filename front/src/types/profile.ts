@@ -1,5 +1,4 @@
 export const LayoutModes = {
-    AUTO : 'auto',
     VERTICAL : 'vertical',
     HORIZONTAL : 'horizontal'
 } as const;
@@ -10,4 +9,4 @@ export const ThemeModes = {
     DARK : 'dark',
     SYSTEM_DEFAULT : 'system_default'
 } as const;
-export type ThemeModes = typeof ThemeModes[keyof typeof ThemeModes];
+export type ThemeModes = typeof ThemeModes[keyof typeof ThemeModes]; 

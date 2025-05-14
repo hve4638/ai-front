@@ -63,7 +63,7 @@ class SessionHistory {
         else {
             const { api } = useProfileAPIStore.getState();
             const sessionAPI = api.getSessionAPI(this.sessionId);
-            const messages = await sessionAPI.getHistoryMessage(uncachedId);
+            const messages = await sessionAPI.history.getMessage(uncachedId);
             this.setHistory(messages);
             
             for (const [historyId, index] of Object.entries(neededId)) {
@@ -78,7 +78,7 @@ class SessionHistory {
     async select(offset: number, limit: number) {
         const { api } = useProfileAPIStore.getState();
         const sessionAPI = api.getSessionAPI(this.sessionId);
-        const newMetadata = await sessionAPI.getHistoryMetadata(offset, limit);
+        const newMetadata = await sessionAPI.history.get(offset, limit);
 
         console.log(newMetadata);
 
@@ -89,7 +89,7 @@ class SessionHistory {
     async search(offset: number, limit: number, condition: HistorySearch) {
         const { api } = useProfileAPIStore.getState();
         const sessionAPI = api.getSessionAPI(this.sessionId);
-        const newMetadata = await sessionAPI.searchHistoryMetadata(offset, limit, condition);
+        const newMetadata = await sessionAPI.history.search(offset, limit, condition);
 
         console.log(newMetadata);
 

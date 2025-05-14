@@ -1,12 +1,12 @@
 import runtime from '@/runtime';
 import { IPCInvokerName } from 'types';
 
-function handler() {
+function handler():IPCInvokerProfileSessionHistory {
     const throttles = {};
 
     return {
         /* 프로필 세션 히스토리 */
-        [IPCInvokerName.GetProfileSessionHistoryMetadata]: async (profileId: string, sessionId: string, offset:number, limit:number) => {
+        async get(profileId: string, sessionId: string, offset:number, limit:number) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
             const historyRows = accessor.getHistory(offset, limit);
@@ -23,7 +23,7 @@ function handler() {
 
             return [null, metadata] as const;
         },
-        [IPCInvokerName.SearchProfileSessionHistoryMetadata]: async (profileId: string, sessionId: string, offset:number, limit:number, condition:HistorySearch) => {
+        async search(profileId: string, sessionId: string, offset:number, limit:number, condition:HistorySearch) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
             const rows = accessor.searchHistory({
@@ -46,7 +46,7 @@ function handler() {
             
             return [null, metadata] as const;
         },
-        [IPCInvokerName.GetProfileSessionHistoryMessage]: async (profileId: string, sessionId: string, historyIds:number[]) => {
+        async getMessage(profileId: string, sessionId: string, historyIds:number[]) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
 
@@ -62,10 +62,7 @@ function handler() {
 
             return [null, messages] as const;
         },
-        [IPCInvokerName.AddProfileSessionHistory]: async (profileId: string, sessionId: string, history: any) => {
-            throw new Error('Not implemented');
-        },
-        [IPCInvokerName.DeleteProfileSessionHistory]: async (profileId: string, sessionId: string, historyKey: number) => {
+        async delete(profileId: string, sessionId: string, historyKey: number) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
 
@@ -73,7 +70,7 @@ function handler() {
 
             return [null] as const;
         },
-        [IPCInvokerName.DeleteAllProfileSessionHistory]: async (profileId: string, sessionId: string) => {
+        async deleteAll(profileId: string, sessionId: string) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
 

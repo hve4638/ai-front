@@ -23,7 +23,7 @@ class ChatAIModelManager {
                 list : provider.categories,
             }
             this.#models.push(providerModel);
-
+            
             for (const category of provider.categories) {
                 for (const modelItem of category.list) {
                     this.#modelIds.set(modelItem.id, modelItem);

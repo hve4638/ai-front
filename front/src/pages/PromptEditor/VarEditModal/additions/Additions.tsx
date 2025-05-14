@@ -6,58 +6,58 @@ import StructAddition from './StructAddition';
 import ArrayAddition from './ArrayAddition';
 
 type AdditionsProps = {
-    promptVar:PromptVar;
+    target:PromptVar;
     fieldVarRef:React.MutableRefObject<PromptVar|null>|null;
     onRefresh:()=>void;
 }
 
 function Additions({
-    promptVar,
+    target,
     fieldVarRef,
     onRefresh
 }:AdditionsProps) {
     return (
     <>
         {
-            promptVar.type === 'text' &&
+            target.type === 'text' &&
             <TextAddition
-                promptVar={promptVar}
+                promptVar={target}
                 onRefresh={onRefresh}
             />
         }
         {
-            promptVar.type === 'number' &&
+            target.type === 'number' &&
             <NumberAddition
-                promptVar={promptVar}
+                promptVar={target}
                 onRefresh={onRefresh}
             />
         }
         {
-            promptVar.type === 'checkbox' &&
+            target.type === 'checkbox' &&
             <CheckboxAddition
-                promptVar={promptVar}
+                promptVar={target}
                 onRefresh={onRefresh}
             />
         }
         {
-            promptVar.type === 'select' &&
+            target.type === 'select' &&
             <SelectAddition
-                promptVar={promptVar}
+                promptVar={target}
                 onRefresh={onRefresh}
             />
         }
         {
-            promptVar.type === 'array' &&
+            target.type === 'array' &&
             <ArrayAddition
-                promptVar={promptVar}
+                promptVar={target}
                 fieldVarRef={fieldVarRef}
                 onRefresh={onRefresh}
             />
         }
         {
-            promptVar.type === 'struct' &&
+            target.type === 'struct' &&
             <StructAddition
-                promptVar={promptVar}
+                promptVar={target}
                 fieldVarRef={fieldVarRef}
                 onRefresh={onRefresh}
             />

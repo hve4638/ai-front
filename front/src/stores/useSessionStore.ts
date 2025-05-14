@@ -3,6 +3,8 @@ import { RefetchMethods, UpdateMethods } from './types';
 import { profileStoreTool, sessionStoreTool } from './utils';
 import ProfilesAPI, { type ProfileAPI } from '@/api/profiles';
 import RequestManager from '@/features/request-manager';
+import useSignalStore from './useSignalStore';
+import useChannelStore from './useChannelStore';
 
 interface SessionCacheFields {
     input:string;
@@ -80,6 +82,14 @@ export const useSessionStore = create<SessionState>((set, get)=>{
                     return;
                 }
                 if (!last_session_id) return;
+
+                const { signal } = useSignalStore.getState()
+                const { reset : resetChannel } = useChannelStore.getState();
+                
+                const readyCh = resetChannel.request_ready();
+                
+                signal.request();
+                await readyCh.consume();
 
                 RequestManager.request(api.id, last_session_id);
             },

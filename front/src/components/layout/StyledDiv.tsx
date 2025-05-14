@@ -5,6 +5,7 @@ export interface StyledDivTags {
     style?: React.CSSProperties;
     children?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
+    onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export interface StyledDivProps {
@@ -20,7 +21,8 @@ function StyledDiv({
         className = '',
         style = {},
         children,
-        onClick
+        onClick,
+        onMouseDown
     } = tags;
 
     return (
@@ -30,7 +32,7 @@ function StyledDiv({
             }
             style={style}
             onClick={onClick}
-            
+            onMouseDown={onMouseDown}
         >
             {
                 children != null &&

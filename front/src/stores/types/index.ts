@@ -9,3 +9,7 @@ export type RefetchMethods<T> = {
 export type ActionMethods<T> = {
     [K in keyof T]: () => Promise<void>;
 }
+
+export type FuncMethods<FIELDS, TARG, TRETURN=void> = {
+    [K in keyof FIELDS]: (x:TARG) => Promise<TRETURN>;
+}

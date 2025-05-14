@@ -1,4 +1,5 @@
 import { JSONType, StorageAccess } from "ac-storage";
+import FORM_JSON_TREE from "./form-json-tree";
 
 const REQUEST_TEMPLATE_TREE = {
     'index.json' : StorageAccess.JSON({
@@ -7,76 +8,59 @@ const REQUEST_TEMPLATE_TREE = {
     }),
     '*' : {
         'index.json' : StorageAccess.JSON({
+            'version' : JSONType.Number().default_value(0),
             'id' : JSONType.String(),
             'name' : JSONType.String(),
             'uuid' : JSONType.String(),
             'mode' : JSONType.Union('prompt_only', 'flow').default_value('prompt_only'),
             'input_type' : JSONType.Union('normal', 'chat').default_value('normal'),
+            'forms' : JSONType.Array(JSONType.String()), // form 순서
+            'entrypoint_node' : JSONType.Number(),
         }),
         'form.json' : StorageAccess.JSON({
-            '*' : {
-                'id' : JSONType.String(),
-                'type' : JSONType.Union('text', 'number', 'boolean', 'select', 'multi_select', 'file', 'image_url').default_value('text'),
-                'name' : JSONType.String(),
-                'display_on_header' : JSONType.Bool().default_value(false),
-                
-                'config' : {
-                    'text' : {
-                        'default_value' : JSONType.String().default_value(''),
-                        'placeholder' : JSONType.String(),
-                        'allow_multiline' : JSONType.Bool().default_value(false),
-                    },
-                    'number' : {
-                        'default_value' : JSONType.Number().default_value(0),
-                        'minimum_value' : JSONType.Number().nullable(),
-                        'maximum_value' : JSONType.Number().nullable(),
-                        'allow_decimal' : JSONType.Bool().default_value(false),
-                    },
-                    'checkbox' : {
-                        'default_value' : JSONType.Bool().default_value(false),
-                    },
-                    'select' : {
-                        'default_value' : JSONType.String(),
-                        'options' : JSONType.Array({
-                            'name' : JSONType.String(),
-                            'value' : JSONType.String(),
-                        }),
-                    },
-                    'array' : {
-                        'minimum_length' : JSONType.Number().nullable(),
-                        'maximum_length' : JSONType.Number().nullable(),
-                        'element_type' : JSONType.Union('text', 'number', 'checkbox', 'select', 'struct').default_value('text'),
-                    },
-                    'struct' : {
-                        fields : JSONType.Array({}),
-                    }
-                }
-            }
+            // key : formId
+            '*' : FORM_JSON_TREE,
         }),
-        'flow.json' : StorageAccess.JSON({
-            'nodes' : JSONType.Array({
+        'node.json' : StorageAccess.JSON({
+            '*' : {
                 'id' : JSONType.Number(),
-                'node' : JSONType.String(),
+                'node' : JSONType.Union(
+                    'input', 'output',
+                    'prompt', 'chatai-fetch',
+                    'stringify-chatml',
+                ),
                 'option' : JSONType.Struct(),
+                'forms' : JSONType.Array({
+                    'id' : JSONType.String(),
+                    'external_id' : JSONType.String().nullable(),
+                }),
                 'link_to' : {
+                    // key : output interface nmae
                     '*' : JSONType.Array({
-                        'id' : JSONType.Number(),
+                        'node_id' : JSONType.Number(),
                         'input' : JSONType.String(),
                     }),
                 },
                 'addition' : {
-                    'x' : JSONType.Number(),
-                    'y' : JSONType.Number(),
+                    'x' : JSONType.Number().default_value(0),
+                    'y' : JSONType.Number().default_value(0),
                 },
-            }),
-            'entrypoint_node' : JSONType.Number(),
+            },
         }),
         'prompts' : {
+            // key : promptId
             '*' : StorageAccess.JSON({
                 'id' : JSONType.String(),
                 'name' : JSONType.String(),
-                'input_type' : JSONType.Union('normal', 'chat'),
-                'forms' : JSONType.Array(),
+                'variables' : JSONType.Array({
+                    'name' : JSONType.String(),
+                    'form_id' : JSONType.String(),
+                    'weak' : JSONType.Bool().default_value(false),
+                }),
+                'constants' : JSONType.Array({
+                    'name' : JSONType.String(),
+                    'value' : JSONType.Any(),
+                }),
                 'contents' : JSONType.String(),
             }),
         },

@@ -1,55 +1,49 @@
 declare global {
     type PromptVarType = 'text'|'number'|'checkbox'|'select'|'struct'|'array';
 
-    type PromptVar = PromptVarText | PromptVarNumber | PromptVarCheckbox | PromptVarSelect | PromptVarStruct | PromptVarArray;
+    type PromptVar = (
+        PromptVarText | PromptVarNumber | PromptVarCheckbox | PromptVarSelect | PromptVarStruct | PromptVarArray
+    );
 
-    type PromptVarText = {
-        type : 'text';
+    interface BasePromptVar {
+        id? : string;
         name : string;
         display_name : string;
-        default_value : string;
+    }
+    interface PromptVarText extends BasePromptVar {
+        type : 'text';
+        default_value? : string;
         placeholder : string;
         allow_multiline : boolean;
     }
-    type PromptVarNumber = {
+    interface PromptVarNumber extends BasePromptVar {
         type : 'number';
-        name : string;
         allow_decimal : boolean;
-        display_name : string;
-        default_value : number;
-        maximum_value : number|null;
-        minimum_value : number|null;
+        default_value? : number;
+        maximum_value? : number;
+        minimum_value? : number;
     }
-    type PromptVarCheckbox = {
+    interface PromptVarCheckbox extends BasePromptVar {
         type : 'checkbox';
-        name : string;
-        display_name : string;
-        default_value : boolean;
+        default_value? : boolean;
     }
-    type PromptVarSelect = {
+    interface PromptVarSelect extends BasePromptVar {
         type : 'select';
-        name : string;
-        display_name : string;
-        default_value : string;
-        options : PromptVarSelectOption[];
+        default_value? : string;
+        options : {
+            name : string;
+            value : string;
+        }[];
     }
-    type PromptVarSelectOption = {
-        name : string;
-        value : string;
-    }
-    type PromptVarStruct = {
+    interface PromptVarStruct extends BasePromptVar {
         type : 'struct';
-        name : string;
-        display_name : string;
-        fields : PromptVar[];
+        fields : Exclude<PromptVar, PromptVarStruct|PromptVarArray>[];
     }
-    type PromptVarArray = {
+    interface PromptVarArray extends BasePromptVar {
         type : 'array';
-        name : string;
-        display_name : string;
-        minimum_length : number|null;
-        maximum_length : number|null;
-        element : PromptVar;
+        minimum_length? : number;
+        maximum_length? : number;
+        element : Exclude<PromptVar, PromptVarArray>;
     }
 }
 

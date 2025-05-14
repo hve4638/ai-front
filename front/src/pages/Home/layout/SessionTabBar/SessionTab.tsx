@@ -73,12 +73,12 @@ function SessionTab({
         >
             <SessionName
                 name={item.name}
-                displayName={item.displayName}
+                displayName={item.displayName ?? item.name ?? ''}
                 rename={renameMode}
                 onEnableRename={()=>setRenameMode(true)}
-                onChange={(value)=>{
-                    sessionAPI.set('config.json', { name: value });
-                    signal.session_metadata();
+                onChange={async (value)=>{
+                    await sessionAPI.set('config.json', { name: value });
+                    await signal.session_metadata();
                     setRenameMode(false);
                 }}
                 onCancelRename={()=>setRenameMode(false)}

@@ -29,7 +29,7 @@ h4, h5 {
 }
 hr {
     width : auto;
-    box-sizing: content-box;
+    box-sizing: border-box;
     margin: 0.25em 0.25em;
 
     border: none;
@@ -46,6 +46,13 @@ button {
 
 input[type="text"] {
     font-size: 0.95em;
+}
+
+input[type="checkbox"] {
+    &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
+    }
 }
 
 a {

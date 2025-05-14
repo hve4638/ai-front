@@ -8,7 +8,7 @@ export type RuntimeRegistry = {
     globalStorage: IACStorage;
     masterKeyManager: MasterKeyManager;
     rtWorker: RTWorker;
-    ipcFrontAPI: IPCInvokeIntrerface;
+    ipcFrontAPI: IPCInvokerInterface;
     env: Env;
 }
 

@@ -10,6 +10,7 @@ import Profiles from '@/features/profiles';
 import MasterKeyManager, { MasterKeyInitResult, MockMasterKeyManager } from '@/features/master-key';
 import RTWorker from '@/features/rt-worker';
 import ElectronApp from '@/features/elctron-app';
+import { PromptOnlyTemplateFactory } from './features/rt-template-factory';
 
 const documentPath = personal('cp949') ?? process.env['USERPROFILE']+'/documents' ?? './';
 const programPath = new ProgramPath(path.join(documentPath, 'Afron'));
@@ -114,26 +115,23 @@ async function initOptional() {
         const ids = profiles.getProfileIDs();
         
         if (ids.length > 0) return;
-        const [_, pid] = await ipcFrontAPI.CreateProfile();
+        const [_, pid] = await ipcFrontAPI.profiles.create();
         const profileId = pid as string;
-        await ipcFrontAPI.SetLastProfile(profileId);
-        await ipcFrontAPI.SetProfileData(profileId, 'config.json', {
+        await ipcFrontAPI.profiles.setLast(profileId);
+        await ipcFrontAPI.profileStorage.set(profileId, 'config.json', {
             name: 'default',
         });
-
             
         if (runtime.env.defaultRT) {
+            const metadata:RTMetadata = {
+                name: 'Default Prompt',
+                id: 'default-rt',
+                mode: 'prompt_only',
+            }
             console.info('DEFAULT RT CREATION');
-
-            await ipcFrontAPI.AddProfileRT(profileId, {id: 'default', name: 'Default', mode: 'prompt_only'});
-            await ipcFrontAPI.SetProfileRTPromptData(profileId, 'default', 'default', {
-                forms : [],
-                input_type : 'normal',
-                contents : '{{:input}}',
-            })
+            await ipcFrontAPI.profileRTs.createUsingTemplate(profileId, metadata, 'debug');
         }
     }
 }
 
 main();
-

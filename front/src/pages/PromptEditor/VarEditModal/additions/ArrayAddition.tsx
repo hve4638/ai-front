@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import styles from '../../styles.module.scss'
-import { CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm } from 'components/Forms';
+import { DropdownForm } from 'components/Forms';
 import { GoogleFontIcon } from 'components/GoogleFontIcon';
 import { dropdownItem } from '../utils';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import TextAddition from './TextAddition';
 import CheckboxAddition from './CheckboxAddition';
 import NumberAddition from './NumberAddition';
@@ -29,12 +29,22 @@ function ArrayAddition({
     fieldVarRef,
     onRefresh
 }:ArrayAdditionProps) {
-    useEffect(()=>{
-        if ('element' in promptVar) {
-            promptVar.element = {} as any;
-            onRefresh();
-        }
-    }, [promptVar]);
+    const defaultValueCaches = useRef<{
+        text?: string,
+        number?: number,
+        checkbox?: boolean,
+        select?: string,
+    }>({
+        text: '',
+        number: 0,
+        checkbox: false,
+    });
+    // useEffect(()=>{
+    //     if ('element' in promptVar) {
+    //         promptVar.element = {} as any;
+    //         onRefresh();
+    //     }
+    // }, [promptVar]);
 
     return (
     <>
@@ -47,14 +57,14 @@ function ArrayAddition({
                 if (!promptVar.element) {
                     promptVar.element = {} as any;
                 }
-                promptVar.element.type = item.key as PromptVarType;
+                promptVar.element.type = item.key as Exclude<PromptVarType, 'array'>;
                 onRefresh();
             }}
             onItemNotFound={()=>{
                 if (!promptVar.element) {
                     promptVar.element = {} as any;
                 }
-                promptVar.element.type = VAR_DROPDOWN_ITEMS[0].key as PromptVarType;
+                promptVar.element.type = VAR_DROPDOWN_ITEMS[0].key as Exclude<PromptVarType, 'array'>;
                 onRefresh();
             }}
         />

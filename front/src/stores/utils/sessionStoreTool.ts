@@ -18,8 +18,8 @@ export function sessionStoreTool<FIELDS extends object>(set:ZustandSet<FIELDS>, 
             const { last_session_id } = useCacheStore.getState();
             
             if (last_session_id == null) return;
-            const sessionAPI = api.getSessionAPI(last_session_id);
-        
+            const sessionAPI = api.session(last_session_id);
+            
             await sessionAPI.set(accessorId, { [name]: value });
             set({ [name]: value } as Partial<FIELDS>);
         }
@@ -30,7 +30,7 @@ export function sessionStoreTool<FIELDS extends object>(set:ZustandSet<FIELDS>, 
             const { last_session_id } = useCacheStore.getState();
             
             if (last_session_id == null) return;
-            const sessionAPI = api.getSessionAPI(last_session_id);
+            const sessionAPI = api.session(last_session_id);
 
             const result:Record<string, unknown> = await sessionAPI.get(accessorId, [name as string]);
             result[name as string] ??= fields[name as string];

@@ -20,13 +20,13 @@ function ProfileSelectPage({
     const [profileIds, setProfileIds] = useState<string[]>([]);
 
     useEffect(() => {
-        ProfilesAPI.getProfileIds()
+        ProfilesAPI.getIds()
             .then(async (nextProfileIds) => {
                 console.log('Loaded profiles:', nextProfileIds);
                 
                 const newProfiles:ProfileMetadata[] = [];
                 for (const id of nextProfileIds) {
-                    const profileAPI = await ProfilesAPI.getProfile(id);
+                    const profileAPI = ProfilesAPI.profile(id);
                     const { name, color } = await profileAPI.get('config.json', ['name', 'color']);
                     newProfiles.push({
                         id : id,
@@ -50,8 +50,8 @@ function ProfileSelectPage({
                 showModal &&
                 <NewProfileModal
                     onSubmit={async (metadata) => {
-                        const id = await ProfilesAPI.createProfile();
-                        const profile = await ProfilesAPI.getProfile(id);
+                        const id = await ProfilesAPI.create();
+                        const profile = ProfilesAPI.profile(id);
                         await profile.set('config.json', {
                             name: metadata.name,
                             color: metadata.color,

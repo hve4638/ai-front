@@ -35,6 +35,7 @@
         "name_label" : "이름",
         "id_label" : "식별자",
         "submit_label" : "",
+        "saved_label" : "저장됨",
         "save_label" : "저장",
         "save_new_label" : "새로 저장",
         "add_form_label" : "변수 추가",
@@ -65,6 +66,26 @@
             "EXCEPTION_IN_HOOK" : "내부 연산에 오류가 발생습니다",
             "INVALID_AST_FORMAT" : "잘못된 AST 형식 (내부 오류)",
             "LOGIC_ERROR" : "내부 문제가 발생했습니다"
+        }
+    },
+    "form_editor" : {
+        "title": "변수 편집",
+        "type_label": "타입",
+        "name_label": "변수명",
+        "display_name_label": "표시되는 이름",
+        "default_value_label": "기본값",
+
+        "text_config" : {
+            "allow_multiline_label" : "여러 줄 허용",
+            "placeholder_label" : "플레이스홀더"
+        },
+        "select_config" : {
+            "option_label" : "옵션"
+        },
+        "checkbox_config" : {
+        },
+        "number_config" : {
+            
         }
     },
     "rt" : {

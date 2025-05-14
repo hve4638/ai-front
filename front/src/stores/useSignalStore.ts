@@ -2,33 +2,34 @@ import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { ActionMethods } from './types';
 
-interface SignalFields {
-    session_metadata: number;
-    change_profile: number;
-    reload_input: number;
-}
+const signalFields = {
+    session_metadata : 0,
+    change_profile : 0,
+    reload_input : 0,
+    request : 0,
+    request_ready : 0,
+} as const;
+type SignalFields = Record<keyof typeof signalFields, number>;
 
 interface SignalState extends SignalFields {
     signal : ActionMethods<SignalFields>;
 }
 
 export const useSignalStore = create<SignalState, [['zustand/subscribeWithSelector', never]]>(
-    subscribeWithSelector((set)=>({
-        session_metadata : 0,
-        change_profile : 0,
-        reload_input : 0,
-        signal : {
-            async session_metadata() {
-                set(state=>({ session_metadata: state.session_metadata+1 }));
+    subscribeWithSelector((set)=>{
+        const updater = Object.fromEntries(
+            Object.entries(signalFields).map(
+                ([key, _])=>[key, async ()=>(set(state=>({ [key]: state[key]+1 })))]
+            )
+        ) as ActionMethods<SignalFields>;
+        
+        return {
+            ...signalFields,
+            signal : {
+                ...updater,
             },
-            async change_profile() {
-                set(state=>({ change_profile: state.change_profile+1 }));
-            },
-            async reload_input() {
-                set(state=>({ reload_input: state.reload_input+1 }));
-            },
-        },
-    }))
+        }
+    })
 );
 
 export default useSignalStore;

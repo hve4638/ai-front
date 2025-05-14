@@ -6,8 +6,11 @@ import { ProfileSessionMetadata } from '@/types';
 
 import { v7 } from 'uuid';
 import i18next from 'i18next';
+import useSessionStore from './useSessionStore';
 
 type ProviderName = 'openai'|'anthropic'|'google';
+
+type PromptVarWithLastValue = (PromptVar & { last_value?:unknown });
 
 interface ProfileEventState {
     createSession(): Promise<void>;
@@ -31,6 +34,9 @@ interface ProfileEventState {
     changeRTId(oldId:string, newId:string): Promise<void>;
     addRT(metadata:RTMetadata): Promise<void>;
     removeRT(rtId:string): Promise<void>;
+
+    getCurrentSessionForms(): Promise<PromptVarWithLastValue[]>;
+    setCurrentSessionForms(values:Record<string, any>): Promise<void>;
 }
 
 const useProfileEvent = create<ProfileEventState>((set)=>{
@@ -40,7 +46,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             const { update : updateCacheState } = useCacheStore.getState();
             const { refetch : refetchDataState } = useDataStore.getState();
 
-            const sid = await api.createSession();
+            const sid = await api.sessions.add();
             await Promise.all([
                 updateCacheState.last_session_id(sid),
                 refetchDataState.sessions(),
@@ -58,7 +64,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
                 return;
             }
 
-            await api.removeSession(sessionId);
+            await api.sessions.remove(sessionId);
             
             // 세션 0개는 허용되지 않으므로 제거 후 새 세션 생성
             if (sessions.length == 1) {
@@ -83,14 +89,14 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             const { api } = useProfileAPIStore.getState();
             const dataState = useDataStore.getState();
 
-            await api.reorderSessions(sessionIds);
+            await api.sessions.reorder(sessionIds);
             await dataState.refetch.sessions();
         },
         async undoRemoveSession() {
             const { api } = useProfileAPIStore.getState();
             const dataState = useDataStore.getState();
 
-            await api.undoRemoveSession();
+            await api.sessions.undoRemoved();
             await dataState.refetch.sessions();
         },
         async getSessionMetadataList() {
@@ -114,9 +120,11 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
 
                     let displayName = name;
                     if (name == null || name === '') {
-                        if (await api.hasRTId(rt_id)) {
-                            const rtAPI = api.getRTAPI(rt_id);
-                            const rtName = await rtAPI.getOne('index.json', 'name');
+                        if (await api.rts.existsId(rt_id)) {
+                            const rtAPI = api.rt(rt_id);
+                            const {
+                                name : rtName,
+                            } = await rtAPI.getMetadata();
                             
                             displayName = rtName;
                         }
@@ -161,7 +169,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             let secretId:string;
             while (true) {
                 secretId = v7();
-                const exist = await api.hasSecret('secret.json', [secretId]);
+                const exist = await api.storage.hasSecret('secret.json', [secretId]);
                 if (!exist[0]) {
                     break;
                 }
@@ -169,7 +177,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             }
             
             const displayName = maskSecret(apiKey);
-            await api.setSecret('secret.json', [[secretId, apiKey]]);
+            await api.setAsSecret('secret.json', [[secretId, apiKey]]);
             await api.set('data.json', {
                 api_keys : {
                     [provider] : [
@@ -199,7 +207,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
 
             const next = providerAPIKeysMetadata.filter((_, i) => i !== index);
             const targetSecretId = target.secret_id;
-            await api.removeSecret('secret.json', [targetSecretId]);
+            await api.removeAsSecret('secret.json', [targetSecretId]);
             await api.set('data.json', {
                 api_keys : {
                     [provider] : next
@@ -229,38 +237,69 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
         async getRTTree() {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.getRTTree();
+            return await api.rts.getTree();
         },
         async updateRTTree(tree:RTMetadataTree) {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.updateRTTree(tree);
+            return await api.rts.updateTree(tree);
         },
         async hasRTId(id:string) {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.hasRTId(id);
+            return await api.rts.hasId(id);
         },
         async generateRTId() {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.generateRTId();
+            return await api.rts.generateId();
         },
         async addRT(metadata:RTMetadata) {
             const { api } = useProfileAPIStore.getState();
         
-            return await api.addRT(metadata);
+            return await api.rts.add(metadata);
         },
         async removeRT(rtId:string) {
             const { api } = useProfileAPIStore.getState();
         
-            return await api.removeRT(rtId);
+            return await api.rts.remove(rtId);
         },
         async changeRTId(oldId:string, newId:string) {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.changeRTId(oldId, newId); 
+            return await api.rts.changeId(oldId, newId); 
         },
+        
+        async getCurrentSessionForms() {
+            const { api } = useProfileAPIStore.getState();
+            const { rt_id } = useSessionStore.getState();
+            const { last_session_id } = useCacheStore.getState();
+
+            if (last_session_id == null) throw new Error('last_session_id is null');
+
+            const rt = api.rt(rt_id);
+            const session = api.session(last_session_id);
+
+            const forms:PromptVarWithLastValue[] = await rt.getForms();
+            const formValues = await session.getFormValues(rt_id);
+
+            for (const form of forms) {
+                form.last_value = formValues[form.id!];
+            }
+            return forms;
+        },
+
+        async setCurrentSessionForms(values:Record<string, any>) {
+            const { api } = useProfileAPIStore.getState();
+            const { rt_id } = useSessionStore.getState();
+            const { last_session_id } = useCacheStore.getState();
+
+            if (last_session_id == null) throw new Error('last_session_id is null');
+
+            const session = api.session(last_session_id);
+
+            await session.setFormValues(rt_id, values);
+        }
     }
 
     return state;

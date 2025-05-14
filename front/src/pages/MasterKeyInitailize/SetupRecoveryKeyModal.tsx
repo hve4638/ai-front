@@ -1,5 +1,3 @@
-import { StringForm } from "components/Forms";
-import { TextInput } from "components/Input";
 import { Align, Flex, Row } from "components/layout";
 import { Modal, ModalHeader } from "components/Modal";
 import { useEffect, useMemo, useState } from "react";
@@ -7,7 +5,6 @@ import styles from './styles.module.scss';
 import Button from "components/Button";
 import classNames from "classnames";
 import ReactLoading from 'react-loading';
-import { MODAL_DISAPPEAR_DURATION } from "data";
 import useModalDisappear from "hooks/useModalDisappear";
 
 interface RecoveryKeySetupModalProps {

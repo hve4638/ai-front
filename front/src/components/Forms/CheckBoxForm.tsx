@@ -22,8 +22,8 @@ function CheckBoxForm({
     <Row
         className={className}
         style={{
+            width: '100%',
             height: '1.4em',
-            margin: '0.5em 0',
             ...style
         }}
     >
@@ -42,6 +42,7 @@ function CheckBoxForm({
                 style={{
                     height: '100%',
                     aspectRatio: '1/1',
+                    cursor : 'pointer',
                 }}
                 checked={checked}
                 onChange={(e)=>onChange(e.target.checked)}

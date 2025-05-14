@@ -37,13 +37,15 @@ class RTSender {
         }
     }
 
-    sendError(text:string) {
+    sendError(message:string, detail:string[] = []) {
         const window = this.browserWindowRef.deref();
+
+        console.trace('RTSender.sendError', message, detail);
         if (window) {
             window.webContents.send(IPCListenerPing.Request, this.token, {
                 type : 'error',
-                text : text,
-                data : null,
+                message,
+                detail,
             } satisfies RequestRTData);
         }
     }

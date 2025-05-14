@@ -41,7 +41,7 @@ function SettingModal({
         SETTING_CATEGORY.API,
         SETTING_CATEGORY.SHORTCUT,
         SETTING_CATEGORY.HISTORY,
-        SETTING_CATEGORY.SERVER,
+        // SETTING_CATEGORY.SERVER,
         SETTING_CATEGORY.DATA,
     ]
     const [disappear, close] = useModalDisappear(onClose);

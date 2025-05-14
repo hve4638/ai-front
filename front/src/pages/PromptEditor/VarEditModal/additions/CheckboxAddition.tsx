@@ -1,4 +1,5 @@
-import { CheckBoxForm, NumberForm, StringForm, StringLongForm } from "components/Forms";
+import { CheckBoxForm } from '@/components/Forms';
+import { useTranslation } from 'react-i18next';
 
 type PropmtVarCheckboxOptionProps = {
     promptVar:PromptVarCheckbox;
@@ -9,11 +10,13 @@ function PropmtVarCheckboxOption({
     promptVar,
     onRefresh
 }:PropmtVarCheckboxOptionProps) {
+    const { t } = useTranslation();
+
     return (
     <>
         <hr/>
         <CheckBoxForm
-            name='기본값'
+            name={t('form_editor.default_value_label')}
             checked={promptVar.default_value ?? false}
             onChange={(checked)=>{
                 promptVar.default_value = checked;

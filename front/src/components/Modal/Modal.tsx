@@ -33,7 +33,7 @@ function Modal({
     <>
         <FocusLock
             autoFocus={false}
-            returnFocus={true}
+            returnFocus={false}
         >
             <ModalBackground
                 className={backgroundClassName}

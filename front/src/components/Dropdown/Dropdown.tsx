@@ -38,9 +38,9 @@ interface LayerDropdownProps {
  */
 function Dropdown({
     className='',
+    style={},
     listClassName='',
     itemClassName='',
-    style={},
     listStyle={},
     itemStyle={},
 
@@ -131,12 +131,17 @@ function Dropdown({
             style={style}
         >
             <div
-                className='dropdown-header flex'
-                onClick={() => setIsOpen(prev => !prev)}
                 ref={headerRef}
+                className='dropdown-header flex'
+                style={{
+                    height : '100%'
+                }}
+                onClick={() => setIsOpen(prev => !prev)}
                 tabIndex={0}
                 onKeyDown={(e) => {
-                    
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        setIsOpen(prev => !prev);
+                    }
                 }}
             >
                 {currentName}

@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from "react-i18next";
-import Editor, { useMonaco } from '@monaco-editor/react'
-import { CBFParser, CBFFail } from '@hve/cbf';
+import Editor, { useMonaco } from '@monaco-editor/react';
+import { PromptTemplate, CBFFail } from '@hve/prompt-template';
 
-import useLazyThrottle from 'hooks/useLazyThrottle';
-import { calcTextPosition } from 'utils';
+import useLazyThrottle from '@/hooks/useLazyThrottle';
+import { calcTextPosition } from '@/utils';
+
+import type { PromptEditorData } from '@/types';
+
 import styles from './styles.module.scss';
-import { PromptData } from '@/types';
-
-const parser = new CBFParser();
 
 type EditorSectionProps = {
-    promptData:PromptData;
+    data:PromptEditorData;
 }
 
 function EditorSection({
-    promptData,
+    data,
 }:EditorSectionProps) {
     const { t } = useTranslation();
     const monaco = useMonaco();
@@ -49,7 +49,7 @@ function EditorSection({
     }
 
     const lint = useLazyThrottle((text:string)=>{
-        const result = parser.build(text);
+        const result = PromptTemplate.build(text);
         if (result.errors.length === 0) {
             clearErrorMarker();
         }
@@ -94,9 +94,10 @@ function EditorSection({
                 theme='vs-dark'
                 width='100%'
                 height='100%'
-                value={promptData.contents}
+                value={data.contents}
                 onChange={(value)=>{
-                    promptData.contents = value ?? '';
+                    data.contents = value ?? '';
+                    data.changed.contents = true;
                     lint(value ?? '');
                 }}
                 onMount={

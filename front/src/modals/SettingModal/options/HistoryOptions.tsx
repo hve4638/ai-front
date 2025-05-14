@@ -1,5 +1,5 @@
 import { useConfigStore } from '@/stores';
-import { CheckBoxForm, DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
+import { CheckBoxForm, DropdownForm, NumberForm } from '@/components/Forms';
 
 function HistoryOptions() {
     const configs = useConfigStore();

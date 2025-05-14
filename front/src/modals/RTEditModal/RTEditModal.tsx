@@ -73,7 +73,7 @@ function RTEditModal({
                     onChange={(next)=>setTree(next)}
                     onClick={(rtId:string)=>{
                         console.log('rtId', rtId);
-                        navigate(`/prompt/${rtId}`);
+                        navigate(`/workflow/${rtId}/prompt/default`);
                     }}
                 />
                 <div/>

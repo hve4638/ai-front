@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { DropdownForm, NumberForm, StringForm, StringLongForm, ToggleSwitchForm } from 'components/Forms';
 import ButtonForm from 'components/Forms/ButtonForm';
-import { useProfileEvent } from '@/stores';
 
 function DataOptions() {
     return (

@@ -4,7 +4,7 @@ export type InputNodeInput = {
     
 }
 export type InputNodeOutput = {
-    input?:string;
+    input :string;
     chat?:RTInputMessage[];
     form?:Record<string, any>;
 }
@@ -15,7 +15,7 @@ export type InputNodeOption = {
 class InputNode extends WorkNode<InputNodeInput, InputNodeOutput, InputNodeOption>  {
     override async process({}) {
         const { inputType } = this.option;
-        const { form, input } = this.nodeData.rtInput;
+        const { form, input, chat } = this.nodeData;
 
         this.nodeData.historyRequired.input.push({
             type: 'text',
@@ -25,8 +25,7 @@ class InputNode extends WorkNode<InputNodeInput, InputNodeOutput, InputNodeOptio
         });
         this.nodeData.historyRequired.form = form;
         
-        if (inputType === 'chat') { 
-            const { chat } = this.nodeData.rtInput;
+        if (inputType === 'chat') {
             this.nodeData.historyRequired.chat_type = 'chat';
 
             if (!chat) throw new Error('Chat is not defined in input.');

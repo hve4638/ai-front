@@ -1,93 +1,25 @@
-import * as utils from '@utils';
-import { IPCInvokerName } from 'types';
-
 import runtime from '@/runtime';
-import Profile from '@/features/profiles/Profile';
+import ThrottleAction from '@/features/throttle-action';
 
-function handler() {
-    const throttles = {};
-
-    const saveProfile = (profile:Profile) => {
-        const throttleId = `profile_${profile.path}`;
-        throttles[throttleId] ??= utils.throttle(500);
-        throttles[throttleId](()=>{
-            profile.commit();
-        });
-    }
-
+function profileSession():IPCInvokerProfileSession {
+    const throttle = ThrottleAction.getInstance();
+    
     return {
-        /* 프로필 세션 */
-        [IPCInvokerName.AddProfileSession]: async (profileId: string) => {
+        async getFormValues(profileId:string, sessionId:string, rtId:string) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const sid = await profile.createSession();
-
-            saveProfile(profile);
-            return [null, sid] as const;
+            const values = await profile.session(sessionId).getFormValues(rtId);
+            return [null, values];
         },
-        [IPCInvokerName.RemoveProfileSession]: async (profileId: string, sessionId: string) => {
+        async setFormValues(profileId:string, sessionId:string, rtId:string, values:Record<string, any>) {
             const profile = await runtime.profiles.getProfile(profileId);
-            await profile.removeSession(sessionId);
+            const session = profile.session(sessionId);
 
-            saveProfile(profile);
+            session.setFormValues(rtId, values);
+            throttle.saveProfile(profile);
 
-            return [null] as const;
-        },
-        [IPCInvokerName.UndoRemoveProfileSession]: async (profileId: string) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const sid = await profile.undoRemoveSession();
-
-            const throttleId = `profile_${profileId}`;
-            throttles[throttleId] ??= utils.throttle(500);
-            throttles[throttleId](() => {
-                profile.commit();
-            });
-
-            if (sid == null) {
-                return [new Error('No session to undo')] as const;
-            }
-            else {
-                return [null, sid] as const;
-            }
-        },
-        [IPCInvokerName.ReorderProfileSessions]: async (profileId: string, newTabs: string[]) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            profile.reorderSessions(newTabs);
-
-            const throttleId = `profile_${profileId}`;
-            throttles[throttleId] ??= utils.throttle(500);
-            throttles[throttleId](() => {
-                profile.commit();
-            });
-
-            return [null] as const;
-        },
-        [IPCInvokerName.GetProfileSessionIds]: async (profileId: string) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const sessions = await profile.getSessionIds();
-
-            return [null, sessions] as const;
-        },
-
-        /* 프로필 세션 저장소 */
-        [IPCInvokerName.GetProfileSessionData]: async (profileId: string, sessionId: string, id: string, keys: string[]) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const accessor = await profile.accessAsJSON(`session:${sessionId}:${id}`);
-            
-            return [null, accessor.get(...keys)] as const;
-        },
-        [IPCInvokerName.SetProfileSessionData]: async (profileId: string, sessionId: string, accessId: string, data:KeyValueInput) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const accessor = await profile.accessAsJSON(`session:${sessionId}:${accessId}`);
-
-            accessor.set(data);
-            throttles['profiles'] ??= utils.throttle(500);
-            throttles['profiles'](() => {
-                runtime.profiles.saveAll();
-            });
-
-            return [null] as const;
+            return [null];
         },
     }
 }
 
-export default handler;
+export default profileSession;

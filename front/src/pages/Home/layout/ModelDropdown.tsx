@@ -8,9 +8,10 @@ import {
     AnthropicIcon,
     GoogleVertexAIIcon,
 } from 'components/Icons'
-import { useConfigStore, useDataStore, useProfileEvent, useSessionStore } from '@/stores';
+import { useConfigStore, useDataStore, useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
 
 function ModelDropdown() {
+    const { api } = useProfileAPIStore();
     const only_starred_models = useConfigStore(state=>state.only_starred_models);
     const show_actual_model_name = useConfigStore(state=>state.show_actual_model_name);
     const starred_models = useDataStore(state=>state.starred_models);
@@ -52,9 +53,7 @@ function ModelDropdown() {
     ])
 
     useEffect(()=>{
-        // @TODO : LocalAPI를 직접 호출해서는 안됨
-        // 추후 ProfileContext를 통해서 호출하도록 변경 필요
-        LocalAPI.getChatAIModels()
+        api.getChatAIModels()
             .then((models)=>{
                 setAllModels(models);
             });

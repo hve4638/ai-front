@@ -8,11 +8,14 @@ import {
 } from 'ac-storage';
 import { SecretJSONAccessor, MemSecretJSONAccessor, HistoryAccessor } from '@/features/acstorage-accessor';
 import runtime from '@/runtime';
-import SessionAction from './SessionAction';
-import RTControl from './RTControl';
+import ProfileSessions from './ProfileSessions';
+import RTControl from './rt/ProfileRTs';
 import { PROFILE_STORAGE_TREE } from './data';
 import { ProfileError } from './errors';
 import { v4 as uuidv4 } from 'uuid';
+import ProfileRT from './rt/ProfileRT';
+import IRTControl from './rt/IRTControl';
+import { PromptOnlyTemplateFactory } from '@/features/rt-template-factory';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -21,8 +24,8 @@ class Profile {
     /** Profile 디렉토리 경로 */
     #basePath:string|null;
     #storage:ACStorage;
-    #sessionControl:SessionAction;
-    #rtControl:RTControl;
+    #sessionControl:ProfileSessions;
+    #rtControl:IRTControl;
     #dropped:boolean = false;
 
     #personalKey:string;
@@ -70,7 +73,7 @@ class Profile {
             async destroy(ac) { return await ac.drop() },
         });
         
-        this.#sessionControl = new SessionAction(
+        this.#sessionControl = new ProfileSessions(
             this.#storage
         );
         this.#rtControl = new RTControl(
@@ -106,55 +109,56 @@ class Profile {
         return this.#basePath ?? '';
     }
     
-    /* 세션 */
-    async createSession():Promise<string> {
-        return this.#sessionControl.createSession();
+    
+    get sessions() {
+        return this.#sessionControl;
     }
 
-    async removeSession(sid:string):Promise<void> {
-        await this.#sessionControl.removeSession(sid);
+    session(sessionId:string) {
+        return this.#sessionControl.session(sessionId);
+    }
+    rt(rtId:string):ProfileRT {
+        return this.#rtControl.rt(rtId);
     }
 
-    async undoRemoveSession():Promise<string|null> {
-        return await this.#sessionControl.undoRemoveSession();
-    }
+    /* 요청 템플릿 */ 
 
-    async setSelectedSession(sid:string) {
-        await this.#sessionControl.setSelectedSession(sid);
-    }
-
-    async permanentRemoveSession(sid:string) {
-        this.#sessionControl.permanentRemoveSession(sid);
-    }
-
-    async removeOrphanSessions() {
-        if (!this.#basePath) return;
-        
-        const sessionPath = path.join(this.#basePath, 'session');
-        
-        this.#sessionControl.removeOrphanSessions(sessionPath);
-    }
-
-    async reorderSessions(newSessionIds:string[]) {
-        this.#sessionControl.reorderSessions(newSessionIds);
-    }
-
-    async getSessionIds():Promise<string[]> {
-        return await this.#sessionControl.getSessionIds();
-    }
-
-    /* 요청 템플릿 */
-    async getRTData(rtId:string, accessId:string, keys:string[]):Promise<any> {
-        return this.#rtControl.getRTData(rtId, accessId, keys);
-    }
-    async setRTData(rtId:string, accessId:string, data:KeyValueInput) {
-        return this.#rtControl.setRTData(rtId, accessId, data);
-    }
     async getRTTree() {
         return this.#rtControl.getTree();
     }
     async updateRTTree(newTree:RTMetadataTree) {
         this.#rtControl.updateTree(newTree);
+    }
+    async createUsingTemplate(metadata:RTMetadata, templateId:string) {
+        if (metadata.mode === 'prompt_only') {
+            switch (templateId) {
+                case 'normal':
+                    await PromptOnlyTemplateFactory.normal(this, metadata.id, metadata.name);
+                    break;
+                case 'chat':
+                    await PromptOnlyTemplateFactory.chat(this, metadata.id, metadata.name);
+                    break;
+                case 'translate':
+                    await PromptOnlyTemplateFactory.translate(this, metadata.id, metadata.name);
+                    break;
+                case 'debug':
+                    await PromptOnlyTemplateFactory.debug(this, metadata.id, metadata.name);
+                    break;
+                default:
+                    console.warn(`Unknown templateId: ${templateId}`);
+                    /* through */
+                case 'empty':
+                    await PromptOnlyTemplateFactory.empty(this, metadata.id, metadata.name);
+                    break;
+            }
+        }
+        else {
+            switch (templateId) {
+                default:
+                    // await PromptOnlyTemplateFactory.empty(this, metadata.id, metadata.name);
+                    break;
+            }
+        }
     }
     async addRT(metadata:RTMetadata) {
         this.#rtControl.addRT(metadata);
@@ -162,18 +166,7 @@ class Profile {
     async removeRT(rtId:string) {
         this.#rtControl.removeRT(rtId);
     }
-    async getRTMode(rtId:string):Promise<RTMode> {
-        return await this.#rtControl.getRTMode(rtId);
-    }
-    async setRTMode(rtId:string, mode:RTMode) {
-        await this.#rtControl.setRTMode(rtId, mode);
-    }
-    async getRTPromptData(rtId:string, promptId:string, keys:string[]) {
-        return await this.#rtControl.getRTPromptData(rtId, promptId, keys);
-    }
-    async setRTPromptData(rtId:string, promptId:string, data:KeyValueInput) {
-        await this.#rtControl.setRTPromptData(rtId, promptId, data);
-    }
+
     async hasRTId(rtId:string):Promise<boolean> {
         return await this.#rtControl.hasId(rtId);
     }

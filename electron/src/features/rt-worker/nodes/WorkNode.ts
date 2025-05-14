@@ -15,6 +15,10 @@ abstract class WorkNode<NInput, NOutput, NOption extends object> {
         try {
             return this.process(input);
         }
+        catch(error) {
+            console.error(`[WorkNode] Error in node ${this.nodeId}:`, error);
+            throw error;
+        }
         finally {
             
         }

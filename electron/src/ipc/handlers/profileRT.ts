@@ -1,130 +1,100 @@
-import * as utils from '@utils';
-import { IPCInvokerName } from 'types';
-
 import runtime from '@/runtime';
-import Profile from '@/features/profiles/Profile';
+import ThrottleAction from '@/features/throttle-action';
 
-function handler() {
-    const throttles = {};
-
-    const saveProfile = (profile:Profile) => {
-        const throttleId = `profile_${profile.path}`;
-        throttles[throttleId] ??= utils.throttle(500);
-        throttles[throttleId](()=>{
-            profile.commit();
-        });
-    }
+function handler():IPCInvokerProfileRT {
+    const throttle = ThrottleAction.getInstance();
 
     return {
-        /*  */
-        [IPCInvokerName.GenerateProfileRTId]: async (profileId: string) => {
+        async getMetadata(profileId: string, rtId: string) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const rtId = await profile.generateRTId();
+            const rt = profile.rt(rtId);
+            const metadata = await rt.getMetadata();
 
-            return [null, rtId] as const;
+            return [null, metadata];
         },
-
-        /* 트리 */
-        [IPCInvokerName.GetProfileRTTree]: async (profileId: string) => {
+        async setMetadata(profileId: string, rtId: string, metadata: RTIndex) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const tree = await profile.getRTTree();
+            const rt = profile.rt(rtId);
 
-            return [null, tree] as const;
-        },
-        [IPCInvokerName.UpdateProfileRTTree]: async (profileId: string, tree: any) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            profile.updateRTTree(tree);
-            saveProfile(profile);
+            await rt.setMetadata(metadata);
+            throttle.saveProfile(profile);
 
-            return [null] as const;
+            return [null];
         },
-
-        /* RT 컨트롤 */
-        [IPCInvokerName.AddProfileRT]: async (profileId: string, metadata: RTMetadata) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            profile.addRT(metadata);
-            saveProfile(profile);
-
-            return [null] as const;
-        },
-        [IPCInvokerName.RemoveProfileRT]: async (profileId: string, promptId: string) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            profile.removeRT(promptId);
-            saveProfile(profile);
-            
-            return [null] as const;
-        },
-
-        /* RT 데이터 */
-        [IPCInvokerName.SetProfileRTData]: async (profileId: string, rtId: string, accessId: string, data:KeyValueInput) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const result = await profile.setRTData(rtId, accessId, data);
-            return [null, result] as const;
-        },
-        [IPCInvokerName.GetProfileRTData]: async (profileId: string, rtId: string, accessorId: string, keys:string[]) => {
-            const profile = await runtime.profiles.getProfile(profileId);
-            const result = await profile.getRTData(rtId, accessorId, keys);
-            return [null, result] as const;
-        },
-        [IPCInvokerName.ReflectProfileRTMetadata]: async (profileId: string, rtId: string) => {
+        async reflectMetadata(profileId: string, rtId: string) {
             const profile = await runtime.profiles.getProfile(profileId);
             profile.updateRTMetadata(rtId);
             
-            return [null] as const;
+            return [null];
         },
 
-        /* RT 모드 */
-        [IPCInvokerName.GetProfileRTMode]: async (profileId: string, rtId: string) => {
+        async getForms(profileId:string, rtId:string) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const mode = await profile.getRTMode(rtId);
+            const rt = profile.rt(rtId);
 
-            return [null, mode] as const;
-        },
-        [IPCInvokerName.SetProfileRTMode]: async (profileId: string, rtId: string, mode: RTMode) => {
-            const profile = await runtime.profiles.getProfile(profileId)
-            profile.setRTMode(rtId, mode);
-            saveProfile(profile);
-
-            return [null] as const;
+            const forms = await rt.getForms();
+            return [null, forms];
         },
 
-        
-        [IPCInvokerName.GetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, keys:string[]) => {
+        async addNode(profileId:string, rtId:string, nodeCategory:string) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const data = await profile.getRTPromptData(rtId, promptId, keys);
+            const rt = profile.rt(rtId);
 
-            return [null, data] as const;
+            const nodeId = await rt.addNode(nodeCategory);
+            throttle.saveProfile(profile);
+
+            return [null, nodeId];
         },
-        [IPCInvokerName.SetProfileRTPromptData]: async (profileId: string, rtId:string, promptId:string, data:KeyValueInput) => {
+        async removeNode(profileId:string, rtId:string, nodeId:number) {
             const profile = await runtime.profiles.getProfile(profileId);
-            profile.setRTPromptData(rtId, promptId, data);
+            const rt = profile.rt(rtId);
 
-            return [null] as const;
+            await rt.removeNode(nodeId);
+            throttle.saveProfile(profile);
+
+            return [null];
         },
-
-        [IPCInvokerName.HasProfileRTId]: async (profileId: string, rtId: string) => {
+        async updateNodeOption(profileId:string, rtId:string, nodeId:number, option:Record<string, unknown>) {
             const profile = await runtime.profiles.getProfile(profileId);
-            const exists = await profile.hasRTId(rtId);
+            const rt = profile.rt(rtId);
+            
+            const success = await rt.updateNodeOption(nodeId, option);
+            throttle.saveProfile(profile);
 
-            return [null, exists] as const;
+            if (success) {
+                return [null];
+            }
+            else {
+                return [new Error('Failed to update node option')] as const;
+            }
         },
-        [IPCInvokerName.ChangeProfileRTId]: async (profileId: string, oldRTId: string, newRTId: string) => {
+        async connectNode(profileId:string, rtId:string, from:RTNodeEdge, to:RTNodeEdge) {
             const profile = await runtime.profiles.getProfile(profileId);
-            profile.changeRTId(oldRTId, newRTId);
-            saveProfile(profile);
+            const rt = profile.rt(rtId);
 
-            return [null] as const;
+            const success = await rt.connectNode(from, to);
+            throttle.saveProfile(profile);
+
+            if (success) {
+                return [null];
+            }
+            else {
+                return [new Error('Failed to connect node interface')] as const;
+            }
         },
-
-        /* RT 요청 */
-        [IPCInvokerName.RequestProfileRT]: async (token:string, profileId: string, input:RTInput) => {
+        async disconnectNode(profileId:string, rtId:string, from:RTNodeEdge, to:RTNodeEdge) {
             const profile = await runtime.profiles.getProfile(profileId);
-            await runtime.rtWorker.request(token, profile, input);
+            const rt = profile.rt(rtId);
 
-            return [null] as const;
-        },
-        [IPCInvokerName.AbortProfileRTRequest]: async (token:string) => {
-            return [null] as const;
+            const success = await rt.disconnectNode(from, to);
+            throttle.saveProfile(profile);
+
+            if (success) {
+                return [null];
+            }
+            else {
+                return [new Error('Failed to disconnect node interface')] as const;
+            }
         }
     }
 }
