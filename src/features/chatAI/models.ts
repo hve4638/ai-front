@@ -52,6 +52,8 @@ if (TARGET_ENV === "WINDOWS") {
     MODEL_CATEGORY[MODELS.CLAUDE] = {
         "name" : "Anthropic Claude",
         "models" : [
+            { name : "Claude 4 Sonnet", value: "claude-sonnet-4-20250514" },
+            { name : "Claude 4 Opus", value: "claude-opus-4-20250514" },
             { name : "Claude 3.7 Sonnet", value: "claude-3-7-sonnet-20250219" },
             { name : "Claude 3.5 Sonnet", value: "claude-3-5-sonnet-20240620" },
             { name : "Claude 3 Opus", value: "claude-3-opus-20240229" },

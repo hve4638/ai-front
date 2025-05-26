@@ -2,7 +2,7 @@
   "name": "ai-front",
   "author": "Hve",
   "description": "AI Front",
-  "version": "v0.6.12",
+  "version": "v0.6.13",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
