@@ -24,6 +24,7 @@ function AvatarPopover({
         modal.open(RTEditModal, {
             onClickCreateNewRT:()=>{
                 // @TODO
+                
             }
         });
         onClose();

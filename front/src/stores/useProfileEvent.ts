@@ -34,6 +34,7 @@ interface ProfileEventState {
     changeRTId(oldId:string, newId:string): Promise<void>;
     addRT(metadata:RTMetadata): Promise<void>;
     removeRT(rtId:string): Promise<void>;
+    renameRT(rtId:string, newName:string): Promise<void>;
 
     getCurrentSessionForms(): Promise<PromptVarWithLastValue[]>;
     setCurrentSessionForms(values:Record<string, any>): Promise<void>;
@@ -247,7 +248,7 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
         async hasRTId(id:string) {
             const { api } = useProfileAPIStore.getState();
 
-            return await api.rts.hasId(id);
+            return await api.rts.existsId(id);
         },
         async generateRTId() {
             const { api } = useProfileAPIStore.getState();
@@ -268,6 +269,12 @@ const useProfileEvent = create<ProfileEventState>((set)=>{
             const { api } = useProfileAPIStore.getState();
 
             return await api.rts.changeId(oldId, newId); 
+        },
+        async renameRT(rtId:string, name:string) {
+            const { api } = useProfileAPIStore.getState();
+        
+            await api.rt(rtId).setMetadata({ name : name });
+            await api.rt(rtId).reflectMetadata();
         },
         
         async getCurrentSessionForms() {

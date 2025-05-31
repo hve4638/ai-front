@@ -63,7 +63,7 @@ function SettingModal({
                 style={{
                     position : 'relative',
                     display: 'grid',
-                    gridTemplateRows: '64px 1fr',
+                    gridTemplateRows: '48px 1fr',
                     gridTemplateColumns: '96px 1fr',
                     width: '100%',
                     height: '100%',
@@ -78,7 +78,7 @@ function SettingModal({
                     className='undraggable'
                     style={{
                         display: 'block',
-                        fontSize: '0.9em'
+                        fontSize: '0.9em',
                     }}
                 >
                     {

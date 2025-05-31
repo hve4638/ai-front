@@ -1,11 +1,14 @@
 import { useConfigStore } from '@/stores';
 import { CheckBoxForm, DropdownForm, NumberForm } from '@/components/Forms';
+import { Column } from '@/components/layout';
+
+import styles from '../styles.module.scss';
 
 function HistoryOptions() {
     const configs = useConfigStore();
 
     return (
-        <>
+        <Column className={styles['options-gap']}>
             <CheckBoxForm
                 name='기록 활성화'
                 checked={configs.history_enabled}
@@ -33,7 +36,7 @@ function HistoryOptions() {
                 value={String(configs.max_history_storage_days)}
                 onChange={(item)=>configs.update.max_history_storage_days(Number(item.key))}
             />
-        </>
+        </Column>
     )
 }
 

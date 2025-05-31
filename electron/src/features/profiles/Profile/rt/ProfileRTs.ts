@@ -66,8 +66,7 @@ class ProfileRTs implements IRTControl {
     #hasId(rtId:string):boolean {
         return this.#rtIds.includes(rtId);
     }
-
-
+    
     /**
      * 각 RT의 이름을 트리 목록에 갱신
      */
@@ -111,7 +110,6 @@ class ProfileRTs implements IRTControl {
     async updateTree(newTree:RTMetadataTree) {
         await this.#loadData();
         
-        this.#tree = newTree;
         const prevIds = this.#getRTIds(this.#tree);
         const newIds = this.#getRTIds(newTree);
 

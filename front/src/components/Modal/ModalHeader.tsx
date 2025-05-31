@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { GoogleFontIcon } from "components/GoogleFontIcon";
+import { GIconButton, GoogleFontIcon } from "components/GoogleFontIcon";
 import { Flex, Row } from "components/layout";
 
 interface ModalHeaderProps {
@@ -18,31 +18,34 @@ function ModalHeader({
 }:ModalHeaderProps) {
     return (
         <Row
-            className={classNames('flex', className)}
+            className={className}
             style={{
                 width: '100%',
+                height: '1.5em',
+                marginBottom: '8px',
             }}
         >
             {
                 children != null &&
-                <h1
+                <span
                     className='center undraggable'
                     style={{
-                        margin : '4px'
+                        margin : '4px',
+                        fontSize: '1.2em',
+                        lineHeight: '1',
                     }}
-                >{children}</h1>
+                >{children}</span>
             }
             <Flex/>
             {
                 !hideCloseButton &&
-                <GoogleFontIcon
-                    enableHoverEffect={true}
+                <GIconButton
                     value='close'
                     style={{
-                        fontSize: '36px',
-                        margin: '4px',
-                        cursor: 'pointer',
+                        fontSize: '1.5em',
+                        lineHeight: '1',
                     }}
+                    hoverEffect='circle'
                     onClick={() => onClose()}
                 />
             }

@@ -10,6 +10,12 @@ textarea {
     resize : none;
 }
 
+div {
+    &:focus {
+        outline: none;
+    }
+}
+
 input {
     border: 0px;
 }

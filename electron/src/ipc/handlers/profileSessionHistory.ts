@@ -6,10 +6,10 @@ function handler():IPCInvokerProfileSessionHistory {
 
     return {
         /* 프로필 세션 히스토리 */
-        async get(profileId: string, sessionId: string, offset:number, limit:number) {
+        async get(profileId: string, sessionId: string, offset:number, limit:number, desc:boolean) {
             const profile = await runtime.profiles.getProfile(profileId);
             const accessor = await profile.accessAsHistory(sessionId);
-            const historyRows = accessor.getHistory(offset, limit);
+            const historyRows = accessor.getHistory(offset, limit, desc);
             const metadata:HistoryMetadata[] = historyRows.map(row=>({
                 id : row.id,
                 requestType : row.chat_type,
@@ -18,7 +18,8 @@ function handler():IPCInvokerProfileSessionHistory {
                 rtId : row.rt_id,
                 rtUUID : row.rt_uuid,
                 modelId : row.model_id,
-                form : row.form,
+                form : JSON.parse(row.form),
+                isComplete : Boolean(row.is_complete),
             }));
 
             return [null, metadata] as const;
@@ -41,7 +42,8 @@ function handler():IPCInvokerProfileSessionHistory {
                 rtId : row.rt_id,
                 rtUUID : row.rt_uuid,
                 modelId : row.model_id,
-                form : row.form,
+                form : JSON.parse(row.form),
+                isComplete : Boolean(row.is_complete),
             }));
             
             return [null, metadata] as const;
@@ -59,7 +61,6 @@ function handler():IPCInvokerProfileSessionHistory {
                     output : output,
                 });
             }
-
             return [null, messages] as const;
         },
         async delete(profileId: string, sessionId: string, historyKey: number) {

@@ -1,8 +1,9 @@
 import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import { GIconButton, GoogleFontIcon } from 'components/GoogleFontIcon';
 import { TreeNodeProps, Regions } from './types';
 import styles from './styles.module.scss';
+import { Flex } from '@/components/layout';
 
 export function TreeNodeItem({
     name,
@@ -12,6 +13,7 @@ export function TreeNodeItem({
     added = false,
     fixed = false,
     onClick = (e) => {},
+    onDoubleClick = (e) => {},
     onMouseEnter = (e) => {},
     onMouseLeave = (e) => {},
     onRegionMouseEnter = (e, region:Regions) => {},
@@ -126,7 +128,9 @@ export function TreeNodeItem({
         <div
             ref={nodeRef}
             className={
+                
                 classNames(
+                    'row',
                     className,
                     styles['node'],
                     {
@@ -145,6 +149,7 @@ export function TreeNodeItem({
             onMouseLeave={mouseLeave}
             onMouseMove={mouseMove}
             onClick={onClick}
+            onDoubleClick={onDoubleClick}
         >
             {
                 icon !== '' && (
@@ -157,6 +162,33 @@ export function TreeNodeItem({
                 )
             }
             <span style={{paddingLeft:'0.25em'}}>{name}</span>
+            <Flex/>
+            {
+                icon !== '' && (
+                    <GIconButton
+                        value='edit'
+                        style={{
+                            top: '1px',
+                            fontSize: '120%',
+                            aspectRatio: '1/1',
+                        }}
+                        hoverEffect='square'
+                    />
+                )
+            }
+            {
+                icon !== '' && (
+                    <GIconButton
+                        value='delete'
+                        style={{
+                            top: '1px',
+                            fontSize: '120%',
+                            aspectRatio: '1/1',
+                        }}
+                        hoverEffect='square'
+                    />
+                )
+            }
         </div>
     );
 }

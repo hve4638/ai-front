@@ -15,7 +15,10 @@ type PromptTreeModalProps = {
     tree:RTNodeTree;
     onChange?: (item:RTNodeTree) => void;
     onClick?: (rtId:string) => void;
+    onDoubleClick?: (rtId:string) => void;
     
+    editable?: boolean;
+    deletable?: boolean;
     relocatable?: boolean;
     hideBackground ?: boolean;
 }
@@ -25,8 +28,11 @@ function RTTreeModal({
     style={},
     tree,
     onClick=()=>{},
+    onDoubleClick=()=>{},   
     onChange=()=>{},
     relocatable=false,
+    editable=false,
+    deletable=false,
     hideBackground=false,
 }:PromptTreeModalProps) {
     // 드래그 인디케이터 위치지정
@@ -144,7 +150,10 @@ function RTTreeModal({
                     onClick={() => {
                         onClick(node.id);
                     }}
-                />
+                    onDoubleClick={() => {
+                        onDoubleClick(node.id);
+                    }}
+                ></TreeNode>
             );
         }
     }

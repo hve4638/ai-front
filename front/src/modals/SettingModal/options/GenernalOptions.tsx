@@ -1,8 +1,14 @@
 import { useMemo, useState } from 'react';
-import { CheckBoxForm, DropdownForm, NumberForm } from 'components/Forms';
-import { LayoutModes, ThemeModes } from 'types/profile';
+
+import { LayoutModes, ThemeModes } from '@/types/profile';
 import { useConfigStore } from '@/stores';
+
 import SliderForm from '@/components/Forms/SliderForm';
+import { Column } from '@/components/layout';
+import { CheckBoxForm, DropdownForm, NumberForm } from '@/components/Forms';
+
+import { remapDecimal } from '@/utils/math';
+import styles from '../styles.module.scss';
 
 function GeneralOptions() {
     const config = useConfigStore();
@@ -18,7 +24,7 @@ function GeneralOptions() {
     }, [config.textarea_io_ratio[0], config.textarea_io_ratio[1]]);
 
     return (
-        <>
+        <Column className={styles['options-gap']}>
             <NumberForm
                 name='폰트 크기'
                 width='4em'
@@ -60,13 +66,16 @@ function GeneralOptions() {
             />
             <SliderForm
                 name='입력창 여백'
-                min={8}
+                min={4}
                 max={24}
                 value={config.textarea_padding}
                 onChange={(value)=>{
+                    const radius = remapDecimal(value, {min: 4, max: 16}, {min: 1, max: 5});
+                    config.update.textarea_radius(radius);
                     config.update.textarea_padding(value);
                 }}
                 marks={{
+                    '4' : '4',
                     '8' : '8',
                     '12' : '12',
                     '16' : '16',
@@ -105,7 +114,7 @@ function GeneralOptions() {
                 value={config.remember_deleted_session_count}
                 onChange={config.update.remember_deleted_session_count}
             />
-        </>
+        </Column>
     )
 }
 

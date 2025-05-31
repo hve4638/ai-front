@@ -1,0 +1,12 @@
+.theme-light {
+    --prompt-tree-hover-bgcolor : aqua;
+
+    --added-prompt-item-color : rgb(67, 187, 145);
+    --edited-prompt-item-color : rgb(226, 192, 121);
+}
+.theme-dark {
+    --prompt-tree-hover-bgcolor : rgba(255, 255, 255, 0.2);
+
+    --added-prompt-item-color : rgb(67, 187, 145);
+    --edited-prompt-item-color : rgb(226, 192, 121);
+}

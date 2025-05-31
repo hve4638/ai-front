@@ -51,7 +51,7 @@ function HistoryModal({
 
         const historyCache = historyState.get(last_session_id);
         if (searchText.length === 0) {
-            historyCache.select(0, 100)
+            historyCache.select(0, 100, true)
                 .then((result) => {
                     setHistory(result);  
                 });
@@ -144,8 +144,8 @@ function HistoryModal({
                                 value={item}
                                 onClick={async ()=>{
                                     const promises:Promise<void>[] = [];
-                                    promises.push(updateSessionState.input(item.input));
-                                    promises.push(updateSessionState.output(item.output));
+                                    promises.push(updateSessionState.input( item.input ?? ''));
+                                    promises.push(updateSessionState.output(item.output ?? ''));
                                     if (history_apply_rt) {
                                         promises.push(updateSessionState.rt_id(item.rtId));
                                     }

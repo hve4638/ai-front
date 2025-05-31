@@ -10,6 +10,7 @@ interface ConfigFields {
     layout_mode: LayoutModes;
     history_enabled: boolean;
 
+    textarea_radius : number;
     textarea_padding : number;
     textarea_io_ratio : [number, number];
     
@@ -28,6 +29,7 @@ const defaultConfig:ConfigFields = {
     layout_mode: LayoutModes.HORIZONTAL,
     history_enabled: true,
 
+    textarea_radius : 5,
     textarea_padding : 16,
     textarea_io_ratio : [2048, 2048],
     remember_deleted_session_count: 30,

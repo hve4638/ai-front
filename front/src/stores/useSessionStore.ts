@@ -54,7 +54,7 @@ interface SessionState extends SessionFields {
     refetch : RefetchMethods<SessionFields>;
     refetchAll : () => Promise<void>;
 }
-
+ 
 export const useSessionStore = create<SessionState>((set, get)=>{
     const {
         update : updateCache,

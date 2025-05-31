@@ -17,7 +17,7 @@ interface GIconButtonProps {
 
     hoverEffect?: HoverEffectRadius;
 
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLLabelElement, MouseEvent>|React.KeyboardEvent<HTMLLabelElement>) => void;
     onMouseDown?: (e: React.MouseEvent<HTMLLabelElement, MouseEvent>) => void;
 }
 
@@ -28,7 +28,7 @@ function IconButton({
     
     hoverEffect = HoverEffectRadius.None,
 
-    onClick = () => { },
+    onClick = (e) => { },
     onMouseDown = (e) => { },
 }: GIconButtonProps) {
     let hoverRadius:string|undefined;
@@ -58,11 +58,11 @@ function IconButton({
                 ...style,
             }}
 
-            onClick={(e) => onClick()}
+            onClick={(e) => onClick(e)}
             onMouseDown={(e) => onMouseDown(e)}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    onClick();
+                    onClick(e);
                     e.preventDefault();
                     e.stopPropagation();
                 }

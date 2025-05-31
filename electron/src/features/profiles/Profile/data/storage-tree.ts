@@ -64,7 +64,7 @@ export const PROFILE_STORAGE_TREE = {
         }
     }),
     'config.json' : StorageAccess.JSON({
-        'name' : JSONType.String(),
+        'name' : JSONType.String(), 
         'color' : JSONType.String(),
         'font_size' : JSONType.Number(),
         'theme_mode' : JSONType.Union('auto', 'light', 'dark').default_value('auto'),

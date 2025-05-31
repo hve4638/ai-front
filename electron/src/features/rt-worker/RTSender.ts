@@ -28,6 +28,15 @@ class RTSender {
         }
     }
 
+    sendHistoryUpdate() {
+        const window = this.browserWindowRef.deref();
+        if (window) {
+            window.webContents.send(IPCListenerPing.Request, this.token, {
+                type : 'history_update',
+            } satisfies RequestRTData);
+        }
+    }
+
     sendClose() {
         const window = this.browserWindowRef.deref();
         if (window) {

@@ -1,5 +1,6 @@
-import { GoogleFontIcon } from "components/GoogleFontIcon";
-import React, { useEffect, useState, useRef, useMemo, useLayoutEffect, forwardRef } from "react";
+import React, { useMemo, forwardRef } from 'react';
+import styles from './styles.module.scss';
+import classNames from 'classnames';
 
 interface DropdownListProps {
     className?:string;
@@ -37,7 +38,7 @@ const DropdownList = forwardRef(({
     return (
         <div
             ref={ref}
-            className={`dropdown-list ${className} `}
+            className={classNames(styles['dropdown-list'], className)}
             style={{
                 left: left,
                 top: top,

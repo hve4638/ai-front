@@ -2,6 +2,7 @@
     "create_label" : "생성",
     "submit_label" : "확인",
     "confirm_label" : "확인",
+    "delete_label" : "삭제",
     "cancel_label" : "취소",
     "prev_label" : "뒤로",
     "error" : {
@@ -94,10 +95,13 @@
         "select_prompt_only_mode_button" : "단일 프롬프트",
         "select_flow_mode_button" : "워크플로우",
         "rt_create" : "새 템플릿 추가",
+        "rt_load" : "템플릿 불러오기",
         "rt_edit" : "요청 템플릿 수정",
         "name" : "이름",
         "identifier" : "내부 식별자",
-        "advanced_button" : "고급"
+        "advanced_button" : "고급",
+
+        "new_directory" : "새 폴더"
     },
     "session" : {
         "default_name" : "새 세션"

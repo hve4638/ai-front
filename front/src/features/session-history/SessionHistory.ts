@@ -12,21 +12,27 @@ class SessionHistory {
 
     constructor(private sessionId: string) {}
 
-    private setHistoryMetadata(next:HistoryMetadata[]) {
+    private cacheHistoryMetadata(next:HistoryMetadata[]) {
+        const cached = {};
+
         for (const m of next) {
+            cached[m.id] = m;
             this.metadataCache[m.id] = m;
         }
+
+        return cached;
     }
-    private setHistory(next:HistoryMessage[]) {
+    private cacheHistory(next:HistoryMessage[]):Record<number, HistoryData> {
+        const cached = {};
+
         for (const m of next) {
             const meta = this.metadataCache[m.id];
-            if (!meta) continue;
-
-            this.historyCache[m.id] = {
+            const data = {
                 id: m.id,
-                requestType: meta.requestType,
                 input: m.input,
                 output: m.output,
+                
+                requestType: meta.requestType,
                 createdAt: meta.createdAt,
                 bookmark: meta.bookmark,
                 
@@ -34,8 +40,25 @@ class SessionHistory {
                 rtUUID: meta.rtUUID,
                 modelId: meta.modelId,
             };
+
+            cached[m.id] = data;
+
+            if (meta.isComplete) {
+                this.historyCache[m.id] = data;
+            }
         }
+        
+        return cached;
     }
+    
+    /**
+     * HistoryMetadata 기반으로 히스토리 데이터 요청
+     * 
+     * 각 History 로드 시 캐시에 저장하고 이후 캐시된 데이터를 반환
+     * 
+     * @param next 
+     * @returns 
+     */
     private async loadHistory(next: HistoryMetadata[]) {
         const result:(HistoryData|null)[] = [];
         const uncachedId:number[] = [];
@@ -57,43 +80,48 @@ class SessionHistory {
             }
         }
 
+        console.group('loadHistory');
+        console.log('next: ', next);
+        console.log('uncachedId: ', uncachedId);
+        console.log('neededId: ', neededId);
+        console.groupEnd();
         if (uncachedId.length === 0) {
+            console.log('result', result);
             return result as HistoryData[];
         }
         else {
             const { api } = useProfileAPIStore.getState();
-            const sessionAPI = api.getSessionAPI(this.sessionId);
+            const sessionAPI = api.session(this.sessionId);
             const messages = await sessionAPI.history.getMessage(uncachedId);
-            this.setHistory(messages);
+            const cache = this.cacheHistory(messages);
             
             for (const [historyId, index] of Object.entries(neededId)) {
-                result[index] = this.historyCache[Number(historyId)];
+                result[index] = cache[Number(historyId)];
             }
             
-            console.log(result);
+            console.log('result', result);
             return result as HistoryData[];
         }
     }
 
-    async select(offset: number, limit: number) {
+    async select(offset: number, limit: number, desc: boolean) {
         const { api } = useProfileAPIStore.getState();
-        const sessionAPI = api.getSessionAPI(this.sessionId);
-        const newMetadata = await sessionAPI.history.get(offset, limit);
+        const sessionAPI = api.session(this.sessionId);
+        const newMetadata = await sessionAPI.history.get(offset, limit, desc);
+        console.log('select>')
 
-        console.log(newMetadata);
-
-        this.setHistoryMetadata(newMetadata);
+        this.cacheHistoryMetadata(newMetadata);
         return this.loadHistory(newMetadata);
     }
 
     async search(offset: number, limit: number, condition: HistorySearch) {
         const { api } = useProfileAPIStore.getState();
-        const sessionAPI = api.getSessionAPI(this.sessionId);
+        const sessionAPI = api.session(this.sessionId);
         const newMetadata = await sessionAPI.history.search(offset, limit, condition);
 
         console.log(newMetadata);
 
-        this.setHistoryMetadata(newMetadata);
+        this.cacheHistoryMetadata(newMetadata);
         return this.loadHistory(newMetadata);
     }
 }

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import styles from '../styles.module.scss';
 
-import { Align, Flex, Row } from 'components/layout';
+import { Align, Flex, Grid, Row } from 'components/layout';
 import AvatarPopover from '../AvatarPopover';
 import { useModal } from 'hooks/useModal';
 
 import RTDropdown from './RTDropdown';
 import ModelDropdown from './ModelDropdown';
-import { useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
+import { useProfileAPIStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
 import classNames from 'classnames';
 import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
 import HistoryModal from '@/modals/HistoryModal';
@@ -42,26 +42,22 @@ function Header() {
                 fontSize: '16px',
             }}
         >
-            <Flex
+            <Grid
                 style={{
-                    margin: '0px 8px',
+                    width : '100%',
+                    margin : '0px 8px',
+                    gap : '16px',
                 }}
+                rows='1fr'
+                columns='1fr 1fr'
             >
-                <ModelDropdown />
-                <Flex />
-                <RTDropdown />
-            </Flex>
-
-            <Flex
-                style={{
-                    margin: '0px 8px',
-                }}
-            >
+                <div>
+                    <ModelDropdown />
+                    <Flex />
+                    <RTDropdown />
+                </div>
                 <Row
-                    className='flex'
-                    style={{
-                        gap: '0.25em',
-                    }}
+                    style={{ gap: '0.25em' }}
                     columnAlign={Align.Center}
                 >
                     {
@@ -126,7 +122,7 @@ function Header() {
                         }
                     </div>
                 </Row>
-            </Flex>
+            </Grid>
         </header>
     );
 }

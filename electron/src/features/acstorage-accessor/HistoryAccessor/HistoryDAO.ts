@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import { HistoryRow, MessageRow } from './types';
 
 export type HistorySearchRow = {
-    text : string;
-    search_scope : 'input' | 'output' | 'any';
+    text: string;
+    search_scope: 'input' | 'output' | 'any';
     // date?: number;
-    regex : boolean;
-    
+    regex: boolean;
+
     offset: number;
     limit: number;
 }
@@ -50,21 +50,40 @@ class HistoryDAO {
             throw new Error(`Failed to open database '${path}' : ${e.message}`);
         }
 
+        /**
+         * history 테이블
+         * id : 고유 키
+         * chat_type : 채팅 타입 (chat, normal)
+         * branch_id : 브랜치 ID (0은 기본 브랜치)
+         * input_token_count : 입력 토큰 수
+         * output_token_count : 출력 토큰 수
+         * form : 폼 정보 (JSON 문자열)
+         * rt_id : 요청 타입 ID
+         * rt_uuid : 요청 타입 UUID
+         * model_id : 모델 ID
+         * fetch_count : ?
+         * create_at : 생성 시간 (UNIX 타임스탬프)
+         * is_complete : 완료 여부
+         */
         db.exec(`CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY,
             chat_type TEXT CHECK(chat_type IN ('chat', 'normal')),
 
+            branch_id INTEGER DEFAULT 0,
+
             input_token_count INTEGER DEFAULT 0,
             output_token_count INTEGER DEFAULT 0,
 
-            form TEXT,
+            form TEXT DEFAULT '{}',
 
             rt_id TEXT NOT NULL,
             rt_uuid TEXT NOT NULL,
             model_id TEXT NOT NULL,
 
             fetch_count INTEGER DEFAULT 0,
-            create_at INTEGER NOT NULL
+            create_at INTEGER NOT NULL,
+
+            is_complete INTEGER DEFAULT 0
         )`);
         db.exec(`CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY,
@@ -99,35 +118,59 @@ class HistoryDAO {
         }
     }
 
-    insertHistory(row: HistoryRowInput): number {
+    insertHistory(row: {
+        form : string;
+        rt_id : string;
+        rt_uuid : string;
+        model_id : string;
+        create_at: number;
+    }): number {
+        console.warn(`INSERT HISTORY`)
         const insert = this.#db.prepare(
             `
                 INSERT INTO history(
-                    chat_type,
-                    input_token_count,
-                    output_token_count,
                     form,
                     rt_id,
                     rt_uuid,
                     model_id,
                     create_at,
-                    fetch_count
+                    is_complete
                 ) VALUES (
-                    $chat_type,
-                    $input_token_count,
-                    $output_token_count,
                     $form,
                     $rt_id,
                     $rt_uuid,
                     $model_id,
                     $create_at,
-                    $fetch_count
+                    0
                 )
             `
         );
 
         const { lastInsertRowid } = insert.run(row);
         return lastInsertRowid as number;
+    }
+
+    updateHistory(historyId: number, row: Partial<HistoryRowInput>) {
+        if (Object.keys(row).length === 0) return;
+
+        const sets = Object.keys(row).map(k => `${k} = $${k}`).join(', ');
+        const update = this.#db.prepare(
+            `UPDATE history
+            SET
+                ${sets}
+            WHERE id = $id`
+        );
+        update.run({ id: historyId, ...row });
+    }
+
+    completeHistory(historyId: number) {
+        const update = this.#db.prepare(
+            `UPDATE history
+            SET 
+                is_complete = 1
+            WHERE id = $id`
+        );
+        update.run({ id: historyId });
     }
 
     insertMessage(historyId: number, row: MessageRowInput) {
@@ -156,18 +199,23 @@ class HistoryDAO {
         insert.run({ history_id: historyId, ...row });
     }
 
-    selectHistory(offset = 0, limit = 1000) {
+    selectHistory({ offset = 0, limit = 1000, desc = true, branchId }: {
+        offset?: number;
+        limit?: number;
+        desc?: boolean;
+        branchId?: number;
+    }) {
         const query = this.#db.prepare(
             `SELECT *
             FROM history
-            ORDER BY create_at DESC
+            ORDER BY create_at ${desc ? 'DESC' : 'ASC'}
             LIMIT $limit
             OFFSET $offset`
         );
         return query.all({ offset, limit }) as HistoryRow[];
     }
 
-    selectMessages(historyId:number|bigint) {
+    selectMessages(historyId: number | bigint) {
         const query = this.#db.prepare(
             `SELECT *
             FROM messages
@@ -177,13 +225,17 @@ class HistoryDAO {
         return query.all({ historyId }) as MessageRow[];
     }
 
-    searchHistory(search:HistorySearchRow) {
-        const params:Record<string, unknown> = {};
-        const likeQuery:string[] = [];
+    searchHistory(search: HistorySearchRow) {
+        const params: Record<string, unknown> = {};
+        const likeQuery: string[] = [];
         if (search.text == null || search.text.trim().length === 0) {
-            return this.selectHistory(search.offset, search.limit);
+            return this.selectHistory({
+                offset: search.offset,
+                limit: search.limit,
+                desc: true,
+            });
         }
-        
+
         const texts = search.text.split(' ').map((text) => `%${text}%`);
         if (search.regex) {
             throw new Error('Not implemented');
@@ -194,12 +246,12 @@ class HistoryDAO {
                 const value = texts[index];
 
                 params[key] = value;
-                
+
                 likeQuery.push(`messages.text LIKE $${key}`);
             }
         }
 
-        let where:string = '';
+        let where: string = '';
         if (likeQuery.length !== 0) {
             const like = likeQuery.join(' OR ');
 

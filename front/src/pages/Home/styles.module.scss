@@ -8,6 +8,7 @@
     position : relative;
     aspect-ratio: 1/1;
     height : 100%;
+    z-index : 5;
     
     .avatar-label {
         width : 100%;
@@ -41,4 +42,9 @@
         padding : 4px 8px;
         border-radius: 8px;
     }
+}
+
+.main-section {
+    z-index: 3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }

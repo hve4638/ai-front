@@ -1,7 +1,7 @@
 import { ICustomAccessor } from 'ac-storage';
 import HistoryDAO from './HistoryDAO';
 import { type HistorySearchRow } from './HistoryDAO';
-import { HistoryRequired } from './types';
+import { HistoryMessageRow, HistoryRequired } from './types';
 
 class HistoryAccessor implements ICustomAccessor {
     #dao:HistoryDAO;
@@ -11,50 +11,60 @@ class HistoryAccessor implements ICustomAccessor {
         this.#dao = new HistoryDAO(target);
     }
 
-    addHistory(historyRequired:Required<HistoryRequired>) {
+    addHistory(historyRequired:{
+        rt_id : string;
+        rt_uuid : string;
+        model_id : string;
+
+        form : Record<string, unknown>;
+        
+        create_at : number;
+    }):number {
         const {
-            chat_type,
-            input_token_count, output_token_count,
             rt_id, rt_uuid, model_id,
-            fetch_count, create_at,
-            input, output,
+            create_at,
             form,
         } = historyRequired;
 
         const historyId = this.#dao.insertHistory({
-            chat_type,
-            input_token_count, output_token_count,
             rt_id, rt_uuid, model_id,
-            fetch_count, create_at,
+            create_at,
             form: JSON.stringify(form),
         });
-        for (const message of input) {
-            if (!message.text) continue;
+
+        return historyId;
+    }
+
+    updateHistory(historyId:number, historyRequired:Partial<HistoryRequired>) {
+        this.#dao.updateHistory(historyId, {
+            input_token_count: historyRequired.input_token_count,
+            output_token_count: historyRequired.output_token_count,
+            rt_id: historyRequired.rt_id,
+            rt_uuid: historyRequired.rt_uuid,
+            model_id: historyRequired.model_id,
+            fetch_count: historyRequired.fetch_count,
+            create_at: historyRequired.create_at,
+            form: JSON.stringify(historyRequired.form),
+        }); 
+    }
+
+    addHistoryMessage(historyId:number, origin:'in'|'out', messages:HistoryMessageRow[]) {
+        for (const m of messages) {
+            if (!m.text) continue;
 
             this.#dao.insertMessage(historyId, {
-                origin: 'in',
-                type : message.type,
-                text : message.text,
-                data: message.data,
-                
-                token_count: message.token_count,
-            });
-        }
-        for (const message of output) {
-            if (!message.text) continue;
-
-            this.#dao.insertMessage(historyId, {
-                origin: 'out',
-                type : message.type,
-                text : message.text,
-                data: message.data,
-                token_count: message.token_count,
+                origin: origin,
+                ...m,
             });
         }
     }
 
-    getHistory(offset=0, limit=1000) {
-        const history = this.#dao.selectHistory(offset, limit);
+    completeHistory(historyId:number) {
+        this.#dao.completeHistory(historyId);
+    }
+
+    getHistory(offset=0, limit=1000, desc=true) {
+        const history = this.#dao.selectHistory({ offset, limit, desc });
 
         return history;
     }
@@ -63,7 +73,7 @@ class HistoryAccessor implements ICustomAccessor {
         return this.#dao.searchHistory(search);
     }
 
-    getMessageText(historyId:number):{input:string, output:string} {
+    getMessageText(historyId:number):{input?:string, output?:string} {
         const messages = this.#dao.selectMessages(historyId);
 
         const inputText:string[] = [];
@@ -79,8 +89,8 @@ class HistoryAccessor implements ICustomAccessor {
         }
 
         return {
-            input : inputText.join(' '),
-            output : outputText.join(' '),
+            input : inputText.length === 0 ? undefined : inputText.join(' '),
+            output : outputText.length === 0 ? undefined : outputText.join(' '),
         };
     }
 

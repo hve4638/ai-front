@@ -9,7 +9,7 @@ type HistoryStates = {
 }
 
 /**
- * 각 세션에 대한 historyStore를 관리
+ * 세션 별 historyStore를 관리
  * 
  * history에 대한 캐싱 역할을 수행함
  */

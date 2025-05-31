@@ -10,11 +10,12 @@ import { CommonDialogProps } from './types';
 import styles from './styles.module.scss';
 import useHotkey from '@/hooks/useHotkey';
 
-type ChoiceTone = 'default'|'highlight'|'dimmed';
+type ChoiceTone = 'default'|'highlight'|'dimmed'|'warn';
 type ChoiceDetail = {
     text : string;
     tone? : ChoiceTone;
 };
+
 
 interface ChoiceDialogProps extends CommonDialogProps {
     choices:(string|ChoiceDetail)[];
@@ -24,6 +25,13 @@ interface ChoiceDialogProps extends CommonDialogProps {
     onEscape? : ()=>Promise<boolean>;
 }
 
+
+
+/**
+ * 다이얼로그 컴포넌트로, 제목과 내용, 그리고 여러 선택지를 버튼 형태로 표시합니다.
+ * @param {ChoiceDialogProps} props - 컴포넌트에 전달할 props입니다.
+ * @returns {JSX.Element} 생성된 다이얼로그 JSX 요소입니다.
+ */
 function ChoiceDialog({
     title,
     children,
@@ -31,7 +39,7 @@ function ChoiceDialog({
     onSelect = async (choice:string, index:number)=>true,
     onClose,
 
-    onEnter = async ()=>true,
+    onEnter = async ()=>false,
     onEscape = async ()=>true,
 
     enableRoundedBackground = false,
@@ -98,17 +106,13 @@ function ChoiceDialog({
                     const text = typeof choice === 'string' ? choice : choice.text;
                     let choiceTone:ChoiceTone = typeof choice === 'string' ? 'default' : (choice.tone ?? 'default');
 
-                    let tone:string|undefined = undefined;
-                    if (choiceTone === 'dimmed') tone = 'transparent';
-                    else if (choiceTone === 'highlight') tone = 'highlight';
-
                     return (
                         <Button
                             key={index}
                             className={
                                 classNames(
                                     styles['dialog-button'],
-                                    tone,
+                                    choiceTone,
                                 )
                             }
                             style={{ minWidth: '6em' }}

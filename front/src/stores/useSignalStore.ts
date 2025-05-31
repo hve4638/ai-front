@@ -8,6 +8,8 @@ const signalFields = {
     reload_input : 0,
     request : 0,
     request_ready : 0,
+    refresh_rt_tree : 0,
+    refresh_chat : 0,
 } as const;
 type SignalFields = Record<keyof typeof signalFields, number>;
 

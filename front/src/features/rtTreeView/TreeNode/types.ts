@@ -17,6 +17,7 @@ export type TreeNodeProps = {
     fixed?:boolean;
     icon?:string;
     onClick?:MouseEventHandler<HTMLDivElement>;
+    onDoubleClick?:MouseEventHandler<HTMLDivElement>;
     onMouseEnter?:MouseEventHandler<HTMLDivElement>;
     onMouseLeave?:MouseEventHandler<HTMLDivElement>;
     onRegionMouseEnter?:(e:React.MouseEvent<HTMLDivElement, MouseEvent>, region:Regions)=>void;

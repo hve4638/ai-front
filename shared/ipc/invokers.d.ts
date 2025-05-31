@@ -67,7 +67,7 @@ declare global {
     };
     
     type IPCInvokerProfileSessionHistory = {
-        get(profileId: string, sessionId: string, offset: number, limit: number): EResult<HistoryMetadata[]>;
+        get(profileId: string, sessionId: string, offset: number, limit: number, desc: boolean): EResult<HistoryMetadata[]>;
         search(profileId: string, sessionId: string, offset: number, limit: number, search: HistorySearch): EResult<HistoryMetadata[]>;
         getMessage(profileId: string, sessionId: string, historyId: number[]): EResult<HistoryMessage[]>;
         delete(profileId: string, sessionId: string, historyKey: number): ENoResult;

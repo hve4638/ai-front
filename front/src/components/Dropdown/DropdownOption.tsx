@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { DropdownItem, DropdownItemList } from './types';
+import styles from './styles.module.scss';
+import classNames from 'classnames';
 
 interface DropdownItemProps {
     className?:string;
@@ -45,10 +47,13 @@ function DropdownOption({
         <div
             ref = {optionRef}
             className={
-                'dropdown-item'
-                + ('list' in item ? ' dropdown-array' : '')
-                + (className ? ' ' + className : '')
+                classNames(
+                    styles['dropdown-item'],
+                    className,
+                    { [styles['dropdown-array']] : 'list' in item },
+                )
             }
+            tabIndex={0}        
             style={style}
             onMouseEnter={(e) => {
                 setHover(true);

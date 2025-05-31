@@ -11,6 +11,8 @@ declare global {
         message : string;
         detail : string[];
     } | {
+        type : 'history_update';
+    } | {
         type : 'close';
     }
 
@@ -25,12 +27,14 @@ declare global {
         modelId: string;
 
         form : Record<string, unknown>;
+
+        isComplete : boolean;
     }
 
     type HistoryMessage = {
         id : number;
-        input : string;
-        output : string;
+        input? : string;
+        output? : string;
     }
 
     type HistorySearch = {

@@ -1,9 +1,14 @@
-import { GoogleFontIcon } from "components/GoogleFontIcon";
-import React, { useEffect, useState, useRef, useMemo, useCallback, useLayoutEffect } from "react";
-import ReactDOM from "react-dom";
-import DropdownList from "./DropdownList";
-import type { DropdownItem, DropdownItemList } from './types';
+import React, { useEffect, useState, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
+import ReactDOM from 'react-dom';
+import classNames from 'classnames';
+
+import { GoogleFontIcon } from '@/components/GoogleFontIcon';
+
+import DropdownList from './DropdownList';
 import DropdownOption from './DropdownOption';
+import type { DropdownItem, DropdownItemList } from './types';
+
+import styles from './styles.module.scss';
 
 interface LayerDropdownProps {
     className?:string;
@@ -127,12 +132,12 @@ function Dropdown({
 
     return (
         <div
-            className={`dropdown-container ${className}`}
+            className={classNames(styles['dropdown-container'], className)}
             style={style}
         >
             <div
                 ref={headerRef}
-                className='dropdown-header flex'
+                className={classNames(styles['dropdown-header'])}
                 style={{
                     height : '100%'
                 }}

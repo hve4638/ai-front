@@ -10,7 +10,6 @@ import styles from './styles.module.scss';
 import { MODAL_DISAPPEAR_DURATION } from 'data';
 import useModalDisappear from 'hooks/useModalDisappear';
 
-
 function NewProfileModal({
     onSubmit,
     onClose,
@@ -42,98 +41,86 @@ function NewProfileModal({
             disappear={disappear}
         >
             <ModalHeader onClose={close}>프로필 추가</ModalHeader>
-            <Column
+            <div style={{ height : '16px' }}/>
+            <Row
+                rowAlign={Align.Center}
                 style={{
-                    padding: '16px 16px 8px 16px'
+                    width : '100%',
+                    paddingLeft : '16px',
+                    paddingRight : '16px',
+                    boxSizing : 'border-box',
+                    marginBottom: '8px'
                 }}
             >
-                <Row
-                    rowAlign={Align.Center}
+                <div
+                    className='noflex'
                     style={{
-                        width : '100%',
-                        padding : '8px',
-                        boxSizing : 'border-box',
-                        marginBottom: '24px'
+                        width: '64px',
+                        height: '64px',
+                        backgroundColor: 'lightgray',
+                        borderRadius: '8px'
+                    }}
+                ></div>
+                <Flex
+                    className='center'
+                    style={{
+                        height: '64px',
+                        paddingLeft: '16px'
                     }}
                 >
-                    <div
-                        className='noflex'
+                    <TextInput
+                        ref={inputRef}
+                        className={classNames('wfill', styles['profile-input'])}
+                        placeholder='프로필 이름'
                         style={{
-                            width: '64px',
-                            height: '64px',
-                            backgroundColor: 'lightgray',
-                            borderRadius: '8px'
+                            boxSizing: 'content-box',
+                            padding: '2px 0.5em',
+                            height: '1.5em'
                         }}
-                    ></div>
-                    <Flex
-                        className='center'
-                        style={{
-                            height: '64px',
-                            paddingLeft: '16px'
+                        value={name}
+                        onChange={(value) => {
+                            setName(value);
                         }}
-                    >
-                        <TextInput
-                            ref={inputRef}
-                            className={classNames('wfill', styles['profile-input'])}
-                            placeholder='프로필 이름'
-                            style={{
-                                boxSizing: 'content-box',
-                                padding: '2px 0.5em',
-                                height: '1.5em'
-                            }}
-                            value={name}
-                            onChange={(value) => {
-                                setName(value);
-                            }}
-                        />
-                    </Flex>
-                </Row>
-                
-                <Row
-                    rowAlign={Align.End}
+                        instantChange={true}
+                    />
+                </Flex>
+            </Row>
+            <div style={{ height : '16px' }}/>
+            <Row
+                rowAlign={Align.End}
+                style={{
+                    width : '100%',
+                    height: '32px',
+                    gap: '12px',
+                }}
+            >
+                <Button
+                    className='green'
                     style={{
-                        width : '100%',
-                        height: '48px',
-                        padding : '8px',
-                        boxSizing : 'border-box'
+                        width : '128px',
+                        height : '100%'
                     }}
-                >
-                    <Button
-                        className='green'
-                        style={{
-                            marginLeft: '12px',
-                            width : '128px',
-                            height : '100%'
-                        }}
-                        onClick={() => {
-                            if (name === '') return;
-                            
-                            const metadata = {
-                                name: name,
-                                color: 'lightgray'
-                            }
-                            onSubmit(metadata)
-                            close();
-                        }}
-                        disabled={name.length === 0}
-                    >
-                        생성
-                    </Button>
-                    <Button
-                        className='transparent'
-                        style={{
-                            marginLeft: '12px',
-                            width : '128px',
-                            height : '100%'
-                        }}
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        취소
-                    </Button>
-                </Row>
-            </Column>
+                    onClick={() => {
+                        if (name === '') return;
+                        
+                        const metadata = {
+                            name: name,
+                            color: 'lightgray'
+                        }
+                        onSubmit(metadata)
+                        close();
+                    }}
+                    disabled={name.length === 0}
+                >생성</Button>
+                <Button
+                    className='transparent'
+                    style={{
+                        width : '128px',
+                        height : '100%'
+                    }}
+                    onClick={() => close()}
+                >취소</Button>
+            </Row>
         </Modal>
     )
 }

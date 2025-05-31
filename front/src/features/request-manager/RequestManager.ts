@@ -13,7 +13,7 @@ class RequestManager {
     }
 
     private constructor() {
-        
+
     }
 
     async request(profileId: string, sessionId: string) {
@@ -24,8 +24,8 @@ class RequestManager {
                 this.handleResponse(chId, sessionAPI);
             })
     }
-    
-    private async handleResponse(chId:string, sessionAPI:SessionAPI) {
+
+    private async handleResponse(chId: string, sessionAPI: SessionAPI) {
         {
             sessionAPI.set('cache.json', { 'state': 'loading' })
             const sessionState = useSessionStore.getState();
@@ -42,10 +42,10 @@ class RequestManager {
                 normalExit = true;
 
                 await sessionAPI.set('cache.json', {
-                    'output' : data.text,
-                    'state' : 'done',
+                    'output': data.text,
+                    'state': 'done',
                 });
-                
+
                 const sessionState = useSessionStore.getState();
                 if (sessionState.deps.last_session_id === sessionAPI.id) {
                     sessionState.refetch.output();
@@ -55,13 +55,20 @@ class RequestManager {
             if (data.type === 'error') {
                 // data.data
             }
+            if (data.type === 'history_update') {
+                const sessionState = useSessionStore.getState();
+                if (sessionState.deps.last_session_id === sessionAPI.id) {
+                    console.log('> history_update');
+                    useSignalStore.getState().signal.refresh_chat();
+                }
+            }
             if (data.type === 'close') {
                 if (normalExit) break;
-                
+
                 console.error('Request closed unexpectedly');
                 await sessionAPI.set('cache.json', {
-                    'output' : 'request closed unexpectedly',
-                    'state' : 'done',
+                    'output': 'request closed unexpectedly',
+                    'state': 'done',
                 });
                 const sessionState = useSessionStore.getState();
                 if (sessionState.deps.last_session_id === sessionAPI.id) {

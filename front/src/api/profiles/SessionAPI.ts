@@ -30,7 +30,7 @@ class SessionAPI {
     }
 
     history = {
-        get : async (offset:number=0, limit:number=100) => LocalAPI.profileSessionHistory.get(this.#profileId, this.#sessionId, offset, limit),
+        get : async (offset:number=0, limit:number=100, desc:boolean) => LocalAPI.profileSessionHistory.get(this.#profileId, this.#sessionId, offset, limit, desc),
         search : async (offset:number=0, limit:number=100, search:HistorySearch) => LocalAPI.profileSessionHistory.search(this.#profileId, this.#sessionId, offset, limit, search),
         getMessage : async (historyIds:number[]) => LocalAPI.profileSessionHistory.getMessage(this.#profileId, this.#sessionId, historyIds),
         delete : async (historyKey:number) => LocalAPI.profileSessionHistory.delete(this.#profileId, this.#sessionId, historyKey),

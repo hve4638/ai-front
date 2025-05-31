@@ -23,7 +23,8 @@ function RTDropdown() {
     const api = useProfileAPIStore(state=>state.api);
     const signal = useSignalStore(state=>state.signal);
     const updateSessionState = useSessionStore(state=>state.update);
-    
+    const refreshRtTreeSignal = useSignalStore(state => state.refresh_rt_tree);
+
     const [tree, setTree] = useState<RTMetadataTree>([]);
     const dropdownItems:(DropdownItem|DropdownItemList)[] = useMemo(()=>{
         return mapRTMetadataTree<DropdownItem, DropdownItemList>(tree, {
@@ -61,7 +62,7 @@ function RTDropdown() {
             .then((tree)=>{
                 setTree(tree);
             });
-    }, []);
+    }, [refreshRtTreeSignal]);
     
     return (
         dropdownItems.length === 0

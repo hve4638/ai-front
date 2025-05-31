@@ -47,7 +47,7 @@ function EditableText({
     
     useLayoutEffect(()=>{
         setCurrent(value);
-    }, [value]);
+    }, [value, renameMode]);
 
     const enableRenameMode = () => {
         if (editable) {
@@ -57,8 +57,6 @@ function EditableText({
             }, 1);
         }
     }
-
-
 
     return (
         <span
@@ -97,10 +95,12 @@ function EditableText({
                     if (e.key === 'Enter') {
                         onChange(current);
                         setRenameMode(false);
+                        e.stopPropagation();
                     }
                     else if (e.key === 'Escape') {
                         setCurrent(value);
                         setRenameMode(false);
+                        e.stopPropagation();
                     }
                 }}
                 spellCheck={false}

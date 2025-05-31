@@ -1,6 +1,6 @@
 import {
     Header,
-    MainSection,
+    IOSection,
     SessionTabBar
 } from './layout';
 import ShortcutHandler from 'pages/ShortcutHandler';
@@ -14,7 +14,7 @@ function HomePage() {
                 className='column relative'
             >
                 <Header/>
-                <MainSection/>
+                <IOSection/>
                 <SessionTabBar/>
                 <ShortcutHandler/>
             </div>

@@ -119,7 +119,7 @@ function ModelOptions() {
                     gridColumn: 'span 2',
                 }}
             >
-                <span>모델</span>
+                {/* <span>모델</span> */}
                 <Flex/>
                 <ModelCheckBox
                     checked={caches.setting_models_show_featured}
@@ -383,35 +383,16 @@ function ModelCheckBox({
     return (
         <>
             <span>{children}</span>
-            <Center
+            <CheckBox
                 style={{
                     height: '100%',
                     marginLeft: '2px',
                     padding: '0.25em',
                     aspectRatio: '1/1',
                 }}
-            >
-                <input
-                    type='checkbox'
-                    style={{
-                        height: '100%',
-                        aspectRatio: '1/1',
-                    }}
-                    checked={checked}
-                    onChange={(e)=>onChange(e.target.checked)}
-                    tabIndex={0}
-                />
-            </Center>
-            {/* <CheckBox
-                style={{
-                    fontSize : '0.9em',
-                    width: '0.9em',
-                    height: '100%',
-                    margin : '0px 4px',
-                }}
                 checked={checked}
-                onChange={onChange}
-            /> */}
+                onChange={(value)=>onChange(value)}
+            />
         </>
     )
 }

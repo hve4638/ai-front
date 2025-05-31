@@ -2,6 +2,9 @@ import { Align, Flex, Row } from '@/components/layout';
 import { RCSlider, TooltipSlider } from '@/components/Slider';
 
 interface SliderFormProps {
+    className?:string;
+    style?:React.CSSProperties;
+
     name:string;
     min:number;
     max:number;
@@ -11,6 +14,9 @@ interface SliderFormProps {
 }
 
 function SliderForm({
+    className='',
+    style={},
+
     name,
     min,
     max,
@@ -20,9 +26,12 @@ function SliderForm({
 }:SliderFormProps) {
   return (
     <Row
+        className={className}
         style={{
+            width : '100%',
             height: '1.4em',
-            margin: '0.5em 0'
+            margin: '0.5em 0',
+            ...style,
         }}
         columnAlign={Align.Center}
     >

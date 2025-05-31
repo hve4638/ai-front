@@ -1,9 +1,13 @@
+import { getEncoding, encodingForModel } from 'js-tiktoken';
+import { Profile } from '@/features/profiles';
+import { HistoryRequired } from '@/features/acstorage-accessor/HistoryAccessor';
+import { HistoryMessageRow } from '@/features/acstorage-accessor/HistoryAccessor/types';
+
+
 import WorkLogger from '../WorkLog';
 import RTSender from '../RTSender';
 import { WorkLog } from '../types';
-import { Profile } from '@/features/profiles';
 import { NodeData } from '../nodes/types';
-import { HistoryRequired } from '@/features/acstorage-accessor/HistoryAccessor';
 
 abstract class RTWorkflow {
     protected workLogger:WorkLogger = new WorkLogger();
@@ -18,31 +22,32 @@ abstract class RTWorkflow {
     abstract process(input:RTInput, workLog:WorkLog[]):Promise<any>;
 
     protected getNodeData(rtInput:RTInput):NodeData {
+        const input:HistoryMessageRow[] = [];
+        input.push({
+            type: 'text',
+            text: rtInput.input,
+            data: null,
+            token_count: 0,
+        });
+
         return {
             sender : this.rtSender,
             logger : this.workLogger,
+            profile : this.profile,
 
-            input : rtInput.input,
             chat : rtInput.chat ?? [],
             form : rtInput.form,
+            
+            sessionId : rtInput.sessionId,
             modelId : rtInput.modelId,
             rtId : rtInput.rtId,
-            profile : this.profile,
-            sessionId : rtInput.sessionId,
+            create_at : Date.now(),
 
-            historyRequired : {
-                fetch_count : 0,
-                input : [],
-                output : [],
-                input_token_count : 0,
-                output_token_count : 0,
-                create_at : Date.now(),
-                session_id : rtInput.sessionId,
-                rt_id : rtInput.rtId,
-                rt_uuid : rtInput.rtId,
-                model_id : rtInput.modelId,
-
-                form : {},
+            data : {
+                input: input,
+                output: [],
+                input_token_count: 0,
+                output_token_count: 0,
             }
         }
     }

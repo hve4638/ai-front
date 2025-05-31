@@ -188,8 +188,8 @@ class ElectronIPCAPI implements IIPCAPI {
         },
     } as const;
     profileSessionHistory = {
-        async get(profileId:string, sessionId:string, offset:number=0, limit:number=100) {
-            const [err, history] = await electron.profileSessionHistory.get(profileId, sessionId, offset, limit);
+        async get(profileId:string, sessionId:string, offset:number=0, limit:number=100, desc:boolean=false) {
+            const [err, history] = await electron.profileSessionHistory.get(profileId, sessionId, offset, limit, desc);
             if (err) throw new IPCError(err.message);
     
             return history;
@@ -216,6 +216,11 @@ class ElectronIPCAPI implements IIPCAPI {
         }
     } as const;
     profileRTs = {
+        async createUsingTemplate(profileId:string, metadata:RTMetadata, templateId:string):Promise<string> {
+            const [err] = await electron.profileRTs.createUsingTemplate(profileId, metadata, templateId);
+            if (err) throw new IPCError(err.message);
+            return profileId;
+        },
         async getTree(profileId:string):Promise<RTMetadataTree> {
             const [err, tree] = await electron.profileRTs.getTree(profileId);
             if (err) throw new IPCError(err.message);
@@ -354,6 +359,7 @@ class ElectronIPCAPI implements IIPCAPI {
     } as const;
     request = {
         async requestRT(token:string, profileId:string, sessionId:string) {
+            console.log('[RequestRT]', token, profileId, sessionId);
             const [err] = await window.electron.request.requestRT(token, profileId, sessionId);
             if (err) throw new IPCError(err.message);
         },

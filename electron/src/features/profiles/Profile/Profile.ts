@@ -14,7 +14,7 @@ import { PROFILE_STORAGE_TREE } from './data';
 import { ProfileError } from './errors';
 import { v4 as uuidv4 } from 'uuid';
 import ProfileRT from './rt/ProfileRT';
-import IRTControl from './rt/IRTControl';
+// import IRTControl from './rt/IRTControl';
 import { PromptOnlyTemplateFactory } from '@/features/rt-template-factory';
 
 /**
@@ -25,7 +25,7 @@ class Profile {
     #basePath:string|null;
     #storage:ACStorage;
     #sessionControl:ProfileSessions;
-    #rtControl:IRTControl;
+    #rtControl:RTControl;
     #dropped:boolean = false;
 
     #personalKey:string;

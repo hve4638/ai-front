@@ -5,15 +5,22 @@ export interface AlignedDivProps {
     className?: string;
     style?: React.CSSProperties;
     children?: React.ReactNode;
+
     rowAlign?: Align;
     columnAlign?: Align;
     reverse?: boolean;
 
-    onClick?: ()=>void;
-    onRClick?: (e:React.MouseEvent<HTMLDivElement, MouseEvent>)=>void;
-    
-    onDragStart?: (e:React.DragEvent<HTMLDivElement>)=>void;
-    onDragOver?: (e:React.DragEvent<HTMLDivElement>)=>void;
+    onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onRClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onDoubleClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+
+    onMouseEnter?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onMouseDown?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onMouseLeave?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onMouseMove?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+
+    onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+    onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
     draggable?: boolean;
 }
 
@@ -25,7 +32,7 @@ export function Column({
     columnAlign = Align.Start,
     reverse = false,
     onClick,
-}:AlignedDivProps) {
+}: AlignedDivProps) {
     return (
         <div
             className={className}
@@ -44,31 +51,37 @@ export function Column({
 }
 
 
-export const Row = forwardRef(({
-    className = '',
-    style = {},
-    children,
-    rowAlign = Align.Start,
-    columnAlign = Align.Start,
-    reverse = false,
-    onClick,
-    onRClick,
-}:AlignedDivProps, ref:React.LegacyRef<HTMLDivElement>) => {
-    return (
-        <div
-            ref={ref}
-            className={className}
-            style={{
-                display: 'flex',
-                flexDirection: reverse ? 'row-reverse' : 'row',
-                justifyContent: rowAlign,
-                alignItems: columnAlign,
-                ...style,
-            }}
-            onClick={onClick}
-            onContextMenu={onRClick}
-        >
-            {children}
-        </div>
-    )
-});
+export const Row = forwardRef(
+    (props: AlignedDivProps, ref: React.LegacyRef<HTMLDivElement>) => {
+        const {
+            className = '',
+            style = {},
+            rowAlign = Align.Start,
+            columnAlign = Align.Start,
+            reverse = false,
+        } = props;
+
+        return (
+            <div
+                ref={ref}
+                className={className}
+                style={{
+                    display: 'flex',
+                    flexDirection: reverse ? 'row-reverse' : 'row',
+                    justifyContent: rowAlign,
+                    alignItems: columnAlign,
+                    ...style,
+                }}
+                onClick={props.onClick}
+                onMouseEnter={props.onMouseEnter}
+                onMouseLeave={props.onMouseLeave}
+                onMouseMove={props.onMouseMove}
+                onMouseDown={props.onMouseDown}
+                onDoubleClick={props.onDoubleClick}
+                onContextMenu={props.onRClick}
+            >
+                {props.children}
+            </div>
+        );
+    }
+);

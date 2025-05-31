@@ -36,7 +36,7 @@ declare global {
         form: Record<string, any>;
         modelId: string;
         rtId: string;
-        sessionId: string|undefined;
+        sessionId: string;
     }
     type RTInputMessage = {
         type : 'chat';

@@ -5,6 +5,7 @@ function DataOptions() {
     return (
         <>
             <b>백업</b>
+            <hr/>
             <ButtonForm
                 name='데이터 백업'
                 text='백업'
@@ -21,6 +22,7 @@ function DataOptions() {
             />
             <div style={{height:'2em'}}/>
             <b>초기화</b>
+            <hr/>
             <ButtonForm
                 name='데이터 초기화'
                 text='데이터 초기화'

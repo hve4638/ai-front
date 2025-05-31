@@ -3,9 +3,9 @@
     width : auto;
     padding : 0px 0.25em;
     transition : background-color 0.15s ease;
-    border-radius: 6px;
+    border-radius: 3px;
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.322);
+        background-color: rgba(255, 255, 255, 0.1);
     }
 }
