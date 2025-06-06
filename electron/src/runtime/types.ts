@@ -2,6 +2,8 @@ import type { IACStorage } from 'ac-storage';
 import type MasterKeyManager from '@/features/master-key';
 import type Profiles from '@/features/profiles';
 import type RTWorker from '@/features/rt-worker';
+import AppVersionManager from '@/features/app-version';
+import MigrationService from '@/features/migration-service';
 
 export type RuntimeRegistry = {
     profiles: Profiles;
@@ -9,6 +11,8 @@ export type RuntimeRegistry = {
     masterKeyManager: MasterKeyManager;
     rtWorker: RTWorker;
     ipcFrontAPI: IPCInvokerInterface;
+    appVersionManager: AppVersionManager;
+    migrationService: MigrationService;
     env: Env;
 }
 
@@ -24,4 +28,5 @@ export type Env = {
     skipMasterKeyInitialization: boolean,
     defaultProfile: boolean,
     defaultRT: boolean,
+    version: string,
 }

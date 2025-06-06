@@ -7,12 +7,12 @@ export interface HistoryState {
 }
 
 class SessionHistory {
-    private metadataCache:Record<number, HistoryMetadata> = {};
-    private historyCache:Record<number, HistoryData> = {};
+    private metadataCache: Record<number, HistoryMetadata> = {};
+    private historyCache: Record<number, HistoryData> = {};
 
-    constructor(private sessionId: string) {}
+    constructor(private sessionId: string) { }
 
-    private cacheHistoryMetadata(next:HistoryMetadata[]) {
+    private cacheHistoryMetadata(next: HistoryMetadata[]) {
         const cached = {};
 
         for (const m of next) {
@@ -22,7 +22,7 @@ class SessionHistory {
 
         return cached;
     }
-    private cacheHistory(next:HistoryMessage[]):Record<number, HistoryData> {
+    private cacheHistory(next: HistoryMessage[]): Record<number, HistoryData> {
         const cached = {};
 
         for (const m of next) {
@@ -31,11 +31,11 @@ class SessionHistory {
                 id: m.id,
                 input: m.input,
                 output: m.output,
-                
+
                 requestType: meta.requestType,
                 createdAt: meta.createdAt,
                 bookmark: meta.bookmark,
-                
+
                 rtId: meta.rtId,
                 rtUUID: meta.rtUUID,
                 modelId: meta.modelId,
@@ -47,10 +47,10 @@ class SessionHistory {
                 this.historyCache[m.id] = data;
             }
         }
-        
+
         return cached;
     }
-    
+
     /**
      * HistoryMetadata 기반으로 히스토리 데이터 요청
      * 
@@ -60,10 +60,10 @@ class SessionHistory {
      * @returns 
      */
     private async loadHistory(next: HistoryMetadata[]) {
-        const result:(HistoryData|null)[] = [];
-        const uncachedId:number[] = [];
+        const result: (HistoryData | null)[] = [];
+        const uncachedId: number[] = [];
 
-        const neededId:Record<number, number> = {};
+        const neededId: Record<number, number> = {};
 
         for (const i in next) {
             const m = next[i];
@@ -80,13 +80,7 @@ class SessionHistory {
             }
         }
 
-        console.group('loadHistory');
-        console.log('next: ', next);
-        console.log('uncachedId: ', uncachedId);
-        console.log('neededId: ', neededId);
-        console.groupEnd();
         if (uncachedId.length === 0) {
-            console.log('result', result);
             return result as HistoryData[];
         }
         else {
@@ -94,11 +88,11 @@ class SessionHistory {
             const sessionAPI = api.session(this.sessionId);
             const messages = await sessionAPI.history.getMessage(uncachedId);
             const cache = this.cacheHistory(messages);
-            
+
             for (const [historyId, index] of Object.entries(neededId)) {
                 result[index] = cache[Number(historyId)];
             }
-            
+
             console.log('result', result);
             return result as HistoryData[];
         }
@@ -123,6 +117,11 @@ class SessionHistory {
 
         this.cacheHistoryMetadata(newMetadata);
         return this.loadHistory(newMetadata);
+    }
+
+    evictCache(cacheId: number) {
+        delete this.metadataCache[cacheId];
+        delete this.historyCache[cacheId];
     }
 }
 

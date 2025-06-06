@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useProfileEvent } from '@/stores';
-import Button from 'components/Button';
-import { StringLongForm } from 'components/Forms';
-import { Align, Column, Row } from 'components/layout';
+import Button from '@/components/Button';
+import { StringLongForm } from '@/components/Forms';
+import { Align, Column, Grid, Row } from '@/components/layout';
+import POTemplateList from './POTemplateList';
 
 
 type Metadata = {
     name : string;
     id : string;
+    templateId: string;
 }
 
 type EditMetadataWidgetProps = {
@@ -17,13 +19,14 @@ type EditMetadataWidgetProps = {
     onConfirm: (metadata:Metadata) => void;
 }
 
-function EditMetadataWidget({
+function EditMetadataLayout({
     onPrev, onConfirm
 }:EditMetadataWidgetProps) {
     const profile = useProfileEvent();
     const { t } = useTranslation();
     const [name, setName] = useState<string>('');
     const [id, setId] = useState<string>('');
+    const [templateId, setTemplateId] = useState<string>('empty');
 
     const [idValid, setIdValid] = useState<boolean>(false); 
 
@@ -57,20 +60,37 @@ function EditMetadataWidget({
     return (
         <Column
             style={{
-                minWidth: '400px',
+                minWidth: '650px',
+                gap : '8px',
             }}
         >
-            <StringLongForm
-                name={t('rt.name')}
-                value={name}
-                onChange={(next)=>setName(next)}
-            />
-            <StringLongForm
-                name={t('rt.identifier')}
-                value={id}
-                onChange={(next)=>setId(next)}
-            />
-            <div style={{height:'4px'}}/>
+            <Grid
+                style={{
+                    width: '100%',
+                    gap : '8px',
+                }}
+                columns='11em 1fr'
+                rows = '1fr'
+                
+            >
+                <Column>
+                    <StringLongForm
+                        name={t('rt.name')}
+                        value={name}
+                        onChange={(next)=>setName(next)}
+                        instantChange={true}
+                    />
+                    {/* <StringLongForm
+                        name={t('rt.identifier')}
+                        value={id}
+                        onChange={(next)=>setId(next)}
+                    /> */}
+                </Column>
+                <POTemplateList
+                    value={templateId}
+                    onChange={(next)=>setTemplateId(next)}
+                />
+            </Grid>
             <Row
                 className='wfill'
                 rowAlign={Align.End}
@@ -93,7 +113,7 @@ function EditMetadataWidget({
                             return;
                         }
 
-                        onConfirm({ name, id });
+                        onConfirm({ name, id, templateId });
                     }}
                 >{t('create_label')}</Button>
                 <Button
@@ -105,9 +125,8 @@ function EditMetadataWidget({
                     onClick={onPrev}
                 >{t('prev_label')}</Button>
             </Row>
-            <div style={{height:'4px'}}/>
         </Column>
     )
 }
 
-export default EditMetadataWidget;
+export default EditMetadataLayout;

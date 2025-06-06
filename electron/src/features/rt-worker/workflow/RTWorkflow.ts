@@ -1,7 +1,7 @@
 import { getEncoding, encodingForModel } from 'js-tiktoken';
 import { Profile } from '@/features/profiles';
 import { HistoryRequired } from '@/features/acstorage-accessor/HistoryAccessor';
-import { HistoryMessageRow } from '@/features/acstorage-accessor/HistoryAccessor/types';
+import { HistoryMessageRow, HistoryRow } from '@/features/acstorage-accessor/HistoryAccessor/types';
 
 
 import WorkLogger from '../WorkLog';
@@ -21,8 +21,26 @@ abstract class RTWorkflow {
 
     abstract process(input:RTInput, workLog:WorkLog[]):Promise<any>;
 
-    protected getNodeData(rtInput:RTInput):NodeData {
+    protected async getNodeData(rtInput:RTInput):Promise<NodeData> {
         const input:HistoryMessageRow[] = [];
+
+        const historyAC = await this.profile.accessAsHistory(rtInput.sessionId);
+        const chat = historyAC
+            .getHistory(0, 1000, true)
+            .map((row:HistoryRow) => row.id)
+            .reverse()
+            .map((id:number) => historyAC.getMessageText(id))
+            .flatMap(({ input, output }) => {
+                const result:{
+                    role:'user'|'assistant',
+                    contents: { type: 'text', value: string }[]
+                }[] = [];
+
+                if (input) result.push({ role: 'user', contents: [{ type: 'text', value: input }] });
+                if (output) result.push({ role: 'assistant', contents: [{ type: 'text', value: output }] });
+                return result;
+            });
+
         input.push({
             type: 'text',
             text: rtInput.input,
@@ -35,7 +53,7 @@ abstract class RTWorkflow {
             logger : this.workLogger,
             profile : this.profile,
 
-            chat : rtInput.chat ?? [],
+            chat : chat,
             form : rtInput.form,
             
             sessionId : rtInput.sessionId,

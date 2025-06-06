@@ -1,51 +1,63 @@
-import ModelProvider from "../ModelProvider";
-import model from "./model";
+import ModelProvider from '../ModelProvider';
+import model from '../model';
+import flags from '../flags';
 
-const legacy = true;
-const experimental = true;
-const deprecated = true;
-const stable = true;
-const latest = true;
-const featured = true;
-const snapshot = true;
+const {
+    latest,
+    featured,
+    experimental,
+    deprecated,
+    snapshot,
+    generative_language_endpoint,
+} = flags;
 
 function initProvider(provider:ModelProvider) {
-    provider.addModels('Gemini 2.0 Flash',
+    const baseFlags = { generative_language_endpoint };
+
+    provider.addModels('Gemini 2.5 Pro',
         [
-            model('Gemini 2.0 Flash Exp', 'gemini-2.0-flash-exp', { latest, featured, experimental }),
-            model('Gemini 2.0 Flash Thinking Exp', 'gemini-2.0-flash-thinking-exp', { latest, featured, experimental }),
-            model('Gemini 2.0 Flash Thinking Exp (1219)', 'gemini-2.0-flash-thinking-exp-1219', { snapshot, experimental }),
-            
+            model('Gemini 2.5 Pro Preview (05-06)', 'gemini-2.5-pro-preview-05-06', { latest, featured, ...baseFlags }),
         ]
     );
-    provider.addModels('Gemini Experimental', 
+    provider.addModels('Gemini 2.5 Flash',
         [
-            model('Gemini Exp (1206)', 'gemini-exp-1206', { experimental, snapshot }),
-            model('Gemini Exp (1121)', 'gemini-exp-1121', { experimental, snapshot, deprecated }),
-            model('Gemini Exp (1114)', 'gemini-exp-1114', { experimental, snapshot, deprecated }),
+            model('Gemini 2.5 Flash Preview (05-20)', 'gemini-2.5-flash-preview-05-20', { latest, featured, ...baseFlags }),
+        ]
+    );
+    provider.addModels('Gemini 2.0 Flash',
+        [
+            model('Gemini 2.0 Flash', 'gemini-2.0-flash', { latest, featured, ...baseFlags }),
+            model('Gemini 2.0 Flash 001', 'gemini-2.0-flash-001', { snapshot, ...baseFlags }),
+            model('Gemini 2.0 Flash Exp', 'gemini-2.0-flash-exp', { ...baseFlags }),
+        ]
+    );
+    provider.addModels('Gemini 2.0 Flash-Lite',
+        [
+            model('Gemini 2.0 Flash-Lite', 'gemini-2.0-flash-lite', { latest, featured, ...baseFlags }),
+            model('Gemini 2.0 Flash-Lite 001', 'gemini-2.0-flash-lite-001', { snapshot, ...baseFlags }),
         ]
     );
     provider.addModels('Gemini 1.5 Pro',
         [
-            model('Gemini 1.5 Pro', 'gemini-1.5-pro-latest', { featured, latest }),
-            model('Gemini 1.5 Pro (stable)', 'gemini-1.5-pro', { featured }),
-            model('Gemini 1.5 Pro 002', 'gemini-1.5-pro-002', { snapshot }),
-            model('Gemini 1.5 Pro 001', 'gemini-1.5-pro-001', { snapshot }),
+            model('Gemini 1.5 Pro (latest)', 'gemini-1.5-pro-latest', { latest, ...baseFlags }),
+            model('Gemini 1.5 Pro (stable)', 'gemini-1.5-pro', { ...baseFlags }),
+            model('Gemini 1.5 Pro 002', 'gemini-1.5-pro-002', { snapshot, ...baseFlags }),
+            model('Gemini 1.5 Pro 001', 'gemini-1.5-pro-001', { snapshot, ...baseFlags }),
         ]
     );
     provider.addModels('Gemini 1.5 Flash',
         [
-            model('Gemini 1.5 Flash', 'gemini-1.5-flash-latest', { featured, latest }),
-            model('Gemini 1.5 Flash (stable)', 'gemini-1.5-flash', { featured }),
-            model('Gemini 1.5 Flash 002', 'gemini-1.5-flash-002', { snapshot }),
-            model('Gemini 1.5 Flash 001', 'gemini-1.5-flash-001', { snapshot }),
+            model('Gemini 1.5 Flash (latest)', 'gemini-1.5-flash-latest', { latest, ...baseFlags }),
+            model('Gemini 1.5 Flash (stable)', 'gemini-1.5-flash', { ...baseFlags }),
+            model('Gemini 1.5 Flash 002', 'gemini-1.5-flash-002', { snapshot, ...baseFlags }),
+            model('Gemini 1.5 Flash 001', 'gemini-1.5-flash-001', { snapshot, ...baseFlags }),
         ]
     );
     provider.addModels('Gemini 1.5 Flash-8B',
         [
-            model('Gemini 1.5 Flash 8B', 'gemini-1.5-flash-8b-latest', { featured, latest }),
-            model('Gemini 1.5 Flash 8B (stable)', 'gemini-1.5-flash-8b', { featured }),
-            model('Gemini 1.5 Flash 8B 001', 'gemini-1.5-flash-8b-001', { snapshot }),
+            model('Gemini 1.5 Flash 8B (latest)', 'gemini-1.5-flash-8b-latest', { latest, ...baseFlags }),
+            model('Gemini 1.5 Flash 8B (stable)', 'gemini-1.5-flash-8b', { ...baseFlags }),
+            model('Gemini 1.5 Flash 8B 001', 'gemini-1.5-flash-8b-001', { snapshot, ...baseFlags }),
         ]
     );
 }

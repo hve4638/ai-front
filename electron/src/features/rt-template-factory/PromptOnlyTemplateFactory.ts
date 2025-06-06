@@ -14,6 +14,7 @@ class PromptOnlyTemplateFactory {
     static async normal(profile: Profile, rtId: string, name: string) {
         const tool = await this.createTool(profile, rtId, name);
 
+        await tool.inputType('normal');
         await tool.contents(
             '{{:input}}'
         );
@@ -21,6 +22,7 @@ class PromptOnlyTemplateFactory {
     static async chat(profile: Profile, rtId: string, name: string) {
         const tool = await this.createTool(profile, rtId, name);
 
+        await tool.inputType('chat');
         await tool.contents(
             '{{:chat}}',
             '',
@@ -48,6 +50,25 @@ class PromptOnlyTemplateFactory {
             '   Output:',
             '   ',
             '{{::endif}}',
+        );
+        await tool.form(
+            {
+                name: 'lang',
+                display_name: '언어',
+                type: 'select',
+                default_value: 'korean',
+                options: [
+                    { value: 'korean', name: '한국어' },
+                    { value: 'english', name: '영어' },
+                    { value: 'japanese', name: '일본어' },
+                ],
+            },
+            {
+                name: 'prefill_enabled',
+                display_name: '프리필 활성화',
+                type: 'checkbox',
+                default_value: false,
+            },
         );
     }
     static async debug(profile: Profile, rtId: string, name: string) {

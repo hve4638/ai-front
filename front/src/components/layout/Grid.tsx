@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 
 interface GridProps {
+    id?: string;
     className?: string;
     style?: React.CSSProperties;
     children?: React.ReactNode;
@@ -12,6 +13,7 @@ interface GridProps {
 
 const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
     {
+        id,
         className = '',
         style = {},
         rows,
@@ -25,6 +27,7 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
     return (
         <div
             ref={ref}
+            id={id}
             className={className}
             style={{
                 display: 'grid',

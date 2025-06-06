@@ -1,7 +1,8 @@
+import { ChatAIResult } from '@hve/chatai';
 import WorkNode from './WorkNode';
 
 export type PromptBuildNodeInput = {
-    output: string;
+    output: ChatAIResult|string;
 }
 export type PromptBuildNodeOutput = {
     
@@ -17,15 +18,28 @@ class OutputNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, P
         const { sender, data } = this.nodeData;
         const { output } = nodeInput;
         
-        data.output.push({
-            type: 'text',
-            text: output,
-            data: null,
-            token_count: 0,
-        });
+        if (typeof output === 'string') {
+            data.output.push({
+                type: 'text',
+                text: output,
+                data: null,
+                token_count: 5,
+            });
 
-        sender.sendResult(output);
-        return {};
+            sender.sendResult(output);
+            return {};
+        }
+        else {
+            data.output.push({
+                type: 'text',
+                text: output.response.content.join('\n'),
+                data: null,
+                token_count: output.response.tokens.output,
+            });
+
+            sender.sendResult(output.response.content.join('\n'));
+            return {};
+        }
     }
 }
 

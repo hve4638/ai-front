@@ -85,6 +85,19 @@ class HistoryDAO {
 
             is_complete INTEGER DEFAULT 0
         )`);
+        /**
+         * messages 테이블
+         * id : 고유 키
+         * history_id : history 테이블의 ID (외래 키)
+         * message_index : 메시지 인덱스
+         * origin : 입력/출력 구분 (in, out)
+         * 
+         * message_type : 메시지 타입 (text, image_url, file)
+         * text : 메시지 텍스트
+         * data : 메시지 데이터
+         * 
+         * token_count : 토큰 수
+         */
         db.exec(`CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY,
             history_id INTEGER,
@@ -119,13 +132,12 @@ class HistoryDAO {
     }
 
     insertHistory(row: {
-        form : string;
-        rt_id : string;
-        rt_uuid : string;
-        model_id : string;
+        form: string;
+        rt_id: string;
+        rt_uuid: string;
+        model_id: string;
         create_at: number;
     }): number {
-        console.warn(`INSERT HISTORY`)
         const insert = this.#db.prepare(
             `
                 INSERT INTO history(
@@ -279,6 +291,39 @@ class HistoryDAO {
         return query.all({ ...params, offset: search.offset, limit: search.limit }) as HistoryRow[];
     }
 
+    selectMessageOrigin(historyId: number) {
+        const query = this.#db.prepare(
+            `
+            SELECT DISTINCT origin
+            FROM messages
+            WHERE history_id = $historyId
+            `
+        );
+        return query.all({ historyId }) as { origin: 'in' | 'out' }[];
+    }
+
+    deleteMessages(historyId: number, origin: 'in' | 'out' | 'both' = 'both') {
+        if (origin === 'both') {
+            const query = this.#db.prepare(
+                `
+                DELETE FROM messages
+                WHERE history_id = $historyId
+                `
+            );
+            query.run({ historyId });
+        }
+        else {
+            const query = this.#db.prepare(
+                `
+                DELETE FROM messages
+                WHERE history_id = $historyId
+                AND origin = $origin
+                `
+            );
+            query.run({ historyId, origin });
+        }
+    }
+    
     delete(historyId: number) {
         const query = this.#db.prepare(
             'DELETE FROM history WHERE id = $id'

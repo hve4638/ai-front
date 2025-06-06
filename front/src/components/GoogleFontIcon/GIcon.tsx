@@ -31,6 +31,7 @@ function GIcon({
             }
             style={{
                 ...style,
+                cursor: 'inherit',
             }}
 
             onClick={(e) => onClick(e)}

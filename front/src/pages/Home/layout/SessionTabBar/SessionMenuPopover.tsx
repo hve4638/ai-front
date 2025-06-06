@@ -24,7 +24,7 @@ function SessionMenuPopover(props:SessionMenuPopoverProps) {
         onClose=()=>{},
     } = props;
     const { api } = useProfileAPIStore();
-    const sessionAPI = useMemo(()=>api.getSessionAPI(item.id), [item.id]);
+    const sessionAPI = useMemo(()=>api.session(item.id), [item.id]);
     const signal = useSignalStore(state=>state.signal);
 
     return (
@@ -38,7 +38,7 @@ function SessionMenuPopover(props:SessionMenuPopoverProps) {
             style={{
                 minWidth : '100%',
                 maxWidth : '200px',
-                zIndex : 5,
+                zIndex : 100,
             }}
             onClickOutside={(e)=>onClose()}
             onMouseDown={(e)=>{
@@ -81,7 +81,7 @@ function SessionMenuPopover(props:SessionMenuPopoverProps) {
                         }}
                     >삭제 잠금</MenuItem>
                 }
-                <MenuItem icon='file_save'>내보내기</MenuItem>
+                {/* <MenuItem icon='file_save'>내보내기</MenuItem> */}
             </Column>
         </Popover>
     )

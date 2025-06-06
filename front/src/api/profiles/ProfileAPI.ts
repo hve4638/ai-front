@@ -70,6 +70,7 @@ class ProfileAPI {
         getTree : async () => LocalAPI.profileRTs.getTree(this.#profileId),
         updateTree : async (tree:RTMetadataTree) => LocalAPI.profileRTs.updateTree(this.#profileId, tree),
         generateId : async () => LocalAPI.profileRTs.generateId(this.#profileId),
+        createRTUsingTemplate : async (metadata:RTMetadata, templateId:string) => LocalAPI.profileRTs.createUsingTemplate(this.#profileId, metadata, templateId),
         add : async (metadata:RTMetadata) => LocalAPI.profileRTs.add(this.#profileId, metadata),
         remove : async (rtId:string) => LocalAPI.profileRTs.remove(this.#profileId, rtId),
         existsId : async (rtId:string) => LocalAPI.profileRTs.existsId(this.#profileId, rtId),
@@ -96,6 +97,7 @@ class ProfileAPI {
 
     /** @deprecated use `session` instead */
     getSessionAPI(sessionId:string):SessionAPI {
+        console.warn('ProfileAPI.getSessionAPI is deprecated. Use ProfileAPI.session instead.');
         if (!(sessionId in this.#sessionAPIs)) {
             this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);
         }
@@ -103,6 +105,7 @@ class ProfileAPI {
     }
     /** @deprecated use `rt` instead */
     getRTAPI(rtId:string):RTAPI {
+        console.warn('ProfileAPI.getRTAPI is deprecated. Use ProfileAPI.rt instead.');
         if (!(rtId in this.#rtAPIs)) {
             this.#rtAPIs[rtId] = new RTAPI(this.#profileId, rtId);
         }

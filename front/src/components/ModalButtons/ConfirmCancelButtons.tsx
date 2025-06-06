@@ -20,7 +20,6 @@ function ConfirmCancelButtons({
         <Row
             style={{
                 height: '1.4em',
-                margin: '0.5em 0.5em'
             }}
             rowAlign={Align.End}
         >

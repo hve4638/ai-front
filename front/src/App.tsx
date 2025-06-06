@@ -12,12 +12,14 @@ import MasterKeyInitailize from 'pages/MasterKeyInitailize';
 import Hub from 'pages/Hub';
 import { ModalProvider } from 'hooks/useModal';
 import classNames from 'classnames';
+import useMemoryStore from './stores/useMemoryStore';
 
 const LoadPhase = {
     BEGIN : 0,
     INIT_MASTER_KEY : 1,
     LOADING_PROFILE_METADATA : 2,
     SELECT_PROFILE : 3,
+    LOAD_MEMORY: 4,
     ENTRYPOINT : 10,
 };
 type LoadPhase = typeof LoadPhase[keyof typeof LoadPhase];
@@ -48,13 +50,35 @@ function App() {
                         apiState.setAPI(lastProfileId);
 
                         setProfile(lastProfileId);
-                        setCurrentState(LoadPhase.ENTRYPOINT);
+                        setCurrentState(LoadPhase.LOAD_MEMORY);
                     }
                     break;
                 case LoadPhase.SELECT_PROFILE:
                     if (profile != null) {
-                        setCurrentState(LoadPhase.ENTRYPOINT);
+                        setCurrentState(LoadPhase.LOAD_MEMORY);
                     }
+                    break;
+                case LoadPhase.LOAD_MEMORY:
+                    const promises = [
+                        apiState.api.getChatAIModels()
+                            .then((models)=>{
+                                useMemoryStore.setState({ allModels: models })
+                            }),
+                        LocalAPI.general.getAvailableVersion()
+                            .then((availableVersion) => {
+                                useMemoryStore.setState({ availableVersion })
+                            })
+                            .catch(err=>{
+                                // nothing to do
+                            }),
+                        LocalAPI.general.getCurrentVersion()
+                            .then((version) => {
+                                useMemoryStore.setState({ version })
+                            })
+                    ];
+                    await Promise.all(promises);
+                    
+                    setCurrentState(LoadPhase.ENTRYPOINT);
                     break;
                 case LoadPhase.ENTRYPOINT:
                     break;

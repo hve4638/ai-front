@@ -18,6 +18,14 @@ export class RTPromptOnlyTemplateTool {
         return this;
     }
 
+    async inputType(inputType:'chat'|'normal') {
+        const rt = this.profile.rt(this.rtId);
+        await rt.setMetadata({ 'input_type' : inputType });
+
+        return this;
+        
+    }
+
     async contents(...line:string[]) {
         const prompt = line.join('\n');
 

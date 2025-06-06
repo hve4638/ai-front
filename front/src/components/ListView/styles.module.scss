@@ -1,0 +1,13 @@
+// :global(.theme-dark) {
+//     --history-hover : rgba(118, 118, 118, 0.3);
+//     --history-search-border-color : rgb(67, 73, 76);
+// }
+
+.list-view {
+    width : 100%;
+    background-color: var(--secondary-bgcolor);
+    border-radius: 4px;
+    // gap: 0.1em;
+
+    overflow-y : auto;
+}

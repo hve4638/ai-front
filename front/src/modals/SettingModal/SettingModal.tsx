@@ -12,45 +12,48 @@ import {
 import { MODAL_DISAPPEAR_DURATION } from 'data';
 import useHotkey from 'hooks/useHotkey';
 import useModalDisappear from 'hooks/useModalDisappear';
+import { Column, Flex } from '@/components/layout';
+import useMemoryStore from '@/stores/useMemoryStore';
 
 const SETTING_CATEGORY = {
-    GENERAL : '일반',
-    API : 'API',
-    MODELS : '모델',
-    SHORTCUT : '단축키',
-    SESSION : '세션',
-    HISTORY : '기록',
-    SERVER : '서버 (베타)',
-    DATA : '데이터',
+    GENERAL: '일반',
+    API: 'API',
+    MODELS: '모델',
+    SHORTCUT: '단축키',
+    SESSION: '세션',
+    HISTORY: '기록',
+    SERVER: '서버 (베타)',
+    DATA: '데이터',
 }
 type SETTING_CATEGORY = typeof SETTING_CATEGORY[keyof typeof SETTING_CATEGORY];
 
 
 type SettingModalProps = {
-    isFocused:boolean;
-    onClose:() => void;
+    isFocused: boolean;
+    onClose: () => void;
 }
 
 function SettingModal({
     isFocused,
     onClose,
-}:SettingModalProps) {
+}: SettingModalProps) {
     const categories = [
         SETTING_CATEGORY.GENERAL,
         SETTING_CATEGORY.MODELS,
         SETTING_CATEGORY.API,
         SETTING_CATEGORY.SHORTCUT,
-        SETTING_CATEGORY.HISTORY,
+        // SETTING_CATEGORY.HISTORY,
         // SETTING_CATEGORY.SERVER,
-        SETTING_CATEGORY.DATA,
+        // SETTING_CATEGORY.DATA,
     ]
     const [disappear, close] = useModalDisappear(onClose);
     const [currentCategory, setCurrentCategory] = useState<SETTING_CATEGORY>(SETTING_CATEGORY.GENERAL);
+    const version = useMemoryStore(state => state.version);
 
     useHotkey({
         'Escape': close,
     }, isFocused, []);
-    
+
     return (
         <Modal
             disappear={disappear}
@@ -61,7 +64,7 @@ function SettingModal({
         >
             <div
                 style={{
-                    position : 'relative',
+                    position: 'relative',
                     display: 'grid',
                     gridTemplateRows: '48px 1fr',
                     gridTemplateColumns: '96px 1fr',
@@ -74,10 +77,9 @@ function SettingModal({
                 <div>
                     <ModalHeader onClose={close}>{currentCategory}</ModalHeader>
                 </div>
-                <div
+                <Column
                     className='undraggable'
                     style={{
-                        display: 'block',
                         fontSize: '0.9em',
                     }}
                 >
@@ -94,7 +96,7 @@ function SettingModal({
                                     margin: '0px',
                                     cursor: 'pointer',
                                 }}
-                                onClick={()=>{
+                                onClick={() => {
                                     setCurrentCategory(category);
                                 }}
                             >
@@ -108,7 +110,9 @@ function SettingModal({
                             </div>
                         ))
                     }
-                </div>
+                    <Flex/>
+                    <small className='subtle-text'>{version}</small>
+                </Column>
                 <div
                     style={{
                         display: 'block',
@@ -116,34 +120,34 @@ function SettingModal({
                         padding: '0px 8px',
                     }}
                 >
-                {
-                    currentCategory === SETTING_CATEGORY.GENERAL &&
-                    <GeneralOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.MODELS &&
-                    <ModelOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.API &&
-                    <APIKeyOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.SHORTCUT &&
-                    <ShortcutOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.HISTORY &&
-                    <HistoryOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.SERVER &&
-                    <ServerOptions/>
-                }
-                {
-                    currentCategory === SETTING_CATEGORY.DATA &&
-                    <DataOptions/>
-                }
+                    {
+                        currentCategory === SETTING_CATEGORY.GENERAL &&
+                        <GeneralOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.MODELS &&
+                        <ModelOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.API &&
+                        <APIKeyOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.SHORTCUT &&
+                        <ShortcutOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.HISTORY &&
+                        <HistoryOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.SERVER &&
+                        <ServerOptions />
+                    }
+                    {
+                        currentCategory === SETTING_CATEGORY.DATA &&
+                        <DataOptions />
+                    }
                 </div>
             </div>
         </Modal>

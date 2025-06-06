@@ -10,6 +10,11 @@ declare global {
     type IPCInvokerGeneral = {
         echo(message: string): EResult<string>;
         openBrowser(url: string): ENoResult;
+        getCurrentVersion(): EResult<string>;
+        getAvailableVersion(prerelease:boolean): EResult<VersionInfo>;
+
+        existsLegacyData(): EResult<boolean>;
+        migrateLegacyData(): ENoResult;
     }
     
     type IPCInvokerGlobalStorage = {
@@ -70,6 +75,8 @@ declare global {
         get(profileId: string, sessionId: string, offset: number, limit: number, desc: boolean): EResult<HistoryMetadata[]>;
         search(profileId: string, sessionId: string, offset: number, limit: number, search: HistorySearch): EResult<HistoryMetadata[]>;
         getMessage(profileId: string, sessionId: string, historyId: number[]): EResult<HistoryMessage[]>;
+        // editMessage(profileId: string, sessionId: string, historyId: number, origin: 'in' | 'out' | 'both'): ENoResult;
+        deleteMessage(profileId: string, sessionId: string, historyId: number, origin: 'in' | 'out' | 'both'): ENoResult;
         delete(profileId: string, sessionId: string, historyKey: number): ENoResult;
         deleteAll(profileId: string, sessionId: string): ENoResult;
     };

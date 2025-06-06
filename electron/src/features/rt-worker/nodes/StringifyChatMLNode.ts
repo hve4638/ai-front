@@ -6,7 +6,7 @@ import WorkNode from './WorkNode';
 import { ChatML, PromptMessages } from './node-types';
 
 export type StringifyChatMLNodeInput = {
-    promptMessage: PromptMessages;
+    messages: PromptMessages;
 }
 export type StringifyChatMLNodeOutput = {
     chatML: ChatML;
@@ -19,10 +19,10 @@ class StringifyChatMLNode extends WorkNode<StringifyChatMLNodeInput, StringifyCh
     override async process(
         input:StringifyChatMLNodeInput,
     ) {
-        const { promptMessage } = input;
+        const { messages } = input;
         const result: string[] = [];
 
-        for (const message of promptMessage) {
+        for (const message of messages) {
             switch (message.role) {
                 case 'User':
                     result.push(`<|im_start|>user`);

@@ -6,7 +6,6 @@ class WorkflowMirror extends RTWorkflow {
         this.workLogger.workBegin();
         
         try {
-            await new Promise(resolve => setTimeout(resolve, 500));
             this.rtSender.sendResult(rtInput.input);
         }
         catch (error) {

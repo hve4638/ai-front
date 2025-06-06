@@ -13,6 +13,7 @@ type HoverEffectRadius = typeof HoverEffectRadius[keyof typeof HoverEffectRadius
 interface GIconButtonProps {
     className?: string;
     style?: React.CSSProperties;
+    children?: React.ReactNode;
     value: string;
 
     hoverEffect?: HoverEffectRadius;
@@ -24,6 +25,7 @@ interface GIconButtonProps {
 function IconButton({
     className = '',
     style = {},
+    children,
     value,
     
     hoverEffect = HoverEffectRadius.None,
@@ -75,6 +77,9 @@ function IconButton({
             >
                 {value}
             </span>
+            {
+                children
+            }
         </label>
     )
 }

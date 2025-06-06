@@ -1,0 +1,52 @@
+.toast-anchor {
+    position: contents;
+    // width: 100%;
+    // min-height: 100%;
+}
+
+.toast-message {
+    position: relative;
+    width: 14em;
+    height: 3.5em;
+    padding: 0 0.55em;
+    gap: 0.4em;
+    border-radius: 4px;
+    align-items: center;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+
+    transition: opacity 0.1s ease-in-out;
+    opacity: 1;
+
+    overflow: hidden;
+
+    .description {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 15em;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        font-size: 1.25em;
+    }
+
+    &:global(.disappear) {
+        opacity: 0;
+    }
+
+    &.error-toast {
+        background-color: rgba(183, 0, 0, 0.536);
+    }
+
+    &.warning-toast {
+        background-color: rgba(183, 128, 0, 0.536);
+    }
+
+    &.info-toast {
+        background-color: rgba(0, 73, 183, 0.536);
+    }
+}

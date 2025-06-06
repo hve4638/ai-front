@@ -7,13 +7,13 @@ import ProfilesAPI, { ProfileAPI } from '@/api/profiles';
 interface DataFields {
     sessions : string[];
     starred_models : string[];
-    api_keys_metadata : Record<string, APIKeyMetadata[]>;
+    api_keys : Record<string, APIKeyMetadata[]>;
 }
 
 const defaultData:DataFields = {
     sessions : [],
     starred_models : [],
-    api_keys_metadata : {},
+    api_keys : {},
 }
 
 interface DataState extends DataFields {

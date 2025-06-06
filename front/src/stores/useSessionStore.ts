@@ -5,13 +5,17 @@ import ProfilesAPI, { type ProfileAPI } from '@/api/profiles';
 import RequestManager from '@/features/request-manager';
 import useSignalStore from './useSignalStore';
 import useChannelStore from './useChannelStore';
+import { HistoryData } from '@/features/session-history';
 
 interface SessionCacheFields {
     input:string;
     output:string;
     token_count:number;
+    last_history:HistoryData|null;
+    
     warning_message:string|null;
     state:'loading'|'idle'|'error'|'done';
+    markdown:boolean;
 }
 
 interface SessionConfigFields {
@@ -25,8 +29,10 @@ const defaultCache:SessionCacheFields = {
     input : '',
     output : '',
     token_count : 0,
+    last_history : null,
     warning_message : null,
     state: 'idle',
+    markdown: true,
 }
 const defaultConfig:SessionConfigFields = {
     name : null,

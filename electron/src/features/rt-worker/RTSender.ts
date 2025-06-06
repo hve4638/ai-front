@@ -37,6 +37,15 @@ class RTSender {
         }
     }
 
+    sendNoResult() {
+        const window = this.browserWindowRef.deref();
+        if (window) {
+            window.webContents.send(IPCListenerPing.Request, this.token, {
+                type : 'no_result',
+            } satisfies RequestRTData);
+        }
+    }
+
     sendClose() {
         const window = this.browserWindowRef.deref();
         if (window) {

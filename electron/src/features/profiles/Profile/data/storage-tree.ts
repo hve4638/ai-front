@@ -25,18 +25,20 @@ export const PROFILE_STORAGE_TREE = {
                 'input' : JSONType.String(),
                 'output' : JSONType.String(),
                 'token_count' : JSONType.Number(),
+                'last_history' : JSONType.Struct().nullable(),
                 'warning_message' : JSONType.String(),
                 'state' : JSONType.String(),
+                'markdown' : JSONType.Bool().default_value(true),
             }),
             'history' : StorageAccess.Custom('history'),
         }
     },
     'cache.json' : StorageAccess.JSON({
         'last_session_id' : JSONType.String(),
-        'setting_models_show_featured' : JSONType.Bool(),
-        'setting_models_show_snapshot' : JSONType.Bool(),
-        'setting_models_show_experimental' : JSONType.Bool(),
-        'setting_models_show_deprecated' : JSONType.Bool(),
+        'setting_models_show_featured' : JSONType.Bool().default_value(true),
+        'setting_models_show_snapshot' : JSONType.Bool().default_value(false),
+        'setting_models_show_experimental' : JSONType.Bool().default_value(false),
+        'setting_models_show_deprecated' : JSONType.Bool().default_value(false),
 
         'removed_sessions' : JSONType.Array(JSONType.String()).strict(),
         

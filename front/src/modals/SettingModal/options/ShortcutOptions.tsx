@@ -63,7 +63,7 @@ function ShortcutOptions() {
                     />
                 ))
             }
-            <div style={{ height: '1em' }}/>
+            {/* <div style={{ height: '1em' }}/>
             <h2 className='undraggable'>전역 단축키</h2>
             <CheckBoxForm
                 name='활성화'
@@ -83,7 +83,7 @@ function ShortcutOptions() {
                 onClick={()=>{
                     ;
                 }}
-            />
+            /> */}
         </>
     )
 }

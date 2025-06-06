@@ -4,17 +4,18 @@ import { getEncoding, encodingForModel } from 'js-tiktoken';
 import useLazyThrottle from '@/hooks/useLazyThrottle';
 import useSignal from '@/hooks/useSignal';
 
-import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore, useChannelStore } from '@/stores';
+import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore, useChannelStore, useProfileEvent, useProfileAPIStore } from '@/stores';
 import SingleIOLayout from './SingleIOLayout';
 import ChatIOLayout from './ChatIOLayout';
 
 
 function IOSection() {
-    const { font_size } = useConfigStore();
     const sessionState = useSessionStore();
     const color = useSessionStore(state=>state.color);
     const reloadInputSignal = useSignalStore(state=>state.reload_input);
+    const { api } = useProfileAPIStore();
 
+    const [inputLayoutType, setInputLayoutType] = useState<'normal'|'chat'>('normal');
     const [tokenCount, setTokenCount] = useState(0);
     const inputTextRef = useRef('');
     const [_, refresh] = useSignal();
@@ -35,6 +36,19 @@ function IOSection() {
         updateInputTextThrottle();
         refresh();
     }
+
+    useEffect(()=>{
+        setTokenCount(tokenizer.encode(inputTextRef.current).length);
+        updateInputTextThrottle();
+        refresh();
+    }, [sessionState.deps.last_session_id])
+
+    useEffect(()=>{
+        api.rt(sessionState.rt_id).getMetadata()
+            .then(({ input_type }) => {
+                setInputLayoutType(input_type);
+            });
+    }, [api, sessionState.rt_id])
     
     useLayoutEffect(() => {
         inputTextRef.current = sessionState.input;
@@ -62,14 +76,25 @@ function IOSection() {
         const unsubscribes = [
             useShortcutSignalStore.subscribe(
                 state=>state.send_request,
-                ()=>sessionState.actions.request(),
+                ()=>{
+                    const { state } = useSessionStore.getState();
+
+                    if (state === 'idle' || state === 'done') {
+                        sessionState.actions.request();
+                    }
+                    else {
+                        console.warn('request is ignored, because current state is', state);
+                    }
+                },
             ),
             useShortcutSignalStore.subscribe(
                 state=>state.copy_response,
                 ()=>{
-                    if (sessionState.output) {
+                    const output = useSessionStore.getState().output;
+                    if (output) {
                         try {
-                            navigator.clipboard.writeText(sessionState.output);
+                            console.log('copying response to clipboard', output);
+                            navigator.clipboard.writeText(output);
                         }
                         catch (error) {
                             console.error('Failed to copy response:', error);
@@ -82,7 +107,7 @@ function IOSection() {
     }, []);
 
     
-    if (1) {
+    if (inputLayoutType === 'chat') {
         return (
             <ChatIOLayout
                 inputText={inputTextRef.current}

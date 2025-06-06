@@ -22,13 +22,11 @@ import NewRTModal from '@/modals/NewRTModal';
 import { LeafNode } from './nodes';
 
 type RTEditModalProps = {
-    onClickCreateNewRT: () => void;
     isFocused: boolean;
     onClose: () => void;
 }
 
 function RTEditModal({
-    onClickCreateNewRT,
     isFocused,
     onClose
 }: RTEditModalProps) {

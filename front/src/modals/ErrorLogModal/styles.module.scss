@@ -1,0 +1,11 @@
+.log-entry {
+    width: 100%;
+    padding: 4px 8px;
+    transition: background-color 0.15s ease;
+    background-color: rgb(70, 47, 44);
+    // background-color: rgb(81, 52, 49);
+
+    &:hover {
+        background-color: rgb(97, 66, 62);
+    }
+}

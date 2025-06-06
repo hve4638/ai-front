@@ -1,4 +1,5 @@
 import React from 'react';
+import MarkdownArea from '../MarkdownArea';
 
 interface InputFieldProps {
     text: string;
@@ -8,6 +9,7 @@ interface InputFieldProps {
     onChange: (x: string) => void;
     tabIndex?: number;
     readonly?: boolean;
+    markdown?: boolean;
 }
 
 function InputField({
@@ -17,24 +19,66 @@ function InputField({
     text,
     tabIndex,
     onChange,
-    readonly=false
+    readonly=false,
+    markdown=false
 }: InputFieldProps) {
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
     return (
         <div
+            ref={containerRef}
             className={`input-field-container ${className}`}
             style={{
                 position: 'relative',
                 ...style
             }}
+            onKeyDown={(e) => {
+                if (e.key === 'a' && e.ctrlKey) {
+                    if (containerRef.current) {
+                        const range = document.createRange();
+                        range.selectNodeContents(containerRef.current);
+
+                        const selection = window.getSelection();
+                        if (selection) {
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        }
+                    }
+
+                    e.preventDefault();
+                }
+            }}
         >
-            <textarea
-                readOnly={readonly}
-                className='input-field fill fontstyle scrollbar'
-                spellCheck='false'
-                value={text}
-                onChange={(e) => onChange(e.target.value)}
-                tabIndex={tabIndex}
-            />
+            {
+                !markdown &&
+                <textarea
+                    readOnly={readonly}
+                    className='input-field fill fontstyle scrollbar'
+                    style={{
+                        resize: 'none',
+                        width: '100%',
+                        height: '100%',
+                        boxSizing: 'border-box',
+                        overflowY: 'auto',
+                    }}
+
+                    spellCheck='false'
+                    value={text}
+                    onChange={(e) => onChange(e.target.value)}
+                    tabIndex={tabIndex}
+                />
+            }
+            {
+                markdown &&
+                <MarkdownArea
+                    className='fill fontstyle'
+                    style={{
+                        // overflowX: 'hidden',
+                        // overflowY: 'auto',
+                    }}
+                    content={text}
+                />
+            }
             {
                 children != null &&
                 children

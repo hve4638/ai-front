@@ -13,6 +13,8 @@ const ipcInvokerPath = {
     general : {
         echo : 0,
         openBrowser : 0,
+        getCurrentVersion : 0,
+        getAvailableVersion : 0,
     },
     globalStorage : {
         get : 0,
@@ -63,6 +65,7 @@ const ipcInvokerPath = {
         get : 0,
         search : 0,
         getMessage : 0,
+        deleteMessage : 0,
         delete : 0,
         deleteAll : 0,
     },

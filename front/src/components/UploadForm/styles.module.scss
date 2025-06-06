@@ -1,0 +1,10 @@
+.upload-container {
+    border: 3px dotted white;
+    padding: 4px;
+    transition: 0.2s color ease, 0.2s border ease;
+
+    .ondraghover {
+        border: 3px dotted rgb(176, 116, 255);
+        color: rgb(176, 116, 255);
+    }
+}

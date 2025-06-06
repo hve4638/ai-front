@@ -1,41 +1,67 @@
-import ModelProvider from "../ModelProvider";
-import model from "./model";
+import ModelProvider from '../ModelProvider';
+import model from '../model';
+import flags from '../flags';
 
-const legacy = true;
-const experimental = true;
-const deprecated = true;
-const stable = true;
-const latest = true;
-const featured = true;
-const snapshot = true;
+const {
+    latest,
+    featured,
+    experimental,
+    deprecated,
+    thinking,
+    snapshot,
+    claude_endpoint,
+    high_cost,
+} = flags;
+
 
 function initProvider(provider:ModelProvider) {
-    provider.addModels('Sonnet 3.5 Sonnet',
+    const baseFlags = { claude_endpoint, };
+
+    provider.addModels('Claude Opus 4',
         [
-            model('Claude 3.5 Sonnet', 'claude-3-5-sonnet-latest', { latest, featured }),
-            model('Claude 3.5 Sonnet (20241022)', 'claude-3-5-sonnet-20241022', { snapshot }),
-            model('Claude 3.5 Sonnet (20240620)', 'claude-3-5-sonnet-20240620', { snapshot }),
+            model('Claude Opus 4', 'claude-opus-4-0', { featured, latest, thinking, ...baseFlags }),
+            model('Claude Opus 4 (2025-05-14)', 'claude-opus-4-20250514', { snapshot, thinking, ...baseFlags }),
         ]
     );
-    provider.addModels('Claude 3.5 Haiku',
+    provider.addModels('Claude Sonnet 4',
         [
-            model('Claude 3.5 Haiku (20241022)', 'claude-3-5-haiku-20241022', { featured, snapshot }),
+            model('Claude Sonnet 4', 'claude-sonnet-4-0', { featured, latest, thinking, ...baseFlags }),
+            model('Claude Sonnet 4 (2025-05-14)', 'claude-sonnet-4-20250514', { snapshot, thinking, ...baseFlags }),
         ]
     );
-    provider.addModels('Claude 3 Opus',
+    provider.addModels('Claude Sonnet 3.7',
         [
-            model('Claude 3 Opus', 'claude-3-opus-latest', { featured, latest }),
-            model('Claude 3 Opus (20240229)', 'claude-3-opus-20240229', { snapshot }),
+            model('Claude Sonnet 3.7', 'claude-3-7-sonnet-latest', { latest, featured, thinking, ...baseFlags }),
+            model('Claude Sonnet 3.7 (2025-02-19)', 'claude-3-7-sonnet-20250219', { snapshot, thinking, ...baseFlags }),
         ]
     );
-    provider.addModels('Claude 3 Sonnet',
+    provider.addModels('Claude Sonnet 3.5',
         [
-            model('Claude 3 Sonnet', 'claude-3-sonnet-20240229', { latest, snapshot }),
+            model('Claude 3.5 Sonnet', 'claude-3-5-sonnet-latest', { latest, featured, ...baseFlags }),
+            model('Claude 3.5 Sonnet (2024-10-22)', 'claude-3-5-sonnet-20241022', { snapshot, ...baseFlags }),
+            model('Claude 3.5 Sonnet (2024-06-20)', 'claude-3-5-sonnet-20240620', { snapshot, ...baseFlags }),
         ]
     );
-    provider.addModels('Claude 3 Haiku',
+    provider.addModels('Claude Haiku 3.5',
         [
-            model('Claude 3 Haiku', 'claude-3-haiku-20240307', { latest, snapshot }),
+            model('Claude 3.5 Haiku', 'claude-3-5-haiku-latest', { featured, latest, ...baseFlags }),
+            model('Claude 3.5 Haiku (2024-10-22)', 'claude-3-5-haiku-20241022', { snapshot, ...baseFlags }),
+        ]
+    );
+    provider.addModels('Claude Opus 3',
+        [
+            model('Claude Opus 3', 'claude-3-opus-latest', { featured, latest, ...baseFlags }),
+            model('Claude Opus 3 (2024-02-29)', 'claude-3-opus-20240229', { snapshot, ...baseFlags }),
+        ]
+    );
+    provider.addModels('Claude Sonnet 3',
+        [
+            model('Claude Sonnet 3', 'claude-3-sonnet-20240229', { latest, snapshot, ...baseFlags }),
+        ]
+    );
+    provider.addModels('Claude Haiku 3',
+        [
+            model('Claude Haiku 3', 'claude-3-haiku-20240307', { latest, snapshot, ...baseFlags }),
         ]
     );
 }

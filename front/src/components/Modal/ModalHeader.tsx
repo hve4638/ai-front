@@ -45,7 +45,7 @@ function ModalHeader({
                         fontSize: '1.5em',
                         lineHeight: '1',
                     }}
-                    hoverEffect='circle'
+                    hoverEffect='square'
                     onClick={() => onClose()}
                 />
             }

@@ -1,11 +1,11 @@
-import { forwardRef, useLayoutEffect, useState } from 'react';
+import { forwardRef, useLayoutEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 
 interface TextInputProps {
-    value : string;
-    onChange: (value:string) => void;
+    value: string;
+    onChange: (value: string) => void;
     instantChange?: boolean;
 
     placeholder?: string;
@@ -20,21 +20,28 @@ const TextInput = forwardRef(({
     onChange,
     instantChange = false,
     warn = false,
-    
-    className='',
-    style={},
 
-    placeholder='',
-}:TextInputProps, ref:React.Ref<HTMLInputElement>)=>{
+    className = '',
+    style = {},
+
+    placeholder = '',
+}: TextInputProps, ref: React.Ref<HTMLInputElement>) => {
+    const composingRef = useRef(false);
     const [current, setCurrent] = useState<string>(value);
 
     useLayoutEffect(() => {
         setCurrent(value);
     }, [value]);
 
-    const changeValue = (value:string) => {
-        if (instantChange) onChange(value);
-        else setCurrent(value);
+    const changeValue = (value: string) => {
+        setCurrent(value);
+
+        if (instantChange) {
+            if (composingRef.current) {
+                return;
+            }
+            onChange(value);
+        }
     };
     const commitValue = () => {
         if (current === value) return;
@@ -50,11 +57,11 @@ const TextInput = forwardRef(({
     return (
         <input
             type='text'
-            
+
             className={
                 classNames(
                     styles['text-input'],
-                    { [styles['warn']] : warn },
+                    { [styles['warn']]: warn },
                     className,
                 )
             }
@@ -64,10 +71,17 @@ const TextInput = forwardRef(({
             placeholder={placeholder}
 
             value={current}
-            onChange={(e)=>changeValue(e.target.value)}
-            onBlur={()=>commitValue()}
-            onKeyDown={(e)=>{
+            onChange={(e) => changeValue(e.target.value)}
+            onBlur={() => commitValue()}
+            onKeyDown={(e) => {
                 if (e.key === 'Enter') commitValue();
+            }}
+            onCompositionStart={() => {
+                composingRef.current = true;
+            }}
+            onCompositionEnd={(e) => {
+                composingRef.current = false;
+                changeValue(e.currentTarget.value);
             }}
         />
     );

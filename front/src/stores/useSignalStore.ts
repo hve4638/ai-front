@@ -9,7 +9,10 @@ const signalFields = {
     request : 0,
     request_ready : 0,
     refresh_rt_tree : 0,
+
+    // ChatIOLayout에서 핸들링
     refresh_chat : 0,
+    refresh_chat_without_scroll : 0,
 } as const;
 type SignalFields = Record<keyof typeof signalFields, number>;
 

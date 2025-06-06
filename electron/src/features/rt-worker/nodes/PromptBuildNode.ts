@@ -1,27 +1,26 @@
-import { CBFFail, CBFResult, PromptTemplate } from '@hve/prompt-template';
-import { Chat, ChatRole } from '@hve/chatai';
+import { CBFFail, CBFResult, PromptGenerator, PromptTemplate } from '@hve/prompt-template';
+import { Chat, ChatMessage, ChatRole } from '@hve/chatai';
 import { BUILT_IN_VARS, HOOKS } from '../data';
 import WorkNode from './WorkNode';
-import type { NodeData } from './types';
 import { PromptMessages } from './node-types';
 import { WorkNodeStop } from './errors';
+import ChatGenerator from '../ChatGenerator';
 
 export type PromptBuildNodeInput = {
     input: string;
-    chat?: RTInputMessage[];
 }
 export type PromptBuildNodeOutput = {
-    promptMessage:PromptMessages;
+    messages: PromptMessages;
 }
 export type PromptBuildNodeOption = {
-    promptId:string;
-    form : {
-        [key:string]: { link:true, src:string, value?:unknown } | { link?:false, value:unknown };
+    promptId: string;
+    form: {
+        [key: string]: { link: true, src: string, value?: unknown } | { link?: false, value: unknown };
     };
 }
 
-function getDefaultValue(promptVar:PromptVar):unknown {
-    switch(promptVar.type) {
+function getDefaultValue(promptVar: PromptVar): unknown {
+    switch (promptVar.type) {
         case 'checkbox':
         case 'text':
         case 'number':
@@ -29,8 +28,8 @@ function getDefaultValue(promptVar:PromptVar):unknown {
         case 'select':
             return (
                 promptVar.options.length == 0
-                ? ''
-                : promptVar.options[0].value
+                    ? ''
+                    : promptVar.options[0].value
             );
         case 'array':
             return [];
@@ -39,15 +38,14 @@ function getDefaultValue(promptVar:PromptVar):unknown {
     }
 }
 
-class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption>  {
+class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption> {
     override async process(
         {
             input,
-            chat,
-        }:PromptBuildNodeInput,
+        }: PromptBuildNodeInput,
     ) {
         const {
-            profile, rtId, logger, sender
+            profile, rtId, logger, sender, chat
         } = this.nodeData;
         const rt = profile.rt(rtId);
         const promptVars = await rt.getPromptVariables(this.option.promptId);
@@ -55,48 +53,48 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
 
         const { form } = this.nodeData;
         const vars = {};
-        promptVars.forEach((v)=>{
+        promptVars.forEach((v) => {
             vars[v.name] = form[v.id!] ?? getDefaultValue(v);
         });
-        
+
         const { nodes, errors } = PromptTemplate.build(contents);
         if (errors.length > 0) {
-            logger.nodeError(this.nodeId, errors.map(e=>e.message));
-            
+            logger.nodeError(this.nodeId, errors.map(e => e.message));
+
             sender.sendError(
-                `Error: ${errors}`,
-                errors.map((e:CBFFail)=>{
+                `Prompt build failed`,
+                errors.map((e: CBFFail) => {
                     console.info(e);
                     return `${e.message} (${e.positionBegin})`;
                 })
             );
             throw new WorkNodeStop();
         }
-        
+
         const additionalBuiltInVars = {};
         additionalBuiltInVars['input'] = input;
-        additionalBuiltInVars['chat'] = chat;
-    
-        let generator:Generator<CBFResult>;
+        additionalBuiltInVars['chat'] = new ChatGenerator(chat);
+
+        let generator: Generator<CBFResult>;
         try {
             generator = PromptTemplate.execute(nodes, {
-                builtInVars : {
-                    ...BUILT_IN_VARS,                               
+                builtInVars: {
+                    ...BUILT_IN_VARS,
                     ...additionalBuiltInVars,
                 },
-                vars : vars,
-                hook : HOOKS,
+                vars: vars,
+                hook: HOOKS,
             });
         }
         catch (e) {
             throw new WorkNodeStop();
         }
 
-        const promptMessage:PromptMessages = [];
-        const processResult = (result:CBFResult) => {
-            switch(result.type) {
+        const promptMessage: ChatMessage[] = [];
+        const processResult = (result: CBFResult) => {
+            switch (result.type) {
                 case 'ROLE':
-                    switch(result.role.toLowerCase()) {
+                    switch (result.role.toLowerCase()) {
                         case 'user':
                             promptMessage.push(ChatRole.User());
                             break;
@@ -131,12 +129,12 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
         catch (e) {
             console.warn(e);
             sender.sendError(
-                `Error: ${e}`,
+                `Prompt evaluate failed`,
                 [(e as any).message]
             );
             throw new WorkNodeStop();
         }
-        return { promptMessage };
+        return { messages : promptMessage };
     }
 }
 

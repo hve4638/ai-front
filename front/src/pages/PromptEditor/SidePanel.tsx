@@ -7,7 +7,7 @@ import { RTStoreContext, useContextForce } from '@/context';
 
 import { Align, Column, Flex, Grid, Row } from "@/components/layout";
 import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
-import { DropdownForm } from '@/components/Forms';
+import { CheckBoxForm, DropdownForm } from '@/components/Forms';
 import Button from '@/components/Button';
 
 import { useModal } from '@/hooks/useModal';
@@ -229,6 +229,11 @@ function SidePanel({
             </span>
         </div>
         <Flex/>
+        {/* <CheckBoxForm
+            name='프롬프트 미리보기'
+            checked={true}
+            onChange={(checked)=>{}}
+        /> */}
         <Row
             className='noflex'
             style={{

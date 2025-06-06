@@ -1,14 +1,20 @@
 import classNames from 'classnames';
-import Popover from 'components/Popover';
 
-import styles from './styles.module.scss';
-import { Column } from 'components/layout';
-import DivButton from 'components/DivButton';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
+import Popover from '@/components/Popover';
+import { Column } from '@/components/layout';
+import DivButton from '@/components/DivButton';
+import { GoogleFontIcon } from '@/components/GoogleFontIcon';
+
 import { useModal } from '@/hooks/useModal';
+
 import RTEditModal from '@/modals/RTEditModal';
 import SettingModal from '@/modals/SettingModal';
+
 import { useSignalStore } from '@/stores';
+
+import styles from './styles.module.scss';
+import LocalAPI from '@/api/local';
+import useMemoryStore from '@/stores/useMemoryStore';
 
 type AvatarPopoverProps = {
     onClose: () => void;
@@ -19,14 +25,10 @@ function AvatarPopover({
 }:AvatarPopoverProps) {
     const modal = useModal();
     const signal = useSignalStore(state=>state.signal);
+    const { availableVersion } = useMemoryStore();
 
     const clickEditRTButton = () => {
-        modal.open(RTEditModal, {
-            onClickCreateNewRT:()=>{
-                // @TODO
-                
-            }
-        });
+        modal.open(RTEditModal, {});
         onClose();
     }
     
@@ -80,6 +82,24 @@ function AvatarPopover({
                     />
                     <span>요청 템플릿 수정</span>
                 </DivButton>
+                <hr/>
+                {
+                    availableVersion != null &&
+                    <DivButton
+                        onClick={()=>{
+                            LocalAPI.general.openBrowser(availableVersion.url);
+                        }}
+                        style={{ width : '100%', color : 'orange' }}
+                    >
+                        <GoogleFontIcon
+                            value='browser_updated'
+                            style={{
+                                marginRight: '0.25em',
+                            }}
+                        />
+                        <span>새 버전 업데이트</span>
+                    </DivButton>
+                }
                 <hr/>
                 <DivButton
                     onClick={()=>clickChangeProfileButton()}

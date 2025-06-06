@@ -5,7 +5,7 @@ import HistoryOptions from './HistoryOptions';
 import ServerOptions from './ServerOptions';
 import DataOptions from './DataOptions';
 import ShortcutOptions from './ShortcutOptions';
-import ModelOptions from './ModelOptions';
+import ModelOptions from './MoelOptions/ModelOptions';
 
 
 export {

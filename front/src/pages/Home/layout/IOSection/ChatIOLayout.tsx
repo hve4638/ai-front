@@ -9,7 +9,7 @@ import InputField from '@/components/InputField';
 import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
 import { Align, Column, Flex, Grid, Row } from '@/components/layout';
 
-import { useConfigStore, useSessionStore, useSignalStore } from '@/stores';
+import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore } from '@/stores';
 
 import SplitSlider from '../SplitSlider';
 
@@ -44,7 +44,6 @@ function ChatIOLayout({
     const lastSessionId = useSessionStore(state => state.deps.last_session_id);
     const sessionHistory = useMemo(() => {
         const historyState = useHistoryStore.getState();
-        console.log('sessionHistory', lastSessionId, checksum(lastSessionId));
 
         if (lastSessionId) {
             return historyState.get(lastSessionId);
@@ -59,17 +58,17 @@ function ChatIOLayout({
     const [limit, setLimit] = useState(32);
     const [hasMore, setHasMore] = useState(true);
 
-    const historyData = useCache<{ current: HistoryData[] }>(()=>({ current : [] }), [lastSessionId]);
+    const historyData = useCache<{ current: HistoryData[] }>(() => ({ current: [] }), [lastSessionId]);
     const chats = useMemo(() => {
         console.log('load chats', historyData.current);
 
         return historyData.current.flatMap((item) => {
-            const chat:{ side: 'input' | 'output', value: string, key: string }[] = [];
+            const chat: { side: 'input' | 'output', value: string, key: string, data: HistoryData }[] = [];
             if (item.output) {
-                chat.push({ side: 'output', value: item.output, key: `${item.id}_output` });
+                chat.push({ side: 'output', value: item.output, key: `${item.id}_output`, data: item });
             }
             if (item.input) {
-                chat.push({ side: 'input', value: item.input, key: `${item.id}_input` });
+                chat.push({ side: 'input', value: item.input, key: `${item.id}_input`, data: item });
             }
             return chat;
         });
@@ -78,7 +77,10 @@ function ChatIOLayout({
     useEffect(() => {
         setHasMore(true);
         setNextOffset(0);
-        scrollAnchorRef.current?.scrollIntoView();
+        window.setTimeout(
+            () => scrollAnchorRef.current?.scrollIntoView(),
+            1
+        )
     }, [lastSessionId]);
 
     useEffect(() => {
@@ -89,13 +91,24 @@ function ChatIOLayout({
                     if (!sessionHistory) return;
 
                     await loadHistory();
-                    scrollAnchorRef.current?.scrollIntoView();
+                    window.setTimeout(
+                        () => scrollAnchorRef.current?.scrollIntoView(),
+                        1
+                    )
+                }
+            ),
+            useSignalStore.subscribe(
+                (state) => state.refresh_chat_without_scroll,
+                async () => {
+                    if (!sessionHistory) return;
+
+                    await loadHistory();
                 }
             )
         ]
 
         return () => unsubscribes.forEach(unsub => unsub());
-    }, [lastSessionId]);
+    }, [lastSessionId, sessionHistory]);
 
     const loadHistory = async () => {
         if (!sessionHistory) {
@@ -111,12 +124,12 @@ function ChatIOLayout({
         historyData.current = prev;
         refresh();
     }
-    
+
     const loadMore = async () => {
         if (!hasMore) return;
 
         await loadHistory();
-        setLimit(limit*2);
+        setLimit(limit * 2);
     }
 
     return (
@@ -133,8 +146,7 @@ function ChatIOLayout({
             }
             style={{
                 width: '100%',
-                height: '100%',
-                overflowY: 'auto',
+                overflowY: 'hidden',
                 paddingTop: '0.5em',
             }}
             rows='1fr 0.25em 8em'
@@ -158,13 +170,14 @@ function ChatIOLayout({
                         gap: '0.5em',
                     }}
                 >
-                    <div ref={scrollAnchorRef}/>
+                    <div ref={scrollAnchorRef} />
                     {
                         chats.map((c, index) => (
                             <ChatDiv
                                 key={c.key}
                                 side={c.side}
                                 value={c.value}
+                                data={c.data}
                             />
                         ))
                     }
@@ -192,13 +205,14 @@ function ChatInput({
     onChange = () => { },
     tokenCount = 0,
 }: ChatInputProps) {
+    const sessionState = useSessionStore();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const { font_size } = useConfigStore();
 
     return (
         <div
             className={classNames(styles['chat-input-container'])}
-            onClick={(e)=>{
+            onClick={(e) => {
                 textareaRef.current?.focus();
             }}
         >
@@ -221,7 +235,12 @@ function ChatInput({
                     style={{ fontSize: '1.75em' }}
                     columnAlign={Align.End}
                 >
-                    <span className={classNames(styles['token-count'], 'undraggable')}>
+                    <span
+                        className={classNames(styles['token-count'], 'undraggable')}
+                        style={{
+                            paddingLeft: '0.25em',
+                        }}
+                    >
                         token: {tokenCount}
                     </span>
                     <Flex />
@@ -229,6 +248,8 @@ function ChatInput({
                         className={classNames(styles['send-button'])}
                         value='send'
                         onClick={(e) => {
+                            sessionState.actions.request();
+
                             e.stopPropagation();
                         }}
                     />

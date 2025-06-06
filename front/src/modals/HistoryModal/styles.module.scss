@@ -1,6 +1,7 @@
 :global(.theme-dark) {
-    --history-hover : rgba(118, 118, 118, 0.3);
-    --history-search-border-color : rgb(67, 73, 76);
+    --history-hover: rgba(118, 118, 118, 0.3);
+    --history-search-border-color: rgb(67, 73, 76);
+    --history-empty-text: rgb(94, 94, 94);
 }
 
 .history-container {
@@ -8,32 +9,33 @@
         background-color: var(--secondary-bgcolor);
         border-radius: 2px;
         box-sizing: border-box;
-        box-shadow : 0 0 0 1px var(--history-search-border-color) inset;
+        box-shadow: 0 0 0 1px var(--history-search-border-color) inset;
         height: 100%;
-        padding-left : 0.25em;
+        padding-left: 0.25em;
     }
 
     select {
-        font-size : 0.8em;
-        border : 0;
+        font-size: 0.8em;
+        border: 0;
         border-radius: 2px;
-        box-shadow : 0 0 0 1px var(--history-search-border-color) inset;
+        box-shadow: 0 0 0 1px var(--history-search-border-color) inset;
         background-color: var(--secondary-bgcolor);
         height: 100%;
     }
+
     input[type="text"] {
-        font-size : 0.8em;
+        font-size: 0.8em;
     }
 
     input[type="date"] {
-        font-size : 0.8em;
+        font-size: 0.8em;
         background-color: var(--background-color);
-        color : var(--text-field-color);
+        color: var(--text-field-color);
     }
 }
 
 .history-list {
-    width : 100%;
+    width: 100%;
     background-color: var(--secondary-bgcolor);
     border-radius: 4px;
     gap: 0.1em;
@@ -41,28 +43,37 @@
 
 .history-list-item {
     padding: 0.3em 0.8em;
-    width : 100%;
-    height : 4em;
-    border-radius: 6px;
-    transition : background-color 0.15s ease-in-out;
+    width: 100%;
+    height: 4em;
+    // border-radius: 6px;
+    transition: background-color 0.1s ease;
     background-color: transparent;
     cursor: pointer;
 
     .input {
         width: 100%;
-        color : var(--text-color);
+        color: var(--text-color);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.empty {
+            color: var(--history-empty-text);
+        }
     }
 
     .output {
         width: 100%;
-        color : var(--text-color-secondary);
+        color: var(--text-color-secondary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.empty {
+            color: var(--history-empty-text);
+        }
     }
+
 
     &:hover {
         background-color: var(--history-hover);

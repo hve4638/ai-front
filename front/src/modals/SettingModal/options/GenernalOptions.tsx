@@ -9,6 +9,7 @@ import { CheckBoxForm, DropdownForm, NumberForm } from '@/components/Forms';
 
 import { remapDecimal } from '@/utils/math';
 import styles from '../styles.module.scss';
+import Delimiter from '@/components/Delimiter';
 
 function GeneralOptions() {
     const config = useConfigStore();
@@ -25,13 +26,15 @@ function GeneralOptions() {
 
     return (
         <Column className={styles['options-gap']}>
+            <b style={{ fontSize: '0.975em' }}>기본</b>
+            <Delimiter/>
             <NumberForm
                 name='폰트 크기'
                 width='4em'
                 value={config.font_size}
                 onChange={config.update.font_size}
             />
-            <DropdownForm
+            {/* <DropdownForm
                 name='화면 테마'
                 items={
                     [
@@ -47,7 +50,7 @@ function GeneralOptions() {
                 onItemNotFound={()=>{
                     config.update.theme_mode(ThemeModes.SYSTEM_DEFAULT);
                 }}
-            />
+            /> */}
             <DropdownForm
                 name='레이아웃 설정'
                 items={
@@ -64,6 +67,10 @@ function GeneralOptions() {
                     config.update.layout_mode(LayoutModes.HORIZONTAL);
                 }}
             />
+
+
+            <b style={{ fontSize: '0.975em', marginTop: '1em' }}>입력창</b>
+            <Delimiter/>
             <SliderForm
                 name='입력창 여백'
                 min={4}
@@ -102,8 +109,8 @@ function GeneralOptions() {
                     '80' : '80%',
                 }}
             />
-            <div style={{height: '1em'}}/>
-            <CheckBoxForm
+            <div style={{height: '0.25em'}}/>
+            {/* <CheckBoxForm
                 name='탭 삭제 시 확인 메시지 표시'
                 checked={config.confirm_on_session_close}
                 onChange={config.update.confirm_on_session_close}
@@ -113,7 +120,7 @@ function GeneralOptions() {
                 width='4em'
                 value={config.remember_deleted_session_count}
                 onChange={config.update.remember_deleted_session_count}
-            />
+            /> */}
         </Column>
     )
 }

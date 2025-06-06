@@ -93,7 +93,7 @@ function EditorSection({
                 options={editorOptions}
                 theme='vs-dark'
                 width='100%'
-                height='100%'
+                height='auto'
                 value={data.contents}
                 onChange={(value)=>{
                     data.contents = value ?? '';

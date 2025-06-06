@@ -4,7 +4,7 @@ import useModalDisappear from 'hooks/useModalDisappear';
 import { useTranslation } from 'react-i18next';
 import RTSelectWidget from './RTSelectWidget';
 import { useState } from 'react';
-import EditMetadataWidget from './EditMetadataWidget';
+import EditMetadataLayout from './layout/EditMetadataLayout';
 import { useProfileEvent } from '@/stores';
 
 const enum NewRTModalStep {
@@ -40,6 +40,7 @@ function NewRTModal({
             disappear={disappear}
             style={{
                 width: 'auto',
+                maxWidth: '80%',
             }}
         >
             <ModalHeader onClose={close}>{t('rt.new_rt_title')}</ModalHeader>
@@ -55,16 +56,16 @@ function NewRTModal({
             }
             {
                 step === NewRTModalStep.EditMetadata &&
-                <EditMetadataWidget
+                <EditMetadataLayout
                     onPrev={()=>{
                         setStep(NewRTModalStep.SelectRTType);
                     }}
                     onConfirm={async (metadata)=>{
-                        await profile.addRT({
+                        await profile.createRT({
                             name: metadata.name,
                             id: metadata.id,
                             mode: rtMode,
-                        });
+                        }, metadata.templateId);
                         
                         onAddRT(metadata.id, rtMode);
                     }}

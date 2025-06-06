@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ProfileRT from './rt/ProfileRT';
 // import IRTControl from './rt/IRTControl';
 import { PromptOnlyTemplateFactory } from '@/features/rt-template-factory';
+import { LegacyAIFrontData } from '@/features/migration-service';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -108,8 +109,7 @@ class Profile {
     get path():string {
         return this.#basePath ?? '';
     }
-    
-    
+
     get sessions() {
         return this.#sessionControl;
     }
@@ -122,7 +122,6 @@ class Profile {
     }
 
     /* 요청 템플릿 */ 
-
     async getRTTree() {
         return this.#rtControl.getTree();
     }

@@ -47,8 +47,8 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@hve/chatai": "^0.6.0",
     "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.5.0",
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",
     "js-tiktoken": "^1.0.20",

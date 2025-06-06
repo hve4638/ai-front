@@ -36,7 +36,8 @@
 .theme-dark {
     /* 범용 */
     --bgcolor: rgb(23, 23, 23);
-    --secondary-bgcolor: rgb(32, 32, 32);
+    --secondary-bgcolor: rgb(40, 40, 40);
+    // --secondary-bgcolor: rgb(32, 32, 32);
 
     --background-color: rgb(23, 23, 23);
 
@@ -50,6 +51,7 @@
     /* 범용 텍스트 색상 */
     --text-color: white;
     --text-color-secondary: rgb(192, 192, 192);
+    --text-color-subtle: rgb(102, 102, 102);
     --subtext-color: rgb(180, 180, 172);
     --text-highlight-color: rgb(56, 139, 241);
 

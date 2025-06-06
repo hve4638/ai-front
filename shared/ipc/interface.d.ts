@@ -30,7 +30,7 @@ declare global {
         // addDebugLogListener(message:string): EResult<number>;
         // removeRequestListener(message:string): EResult<number>;
     };
-
+    
     type IPCInterface = IPCInvokerInterface & IPCListenerInterface;
 
     type IPCInvokerPath = {

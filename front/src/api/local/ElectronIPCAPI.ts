@@ -31,6 +31,16 @@ class ElectronIPCAPI implements IIPCAPI {
         async openBrowser(url: string) {
             await electron.general.openBrowser(url);
         },
+        async getCurrentVersion() {
+            const [err, version] = await electron.general.getCurrentVersion();
+            if (err) throw new IPCError(err.message);
+            return version;
+        },
+        async getAvailableVersion(prerelease: boolean = false) {
+            const [err, info] = await electron.general.getAvailableVersion(prerelease);
+            if (err) throw new IPCError(err.message);
+            return info;
+        }
     } as const;
     masterKey = {
         async init() {
@@ -205,6 +215,10 @@ class ElectronIPCAPI implements IIPCAPI {
             if (err) throw new IPCError(err.message);
     
             return messages;
+        },
+        async deleteMessage(profileId:string, sessionId:string, historyId:number, origin:'in' | 'out' | 'both') {
+            const [err] = await electron.profileSessionHistory.deleteMessage(profileId, sessionId, historyId, origin);
+            if (err) throw new IPCError(err.message);
         },
         async delete(profileId:string, sessionId:string, historyKey:number) {
             const [err] = await electron.profileSessionHistory.delete(profileId, sessionId, historyKey);

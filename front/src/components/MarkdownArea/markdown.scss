@@ -1,0 +1,58 @@
+.markdown-area {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  resize: none;
+  outline: none;
+  --normal: rgb(146, 148, 152);
+  --think: rgb(237, 163, 85);
+  --say: white;
+  --accent: rgb(177, 222, 232);
+
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+
+  p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: var(--normal);
+  }
+
+  h2 {
+    margin: 0px;
+  }
+
+  code {
+    color: rgb(177, 222, 232);
+    margin-bottom: 0px;
+  }
+
+  ul {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    line-height : 0.5em;
+    padding-left: 2em;
+  }
+
+  li {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  em {
+    /* ** */
+    color: var(--think);
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  .say {
+    color: white;
+  }
+
+  .accent {
+    color: var(--accent);
+  }
+}

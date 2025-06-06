@@ -1,0 +1,12 @@
+:root {
+    --shortcut-input-color: rgb(60, 65, 71);
+    --shortcut-input-focus-color: rgb(45, 50, 56);
+    --inset-shadow-color: rgba(0, 0, 0, 0.1);
+    --inset-shadow-focus-color: rgba(0, 0, 0, 0.5);
+}
+
+
+:global(.theme-dark) {
+    --model-list-bgcolor: rgb(30, 30, 30);
+    --model-item-hover-bgcolor: rgba(255, 255, 255, 0.1);
+}

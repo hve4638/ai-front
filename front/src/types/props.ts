@@ -1,3 +1,4 @@
+/** @deprecated */
 export type ComponentProps = {
     className?: string;
     style?: React.CSSProperties;

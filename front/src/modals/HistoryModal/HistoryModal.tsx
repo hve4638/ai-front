@@ -12,6 +12,7 @@ import styles from './styles.module.scss';
 import classNames from 'classnames';
 import HistoryItem from './HistoryItem';
 import { HistoryData } from '@/features/session-history';
+import useSignal from '@/hooks/useSignal';
 
 type NewRTModalProps = {
     isFocused: boolean;
@@ -26,6 +27,7 @@ function HistoryModal({
     const [disappear, close] = useModalDisappear(onClose);
     const historyState = useHistoryStore();
     const updateSessionState = useSessionStore(state=>state.update);
+    const [refreshHistoryPing, refreshHistory] = useSignal();
     const {
         last_session_id,
 
@@ -35,6 +37,9 @@ function HistoryModal({
         history_apply_form,
         update : updateCacheState,
     } = useCacheStore();
+    const {
+        deleteHistoryMessage
+    } = useProfileEvent();
     const { signal } = useSignalStore();
 
     const [searchTextInstant, setSearchTextInstant] = useState<string>('');
@@ -59,10 +64,10 @@ function HistoryModal({
         else {
             historyCache.search(0, 100, { text : searchText, searchScope : history_search_scope })
                 .then((result) => {
-                    setHistory(result);  
+                    setHistory(result);
                 });
         }
-    }, [last_session_id, searchText, history_search_scope])
+    }, [last_session_id, searchText, history_search_scope, refreshHistoryPing])
 
     useHotkey({
         'Escape' : close,
@@ -93,21 +98,7 @@ function HistoryModal({
                         gap: '0.5em',
                     }}
                 >
-                    {/* <Dropdown
-                        style={{
-                            height: '100%',
-                        }}
-                        items={[
-                            { key: 'current', name: '현재 세션' },
-                            { key: '1', name: '세션 1' },
-                            { key: '2', name: '세션 2' },
-                        ]}
-                        value='current'
-                    /> */}
                     <Flex/>
-                    {/* <input
-                        type='date'
-                    /> */}
                     <select
                         value={history_search_scope}
                         onChange={(e)=>{
@@ -144,7 +135,7 @@ function HistoryModal({
                                 value={item}
                                 onClick={async ()=>{
                                     const promises:Promise<void>[] = [];
-                                    promises.push(updateSessionState.input( item.input ?? ''));
+                                    promises.push(updateSessionState.input(item.input ?? ''));
                                     promises.push(updateSessionState.output(item.output ?? ''));
                                     if (history_apply_rt) {
                                         promises.push(updateSessionState.rt_id(item.rtId));
@@ -156,6 +147,10 @@ function HistoryModal({
 
                                     signal.reload_input();
                                     close();
+                                }}
+                                onDelete={async ()=>{
+                                    await deleteHistoryMessage(item.id, 'both');
+                                    refreshHistory();
                                 }}
                             />
                         ))

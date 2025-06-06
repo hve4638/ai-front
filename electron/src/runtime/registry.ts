@@ -1,4 +1,4 @@
-import { PartialRuntimeRegistry, RuntimeRegistry } from "./types";
+import { PartialRuntimeRegistry, RuntimeRegistry } from './types';
 
 export const registry:RuntimeRegistry = {
     profiles: null as any,
@@ -6,6 +6,8 @@ export const registry:RuntimeRegistry = {
     masterKeyManager: null as any,
     rtWorker: null as any,
     ipcFrontAPI: null as any,
+    appVersionManager : null as any,
+    migrationService: null as any,
     env: {
         dev: false,
         devUrl : 'http://localhost:3600',
@@ -14,6 +16,7 @@ export const registry:RuntimeRegistry = {
         skipMasterKeyInitialization: false,
         defaultProfile: false,
         defaultRT: false,
+        version: 'undefined',
     },
 };
 
@@ -26,6 +29,6 @@ export function updateRegistry(newRegistry: PartialRuntimeRegistry) {
             else {
                 registry[key] = value;
             }
-        }5
+        }
     }
 }

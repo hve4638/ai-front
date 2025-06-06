@@ -94,6 +94,32 @@ class HistoryAccessor implements ICustomAccessor {
         };
     }
 
+    deleteMessage(historyId:number, origin:'in'|'out'|'both'='both') {
+        let input = false;
+        let output = false;
+        this.#dao.selectMessageOrigin(historyId)
+            .forEach(({ origin })=>{
+                if (origin === 'in') input = true;
+                else if (origin === 'out') output = true;
+            });
+            
+        this.#dao.deleteMessages(historyId, origin);
+        if (origin === 'in') {
+            input = false;
+        }
+        else if (origin === 'out') {
+            output = false;
+        }
+        else if (origin === 'both') {
+            input = false;
+            output = false;
+        }
+
+        if (!input && !output) {
+            this.#dao.delete(historyId);
+        }
+    }
+
     delete(id:number) {
         this.#dao.delete(id);
     }

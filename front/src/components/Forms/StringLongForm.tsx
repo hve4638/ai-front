@@ -5,18 +5,19 @@ interface StringFormProps {
     name:string;
     value:string;
     onChange:(x:string)=>void;
+    instantChange?:boolean;
 }
 
 function StringLongForm({
     name,
     value,
     onChange,
+    instantChange=false,
 }:StringFormProps) {
   return (
     <div
         style={{
             display: 'block',
-            margin: '0.5em 0',
             width : '100%'
         }}
     >
@@ -26,9 +27,9 @@ function StringLongForm({
                 paddingLeft : '0.1em',
             }}
         >
-            <small className='noflex undraggable'>
+            <span className='noflex undraggable'>
                 {name}
-            </small>
+            </span>
         </Row>
         <Row
             style={{
@@ -40,7 +41,7 @@ function StringLongForm({
             <TextInput
                 value={value}
                 onChange={(x)=>onChange(x)}
-                instantChange={false}
+                instantChange={instantChange}
 
                 style={{
                     width : '100%',

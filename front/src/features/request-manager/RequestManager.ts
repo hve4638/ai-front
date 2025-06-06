@@ -1,6 +1,8 @@
 import RequestAPI from "@/api/request";
 import ProfilesAPI, { SessionAPI } from "@/api/profiles";
 import { useSessionStore, useSignalStore } from "@/stores";
+import useErrorLogStore from "@/stores/useErrorLogStore";
+import useToastStore from "@/stores/useToastStore";
 
 class RequestManager {
     static instance: RequestManager | null = null;
@@ -52,29 +54,55 @@ class RequestManager {
                 }
                 useSignalStore.getState().signal.session_metadata();
             }
+            else if (data.type === 'no_result') {
+                console.warn('No result received from request:', data);
+                normalExit = true;
+                await sessionAPI.set('cache.json', {
+                    'state': 'done',
+                });
+                useSignalStore.getState().signal.session_metadata();
+            }
             if (data.type === 'error') {
-                // data.data
+                useToastStore.getState().add(
+                    '요청이 실패했습니다',
+                    data.message,
+                    'error'
+                );
+                useErrorLogStore.getState().add({
+                    message: data.message,
+                    detail: data.detail,
+                    occurredAt: {
+                        type: 'session',
+                        sessionId: sessionAPI.id,
+                    },
+                });
             }
             if (data.type === 'history_update') {
                 const sessionState = useSessionStore.getState();
                 if (sessionState.deps.last_session_id === sessionAPI.id) {
-                    console.log('> history_update');
                     useSignalStore.getState().signal.refresh_chat();
                 }
             }
             if (data.type === 'close') {
-                if (normalExit) break;
-
-                console.error('Request closed unexpectedly');
-                await sessionAPI.set('cache.json', {
-                    'output': 'request closed unexpectedly',
-                    'state': 'done',
-                });
+                console.warn('Request closed:', data);
                 const sessionState = useSessionStore.getState();
+
+                await sessionAPI.set('cache.json', {
+                    'state': 'idle',
+                });
                 if (sessionState.deps.last_session_id === sessionAPI.id) {
+                    sessionState.refetch.state();
                     sessionState.refetch.output();
                 }
                 useSignalStore.getState().signal.session_metadata();
+
+                if (normalExit) break;
+
+                useToastStore.getState().add(
+                    'Request closed unexpectedly',
+                    null,
+                    'warn'
+                );
 
                 break;
             }

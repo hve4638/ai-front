@@ -185,7 +185,7 @@ function VarEditModal({
             {
                 (
                     target.type == 'struct'
-                    || (target.type == 'array' && target.element.type == 'struct')
+                    || (target.type === 'array' && target.element?.type === 'struct')
                 ) &&
                 fieldRef.current != null &&
                 <>

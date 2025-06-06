@@ -28,7 +28,7 @@ function SessionTab({
     onClose = ()=>{},
 }:TabCoreProps) {
     const { api } = useProfileAPIStore();
-    const sessionAPI = useMemo(()=>api.getSessionAPI(item.id), [item.id]);
+    const sessionAPI = useMemo(()=>api.session(item.id), [item.id]);
     const signal = useSignalStore(state=>state.signal);
 
     const [showMenu, setShowMenu] = useState(false);
