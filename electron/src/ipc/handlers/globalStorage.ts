@@ -1,6 +1,9 @@
+import ThrottleAction from '@/features/throttle-action';
 import runtime from '@/runtime';
 
 function globalStorage():IPCInvokerGlobalStorage {
+    const throttle = ThrottleAction.getInstance();
+
     return {
         async get(identifier:string, key:string[]) {
             const accessor = await runtime.globalStorage.accessAsJSON(identifier);
@@ -12,6 +15,7 @@ function globalStorage():IPCInvokerGlobalStorage {
             const accessor = await runtime.globalStorage.accessAsJSON(identifier);
 
             accessor.set(data);
+            throttle.saveGlobal();
             return [null];
         },
     }

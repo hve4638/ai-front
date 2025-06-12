@@ -50,6 +50,8 @@ interface ProfileEventState {
     setCurrentSessionForms(values: Record<string, any>): Promise<void>;
 
     deleteHistoryMessage(historyId: number, origin: 'in' | 'out' | 'both'): Promise<void>;
+
+    verifyAPIKey(apiKeyId: string): Promise<boolean>;
 }
 
 const useProfileEvent = create<ProfileEventState>((set) => {
@@ -165,7 +167,7 @@ const useProfileEvent = create<ProfileEventState>((set) => {
             const caches = useCacheStore.getState();
 
             const allModels = await api.getChatAIModels();
-            
+
             const newProviders: ChatAIModelProviders[] = [];
             for (const provider of allModels) {
                 const newProvider: ChatAIModelProviders = {
@@ -432,6 +434,11 @@ const useProfileEvent = create<ProfileEventState>((set) => {
             await api.session(last_session_id).history.deleteMessage(historyId, origin);
             history.evictCache(historyId);
             useSignalStore.getState().signal.refresh_chat_without_scroll();
+        },
+
+        async verifyAPIKey(apiKeyId: string) {
+            const { api } = useProfileAPIStore.getState();
+            return (await api.verifyAsSecret('secret.json', [apiKeyId]))[0];
         }
     }
 

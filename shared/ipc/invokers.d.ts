@@ -15,8 +15,9 @@ declare global {
 
         existsLegacyData(): EResult<boolean>;
         migrateLegacyData(): ENoResult;
+        ignoreLegacyData(): ENoResult;
     }
-    
+
     type IPCInvokerGlobalStorage = {
         get(storageName:string, keys:string[]): EResult<Record<string, any>>;
         set(storageName:string, data:KeyValueInput): ENoResult;
@@ -35,6 +36,9 @@ declare global {
 
         getLast(): EResult<string | null>;
         setLast(profileName: string | null): ENoResult;
+
+        getOrphanIds(): EResult<string[]>;
+        recoverOrphan(profileId: string): ENoResult;
     }
 
     type IPCInvokerProfile = {
@@ -116,6 +120,7 @@ declare global {
     
     type IPCInvokerProfileRTPrompt = {
         getMetadata(profileId:string, rtId:string, promptId:string): EResult<RTPromptData>;
+        setMetadata(profileId:string, rtId:string, promptId:string, metadata:RTPromptDataEditable): ENoResult;
         
         getName(profileId:string, rtId:string, promptId:string): EResult<string>;
         setName(profileId:string, rtId:string, promptId:string, name:string): ENoResult;

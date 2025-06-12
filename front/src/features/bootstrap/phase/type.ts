@@ -1,0 +1,1 @@
+export type BootResult = 'NEXT' | 'RETRY' | 'FATAL_ERROR';

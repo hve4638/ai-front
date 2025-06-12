@@ -7,6 +7,7 @@ import { useConfigStore, useProfileEvent } from '@/stores';
 import useSignal from '@/hooks/useSignal';
 
 import styles from './styles.module.scss';
+import { GIconButton } from '@/components/GoogleFontIcon';
 
 interface ModelListViewProps {
     provider?: ChatAIModelProviders;
@@ -138,6 +139,22 @@ function ModelItem({ model, onClick }: ModelItemProps) {
                 }
             </Row>
             <Flex />
+            <GIconButton
+                className={classNames(styles['star'], { [styles['starred']]: starred })}
+                style={{
+                    fontSize: '1.5em',
+                    height : '100%',
+                    aspectRatio: '1 / 1',
+                    marginRight: '4px',
+                }}
+                onClick={async (e) => {
+                    await onClick(model);
+                    refresh();
+                    e.stopPropagation();
+                }}
+                value='star'
+                hoverEffect='square'
+            />
         </Row>
     )
 }

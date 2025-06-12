@@ -78,7 +78,6 @@ function GeneralOptions() {
                 value={config.textarea_padding}
                 onChange={(value)=>{
                     const radius = remapDecimal(value, {min: 4, max: 16}, {min: 1, max: 5});
-                    config.update.textarea_radius(radius);
                     config.update.textarea_padding(value);
                 }}
                 marks={{

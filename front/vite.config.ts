@@ -11,6 +11,7 @@ function alias(find:string, replacement:string) {
 }
 
 export default defineConfig({
+    base: './',
     server: {
         port : 3600,
     },

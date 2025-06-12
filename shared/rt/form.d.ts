@@ -1,6 +1,6 @@
 declare global {
     type RTIndex = {
-        version : number;
+        version : string;
         id : string;
         name : string;
         uuid : string;
@@ -14,7 +14,22 @@ declare global {
         id : string;
         name : string;
         variables : string[];
+        model: {
+            temperature: number;
+            top_p: number;
+            max_tokens: number;
+        };
         // contents : string;
+    }
+
+    type RTPromptDataEditable = {
+        name? : string;
+        model?: {
+            temperature?: number;
+            top_p?: number;
+            max_tokens?: number;
+        };
+        contents?: string;
     }
 
     type RTForm = {

@@ -20,9 +20,20 @@ class ProfilesAPI {
     async getIds() { return LocalAPI.profiles.getIds(); }
     async getLast() { return LocalAPI.profiles.getLast(); }
     async setLast(id:string|null) { return LocalAPI.profiles.setLast(id); }
+    async getOrphanIds() { return LocalAPI.profiles.getOrphanIds(); }
+    async recoverOrphan(id:string) {
+        try {
+            await LocalAPI.profiles.recoverOrphan(id);
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
+    }
     
     /** @deprecated use `profile` instead */
     getProfile(id:string) {
+        console.warn('[ProfilesAPI] getProfile() is deprecated, use profile() instead');
         if (!(id in this.#profiles)) {
             this.#profiles[id] = new ProfileAPI(id);
         }

@@ -4,8 +4,14 @@
 
     transition: background-color 0.15s ease;
 
-    &:hover {
+    &:not(:global(.disabled)):hover {
         background-color: rgba(154, 154, 154, 0.2);
         cursor: pointer;
+    }
+
+    &:global(.disabled) {
+        // background-color: rgba(154, 154, 154, 0.1);
+        color: grey;
+        cursor: inherit;
     }
 }

@@ -27,6 +27,12 @@ class ThrottleAction {
             runtime.profiles.saveAll();
         });
     }
+    saveGlobal() {
+        this.throttles['#global'] ??= utils.throttle(1000);
+        this.throttles['#global'](() => {
+            runtime.globalStorage.commitAll();
+        });
+    }
     
 }
 

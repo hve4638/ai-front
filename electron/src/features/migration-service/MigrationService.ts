@@ -1,14 +1,20 @@
 import fs from 'fs';
 import path from 'path';
+import { v7 as uuidv7 } from 'uuid';
 
 import Profiles from '@/features/profiles';
 import { PromptOnlyTemplateFactory, RTPromptOnlyTemplateTool } from '@/features/rt-template-factory';
 
-import { AIFRONT_PATH, PROMPT_DIR_PATH } from './data';
+
 import AIFrontPromptLoader from './AIFrontPromptLoader';
-import { LegacyAIFrontData, LegacyPromptMetadata, LegacyPromptMetadataList } from './type';
 import { VarMetadata } from './LegacyPromptParser';
 
+import { AIFRONT_PATH, PROMPT_DIR_PATH } from './data';
+import { LegacyAIFrontData, LegacyPromptMetadata, LegacyPromptMetadataList } from './type';
+
+import runtime from '@/runtime'
+
+type PromptData = { id: string, children?: PromptData[] };
 
 class MigrationService {
     existsLegacyData() {
@@ -23,30 +29,47 @@ class MigrationService {
     }
 
     async migrate(profiles: Profiles, data: LegacyAIFrontData) {
-        const profileId = await profiles.createProfile();
-        const profile = await profiles.getProfile(profileId);
+        const [err, profileId] = await runtime.ipcFrontAPI.profiles.create();
+        if (err) return;
 
-        const tool = new RTPromptOnlyTemplateTool(profile);
+        const tree = await Promise.all(data.prompts.map(prompt => this.migratePrompt(profileId, prompt)));
 
-        for (const prompt of data.prompts) {
-            this.migratePrompt(tool, prompt);
-        }
+        await runtime.ipcFrontAPI.profileRTs.updateTree(profileId, tree);
+        this.setMigrated();
     }
 
-    private async migratePrompt(tool: RTPromptOnlyTemplateTool, prompt: LegacyPromptMetadataList | LegacyPromptMetadata) {
+    private async migratePrompt(profileId: string, prompt: LegacyPromptMetadataList | LegacyPromptMetadata): Promise<RTMetadataNode | RTMetadataDirectory> {
         if (prompt instanceof LegacyPromptMetadataList) {
-
+            return {
+                type: 'directory',
+                name: prompt.name,
+                children: await Promise.all(
+                    prompt.list.map((subPrompt) => {
+                        return this.migratePrompt(profileId, subPrompt);
+                    })
+                ) as RTMetadataNode[],
+            }
         }
-        else if (prompt instanceof LegacyPromptMetadata) {
+        else {
             await prompt.loadPromptTemplate();
 
+            // runtime.ipcFrontAPI.profileRTs.createUsingTemplate(profileId, { id: prompt.key, name: prompt.name, mode: 'prompt_only' }, 'empty');
+
+            const profile = await runtime.profiles.getProfile(profileId);
+
+            const tool = new RTPromptOnlyTemplateTool(profile);
             await tool.create(prompt.key, prompt.name);
             await tool.inputType('normal');
             await tool.contents(prompt.promptTemplate);
 
             for (const metadata of prompt.vars) {
-                await tool.form(prompt.promptTemplate);
+                await tool.form(await this.parsePromptVar(metadata));
+            }
 
+            return {
+                type: 'node',
+                name: prompt.name,
+                id: prompt.key,
             }
         }
     }
@@ -68,7 +91,8 @@ class MigrationService {
                     type: 'select',
                     name: varMetadata.name,
                     display_name: varMetadata.display_name,
-                    default_value: varMetadata.default_value || '',
+                    default_value: varMetadata.default_value ?? '',
+                    options: varMetadata.options ?? [],
                 };
             case 'number':
                 return {
@@ -99,7 +123,7 @@ class MigrationService {
                     type: 'struct',
                     name: varMetadata.name,
                     display_name: varMetadata.display_name,
-                    fields: varMetadata.fields.map(field => this.parsePromptVar(field)),
+                    fields: varMetadata.fields.map(field => this.parseStructPromptVarFields(field)),
                 }
         }
     }
@@ -122,6 +146,7 @@ class MigrationService {
                     name: varMetadata.name,
                     display_name: varMetadata.display_name,
                     default_value: varMetadata.default_value || '',
+                    options: varMetadata.options || [],
                 };
             case 'number':
                 return {
@@ -150,7 +175,7 @@ class MigrationService {
         }
     }
 
-    parseStructPromptVarFields(fields: VarMetadata): Exclude<PromptVar, PromptVarStruct|PromptVarArray> {
+    parseStructPromptVarFields(fields: VarMetadata): Exclude<PromptVar, PromptVarStruct | PromptVarArray> {
         switch (fields.type) {
             case 'text':
             case 'text-multiline':
@@ -168,6 +193,7 @@ class MigrationService {
                     name: fields.name,
                     display_name: fields.display_name,
                     default_value: fields.default_value || '',
+                    options: fields.options || [],
                 };
             case 'number':
                 return {

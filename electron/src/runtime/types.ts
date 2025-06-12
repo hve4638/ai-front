@@ -4,6 +4,7 @@ import type Profiles from '@/features/profiles';
 import type RTWorker from '@/features/rt-worker';
 import AppVersionManager from '@/features/app-version';
 import MigrationService from '@/features/migration-service';
+import Logger from '@/features/logger';
 
 export type RuntimeRegistry = {
     profiles: Profiles;
@@ -13,14 +14,16 @@ export type RuntimeRegistry = {
     ipcFrontAPI: IPCInvokerInterface;
     appVersionManager: AppVersionManager;
     migrationService: MigrationService;
-    env: Env;
+    logger: Logger;
+    version: string;
+    env: AfronEnv;
 }
 
 export type PartialRuntimeRegistry = Partial<RuntimeRegistry> & {
-    env?: Partial<Env>,
+    env?: Partial<AfronEnv>,
 }
 
-export type Env = {
+export type AfronEnv = {
     dev: boolean,
     devUrl: string,
     showDevTool: boolean,
@@ -28,5 +31,6 @@ export type Env = {
     skipMasterKeyInitialization: boolean,
     defaultProfile: boolean,
     defaultRT: boolean,
-    version: string,
+    logTrace: boolean,
+    logVerbose: boolean,
 }

@@ -39,7 +39,7 @@ function PromptOnlyConfigModal({
             close();
             return true;
         }
-    })
+    });
 
     return (
         <Modal
@@ -65,10 +65,10 @@ function PromptOnlyConfigModal({
                 />
                 <StringForm
                     name='버전'
-                    value={'1.0.0'}
+                    value={data.version}
                     onChange={(value)=>{
-                        data.name = value;
-                        data.changed.name = true;
+                        data.version = value;
+                        data.changed.version = true;
                         refresh();
                     }}
                 />
@@ -89,17 +89,36 @@ function PromptOnlyConfigModal({
                     ]}
                 />
                 <div style={{height: '0.5em'}}/>
-                <b className='undraggable'>컨텍스트</b>
+                <b className='undraggable'>모델</b>
                 <Delimiter/>
                 <NumberForm
                     name='최대 응답 크기'
-                    value={0}
+                    value={data.model.maxTokens}
                     onChange={(value)=>{
-                        console.log(value);
+                        data.model.maxTokens = value;
+                        data.changed.model = true;
                         refresh();
                     }}
                 />
                 <NumberForm
+                    name='온도'
+                    value={data.model.temperature}
+                    onChange={(value)=>{
+                        data.model.temperature = value;
+                        data.changed.model = true;
+                        refresh();
+                    }}
+                />
+                <NumberForm
+                    name='Top P'
+                    value={data.model.topP}
+                    onChange={(value)=>{
+                        data.model.topP = value;
+                        data.changed.model = true;
+                        refresh();
+                    }}
+                />
+                {/* <NumberForm
                     name='생각 토큰 크기'
                     value={0}
                     onChange={(value)=>{
@@ -114,7 +133,7 @@ function PromptOnlyConfigModal({
                         console.log(value);
                         refresh();
                     }}
-                />
+                /> */}
             </Column>
 
             {/* <hr/>

@@ -7,6 +7,7 @@ const signalFields = {
     change_profile : 0,
     reload_input : 0,
     request : 0,
+    abort_request : 0,
     request_ready : 0,
     refresh_rt_tree : 0,
 

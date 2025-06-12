@@ -38,6 +38,7 @@ function SessionTab({
     const hideTitle = widthPx <= 60;
     const hideCloseButton = widthPx <= 60 && !selected;
     const colorStyle = `palette-${item.color ?? 'default'}`;
+    
 
     return (
     <>
@@ -72,6 +73,7 @@ function SessionTab({
             }}
         >
             <SessionName
+                highlight={item.state === 'done'}
                 name={item.name}
                 displayName={item.displayName ?? item.name ?? ''}
                 rename={renameMode}

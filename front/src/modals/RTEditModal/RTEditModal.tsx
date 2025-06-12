@@ -285,7 +285,7 @@ function RTEditModal({
                             height: '100%'
                         }}
                     >{t('rt.rt_create')}</Button>
-                    <Button
+                    {/* <Button
                         onClick={()=>{
                             
                             close();
@@ -294,7 +294,7 @@ function RTEditModal({
                             minWidth: '80px',
                             height: '100%'
                         }}
-                    >{t('rt.rt_load')}</Button>
+                    >{t('rt.rt_load')}</Button> */}
                 </Row>
             </Grid>
         </Modal>

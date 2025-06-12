@@ -1,19 +1,22 @@
 {
   "name": "afron",
-  "version": "0.7.0",
+  "version": "0.7.0-alpha.3",
   "description": "ChatAI Frontend",
   "repository": "https://github.com/hve4638/ai-front.git",
-  "author": "Hve <hve4638@gmail.com>",
+  "author": "Hve",
   "license": "MIT",
   "main": "dist/main.js",
   "scripts": {
     "start": "yarn build && electron-forge start",
+    "start:fast": "electron-forge start",
     "start:dev": "yarn build && cross-env ELECTRON_DEV=TRUE electron .",
     "start:dev:mem": "yarn build && cross-env ELECTRON_DEV=TRUE ELECTRON_IN_MEMORY=TRUE electron .",
     "start:release": "yarn build && cross-env ELECTRON_DEV=FALSE electron .",
+    "build": "rollup -c",
+    "dist": "yarn dist:win",
+    "dist:win": "electron-builder -c.extraMetadata.main=./dist/main.js",
     "playground": "tsx ./src/playground",
     "test": "jest",
-    "build": "rollup -c",
     "compile": "tsc",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -36,6 +39,7 @@
     "@types/jest": "^29.5.14",
     "cross-env": "^7.0.3",
     "electron": "^32.1.2",
+    "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
     "jest": "^29.7.0",
     "rollup": "^4.28.1",
@@ -47,29 +51,38 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
+    "@hve/channel": "^1.0.1",
+    "@hve/chatai": "^0.7.0",
+    "@hve/prompt-template": "^0.1.0",
+    "ac-storage": "^0.12.0",
     "better-sqlite3": "^11.3.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^16.5.0",
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.1",
     "js-tiktoken": "^1.0.20",
+    "ps-list": "^8.1.1",
     "systeminformation": "^5.23.23",
     "tiktoken": "^1.0.21",
     "uuid": "^11.0.3",
     "win-known-folders": "^1.0.0"
   },
   "build": {
-    "productName": "AI Front",
-    "appId": "com.hve.aifront",
+    "productName": "Afron",
+    "appId": "com.hve.afron",
     "extends": null,
-    "icon": "./build/favicon.ico",
+    "icon": "./static/favicon.ico",
     "files": [
-      "build/**/**",
-      "electron/**/*",
+      ".env",
+      "dist/**/*",
+      "static/**/*",
       "node_modules/**/*",
       "package.json"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "static/assets",
+      "output": "release"
     }
   }
 }

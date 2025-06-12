@@ -8,6 +8,8 @@ export const registry:RuntimeRegistry = {
     ipcFrontAPI: null as any,
     appVersionManager : null as any,
     migrationService: null as any,
+    logger: null as any,
+    version: 'unknown',
     env: {
         dev: false,
         devUrl : 'http://localhost:3600',
@@ -16,7 +18,8 @@ export const registry:RuntimeRegistry = {
         skipMasterKeyInitialization: false,
         defaultProfile: false,
         defaultRT: false,
-        version: 'undefined',
+        logTrace: false,
+        logVerbose: false,
     },
 };
 

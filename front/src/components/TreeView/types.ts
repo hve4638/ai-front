@@ -1,4 +1,4 @@
-export type ITreeNode<T> = ITreeDirectoryNode<T> | ITreeLeafNode<T>;
+export type ITreeNode<T=unknown> = ITreeDirectoryNode<T> | ITreeLeafNode<T>;
 
 export interface ITreeDirectoryNode<T=unknown> {
     type: 'directory',

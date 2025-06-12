@@ -4,6 +4,7 @@
         "moduleResolution": "node10",
         
         "target": "es2022",
+        "module": "es2022",
         
         "forceConsistentCasingInFileNames": true, /* 대소문자 구분 규칙 */
         "esModuleInterop": true, /* ES 모듈 호환성 */

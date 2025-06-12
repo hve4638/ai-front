@@ -17,6 +17,14 @@ class MemFSUtil {
     async writeData(target:string, data:string[]):Promise<void> {
         
     }
+    
+    async appendData(target: string, data: string[]): Promise<void> {
+
+    }
+
+    async deleteData(target:string):Promise<void> {
+
+    }
 }
 
 export default MemMasterKeyManager;

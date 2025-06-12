@@ -17,7 +17,8 @@ class EncryptModelGen1 implements IEncryptModel {
         const enc = aes.encrypt(`${SIGNITURE}${target}`);
         
         // <버전>:<IV>:<암호화>
-        return `${MODEL_GEN}:${enc.iv}:${enc.data}`;
+        const result = `${MODEL_GEN}:${enc.iv}:${enc.data}`;
+        return result;
     }
 
     async decrypt(encryptedData:string, decKey:string):Promise<string> {

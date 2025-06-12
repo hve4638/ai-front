@@ -40,6 +40,19 @@ class ElectronIPCAPI implements IIPCAPI {
             const [err, info] = await electron.general.getAvailableVersion(prerelease);
             if (err) throw new IPCError(err.message);
             return info;
+        },
+        async existsLegacyData() {
+            const [err, exists] = await electron.general.existsLegacyData();
+            if (err) throw new IPCError(err.message);
+            return exists;
+        },
+        async migrateLegacyData() {
+            const [err] = await electron.general.migrateLegacyData();
+            if (err) throw new IPCError(err.message);
+        },
+        async ignoreLegacyData() {
+            const [err] = await electron.general.ignoreLegacyData();
+            if (err) throw new IPCError(err.message);
         }
     } as const;
     masterKey = {
@@ -64,7 +77,7 @@ class ElectronIPCAPI implements IIPCAPI {
             if (err) throw new IPCError(err.message);
             return data;
         },
-        async set(storageName: string, data: [string, any][]) {
+        async set(storageName: string, data: KeyValueInput) {
             const [err] = await electron.globalStorage.set(storageName, data);
             if (err) throw new IPCError(err.message);
         }
@@ -93,6 +106,15 @@ class ElectronIPCAPI implements IIPCAPI {
         },
         async setLast(id: string | null) {
             const [err] = await electron.profiles.setLast(id);
+            if (err) throw new IPCError(err.message);
+        },
+        async getOrphanIds() {
+            const [err, ids] = await electron.profiles.getOrphanIds();
+            if (err) throw new IPCError(err.message);
+            return ids;
+        },
+        async recoverOrphan(profileId: string) {
+            const [err] = await electron.profiles.recoverOrphan(profileId);
             if (err) throw new IPCError(err.message);
         }
     } as const;
@@ -328,6 +350,10 @@ class ElectronIPCAPI implements IIPCAPI {
             const [err, metadata] = await electron.profileRTPrompt.getMetadata(profileId, rtId, promptId);
             if (err) throw new IPCError(err.message);
             return metadata;
+        },
+        async setMetadata(profileId:string, rtId:string, promptId:string, metadata:RTPromptDataEditable) {
+            const [err] = await electron.profileRTPrompt.setMetadata(profileId, rtId, promptId, metadata);
+            if (err) throw new IPCError(err.message);
         },
         
         async getName(profileId:string, rtId:string, promptId:string):Promise<string> {

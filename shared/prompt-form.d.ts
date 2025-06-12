@@ -6,6 +6,11 @@ declare global {
     );
 
     interface BasePromptVar {
+        /**
+         * setter 작업시 id가 없다면 생성, 있다면 갱신 작업을 수행
+         * 
+         * uuid 형식 권장
+        */
         id? : string;
         name : string;
         display_name : string;

@@ -62,12 +62,14 @@ const customRenderers: Partial<Components> = {
 function MarkdownArea({ 
     className='',
     style={},
+    onKeyDown,
     content
-}:{ content: string, className?: string, style?: React.CSSProperties }) {
+}:{ content: string, className?: string, style?: React.CSSProperties, onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void }) {
     return (
         <div
             className={classNames('markdown-area', className)}
             style={style}
+            onKeyDown={onKeyDown}
         >
             <ReactMarkdown
                 children={content}

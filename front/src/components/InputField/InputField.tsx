@@ -29,24 +29,11 @@ function InputField({
             ref={containerRef}
             className={`input-field-container ${className}`}
             style={{
+                display: 'block',
                 position: 'relative',
+                overflowX: 'hidden',
+                overflowY: 'hidden',
                 ...style
-            }}
-            onKeyDown={(e) => {
-                if (e.key === 'a' && e.ctrlKey) {
-                    if (containerRef.current) {
-                        const range = document.createRange();
-                        range.selectNodeContents(containerRef.current);
-
-                        const selection = window.getSelection();
-                        if (selection) {
-                            selection.removeAllRanges();
-                            selection.addRange(range);
-                        }
-                    }
-
-                    e.preventDefault();
-                }
             }}
         >
             {
@@ -59,7 +46,9 @@ function InputField({
                         width: '100%',
                         height: '100%',
                         boxSizing: 'border-box',
+                        paddingBottom: '2em',
                         overflowY: 'auto',
+
                     }}
 
                     spellCheck='false'
@@ -73,12 +62,28 @@ function InputField({
                 <MarkdownArea
                     className='fill fontstyle'
                     style={{
-                        // overflowX: 'hidden',
-                        // overflowY: 'auto',
+                        paddingBottom: '2em',
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'a' && e.ctrlKey) {
+                            if (containerRef.current) {
+                                const range = document.createRange();
+                                range.selectNodeContents(containerRef.current);
+
+                                const selection = window.getSelection();
+                                if (selection) {
+                                    selection.removeAllRanges();
+                                    selection.addRange(range);
+                                }
+                            }
+
+                            e.preventDefault();
+                        }
                     }}
                     content={text}
                 />
             }
+            {/* <div style={{ height: '15px' }}>a</div> */}
             {
                 children != null &&
                 children

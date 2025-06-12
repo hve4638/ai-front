@@ -1,7 +1,10 @@
 import * as utils from '@utils';
 import runtime from '@/runtime';
+import ThrottleAction from '@/features/throttle-action';
 
 function general():IPCInvokerGeneral {
+    const throttle = ThrottleAction.getInstance();
+
     return {
         async echo(message:string) {
             return [null, message];
@@ -12,7 +15,7 @@ function general():IPCInvokerGeneral {
             return [null];
         },
         async getCurrentVersion() {
-            return [null, runtime.env.version];
+            return [null, runtime.version];
         },
         async getAvailableVersion(prerelease:boolean) {
             let ver:VersionInfo|null;
@@ -37,9 +40,13 @@ function general():IPCInvokerGeneral {
             if (!legacyData) {
                 return [new Error('No legacy data found')];
             }
+            await runtime.migrationService.migrate(runtime.profiles, legacyData);
+            throttle.saveProfiles();
 
-            // Perform migration logic here
-
+            return [null];  
+        },
+        async ignoreLegacyData() {
+            runtime.migrationService.setMigrated();
             return [null];
         }
     }

@@ -32,8 +32,6 @@ function handler():IPCInvokerProfiles {
         /* 프로필 목록 */
         async getIds() {
             const ids = runtime.profiles.getProfileIDs();
-            const window = BrowserWindow.getFocusedWindow();
-            window?.webContents.send(IPCListenerPing.Request, 512, "HELLO?");
 
             return [null, ids] as const;
         },
@@ -44,6 +42,17 @@ function handler():IPCInvokerProfiles {
         },
         async setLast(id: string | null) {
             runtime.profiles.setLastProfileId(id);
+
+            return [null] as const;
+        },
+
+        async getOrphanIds() {
+            const ids = await runtime.profiles.getOrphanProfileIds();
+
+            return [null, ids] as const;
+        },
+        async recoverOrphan(profileId: string) {
+            await runtime.profiles.recoverOrphanProfile(profileId);
 
             return [null] as const;
         },

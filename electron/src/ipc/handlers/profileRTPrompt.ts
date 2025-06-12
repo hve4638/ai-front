@@ -12,6 +12,15 @@ function handler():IPCInvokerProfileRTPrompt {
 
             return [null, metadata];
         },
+        async setMetadata(profileId:string, rtId:string, promptId:string, metadata:RTPromptDataEditable) {
+            const profile = await runtime.profiles.getProfile(profileId);
+            const rt = profile.rt(rtId);
+            await rt.setPromptMetadata(promptId, metadata);
+            await profile.updateRTMetadata(rtId);
+            throttle.saveProfile(profile);
+
+            return [null];
+        },
 
         async getName(profileId:string, rtId:string, promptId:string) {
             const profile = await runtime.profiles.getProfile(profileId);

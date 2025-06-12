@@ -5,6 +5,7 @@ import WorkNode from './WorkNode';
 import { PromptMessages } from './node-types';
 import { WorkNodeStop } from './errors';
 import ChatGenerator from '../ChatGenerator';
+import runtime from '@/runtime';
 
 export type PromptBuildNodeInput = {
     input: string;
@@ -39,6 +40,8 @@ function getDefaultValue(promptVar: PromptVar): unknown {
 }
 
 class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption> {
+    override name = 'PromptBuildNode';
+
     override async process(
         {
             input,
@@ -59,12 +62,12 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
 
         const { nodes, errors } = PromptTemplate.build(contents);
         if (errors.length > 0) {
-            logger.nodeError(this.nodeId, errors.map(e => e.message));
+            runtime.logger.error(`Prompt build failed (id=${this.nodeId})`);
 
             sender.sendError(
                 `Prompt build failed`,
                 errors.map((e: CBFFail) => {
-                    console.info(e);
+                runtime.logger.debug(`Prompt build failed ${e.message}`);
                     return `${e.message} (${e.positionBegin})`;
                 })
             );
@@ -127,7 +130,8 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
             }
         }
         catch (e) {
-            console.warn(e);
+            runtime.logger.warn(e);
+
             sender.sendError(
                 `Prompt evaluate failed`,
                 [(e as any).message]

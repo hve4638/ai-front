@@ -13,6 +13,7 @@ import SplitSlider from '../SplitSlider';
 import { useHistoryStore } from '@/stores/useHistoryStore';
 import { HistoryData } from '@/features/session-history';
 import styles from './styles.module.scss';
+import { remapDecimal } from '@/utils/math';
 
 type SingleIOLayoutProps = {
     inputText: string;
@@ -46,7 +47,11 @@ function SingleIOLayout({
     let [left, right] = useConfigStore(state => state.textarea_io_ratio);
 
     const textareaSectionRef = useRef(null);
-    const textAreaBorderRadius = `${configState.textarea_radius}px`;
+    
+    const textAreaBorderRadius = useMemo(()=>{
+        const radius = remapDecimal(configState.textarea_padding, {min: 4, max: 16}, {min: 1, max: 5});
+        return `${radius}px`;
+    }, [configState.textarea_padding]);
 
     const gridWH = useMemo(() => {
         const sub = '1fr';
@@ -151,27 +156,32 @@ function SingleIOLayout({
                     onChange={(text: string) => onChangeInputText(text)}
                 >
                     <small
-                        className={classNames('secondary-color', 'undraggable')}
+                        className={classNames(styles['token-count'], 'secondary-color', 'undraggable')}
                         style={{
                             position: 'absolute',
                             left: '10px',
                             bottom: '10px',
                             padding: '0em 0.4em',
-                            fontSize: '0.8rem',
                         }}
                     >token: {tokenCount}</small>
-                    <GoogleFontIcon
-                        className='floating-button'
-                        value='send'
+                    <GIconButton
+                        // className='floating-button'
+                        className={classNames(styles['send-button'])}
+                        value={sessionState.state === 'idle' ? 'send' : 'stop'}
                         style={{
                             cursor: 'pointer',
-                            fontSize: '40px',
+                            fontSize: '32px',
                             position: 'absolute',
                             right: '10px',
                             bottom: '10px',
                         }}
                         onClick={() => {
-                            sessionState.actions.request();
+                            if (sessionState.state === 'idle') {
+                                sessionState.actions.request();
+                            }
+                            else {
+                                // sessionState.actions.abortRequest();
+                            }
                         }}
                     />
                 </InputField>

@@ -42,7 +42,10 @@ class RequestAPI {
     
     #getCh(chId:string) {
         const ch = this.#channels.get(chId);
-        if (!ch) throw new Error(`Response channel is closed : '${chId}'`);
+        if (!ch) {
+            console.trace(`Response channel not found : '${chId}'`);
+            throw new Error(`Response channel is closed : '${chId}'`);
+        }
 
         return ch;
     }

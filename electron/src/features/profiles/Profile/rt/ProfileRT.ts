@@ -154,9 +154,22 @@ class ProfileRT implements IProfileRT {
         const promptAC = await this.accessPrompt(promptId);
 
         const name = await this.getPromptName(promptId);
-        const { id, variables } = promptAC.get('id', 'variables');
+        const { id, variables, model } = promptAC.get('id', 'variables', 'model');
         
-        return { id, name, variables } as RTPromptData;
+        return { id, name, variables, model } as RTPromptData;
+    }
+    /**
+     * 특별한 처리를 필요로 하지 않는 프롬프트 메타데이터 갱신
+     */
+    async setPromptMetadata(promptId:string, input:RTPromptDataEditable):Promise<void> {
+        const promptAC = await this.accessPrompt(promptId);
+
+        if (input.name) {
+            await this.setPromptName(promptId, input.name);
+            delete input.name;
+        }
+        promptAC.set(input);
+
     }
 
     async getPromptName(promptId:string):Promise<string> {

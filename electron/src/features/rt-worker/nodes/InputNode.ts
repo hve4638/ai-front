@@ -13,6 +13,8 @@ export type InputNodeOption = {
 }
 
 class InputNode extends WorkNode<InputNodeInput, InputNodeOutput, InputNodeOption>  {
+    override name = 'InputNode';
+    
     override async process({}) {
         const { form, data, chat } = this.nodeData;
         

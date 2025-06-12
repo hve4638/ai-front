@@ -51,6 +51,7 @@ class RequestManager {
                 const sessionState = useSessionStore.getState();
                 if (sessionState.deps.last_session_id === sessionAPI.id) {
                     sessionState.refetch.output();
+                    sessionState.refetch.state();
                 }
                 useSignalStore.getState().signal.session_metadata();
             }
@@ -60,6 +61,10 @@ class RequestManager {
                 await sessionAPI.set('cache.json', {
                     'state': 'done',
                 });
+                const sessionState = useSessionStore.getState();
+                if (sessionState.deps.last_session_id === sessionAPI.id) {
+                    sessionState.refetch.state();
+                }
                 useSignalStore.getState().signal.session_metadata();
             }
             if (data.type === 'error') {
@@ -87,23 +92,21 @@ class RequestManager {
                 console.warn('Request closed:', data);
                 const sessionState = useSessionStore.getState();
 
-                await sessionAPI.set('cache.json', {
-                    'state': 'idle',
-                });
-                if (sessionState.deps.last_session_id === sessionAPI.id) {
-                    sessionState.refetch.state();
-                    sessionState.refetch.output();
-                }
-                useSignalStore.getState().signal.session_metadata();
-
                 if (normalExit) break;
+                await sessionAPI.set('cache.json', {
+                    'state': 'done',
+                });
+                useSignalStore.getState().signal.session_metadata();
+                // if (sessionState.deps.last_session_id === sessionAPI.id) {
+                //     sessionState.refetch.state();
+                //     sessionState.refetch.output();
+                // }
 
                 useToastStore.getState().add(
                     'Request closed unexpectedly',
                     null,
                     'warn'
                 );
-
                 break;
             }
         }

@@ -8,10 +8,17 @@ export type PromptEditorData = {
     promptId : string;
 
     name : string | null;
+    version: string;
     variables : PromptVar[];
     changedVariables : PromptVar[];
     removedVariables : string[];
     contents : string;
+    model: {
+        temperature: number;
+        topP: number;
+        maxTokens: number;
+    };
+    
     config : {
         inputType : PromptInputType;
         // modelLimit : 'nothing' | '';
@@ -21,6 +28,8 @@ export type PromptEditorData = {
         name : boolean;
         contents : boolean;
         config : boolean;
+        version : boolean;
+        model: boolean;
     }>;
     flags : Partial<{
         syncRTName : boolean;

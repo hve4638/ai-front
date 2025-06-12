@@ -1,3 +1,4 @@
+import runtime from '@/runtime';
 import { InputNode, OutputNode, PromptBuildNode, StringifyChatMLNode, ChatAIFetchNode } from '../nodes';
 import { WorkNodeStop } from '../nodes/errors';
 import RTWorkflow from './RTWorkflow';
@@ -12,6 +13,7 @@ class RTWorkflowPromptOnly extends RTWorkflow {
         const stringifyChatMLNode = new StringifyChatMLNode(2, nodeData, {});
         const outputNode = new OutputNode(3, nodeData, {});
 
+        
         const historyAC = await this.profile.accessAsHistory(nodeData.sessionId);
 
         let input: string;
@@ -25,7 +27,6 @@ class RTWorkflowPromptOnly extends RTWorkflow {
             if (error instanceof WorkNodeStop) {
                 this.rtSender.sendNoResult();    
             }
-            this.rtSender.sendClose();
             return;
         }
         
@@ -45,7 +46,6 @@ class RTWorkflowPromptOnly extends RTWorkflow {
 
         try {
             const { messages } = await promptBuildNode.run({ input });
-            // const { chatML } = await stringifyChatMLNode.run({ messages });
             const { result } = await chatAIFetchNode.run({ messages });
             await outputNode.run({ output: result });
 
@@ -61,8 +61,6 @@ class RTWorkflowPromptOnly extends RTWorkflow {
         }
         finally {
             historyAC.completeHistory(historyId);
-
-            this.rtSender.sendClose();
         }
     }
 }

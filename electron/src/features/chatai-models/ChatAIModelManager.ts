@@ -46,8 +46,8 @@ class ChatAIModelManager {
         // const vertexAIProvider = this.#addProvider('VertexAI', KnownProvider.VertexAI);
         // initVertexAIProvider(vertexAIProvider);
 
-        const debugProvider = this.#addProvider('Debug', 'debug');
-        initDebugProvider(debugProvider);
+        // const debugProvider = this.#addProvider('Debug', 'debug');
+        // initDebugProvider(debugProvider);
     }
 
     #addProvider(name: string, providerId: KnownProvider | 'debug') {

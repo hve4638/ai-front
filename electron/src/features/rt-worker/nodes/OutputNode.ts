@@ -12,6 +12,8 @@ export type PromptBuildNodeOption = {
 }
 
 class OutputNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutput, PromptBuildNodeOption>  {
+    override name = 'OutputNode';
+    
     override async process(
         nodeInput:PromptBuildNodeInput,
     ) {

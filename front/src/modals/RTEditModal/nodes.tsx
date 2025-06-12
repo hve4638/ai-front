@@ -36,13 +36,13 @@ export function LeafNode({ name, value, onRename, onDelete, onExport, onEdit }: 
                 e.stopPropagation();
                 e.preventDefault();
             }} />
-            <ExportButton
+            {/* <ExportButton
                 onClick={(e) => {
                     onExport();
                     e.stopPropagation();
                     e.preventDefault();
                 }}
-            />
+            /> */}
             <DeleteButton
                 onClick={(e) => {
                     onDelete();

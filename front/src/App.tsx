@@ -1,185 +1,108 @@
-import { useEffect, useState } from 'react'
-import LocalAPI from '@/api/local';
-import ProfilesAPI from '@/api/profiles';
-import RequestAPI from '@/api/request';
-
-import { useProfileAPIStore, useCacheStore, subscribeStates, useSignalStore } from '@/stores';
-
-import useSignal from '@/hooks/useSignal';
-import LoadPage from '@/features/loading';
-import ProfileSelectPage from 'pages/ProfileSelect';
-import MasterKeyInitailize from 'pages/MasterKeyInitailize';
-import Hub from 'pages/Hub';
-import { ModalProvider } from 'hooks/useModal';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import classNames from 'classnames';
+
+import ProfilesAPI from '@/api/profiles';
+import { useProfileAPIStore } from '@/stores';
+import { ModalProvider } from '@/hooks/useModal';
+
+import ProfileSelectPage from '@/pages/ProfileSelect';
+import Hub from '@/pages/Hub';
+
 import useMemoryStore from './stores/useMemoryStore';
+import {
+    Bootstrap,
+    useBootStore,
+    useInitialize
+} from './features/bootstrap';
 
 const LoadPhase = {
-    BEGIN : 0,
-    INIT_MASTER_KEY : 1,
-    LOADING_PROFILE_METADATA : 2,
-    SELECT_PROFILE : 3,
-    LOAD_MEMORY: 4,
-    ENTRYPOINT : 10,
+    Boot: 'boot',
+    ProfileSelect: 'ProfileSelect',
+    Login: 'login',
+    Main: 'main',
 };
 type LoadPhase = typeof LoadPhase[keyof typeof LoadPhase];
 
 function App() {
-    const [currentState, setCurrentState] = useState<LoadPhase>(LoadPhase.BEGIN);
-    const [retrySignal, sendRetrySignal] = useSignal();
-    const [profile, setProfile] = useState<string|null>(null);
-    const apiState = useProfileAPIStore();
-    const last_session_id = useCacheStore(state=>state.last_session_id);
+    const booted = useBootStore(state => state.booted);
+    const memoryStore = useMemoryStore();
+    const [profileInitialized, setProfileInitialized] = useState(false);
 
-    useEffect(() => {
-        (async ()=> {
-            switch (currentState) {
-                case LoadPhase.BEGIN:
-                    setCurrentState(LoadPhase.INIT_MASTER_KEY);
-                    break;
-                case LoadPhase.INIT_MASTER_KEY:
-                    break;
-                case LoadPhase.LOADING_PROFILE_METADATA:
-                    const lastProfileId = await ProfilesAPI.getLast();
-
-                    if (lastProfileId == null) {
-                        setProfile(null);
-                        setCurrentState(LoadPhase.SELECT_PROFILE);
-                    }
-                    else {
-                        apiState.setAPI(lastProfileId);
-
-                        setProfile(lastProfileId);
-                        setCurrentState(LoadPhase.LOAD_MEMORY);
-                    }
-                    break;
-                case LoadPhase.SELECT_PROFILE:
-                    if (profile != null) {
-                        setCurrentState(LoadPhase.LOAD_MEMORY);
-                    }
-                    break;
-                case LoadPhase.LOAD_MEMORY:
-                    const promises = [
-                        apiState.api.getChatAIModels()
-                            .then((models)=>{
-                                useMemoryStore.setState({ allModels: models })
-                            }),
-                        LocalAPI.general.getAvailableVersion()
-                            .then((availableVersion) => {
-                                useMemoryStore.setState({ availableVersion })
-                            })
-                            .catch(err=>{
-                                // nothing to do
-                            }),
-                        LocalAPI.general.getCurrentVersion()
-                            .then((version) => {
-                                useMemoryStore.setState({ version })
-                            })
-                    ];
-                    await Promise.all(promises);
-                    
-                    setCurrentState(LoadPhase.ENTRYPOINT);
-                    break;
-                case LoadPhase.ENTRYPOINT:
-                    break;
-            }
-        })();
-    }, [currentState, retrySignal, apiState.api]);
-    
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            LocalAPI.general.echo('[MESSAGE] UNHANDLE');
-        };
-        
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
-
-    useEffect(()=>{
-        return useSignalStore.subscribe(
-            (state)=>state.change_profile,
-            (state)=>{
-                setProfile(null);
-                setCurrentState(LoadPhase.SELECT_PROFILE);
-            }
-        )
-    }, []);
-
-    useEffect(() => {
-        // Zustand State 의존성 관련 구독
-        return subscribeStates();
-    }, []);
-
-    useEffect(() => {
-        RequestAPI.register();
-
-        return () => {
-            RequestAPI.unregister();
+    const phase = useMemo<LoadPhase>(() => {
+        if (!booted) {
+            return LoadPhase.Boot;
         }
-    }, []);
-          
+        else if (memoryStore.profileId == null) {
+            return LoadPhase.ProfileSelect;
+        }
+        else if (!profileInitialized) {
+            return LoadPhase.Login;
+        }
+        else {
+            return LoadPhase.Main;
+        }
+    }, [booted, memoryStore.profileId, profileInitialized]);
+
+    useInitialize();
+    useLayoutEffect(() => {
+        if (phase === LoadPhase.ProfileSelect) {
+            setProfileInitialized(false);
+            ProfilesAPI.setLast(null);
+        }
+        else if (phase === LoadPhase.Login) {
+            if (memoryStore.profileId == null) {
+                console.warn('logic error: profileId is null in Login phase');
+                return;
+            }
+            ProfilesAPI.setLast(memoryStore.profileId);
+
+            useProfileAPIStore.getState().setAPI(memoryStore.profileId);
+            const { api } = useProfileAPIStore.getState();
+
+            // @TODO
+            // 앞으로 더 많은 작업이 추가되면
+            // LoadGlobalDataPhase 처럼 작업 분리 필요
+            const promises = [
+                api.getChatAIModels()
+                    .then((models) => {
+                        useMemoryStore.setState({ allModels: models })
+                    }),
+            ];
+            Promise.all(promises)
+                .then(() => {
+                    setProfileInitialized(true);
+                })
+        }
+    }, [phase, memoryStore.profileId]);
+
     return (
         <div
             className={
                 classNames(
-                    'theme-dark fill'
+                    'theme-dark',
+                    'fill',
                 )
-                // + (layoutMode == LayoutModes.AUTO ? ' layout-auto' : '')
-                // + (layoutMode == LayoutModes.HORIZONTAL ? ' layout-horizontal' : '')
-                // + (layoutMode == LayoutModes.VERTICAL ? ' layout-vertical' : '')
             }
             style={{
                 fontSize: '18px'
             }}
         >
             {
-                (
-                    currentState == LoadPhase.BEGIN ||
-                    currentState == LoadPhase.LOADING_PROFILE_METADATA
-                ) &&
-                <LoadPage/>
-            }
-            {
-                currentState == LoadPhase.INIT_MASTER_KEY &&
+                phase === LoadPhase.Boot &&
                 <ModalProvider>
-                    <MasterKeyInitailize
-                        onFinished={() => {
-                            setCurrentState(prev=>{
-                                if (prev === LoadPhase.INIT_MASTER_KEY) {
-                                    return LoadPhase.LOADING_PROFILE_METADATA;
-                                }
-                                else {
-                                    return prev;
-                                }
-                            });
-                        }}
-                    />
+                    <Bootstrap />
                 </ModalProvider>
             }
             {
-                currentState == LoadPhase.SELECT_PROFILE &&
-                <ProfileSelectPage
-                    onSelect={async (id:string) => {
-                        await apiState.setAPI(id);
-                        await ProfilesAPI.setLast(id);
-                        
-                        setCurrentState(prev=>{
-                            if (prev === LoadPhase.SELECT_PROFILE) {
-                                return LoadPhase.LOADING_PROFILE_METADATA;
-                            }
-                            else {
-                                return prev;
-                            }
-                        });
-                    }}
-                />
+                phase === LoadPhase.ProfileSelect &&
+                <ModalProvider>
+                    <ProfileSelectPage />
+                </ModalProvider>
             }
             {
-                currentState == LoadPhase.ENTRYPOINT &&
-                <Hub/>
-            }            
+                phase === LoadPhase.Main &&
+                <Hub />
+            }
         </div>
     )
 }

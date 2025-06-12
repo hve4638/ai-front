@@ -4,3 +4,6 @@ compiled
 src/playground.ts
 
 *.learn.test.ts
+
+static/
+release/

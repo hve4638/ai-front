@@ -19,10 +19,15 @@ class ProgramPath {
         return path.join(this.#basePath, 'test');
     }
 
+    get logPath() {
+        return path.join(this.#basePath, 'logs');
+    }
+
     makeRequiredDirectory() {
         fs.mkdirSync(this.basePath, { recursive: true });
         fs.mkdirSync(this.profilePath, { recursive: true });
-        fs.mkdirSync(this.testPath, { recursive: true });
+        fs.mkdirSync(this.logPath, { recursive: true });
+        // fs.mkdirSync(this.testPath, { recursive: true });
     }
 }
 

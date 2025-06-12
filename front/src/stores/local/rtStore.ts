@@ -14,6 +14,7 @@ export interface RTState {
     };
     update : {
         metadata(data:Partial<RTIndex>): Promise<void>;
+        promptMetadata(promptId:string, data:RTPromptDataEditable): Promise<void>;
 
         promptName(promptId:string, name:string): Promise<void>;
         promptVars(promptId:string, vars:PromptVar[]): Promise<string[]>;
@@ -67,6 +68,11 @@ export function createRTStore(rtId:string) {
                 const rtAPI = getRTAPI(get().id);
     
                 await rtAPI.setMetadata(metadata);
+            },
+            promptMetadata: async (promptId:string, data:RTPromptDataEditable) => {
+                const rtAPI = getRTAPI(get().id);
+    
+                await rtAPI.prompt.setMetadata(promptId, data);
             },
             promptName: async (promptId:string, name:string) => {
                 const rtAPI = getRTAPI(get().id);

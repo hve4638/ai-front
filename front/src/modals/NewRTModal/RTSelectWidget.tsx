@@ -37,6 +37,7 @@ function RTSelectWidget(props:RTSelectWidgetProps) {
                 onClick={()=>{
                     props.onSelectRTType('flow');
                 }}
+                disabled={true}
             />
         </Row>
     )
@@ -46,16 +47,18 @@ type RTTypeButtonProps = {
     value : string;
     text : string;
     onClick : () => void;
+    disabled? : boolean;
 }
 
 function RTTypeButton({
-    value, text, onClick
+    value, text, onClick, disabled = false
 }:RTTypeButtonProps) {
     return (
         <Grid
             className={
                 classNames(
                     style['rt-type-select'],
+                    { 'disabled' : disabled },
                     'undraggable'
                 )
             }
@@ -64,7 +67,10 @@ function RTTypeButton({
             style={{
                 padding : '0.5em',
             }}
-            onClick={onClick}
+            onClick={()=>{
+                if (disabled) return;
+                onClick();
+            }}
             tabIndex={0}
         >
             <Center>

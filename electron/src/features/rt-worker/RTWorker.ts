@@ -2,43 +2,57 @@ import { BrowserWindow } from 'electron';
 import type { Profile } from '@/features/profiles';
 import RTSender from './RTSender';
 import { WorkflowPromptOnly } from './workflow';
+import runtime from '@/runtime';
 
 class RTWorker {
-    protected browserWindowRef:WeakRef<BrowserWindow>|null = null;
+    static senders = new Map<string, RTSender>();
+    protected browserWindowRef: WeakRef<BrowserWindow> | null = null;
 
-    setBrowserWindowRef(browserWindowRef:WeakRef<BrowserWindow>) {
+    setBrowserWindowRef(browserWindowRef: WeakRef<BrowserWindow>) {
         this.browserWindowRef = browserWindowRef;
     }
 
-    async request(token:string, profile:Profile, sessionId:string):Promise<string> {
+    async request(token: string, profile: Profile, sessionId: string): Promise<string> {
         if (!this.browserWindowRef) {
             throw new Error('BrowserWindow reference is not set. Initialize is required.');
         }
+        if (RTWorker.senders.has(token)) {
+            runtime.logger.error(`RTWork failed: duplicate token`, token);
+            throw new Error(`Duplicate token: ${token}`);
+        }
 
-        const rtSender = new RTSender(this.browserWindowRef, token);
         const session = profile.session(sessionId);
 
         const { rt_id, model_id } = await session.get('config.json', ['rt_id', 'model_id']);
         const { input } = await session.get('cache.json', ['input']);
         const form = await session.getOne('data.json', `forms.${rt_id}`);
 
-        const rt = profile.rt(rt_id);
-        const { uuid } = await rt.getMetadata();
-
-        const rtInput:RTInput = {
-            rtId : rt_id,
+        const rtInput: RTInput = {
+            rtId: rt_id,
             modelId: model_id,
             sessionId: sessionId,
-            form : form ?? {},
-            input : input ?? '',
-            chat : [],
+            form: form ?? {},
+            input: input ?? '',
+            chat: [],
         }
-        console.log('[RTInput]', rtInput);
-        console.log('rt uuid:', uuid);
-        
+
+        runtime.logger.trace(`RT request started (${token})`)
+        const rtSender = new RTSender(this.browserWindowRef, token);
         const process = new WorkflowPromptOnly(rtSender, profile);
-        process.process(rtInput);
         
+        RTWorker.senders.set(token, rtSender);
+        process.process(rtInput)
+            .then(() => {
+                runtime.logger.info(`RT request completed (${token})`);
+            })
+            .catch((error) => {
+                runtime.logger.info(`RT request failed (${token})`);
+            })
+            .finally(() => {
+                rtSender.sendClose();
+                RTWorker.senders.delete(token);
+            });
+
         return token;
     }
 }

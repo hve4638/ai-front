@@ -1,6 +1,3 @@
-import PromptTemplate, { CBFResult } from '@hve/prompt-template';
-import { WorkLog } from '../types';
-import { BUILT_IN_VARS, HOOKS } from '../data';
 import WorkNode from './WorkNode';
 import { ChatAI, ChatAIError } from '@hve/chatai';
 import type { ChatAIResult, ChatMessage, KnownProvider } from '@hve/chatai';
@@ -23,7 +20,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         { messages }: ChatAIFetchNodeInput,
     ): Promise<ChatAIFetchNodeOutput> {
         const {
-            modelId, sender, profile
+            modelId, sender, profile, rtId, 
         } = this.nodeData;
 
         const modelData = ChatAIModels.getModel(modelId);
@@ -102,6 +99,10 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         else {
             const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
             const apiKey = await profileAPIKeyControl.nextAPIKey(provider);
+            const rt = profile.rt(rtId);
+            // @TODO : 'default'로 임시 하드코딩
+            // flow모드 구현 시 수정 필요
+            const { model } = await rt.getPromptMetadata('default');
 
             if (!apiKey) {
                 sender.sendError(
@@ -113,6 +114,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             const secret = provider === 'vertexai'
                 ? apiKey
                 : { api_key: apiKey };
+            // const a = 
 
             const chatAI = new ChatAI();
             try {
@@ -121,6 +123,10 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     provider: provider,
                     message: messages,
                     secret: secret,
+
+                    max_tokens: model?.max_tokens,
+                    temperature: model?.temperature,
+                    top_p: model?.top_p,
                 });
 
                 return {

@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useMemo } from "react";
+import { DependencyList, useEffect, useMemo } from 'react';
 
 type HotkeyCallbacks = {
     [key:string]:(e:KeyboardEvent)=>boolean|void;

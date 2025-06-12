@@ -80,7 +80,6 @@ class ProfileAPI {
         hasId : async (rtId:string) => LocalAPI.profileRTs.existsId(this.#profileId, rtId),
     } as const;
     
-    
     session(sessionId:string):SessionAPI {
         if (!(sessionId in this.#sessionAPIs)) {
             this.#sessionAPIs[sessionId] = new SessionAPI(this.#profileId, sessionId);

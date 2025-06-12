@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { IPCInvokerName } from 'types';
 import getHandlers from './handlers';
-import { updateRegistry } from '@/runtime';
+import runtime, { updateRegistry } from '@/runtime';
 
 export function initIPC() {
     const handlers:IPCInvokerInterface = getHandlers();
@@ -12,20 +12,20 @@ export function initIPC() {
             handleIPC(`${category}_${invokeKey}`, handler);
         }
     }
-    
+
     updateRegistry({ ipcFrontAPI : handlers });
 }
 
 function handleIPC(ping:string, callback:any) {
     const handler = async (event: any, ...args: any) => {
-        console.log(`[IPC] ${ping}`, ...args);
+        runtime.logger.trace(`IPCCall:`, ping, ...args);
         try {
             const result = await callback(...args);
             return result;
         }
         catch (error:any) {
-            console.error(`[IPC][ERROR] ${ping}`, ...args);
-            console.error(error);
+            runtime.logger.error(`IPCError:`, ping, ...args);
+            runtime.logger.error(error);
             
             return [makeErrorStruct(error)];
         }

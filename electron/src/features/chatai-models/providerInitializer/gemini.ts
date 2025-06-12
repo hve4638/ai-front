@@ -16,7 +16,7 @@ function initProvider(provider:ModelProvider) {
 
     provider.addModels('Gemini 2.5 Pro',
         [
-            model('Gemini 2.5 Pro Preview (05-06)', 'gemini-2.5-pro-preview-05-06', { latest, featured, ...baseFlags }),
+            model('Gemini 2.5 Pro Preview (06-05)', 'gemini-2.5-pro-preview-06-05', { latest, featured, ...baseFlags }),
         ]
     );
     provider.addModels('Gemini 2.5 Flash',

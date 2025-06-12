@@ -48,3 +48,20 @@
         }
     }
 }
+
+.session-name {
+    color: white;
+    &.highlight {
+        animation: color-transition 3s ease-in-out infinite alternate;
+        
+        @keyframes color-transition {
+            0% {
+                color: rgb(237, 231, 194);
+            }
+            100% {
+                // color: rgb(216, 201, 101);
+                color: rgb(223, 210, 128);
+            }
+        }
+    }
+}

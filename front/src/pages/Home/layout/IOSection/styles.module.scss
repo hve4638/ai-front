@@ -3,11 +3,24 @@
 .main-section {
     z-index: 3;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+
+    .send-button {
+        background-color: rgb(28, 28, 28, 0.75);
+        border-radius: 8px;
+        aspect-ratio: 1;
+        font-size: 0.85em;
+        padding: 4px;
+
+        &:hover {
+            background-color: rgba(92, 92, 92, 0.75);
+            // background-color: rgb(28, 28, 28, 1);
+        }
+    }
 }
 
 .output-info-button {
     background-color: rgba(10, 10, 10, 0.0);
-    padding : 0em 0.4em;
+    padding: 0em 0.4em;
     border-radius: 10px;
     transition: background-color 0.15s ease;
 
@@ -25,6 +38,13 @@
     &:focus {
         outline: none;
     }
+}
+
+.token-count {
+    font-size: 0.8rem;
+    background-color: rgba(47, 47, 47, 0.7);
+    border-radius: 12px;
+
 }
 
 .chat-container {
@@ -75,7 +95,7 @@
         .token-count {
             font-size: 0.5em;
 
-            color : var(--subtext-color);
+            color: var(--subtext-color);
         }
 
         .send-button {
@@ -95,6 +115,6 @@
 
 .markdown-enabled {
     color: rgb(134, 184, 255);
-    
+
     // color: rgb(134, 184, 255);
 }

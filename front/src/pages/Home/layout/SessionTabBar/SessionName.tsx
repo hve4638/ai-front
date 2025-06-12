@@ -1,11 +1,13 @@
 import { useProfileAPIStore } from "@/stores";
 import classNames from "classnames";
 import { LegacyRef, useEffect, useRef, useState } from "react";
+import styles from './styles.module.scss';
 
 type SessionNameProps = {
     name: string;
     displayName: string;
     rename: boolean;
+    highlight?: boolean;
     onEnableRename?: () => void;
     onChange?: (value:string)=>void;
     onCancelRename?: () => void;
@@ -15,13 +17,13 @@ function SessionName({
     name,
     displayName,
     rename,
+    highlight = false,
     onEnableRename = () => {},
     onChange = ()=>{},
     onCancelRename = ()=>{},
 }:SessionNameProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [value, setValue] = useState(name);
-    const api = useProfileAPIStore(state=>state.api);
     
     useEffect(()=>{
         setValue(name);
@@ -40,7 +42,6 @@ function SessionName({
             className={
                 classNames(
                     'flex',
-                    'session-name'
                 )
             }
             style={{
@@ -53,7 +54,13 @@ function SessionName({
         >
         {
             !rename &&
-            displayName
+            <span
+                className={
+                    classNames(
+                        styles['session-name'],
+                        { [styles['highlight']]: highlight },
+                    )}
+            >{displayName}</span>
         }
         {
             rename &&

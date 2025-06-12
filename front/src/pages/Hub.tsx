@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useState } from 'react'
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, useParams } from 'react-router-dom'
 import Home from './Home';
 import PromptEditor, {
     PromptEditAction,
@@ -10,7 +10,7 @@ import WorkflowEditor from './WorkflowEditor';
 
 function Hub() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route
@@ -30,7 +30,7 @@ function Hub() {
                     }
                 />
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 

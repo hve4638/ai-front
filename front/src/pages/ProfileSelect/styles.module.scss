@@ -1,3 +1,20 @@
+:global(.theme-dark) {
+    --wide-button-color: rgba(63, 63, 63, 0.12);
+    --wide-button-hover-color: rgba(115, 115, 115, 0.12);
+    // --wide-button-hover-color: rgba(88, 88, 88, 0.12);
+    --wide-button-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    display: flex;
+    align-items: center;
+    
+}
+
 .profile-input {
     border: 1px solid #525252;
 }
@@ -10,4 +27,43 @@
     
     background-color: rgb(71, 71, 71);
     border-radius: 8px;
+}
+
+.profile-button {
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.15s ease background-color, 0.15s ease color;
+    color : var(--subtext-color);
+}
+
+.profile-button:hover {
+    color : var(--text-color);
+    background-color : var(--button-hover-color);
+}
+
+.profile-setting {
+    display: flex;
+    background-color: var(--wide-button-color);
+    border: 1px solid var(--wide-button-border-color);
+    border-radius: 10px;
+    font-size: 2em;
+    padding: 4px;
+
+    &:hover {
+        background-color: var(--wide-button-hover-color);
+    }
+}
+
+.recovery-profile-button {
+    border-radius: 4px;
+    border: 1px solid var(--wide-button-border-color);
+    // padding: 4px;
+
+    &.highlight {
+        color: rgb(123, 159, 205);
+        // color: rgb(251, 234, 142);
+    }
+    &:not(.highlight) {
+        color: var(--subtext-color);
+    }
 }

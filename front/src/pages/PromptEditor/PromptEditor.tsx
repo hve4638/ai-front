@@ -25,7 +25,7 @@ function PromptEditor() {
     const { rtId, promptId } = useParams();
 
     const rtState = useContextForce(RTStoreContext);
-    
+
     const [_, refresh] = useSignal();
     const [loaded, setLoaded] = useState(false);
 
@@ -35,8 +35,14 @@ function PromptEditor() {
     const editorData = useRef<PromptEditorData>({
         rtId: rtId ?? '',
         promptId: promptId ?? '',
-        
+
         name: null,
+        version: '1.0.0',
+        model: {
+            temperature: 1.0,
+            topP: 1.0,
+            maxTokens: 1024,
+        },
         variables: [],
         changedVariables: [],
         removedVariables: [],
@@ -44,14 +50,13 @@ function PromptEditor() {
         config: {
             inputType: 'normal',
         },
-        
+
         changed: {},
         flags: {},
     });
 
     const isChanged = () => {
-        const changed = Object.entries(editorData.current.changed).some(([key, value])=>value === true);
-
+        const changed = Object.entries(editorData.current.changed).some(([key, value]) => value === true);
         if (
             changed ||
             editorData.current.changedVariables.length > 0 ||
@@ -73,17 +78,32 @@ function PromptEditor() {
         if (data.changed.name && data.name) {
             await rtState.update.promptName(promptId, data.name);
         }
+        if (data.changed.version && data.version) {
+            await rtState.update.metadata({
+                version: data.version
+            });
+        }
 
         if (data.changed.config) {
             await rtState.update.metadata({
-                input_type : data.config.inputType
-            })
+                input_type: data.config.inputType
+            });
         }
-        
+        if (data.changed.model || data.changed.contents) {
+            await rtState.update.promptMetadata(data.promptId, {
+                model: {
+                    temperature: data.model.temperature,
+                    top_p: data.model.topP,
+                    max_tokens: data.model.maxTokens,
+                },
+                contents: data.contents,
+            });
+        }
+
         if (data.changedVariables.length > 0) {
-            data.variables.forEach((promptVar)=>fixPromptVar(promptVar));
+            data.variables.forEach((promptVar) => fixPromptVar(promptVar));
             const variableIds = await rtState.update.promptVars(data.promptId, data.changedVariables);
-            
+
             for (const i in variableIds) {
                 data.variables[i].id = variableIds[i];
             }
@@ -91,9 +111,9 @@ function PromptEditor() {
         if (data.removedVariables.length > 0) {
             await rtState.remove.promptVars(data.promptId, data.removedVariables);
         }
-        if (data.changed.contents) {
-            await rtState.update.promptContents(data.promptId, data.contents);
-        }
+        // if (data.changed.contents) {
+        //     await rtState.update.promptContents(data.promptId, data.contents);
+        // }
 
         setSaved(true);
         data.changed = {};
@@ -104,13 +124,20 @@ function PromptEditor() {
     // 초기 프롬프트 데이터 로드
     const load = async () => {
         if (!rtId || !promptId) return;
-        
+
         const { input_type, mode } = await rtState.get.metadata();
-        const { name } = await rtState.get.promptMetadata(promptId);
+        const { name, model } = await rtState.get.promptMetadata(promptId);
         const contents = await rtState.get.promptContents(promptId);
         const vars = await rtState.get.promptVars(promptId);
 
         editorData.current.name = name;
+        if (model) {
+            editorData.current.model = {
+                temperature: model.temperature,
+                topP: model.top_p,
+                maxTokens: model.max_tokens,
+            };
+        }
         editorData.current.contents = contents;
         editorData.current.changed = {};
         editorData.current.removedVariables = [];
@@ -123,13 +150,13 @@ function PromptEditor() {
     const back = () => {
         if (isChanged()) {
             modal.open(ChoiceDialog, {
-                title : '작업을 저장하겠습니까?',
-                choices : [
-                    { text : '저장', tone : 'highlight' },
-                    { text : '저장하지 않음' },
-                    { text : '취소', tone : 'dimmed' },
+                title: '작업을 저장하겠습니까?',
+                choices: [
+                    { text: '저장', tone: 'highlight' },
+                    { text: '저장하지 않음' },
+                    { text: '취소', tone: 'dimmed' },
                 ],
-                onSelect: async (choice:string, index:number)=>{
+                onSelect: async (choice: string, index: number) => {
                     if (index === 0) {
                         await save();
                         navigate('/');
@@ -142,14 +169,14 @@ function PromptEditor() {
                     }
                     return true;
                 },
-                onEnter: async ()=>{
+                onEnter: async () => {
                     await save();
                     navigate('/');
                     return true;
                 },
-                onEscape: async ()=>true,
-                
-                children : <span>저장되지 않은 변경사항이 있습니다</span>,
+                onEscape: async () => true,
+
+                children: <span>저장되지 않은 변경사항이 있습니다</span>,
             });
         }
         else {
@@ -161,8 +188,8 @@ function PromptEditor() {
         let varName = '';
         let i = 0;
         while (true) {
-            let candidateName = `variable_${i}`;    
-            if (editorData.current.variables.some((item)=>item.name === candidateName)) {
+            let candidateName = `variable_${i}`;
+            if (editorData.current.variables.some((item) => item.name === candidateName)) {
                 i++;
             }
             else {
@@ -171,7 +198,7 @@ function PromptEditor() {
             }
         }
 
-        const newPromptVar:PromptVar = {
+        const newPromptVar: PromptVar = {
             type: 'text',
             name: varName,
             display_name: t('prompt_editor.variable_default_name') + ' ' + i,
@@ -189,15 +216,15 @@ function PromptEditor() {
         return newPromptVar;
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         load();
     }, []);
 
     // 저장 후 버튼 비활성화 타이머
-    useEffect(()=>{
+    useEffect(() => {
         if (!saved) return;
-        
-        const timeoutId = window.setTimeout(()=>{
+
+        const timeoutId = window.setTimeout(() => {
             setSaved(false);
         }, 300);
 
@@ -213,30 +240,30 @@ function PromptEditor() {
         <div
             className={styles['prompt-editor']}
         >
-            <EditorSection data={editorData.current}/>
+            <EditorSection data={editorData.current} />
             <SidePanel
                 data={editorData.current}
                 saved={saved}
 
-                onRefresh={()=>refresh()}
-                onSave={async ()=>await save()}
-                onBack={async ()=>back()}
+                onRefresh={() => refresh()}
+                onSave={async () => await save()}
+                onBack={async () => back()}
 
-                onAddPromptVar={()=>{
+                onAddPromptVar={() => {
                     const promptVar = addPromptVar();
 
                     return promptVar;
                 }}
-                onRemovePromptVar={(promptVar:PromptVar)=>{
-                    editorData.current.variables = editorData.current.variables.filter((item)=>item !== promptVar);
-                    editorData.current.changedVariables = editorData.current.changedVariables.filter((item)=>item !== promptVar);
+                onRemovePromptVar={(promptVar: PromptVar) => {
+                    editorData.current.variables = editorData.current.variables.filter((item) => item !== promptVar);
+                    editorData.current.changedVariables = editorData.current.changedVariables.filter((item) => item !== promptVar);
                     if (promptVar.id) {
                         editorData.current.removedVariables.push(promptVar.id);
                     }
 
                     refresh();
                 }}
-                onChangeInputType={(inputType:PromptInputType)=>{
+                onChangeInputType={(inputType: PromptInputType) => {
                     return;
                 }}
             />
@@ -247,7 +274,7 @@ function PromptEditor() {
 function PromptEditorWrapper() {
     return (
         <ModalProvider>
-            <PromptEditor/>
+            <PromptEditor />
         </ModalProvider>
     )
 }

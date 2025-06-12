@@ -49,6 +49,13 @@ function IOSection() {
                 setInputLayoutType(input_type);
             });
     }, [api, sessionState.rt_id])
+
+    useEffect(() => {
+        if (sessionState.state === 'done') {
+            sessionState.update.state('idle');
+            useSignalStore.getState().signal.session_metadata();
+        }
+    }, [sessionState.deps.last_session_id, sessionState.state]);
     
     useLayoutEffect(() => {
         inputTextRef.current = sessionState.input;

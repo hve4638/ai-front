@@ -49,12 +49,6 @@ function ConfirmDialog({
             >
                 {title}
             </ModalHeader>
-            {/* {
-                title != null &&
-                <h2>
-                    {title}
-                </h2>
-            } */}
             <div
                 className='undraggable'
                 style={{
@@ -84,7 +78,7 @@ function ConfirmDialog({
                     }}
                 >{confirmText}</Button>
                 <Button
-                    className={classNames(cancelButtonClassName)}
+                    className={classNames(cancelButtonClassName, 'transparent')}
                     style={{ minWidth: '6em' }}
                     onClick={()=>{
                         if (onCancel()) {

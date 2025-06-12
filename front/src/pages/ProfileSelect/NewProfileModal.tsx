@@ -107,7 +107,7 @@ function NewProfileModal({
                             name: name,
                             color: 'lightgray'
                         }
-                        onSubmit(metadata)
+                        onSubmit(metadata);
                         close();
                     }}
                     disabled={name.length === 0}

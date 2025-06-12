@@ -1,10 +1,13 @@
-import { Tree, TreeDirectoryData } from './types';
+import {
+    ITreeNode as Tree,
+    ITreeDirectoryNode as TreeDirectoryData,
+} from './types';
 
 type treeOffsets = [number]|[number, number];
 
 /// @TODO : 현재 2계층까지 지원하므로 추후 확장을 위해 수정이 필요할 수 있음
-export function relocateTree(tree:Tree, from:treeOffsets, to:treeOffsets):any[] {
-    const result = JSON.parse(JSON.stringify(tree)) as Tree;
+export function relocateTree(tree:Tree[], from:treeOffsets, to:treeOffsets):any[] {
+    const result = JSON.parse(JSON.stringify(tree)) as Tree[];
     
     if (from.length === 1) {
         if (from[0] < to[0]) {

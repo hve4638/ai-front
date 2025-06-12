@@ -1,7 +1,9 @@
+import runtime from '@/runtime';
 import type { NodeData } from './types';
 
 abstract class WorkNode<NInput, NOutput, NOption extends object> {
     protected _nodeId:number;
+    protected name:string = 'Node';
     
     constructor(nodeId:number, protected nodeData:NodeData, protected option:NOption) {
         this._nodeId = nodeId;
@@ -13,10 +15,11 @@ abstract class WorkNode<NInput, NOutput, NOption extends object> {
     
     async run(input: NInput):Promise<NOutput> {
         try {
+            runtime.logger.trace(`Enter ${this.name} (id=${this.nodeId})`);
             return this.process(input);
         }
         catch(error) {
-            console.error(`[WorkNode] Error in node ${this.nodeId}:`, error);
+            runtime.logger.error(`Error in '${this.name}' (id=${this.nodeId})`, error);
             throw error;
         }
         finally {

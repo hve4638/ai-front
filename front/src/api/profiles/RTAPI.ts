@@ -27,6 +27,7 @@ class RTAPI {
     
     prompt = {
         getMetadata : async (promptId:string) => LocalAPI.profileRTPrompt.getMetadata(this.#profileId, this.#rtId, promptId),
+        setMetadata : async (promptId:string, metadata:RTPromptDataEditable) => LocalAPI.profileRTPrompt.setMetadata(this.#profileId, this.#rtId, promptId, metadata),
         getName : async (promptId:string) => LocalAPI.profileRTPrompt.getName(this.#profileId, this.#rtId, promptId),
         setName : async (promptId:string, name:string) => LocalAPI.profileRTPrompt.setName(this.#profileId, this.#rtId, promptId, name),
         

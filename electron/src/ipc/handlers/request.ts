@@ -4,6 +4,8 @@ function handler():IPCInvokerRequest {
     return {
         async requestRT(token:string, profileId: string, sessionId:string) {
             const profile = await runtime.profiles.getProfile(profileId);
+
+            runtime.logger.info(`RT request (token=${token}, sessionId=${sessionId})`);
             await runtime.rtWorker.request(token, profile, sessionId);
 
             return [null] as const;
