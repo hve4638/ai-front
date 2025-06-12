@@ -1,0 +1,67 @@
+.color-box {
+    aspect-ratio: 1/1;
+    height: 1.5em;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    overflow: hidden;
+
+    &:global(.red) {
+        background-color: red;
+    }
+    &:global(.orange) {
+        background-color: rgb(255, 140, 0);
+    }
+    &:global(.yellow) {
+        background-color: rgb(226, 211, 46);
+    }
+    &:global(.green) {
+        background-color: rgb(50, 205, 50);
+    }
+    &:global(.sky) {
+        background-color: rgb(127, 197, 211);
+    }
+    &:global(.blue) {
+        background-color: rgb(30, 144, 255);
+    }
+    &:global(.purple) {
+        background-color: rgb(119, 91, 206);
+    }
+    &:global(.pink) {
+        background-color: pink;
+    }
+    &:global(.gray) {
+        background-color: gray;
+    }
+    &:global(.black) {
+        background-color: black;
+    }
+    &:global(.default) {
+        background-color: transparent;
+        border : 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .color-box-over {
+        width : 100%;
+        height : 100%;
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.15);
+        }
+    }
+}
+
+.session-name {
+    color: white;
+    &.highlight {
+        animation: color-transition 3s ease-in-out infinite alternate;
+        
+        @keyframes color-transition {
+            0% {
+                color: rgb(237, 231, 194);
+            }
+            100% {
+                // color: rgb(216, 201, 101);
+                color: rgb(223, 210, 128);
+            }
+        }
+    }
+}

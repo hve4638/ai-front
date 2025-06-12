@@ -1,0 +1,9 @@
+compiled
+.tsbuildinfo
+
+src/playground.ts
+
+*.learn.test.ts
+
+static/
+release/

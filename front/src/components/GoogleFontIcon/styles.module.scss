@@ -1,0 +1,9 @@
+.gfonticon-button {
+    background-color: transparent;
+    transition: 0.15s ease background-color;
+    // cursor: pointer;
+    
+    &.hover-effect:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}

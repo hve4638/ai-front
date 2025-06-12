@@ -1,0 +1,25 @@
+.tree-container {
+    box-sizing: border-box;
+    background-color: rgb(54, 54, 54);
+    width: auto;
+    height: auto;
+    padding : 4px;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+
+    font-size : 0.9rem;
+}
+
+.drag-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding : 0px 8px;
+    background-color: var(--prompt-tree-drag-indicator-color);
+    z-index: 1;
+    pointer-events: none;
+    z-index: 1000;
+    font-size : 0.8rem;
+    background-color: rgba(37, 37, 37, 0.75);
+    border-radius: 12px;
+}

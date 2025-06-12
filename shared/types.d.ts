@@ -1,0 +1,4 @@
+import './ipc/interface'
+
+
+export {};

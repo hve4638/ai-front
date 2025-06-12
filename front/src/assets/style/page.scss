@@ -1,0 +1,101 @@
+#home {
+    // display: flex;
+    // flex-direction: column;
+    // width: 100%;
+    // height: 100%;
+    position: relative;
+}
+
+.box {
+    background-color: var(--container-bgcolor);
+    border-radius: 16px;
+}
+
+.seperate-section-item {
+    display: inherit;
+}
+
+.seperate-section {
+    display: flex;
+    flex : none;
+    width: 48px;
+    transition: 0.3s width;
+}
+
+.expand-section {
+    display: flex;
+    flex: 1;
+}
+
+.small-form {
+    display: none;
+}
+
+.large-form {
+    display: inherit;
+}
+
+.floating-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    transform: scale(1.0);
+    transition: 0.3s ease transform;
+    &:hover {
+        transform: scale(1.05);
+    }
+    &:active {
+        transform: scale(0.9);
+    }
+}
+
+.submit-button {
+    font-size: 40px;
+}
+
+.font-button-container {
+    position: relative;
+}
+.font-button {
+    position: absolute;
+    color: white;
+    transition: 0.1s color, 0.3s ease transform;
+    transform: scale(1.0);
+    cursor: pointer;
+    &.selected {
+        color: rgb(56, 139, 241);
+    }
+    &:hover {
+        transform: scale(1.1);
+    }
+    &:active {
+        transform: scale(0.9);
+    }
+}
+
+.rotate {
+    animation: rotateImage 1.2s ease infinite;
+}
+
+.largewidth-only {
+    display: inherit;
+}
+
+.smallwidth-only {
+    display: none;
+}
+
+.rotate-90deg {
+    transform: rotate(90deg);
+}
+
+@keyframes rotateImage {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+

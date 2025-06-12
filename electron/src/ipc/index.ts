@@ -1,0 +1,1 @@
+export { initIPC } from './initIPC';

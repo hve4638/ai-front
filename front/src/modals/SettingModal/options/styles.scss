@@ -1,0 +1,172 @@
+:root {
+    --shortcut-input-color: rgb(60, 65, 71);
+    --shortcut-input-focus-color: rgb(45, 50, 56);
+    --inset-shadow-color: rgba(0, 0, 0, 0.1);
+    --inset-shadow-focus-color: rgba(0, 0, 0, 0.5);
+}
+
+.model-header {
+    box-sizing: border-box;
+    font-size: 0.8em;
+    color: white;
+}
+
+.model-list {
+    box-sizing: border-box;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 8px;
+    margin: 0px 4px;
+    background-color: rgb(30, 30, 30);
+
+    hr {
+        box-sizing: border-box;
+        margin: 2px auto;
+        width: 95%;
+        border-color: rgba(23, 23, 23, 0.5);
+    }
+
+    .provider {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0px 4px;
+        border-radius: 6px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.selected {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    .model {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0px 4px;
+        border-radius: 6px;
+        transition: background-color 0.15s ease;
+        color: white;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    .model-option {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 1.5em;
+        padding: 0px 0px 0px 1em;
+        margin: 1px 0px;
+        border-radius: 6px;
+        font-size: 0.8em;
+        transition: background-color 0.15s ease;
+
+        color: rgb(181, 181, 181);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-container {
+            box-sizing: border-box;
+            height: auto;
+
+            .tag {
+                background-color: rgb(44, 44, 44);
+                padding: 0px 0.5em;
+                height: auto;
+                border-radius: 50px;
+                margin-left: 2px;
+            }
+        }
+    }
+
+    .star {
+        transition: color 0.15s ease;
+
+        &.starred {
+            color: rgb(235, 188, 34);
+        }
+    }
+}
+
+.shortcut-modal {
+    .shortcut-description {
+        box-sizing: border-box;
+        padding: 0px 8px;
+        font-size: 0.75em;
+        color: grey;
+    }
+
+    .shortcut-input {
+        box-sizing: border-box;
+        border-radius: 5px;
+        padding: 8px;
+        margin: 0px 4px;
+        box-shadow: inset 0 0 5px var(--inset-shadow-color);
+        background-color: var(--shortcut-input-color);
+
+        transition: background-color 0.15s ease,
+            box-shadow 0.15s ease;
+
+        &:focus {
+            box-shadow: inset 0 0 5px var(--inset-shadow-focus-color);
+            background-color: var(--shortcut-input-focus-color);
+        }
+    }
+}
+
+
+.slider-container {
+    width: 400px;
+    padding: 16px;
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    position: relative;
+}
+
+.slider-label {
+    margin-bottom: 8px;
+    display: block;
+}
+
+.slider-wrapper {
+    position: relative;
+    height: 40px;
+}
+
+.custom-slider {
+    width: 100%;
+    height: 8px;
+    background: #555;
+    border-radius: 8px;
+    outline: none;
+    appearance: none;
+    position: relative;
+    z-index: 1;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.custom-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+}

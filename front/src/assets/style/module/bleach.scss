@@ -1,0 +1,60 @@
+/* 기본 HTML 스타일을 제거하는 CSS */
+
+textarea {
+    font-family: inherit;
+    cursor: auto;
+    padding: 0px;
+    border: 0px;
+    border-radius: 0px;
+    font-size : inherit;
+    resize : none;
+}
+
+div {
+    &:focus {
+        outline: none;
+    }
+}
+
+input {
+    border: 0px;
+}
+
+input:focus-visible {
+    outline: none;
+    outline-offset: 0px;
+}
+
+button {
+    background-color: white;
+    border: 0px;
+}
+
+button:hover {
+    background-color: white;
+    cursor : pointer;
+}
+
+h1 {
+    margin: 0px;
+    padding: 0px;
+    font-weight: 400;
+}
+
+h2 {
+    margin: 0px;
+    padding: 0px;
+    font-weight: 400;
+}
+
+h3 {
+    margin: 0px;
+    padding: 0px;
+    font-weight: 400;
+}
+
+h4 {
+    margin: 0px;
+    padding: 0px;
+    font-weight: 400;
+}

@@ -1,0 +1,71 @@
+:root {
+    --button-red-bgcolor: rgb(93, 12, 12);
+    --button-red-border-color: rgb(131, 19, 19);
+    --button-red-hover-bgcolor: rgb(127, 26, 26);
+    --button-blue-bgcolor: rgb(102, 102, 199);
+    --button-blue-border-color: rgb(132, 132, 255);
+    --button-blue-hover-bgcolor: rgb(82, 82, 175);
+}
+
+.button {
+    color: rgb(229, 229, 229);
+    background-color: rgb(40, 40, 40);
+    border: 1px solid rgb(90, 90, 90);
+    transition : background-color 0.15s ease,
+                border 0.15s ease,
+                color 0.15s ease;
+
+    &:hover {
+        background-color: rgb(61, 61, 61);
+    }
+
+    &.green {
+        color: rgb(255, 255, 255);
+        background-color: rgb(16, 163, 127);
+        border: 1px solid rgb(19, 131, 103);
+
+        &:hover {
+            background-color: rgb(26, 127, 100);
+        }
+    }
+
+    &.red {
+        color: rgb(205, 205, 205);
+        background-color: rgb(93, 12, 12);
+        border: 1px solid rgb(131, 19, 19);
+
+        &:hover {
+            background-color: rgb(127, 26, 26);
+        }
+    }
+
+    &.blue {
+        background-color: var(--button-blue-bgcolor);
+        border: 1px solid var(--button-blue-border-color);
+
+        &:hover {
+            background-color: var(--button-blue-hover-bgcolor);
+        }
+    }
+
+    &.transparent {
+        color: rgb(229, 229, 229);
+        background-color: transparent;
+        border: 0px;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    &.disabled {
+        color: rgb(153, 153, 153);
+        background-color: rgb(40, 40, 40);
+        border: 0px;
+        cursor: default !important;
+
+        &:hover {
+            background-color: rgb(40, 40, 40);
+        }
+    }
+}

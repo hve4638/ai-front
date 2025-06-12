@@ -1,0 +1,50 @@
+{
+    "compilerOptions": {
+        "isolatedModules": true,
+        "moduleResolution": "node10",
+        
+        "target": "es2022",
+        "module": "es2022",
+        
+        "forceConsistentCasingInFileNames": true, /* 대소문자 구분 규칙 */
+        "esModuleInterop": true, /* ES 모듈 호환성 */
+        
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny" : false, // 암시적 any 타입 허용
+        "exactOptionalPropertyTypes" : false, // 선택 필드에 대한 undefined 금지
+        "noImplicitReturns": false, // 모든 코드 경로에서 반환이 리턴 타입과 일치하는지 확인
+        "noFallthroughCasesInSwitch": false, // switch fall-through 허용
+        "noUncheckedIndexedAccess" : false, // 배열및 객체 필드 접근시 undefined 체크 없음
+        "noPropertyAccessFromIndexSignature" : true, // 확인 불가한 key에 대한 dot 연산자 사용 금지
+        "noImplicitOverride" : true, // 명시적 메서드 오버라이드
+        "allowUnreachableCode" : true, // 도달할 수 없는 코드 허용
+
+        "importHelpers": true, /* Import emit helpers from 'tslib'. */
+        "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+        "sourceMap": true,
+        // "declaration": true,
+        // "declarationDir": "./dist",
+        // "declarationMap": false,
+
+        "outDir" : "./dist",
+        "baseUrl": "./",
+        "paths": {
+          "@/*": ["src/*"],
+          "@utils": ["src/utils/index"],
+          "@utils/*": ["src/utils/*"],
+          "lib/*": ["src/lib/*"],
+          "@ipc/*": ["src/ipc/*"],
+          "@features/*": ["src/features/*"],
+          "types": ["src/types/index"],
+          "types/*": ["src/types/*"]
+        }
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

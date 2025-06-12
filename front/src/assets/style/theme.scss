@@ -1,0 +1,117 @@
+.theme-light {
+    background-color: rgb(245, 247, 248);
+    --background-color: rgb(245, 247, 248);
+    --border-color: rgb(118, 118, 118);
+
+    --default-border-color: rgb(118, 118, 118);
+
+    --button-bgcolor: rgb(52, 52, 53);
+    --button-border-color: rgb(104, 104, 104);
+    --button-hover-color: rgb(57, 57, 57);
+
+    --text-color: black;
+    --title-color: rgb(9, 26, 43);
+
+    --field-color: rgb(208, 212, 214);
+    --field-color-hover: rgb(198, 223, 255);
+
+    --inputfield-border-color: var(--default-border-color);
+    --inputfield-background-color: rgb(255, 255, 255);
+    --inputfield-transparent-color: #dddddd;
+
+    --icon-theme-color: black;
+
+    --background-red: rgba(255, 0, 0, 0.1);
+    --background-orange: rgba(255, 77, 0, 0.1);
+    --background-yellow: rgba(255, 255, 0, 0.1);
+    --background-lime: rgba(26, 255, 0, 0.1);
+    --background-green: rgba(132, 255, 0, 0.1);
+    --background-aqua: rgba(0, 247, 255, 0.1);
+    --background-blue: rgba(36, 153, 255, 0.1);
+    --background-purple: rgba(64, 0, 255, 0.1);
+    --background-reset: rgb(23, 23, 23);
+
+}
+
+.theme-dark {
+    /* 범용 */
+    --bgcolor: rgb(23, 23, 23);
+    --secondary-bgcolor: rgb(40, 40, 40);
+    // --secondary-bgcolor: rgb(32, 32, 32);
+
+    --background-color: rgb(23, 23, 23);
+
+    
+    --container-bgcolor: rgb(60, 68, 81);
+
+
+    background-color: var(--bgcolor);
+    --border-color: rgb(118, 118, 118);
+
+    /* 범용 텍스트 색상 */
+    --text-color: white;
+    --text-color-secondary: rgb(192, 192, 192);
+    --text-color-subtle: rgb(102, 102, 102);
+    --subtext-color: rgb(180, 180, 172);
+    --text-highlight-color: rgb(56, 139, 241);
+
+    --title-color: rgb(180, 180, 172);
+
+    --field-color: rgb(47, 47, 47);
+
+    --icon-theme-color: rgb(180, 181, 184);
+
+    --warn-color: rgb(236, 57, 54);
+    --warn-background-color: rgb(73, 53, 53);
+
+    --button-border-color: rgb(104, 104, 104);
+    --button-bgcolor: rgb(52, 52, 53);
+    --button-hover-color: rgb(57, 57, 57);
+
+    --dropdown-light-color: rgb(60, 60, 60);
+    --dropdown-light-hover-color: rgb(81, 81, 81);
+
+    --input-background-color: rgb(241, 241, 241);
+    --text-field-color: rgb(56, 56, 56);
+
+    --text-field-preview-color: rgb(51, 57, 62);
+    --text-field-hr-color: rgb(134, 134, 134);
+
+    --tooltip-text-color: rgb(191, 191, 191);
+    --tooltip-background-color: rgb(47, 47, 47);
+    --tooltip-border-color: rgb(68, 68, 68);
+
+
+
+    /* 그라데이션 세션 배경 색상 */
+    --background-red: rgba(255, 0, 0, 0.1);
+    --background-orange: rgba(255, 77, 0, 0.1);
+    --background-yellow: rgba(255, 255, 0, 0.1);
+    --background-lime: rgba(26, 255, 0, 0.1);
+    --background-green: rgba(132, 255, 0, 0.1);
+    --background-aqua: rgba(0, 247, 255, 0.1);
+    --background-blue: rgba(36, 153, 255, 0.1);
+    --background-purple: rgba(64, 0, 255, 0.1);
+    --background-reset: rgb(23, 23, 23);
+
+    --default-border-color: rgb(118, 118, 118);
+
+    --inputfield-border-color: var(--default-border-color);
+    --inputfield-background-color: rgb(47, 47, 47);
+    --inputfield-transparent-color: rgba(47, 47, 47, 0.8);
+
+    --modal-outside-color: rgb(0, 0, 0, 0.4);
+    --modal-background-color: rgb(47, 47, 47);
+    --modal-border-color: var(--default-border-color);
+    --modal-default-font-size: 16px;
+    --modal-default-color: white;
+
+    --textbox-background-color: rgb(56, 56, 56);
+    --textbox-border-color: var(--default-border-color);
+    --textbox-color: white;
+
+    --hr-color: rgb(134, 134, 134);
+
+    --history-input-color: white;
+    --history-output-color: rgb(187, 187, 187);
+}

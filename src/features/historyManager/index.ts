@@ -1,1 +1,0 @@
-export { HistoryManager } from './historyManager';

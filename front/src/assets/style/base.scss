@@ -1,0 +1,68 @@
+// html {
+//     font-family: 'NanumGothic', sans-serif;
+//     width: 100vw;
+//     height: 100vh;
+// }
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 18px;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.25em;
+}
+
+h3 {
+    font-size: 1.125em;
+}
+
+h4, h5 {
+    font-size: 1em;
+}
+hr {
+    width : auto;
+    box-sizing: border-box;
+    margin: 0.25em 0.25em;
+
+    border: none;
+    border-top: 1px solid rgb(53, 55, 64);
+}
+
+small {
+    font-size: 0.75em;
+}
+
+button {
+    font-size: 0.85em;
+}
+
+input[type="text"] {
+    font-size: 0.95em;
+}
+
+input[type="checkbox"] {
+    &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
+    }
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer !important;
+    &:hover {
+        text-decoration: none;
+    }
+}

@@ -1,0 +1,33 @@
+:global(.theme-dark) {
+    --button-warn-bgcolor: rgb(214, 60, 60);
+    --button-warn-hover-bgcolor: rgb(227, 76, 76);
+    --button-highlight: rgb(100, 128, 206);
+}
+
+.dialog-button {
+    &:global(.dimmed) {
+        color: rgb(229, 229, 229);
+        background-color: transparent;
+        border-color : transparent;
+        
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    &:global(.highlight) {
+        background-color: var(--button-highlight);
+        border-color : var(--button-highlight);
+    }
+
+    &:global(.warn) {
+        background-color: var(--button-warn-bgcolor);
+        border-color : var(--button-warn-bgcolor);
+
+        &:hover {
+            background-color: var(--button-warn-hover-bgcolor);
+            border-color : var(--button-warn-hover-bgcolor);
+        }
+    }
+}

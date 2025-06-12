@@ -1,0 +1,57 @@
+.session-bar { 
+    background-color: var(--secondary-bgcolor);
+}
+
+.tab-container {
+    &:not(:active) {
+        transition : left 0.3s ease, background-color 0.15s ease;
+    }
+}
+
+.tab {
+    position: relative;
+    background-color: transparent;
+    border-radius: 0px 0px 8px 8px;
+    z-index: 2;
+
+    &.selected {
+        z-index: 5;
+    }
+
+    &.smooth {
+        transition : left 0.3s ease;
+        z-index: 4;
+    }
+
+    &.instant {
+        transition: none;
+    }
+    
+    .close-button {
+        cursor: pointer;
+        border-radius: 20px;
+        transition : 0.1s ease background-color;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+.session-add-button {
+    position: relative;
+    background-color: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0px 2px;
+
+    .hover-effect {
+        border-radius: 50%;
+        margin : 1px;
+    }
+
+    &:hover {
+        .hover-effect {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+    }
+}

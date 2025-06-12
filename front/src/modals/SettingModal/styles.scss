@@ -1,0 +1,11 @@
+.setting-category {
+    transition : color 0.15s ease;
+    color: grey;
+
+    &.selected {
+        color: white;
+    }
+    &:hover {
+        color: rgb(220, 220, 220);
+    }
+}

@@ -1,0 +1,120 @@
+@use './theme.scss';
+
+.main-section {
+    z-index: 3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+
+    .send-button {
+        background-color: rgb(28, 28, 28, 0.75);
+        border-radius: 8px;
+        aspect-ratio: 1;
+        font-size: 0.85em;
+        padding: 4px;
+
+        &:hover {
+            background-color: rgba(92, 92, 92, 0.75);
+            // background-color: rgb(28, 28, 28, 1);
+        }
+    }
+}
+
+.output-info-button {
+    background-color: rgba(10, 10, 10, 0.0);
+    padding: 0em 0.4em;
+    border-radius: 10px;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(10, 10, 10, 0.25);
+    }
+}
+
+@mixin chat {
+    display: block;
+    width: 100%;
+    padding: 8px 1em;
+    border-radius: 16px;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.token-count {
+    font-size: 0.8rem;
+    background-color: rgba(47, 47, 47, 0.7);
+    border-radius: 12px;
+
+}
+
+.chat-container {
+    width: 100%;
+    height: 100%;
+    padding: 0 0.75em;
+
+    .input-side {
+        @include chat;
+
+        background-color: var(--chat-input-side);
+    }
+
+    .output-side {
+        @include chat;
+
+        background-color: var(--chat-output-side);
+    }
+}
+
+.chat-input-container {
+    width: 100%;
+    height: 100%;
+    padding: 0.75em;
+    box-sizing: border-box;
+
+    .chat-input {
+        display: block;
+        position: relative;
+        width: 100%;
+        border-radius: 20px;
+        padding: 12px 0.75em;
+        border: 1px solid var(--inputfield-border-color);
+        background-color: var(--inputfield-background-color);
+
+        textarea {
+            background-color: transparent;
+            width: 100%;
+            height: auto;
+            overflow-y: auto;
+            resize: none;
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .token-count {
+            font-size: 0.5em;
+
+            color: var(--subtext-color);
+        }
+
+        .send-button {
+            background-color: rgb(28, 28, 28, 0.75);
+            border-radius: 8px;
+            height: 100%;
+            aspect-ratio: 1;
+            font-size: 0.85em;
+
+            &:hover {
+                background-color: rgba(92, 92, 92, 0.75);
+                // background-color: rgb(28, 28, 28, 1);
+            }
+        }
+    }
+}
+
+.markdown-enabled {
+    color: rgb(134, 184, 255);
+
+    // color: rgb(134, 184, 255);
+}

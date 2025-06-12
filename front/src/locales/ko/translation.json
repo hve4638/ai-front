@@ -1,0 +1,113 @@
+{
+    "create_label" : "생성",
+    "submit_label" : "확인",
+    "confirm_label" : "확인",
+    "delete_label" : "삭제",
+    "cancel_label" : "취소",
+    "prev_label" : "뒤로",
+    "error" : {
+        "not_found" : "찾을 수 없습니다."
+    },
+    "shortcut" : {
+        "font_size_up" : "폰트 크기 확대",
+        "font_size_down" : "폰트 크기 축소",
+        "send_request" : "요청 전송",
+        "copy_response" : "응답 복사",
+        "next_tab" : "다음 세션",
+        "prev_tab" : "이전 세션",
+        "create_tab" : "세션 생성",
+        "remove_tab" : "세션 닫기",
+        "undo_remove_tab" : "세션 삭제 취소",
+        "tab1" : "세션 1 전환",
+        "tab2" : "세션 2 전환",
+        "tab3" : "세션 3 전환",
+        "tab4" : "세션 4 전환",
+        "tab5" : "세션 5 전환",
+        "tab6" : "세션 6 전환",
+        "tab7" : "세션 7 전환",
+        "tab8" : "세션 8 전환",
+        "tab9" : "세션 9 전환",
+        "toggle_screen" : "화면 활성화/비활성화",
+        "paste_clipboard_into_input" : "클립보드 입력에 복사"
+    },
+    "prompt_editor" : {
+        "title" : "편집",
+        "metadata_edit_title" : "메타데이터 편집",
+        "name_label" : "이름",
+        "id_label" : "식별자",
+        "submit_label" : "",
+        "saved_label" : "저장됨",
+        "save_label" : "저장",
+        "save_new_label" : "새로 저장",
+        "add_form_label" : "변수 추가",
+        "prompt_default_name" : "새 프롬프트",
+        "variable_default_name" : "새 변수",
+
+        "error" : {
+            "INVALID_TOKEN" : "잘못된 토큰",
+            "MULTIPLE_EXPRESSION" : "한 표현식에 여러 값이 들어갈 수 없습니다",
+            "MISSING_OPEN_PAREN" : "'('가 없습니다",
+            "MISSING_OPEN_INDEXOR" : "'['가 없습니다",
+            "NO_EXPRESSION" : "빈 표현식",
+            "UNPROCESSED_EXPRESSION_REMAIN" : "표현식 해석에 실패했습니다",
+            "INVALID_FORMULA" : "잘못된 수식",
+            "INVALID_ACCESSOR" : "잘못된 접근자",
+            "INVALID_OPERAND" : "수식 해석 중 오류가 발생했습니다",
+            "MISSING_PARAM_TOKEN" : "표현식 해석 중 오류가 발생했습니다",
+            "INVALID_DIRECTIVE" : "잘못된 지시자",
+            "UNKNOWN_DIRECTIVE" : "알 수 없는 지시자",
+            "INVALID_FRAGMENT" : "프롬프트 해석 중 오류가 발생했습니다",
+            "MISSING_ENDIF" : "ENDIF가 없습니다",
+            "MISSING_ENDFOREACH" : "ENDFOREACH가 없습니다",
+            "DUPLICATE_ELSE_DIRECTIVE" : "ELSE는 한 번만 사용할 수 있습니다",
+            "IDENTIFIER_RESOLVE_FAIL" : "잘못된 식별자",
+
+            "NO_HOOK" : "지원하지 않는 연산",
+            "OPERATOR_NOT_SUPPORTED" : "지원하지 않는 연산",
+            "EXCEPTION_IN_HOOK" : "내부 연산에 오류가 발생습니다",
+            "INVALID_AST_FORMAT" : "잘못된 AST 형식 (내부 오류)",
+            "LOGIC_ERROR" : "내부 문제가 발생했습니다"
+        }
+    },
+    "form_editor" : {
+        "title": "변수 편집",
+        "type_label": "타입",
+        "name_label": "변수명",
+        "display_name_label": "표시되는 이름",
+        "default_value_label": "기본값",
+
+        "text_config" : {
+            "allow_multiline_label" : "여러 줄 허용",
+            "placeholder_label" : "플레이스홀더"
+        },
+        "select_config" : {
+            "option_label" : "옵션"
+        },
+        "checkbox_config" : {
+        },
+        "number_config" : {
+            
+        }
+    },
+    "rt" : {
+        "new_rt" : "생성",
+        "new_rt_title" : "새 요청 템플릿",
+        "select_prompt_only_mode_button" : "단일 프롬프트",
+        "select_flow_mode_button" : "워크플로우",
+        "rt_create" : "새 템플릿 추가",
+        "rt_load" : "템플릿 불러오기",
+        "rt_edit" : "요청 템플릿 수정",
+        "name" : "이름",
+        "identifier" : "내부 식별자",
+        "advanced_button" : "고급",
+
+        "new_directory" : "새 폴더"
+    },
+    "session" : {
+        "default_name" : "새 세션"
+    },
+    "history" : {
+        "title" : "기록"
+    }
+}
+

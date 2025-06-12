@@ -1,0 +1,72 @@
+.theme-dark {
+    --palette-red-bgcolor: rgb(162, 57, 57);
+    --palette-red-tab-bgcolor: rgba(162, 57, 57, 0.65);
+    --palette-red-tab-hover-bgcolor: rgba(162, 57, 57, 0.75);
+
+    --palette-orange-bgcolor: rgb(184, 128, 44);
+    --palette-orange-tab-bgcolor: rgba(184, 128, 44, 0.65);
+    --palette-orange-tab-hover-bgcolor: rgba(184, 128, 44, 0.75);
+
+    --palette-yellow-bgcolor: rgb(185, 154, 43);
+    --palette-yellow-tab-bgcolor: rgba(185, 154, 43, 0.65);
+    --palette-yellow-tab-hover-bgcolor: rgba(185, 154, 43, 0.75);
+
+    --palette-green-bgcolor: rgb(44, 184, 58);
+    --palette-green-tab-bgcolor: rgba(44, 184, 58, 0.65);
+    --palette-green-tab-hover-bgcolor: rgba(44, 184, 58, 0.75);
+
+    --palette-sky-bgcolor: rgb(127, 197, 211);
+    --palette-sky-tab-bgcolor: rgba(127, 197, 211, 0.65);
+    --palette-sky-tab-hover-bgcolor: rgba(127, 197, 211, 0.7);
+
+    --palette-blue-bgcolor: rgb(30, 144, 255);
+    --palette-blue-tab-bgcolor: rgba(30, 144, 255, 0.5);
+    --palette-blue-tab-hover-bgcolor: rgba(30, 144, 255, 0.6);
+
+    --palette-purple-bgcolor: rgb(119, 91, 206);
+    --palette-purple-tab-bgcolor: rgba(119, 91, 206, 0.5);
+    --palette-purple-tab-hover-bgcolor: rgba(119, 91, 206, 0.6);
+
+    --palette-default-bgcolor: var(--bgcolor);
+    --palette-default-tab-bgcolor: transparent;
+    --palette-default-tab-hover-bgcolor: rgba(255, 255, 255, 0.05);
+}
+
+@mixin palette-body($name) {
+    &.body {
+        background: linear-gradient(transparent, var(--palette-#{$name}-bgcolor));
+    }
+}
+
+@mixin palette-tab($name) {
+    &.tab {
+        background-color: var(--palette-#{$name}-bgcolor);
+
+        &:not(.selected) {
+            background-color: var(--palette-#{$name}-tab-bgcolor);
+
+            &:hover {
+                background-color: var(--palette-#{$name}-tab-hover-bgcolor);
+            }
+        }
+    }
+}
+
+@mixin palette-theme($name) {
+    @include palette-body($name);
+    @include palette-tab($name);
+}
+
+$palette-names: red, orange, yellow, green, sky, blue, purple, default;
+
+@each $name in $palette-names {
+    .palette-#{$name} {
+        @include palette-theme($name);
+    }
+}
+
+// .palette-default {
+//     &.selected {
+//         background-color: var(--bgcolor);
+//     }
+// }
