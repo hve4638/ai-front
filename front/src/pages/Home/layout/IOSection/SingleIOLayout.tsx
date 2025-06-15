@@ -243,13 +243,13 @@ function SingleIOLayout({
                             value='content_paste'
                             hoverEffect='square'
                         />
-                        <GIconButton
+                        {/* <GIconButton
                             style={{
                                 fontSize: '1.15em'
                             }}
                             value='edit'
                             hoverEffect='square'
-                        />
+                        /> */}
                     </Row>
                 </InputField>
                 <SplitSlider

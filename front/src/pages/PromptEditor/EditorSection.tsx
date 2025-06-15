@@ -83,6 +83,8 @@ function EditorSection({
         quickSuggestions: false,
         contextmenu: false,
         lightbulb: { enabled: undefined },
+        wordWrap: 'bounded',
+        wrappingStrategy: 'advanced',
     };
     
     return (
@@ -103,6 +105,7 @@ function EditorSection({
                 onMount={
                     (editor, monaco) => {
                         editorRef.current = editor;
+                        lint(data.contents ?? '');
                     }
                 }
             />
