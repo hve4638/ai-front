@@ -77,6 +77,7 @@ function App() {
 
     return (
         <div
+            id='app'
             className={
                 classNames(
                     'theme-dark',
