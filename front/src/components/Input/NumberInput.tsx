@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 interface NumberInputProps {
-    value : number;
+    value? : number;
     onChange: (value:number) => void;
     allowDecimal?: boolean;
     instantChange?: boolean;
@@ -25,10 +25,10 @@ const NumberInput = forwardRef(({
     style={},
     placeholder='',
 }:NumberInputProps, ref:React.Ref<HTMLInputElement>) => {
-    const [current, setCurrent] = useState<string>(value.toString());
+    const [current, setCurrent] = useState<string>(value?.toString() ?? '');
     
     useLayoutEffect(() => {
-        setCurrent(value.toString());
+        setCurrent(value?.toString() ?? '');
     }, [value]);
 
     const changeValue = (value:string) => {
