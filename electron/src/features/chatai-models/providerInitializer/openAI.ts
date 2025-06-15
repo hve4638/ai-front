@@ -13,63 +13,63 @@ const {
 } = flags;
 
 function initProvider(provider:ModelProvider) {
-    const baseFlags = { responses_api };
-    const oldBaseFlags = { chat_completions_api };
+    const resBaseFlags = { responses_api };
+    const ccBaseFlags = { chat_completions_api };
 
     provider.addModels('ChatGPT-4o',
         [
-            model('ChatGPT 4o', 'chatgpt-4o-latest', { latest, featured, ...baseFlags }),
+            model('ChatGPT 4o', 'chatgpt-4o-latest', { latest, featured, ...ccBaseFlags }),
         ]
     );
     provider.addModels('GPT-4o',
         [
-            model('GPT 4o', 'gpt-4o', { latest, featured, ...baseFlags }),
-            model('GPT 4o (2024-11-20)', 'gpt-4o-2024-11-20', { snapshot, ...baseFlags }),
-            model('GPT 4o (2024-08-06)', 'gpt-4o-2024-08-06', { snapshot, ...baseFlags }),
-            model('GPT 4o (2024-05-13)', 'gpt-4o-2024-05-13', { snapshot, ...baseFlags }),
-            model('GPT 4o mini', 'gpt-4o-mini', { latest, featured, ...baseFlags }),
-            model('GPT 4o mini (2024-07-18)', 'gpt-4o-mini-2024-07-18', { snapshot, ...baseFlags }),
+            model('GPT 4o', 'gpt-4o', { latest, featured, ...ccBaseFlags }),
+            model('GPT 4o (2024-11-20)', 'gpt-4o-2024-11-20', { snapshot, ...ccBaseFlags }),
+            model('GPT 4o (2024-08-06)', 'gpt-4o-2024-08-06', { snapshot, ...ccBaseFlags }),
+            model('GPT 4o (2024-05-13)', 'gpt-4o-2024-05-13', { snapshot, ...ccBaseFlags }),
+            model('GPT 4o mini', 'gpt-4o-mini', { latest, featured, ...ccBaseFlags }),
+            model('GPT 4o mini (2024-07-18)', 'gpt-4o-mini-2024-07-18', { snapshot, ...ccBaseFlags }),
         ]
     );
     provider.addModels('GPT-4.1',
         [
-            model('GPT 4.1', 'gpt-4.1', { latest, featured, ...baseFlags }),
-            model('GPT 4.1 (2025-04-14)', 'gpt-4.1-2025-04-14', { snapshot, ...baseFlags }),
-            model('GPT 4.1 mini', 'gpt-4.1-mini', { latest, featured, ...baseFlags }),
-            model('GPT 4.1 mini (2025-04-14)', 'gpt-4.1-mini-2025-04-14', { snapshot, ...baseFlags }),
-            model('GPT 4.1 nano', 'gpt-4.1-nano', { latest, ...baseFlags }),
-            model('GPT 4.1 nano (2025-04-14)', 'gpt-4.1-nano-2025-04-14', { snapshot, ...baseFlags }),
+            model('GPT 4.1', 'gpt-4.1', { latest, featured, ...ccBaseFlags }),
+            model('GPT 4.1 (2025-04-14)', 'gpt-4.1-2025-04-14', { snapshot, ...ccBaseFlags }),
+            model('GPT 4.1 mini', 'gpt-4.1-mini', { latest, featured, ...ccBaseFlags }),
+            model('GPT 4.1 mini (2025-04-14)', 'gpt-4.1-mini-2025-04-14', { snapshot, ...ccBaseFlags }),
+            model('GPT 4.1 nano', 'gpt-4.1-nano', { latest, ...ccBaseFlags }),
+            model('GPT 4.1 nano (2025-04-14)', 'gpt-4.1-nano-2025-04-14', { snapshot, ...ccBaseFlags }),
         ]
     );
     provider.addModels('o4',
         [
-            model('o4 mini', 'o4-mini', { latest, featured, ...baseFlags }),
-            model('o4 mini (2025-04-16)', 'o4-mini-2025-04-16', { snapshot, ...baseFlags }),
+            model('o4 mini', 'o4-mini', { latest, featured, ...resBaseFlags }),
+            model('o4 mini (2025-04-16)', 'o4-mini-2025-04-16', { snapshot, ...resBaseFlags }),
         ]
     );
     provider.addModels('o3',
         [
-            model('o3', 'o3', { latest, featured, ...oldBaseFlags }),
-            model('o3 (2025-04-16)', 'o3-2025-04-16', { snapshot, ...oldBaseFlags }),
+            model('o3', 'o3', { latest, featured, ...ccBaseFlags }),
+            model('o3 (2025-04-16)', 'o3-2025-04-16', { snapshot, ...ccBaseFlags }),
 
-            model('o3 mini', 'o3-mini', { latest, featured, ...baseFlags }),
-            model('o3 (2025-01-31)', 'o3-mini-2025-01-31', { snapshot, ...baseFlags }),
+            model('o3 mini', 'o3-mini', { latest, featured, ...resBaseFlags }),
+            model('o3 (2025-01-31)', 'o3-mini-2025-01-31', { snapshot, ...resBaseFlags }),
         ]
     );
     provider.addModels('o1',
         [
-            model('o1', 'o1', { latest, featured, ...baseFlags }),
-            model('o1 (2024-12-17)', 'o1-2024-12-17', { snapshot, ...baseFlags }),
-            model('o1 pro', 'o1-pro', { latest, featured, high_cost, ...baseFlags }),
-            model('o1 pro (2025-03-19)', 'o1-pro-2025-03-19', { snapshot, high_cost, ...baseFlags }),
-            model('o1 mini', 'o1-mini', { latest, featured, ...oldBaseFlags }),
-            model('o1 mini (2024-09-12)', 'o1-mini-2024-09-12', { snapshot, ...oldBaseFlags }),
-            model('o1 preview', 'o1-preview', { latest, ...oldBaseFlags }),
-            model('o1 preview (2024-09-12)', 'o1-preview-2024-09-12', { snapshot, ...oldBaseFlags }),
+            model('o1', 'o1', { latest, featured, ...resBaseFlags }),
+            model('o1 (2024-12-17)', 'o1-2024-12-17', { snapshot, ...resBaseFlags }),
+            model('o1 pro', 'o1-pro', { latest, featured, high_cost, ...resBaseFlags }),
+            model('o1 pro (2025-03-19)', 'o1-pro-2025-03-19', { snapshot, high_cost, ...resBaseFlags }),
+            model('o1 mini', 'o1-mini', { latest, featured, ...ccBaseFlags }),
+            model('o1 mini (2024-09-12)', 'o1-mini-2024-09-12', { snapshot, ...ccBaseFlags }),
+            model('o1 preview', 'o1-preview', { latest, ...ccBaseFlags }),
+            model('o1 preview (2024-09-12)', 'o1-preview-2024-09-12', { snapshot, ...ccBaseFlags }),
         ]
     );
 
-    const legacyFlags = { deprecated, ...baseFlags };
+    const legacyFlags = { deprecated, ...ccBaseFlags };
     provider.addModels('GPT-4',
         [
             model('GPT 4 Turbo', 'gpt-4-turbo', { latest, ...legacyFlags }),
