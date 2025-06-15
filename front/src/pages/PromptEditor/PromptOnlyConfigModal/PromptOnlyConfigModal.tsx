@@ -108,6 +108,7 @@ function PromptOnlyConfigModal({
                         data.changed.model = true;
                         refresh();
                     }}
+                    allowDecimal={true}
                 />
                 <NumberForm
                     name='Top P'
@@ -117,6 +118,7 @@ function PromptOnlyConfigModal({
                         data.changed.model = true;
                         refresh();
                     }}
+                    allowDecimal={true}
                 />
                 {/* <NumberForm
                     name='생각 토큰 크기'

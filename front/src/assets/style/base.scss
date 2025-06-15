@@ -44,6 +44,10 @@ button {
     font-size: 0.85em;
 }
 
+input {
+    color: var(--text-color);
+}
+
 input[type="text"] {
     font-size: 0.95em;
 }
@@ -68,5 +72,9 @@ a {
 }
 
 textarea {
+    color: var(--text-color);
+}
+
+select {
     color: var(--text-color);
 }
