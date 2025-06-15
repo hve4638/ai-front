@@ -115,3 +115,8 @@
     --history-input-color: white;
     --history-output-color: rgb(187, 187, 187);
 }
+
+#app {
+    // background-color: var(--bgcolor);
+    color: var(--text-color);
+}
