@@ -934,13 +934,14 @@
   resolved "https://registry.yarnpkg.com/@hve/channel/-/channel-1.0.1.tgz#9c6a172545ad304961c734da1867757ff147d58a"
   integrity sha512-ffTWy2galb6SsjDiUUcl+RztOdD+Arsx7VDyc9V64ULZyui+rlnvClnCWUuz5Kr/0NYmK+d9Gabfx1xIInaPcA==
 
-"@hve/chatai@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@hve/chatai/-/chatai-0.7.0.tgz#0700cbb7e64a17d5639a43341792ee131cf35292"
-  integrity sha512-+DLGNxVPhWeMG4JwFXqxn0dpm13oXPOcHC2iFX7a+bmRv3XuPqRWkLfKlqZfEZM9qS5er2ASkdXmgK6WA5LqKg==
+"@hve/chatai@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@hve/chatai/-/chatai-0.9.0.tgz#46426517f9088e6f24d131773741506d0c53ea3c"
+  integrity sha512-cnzInnP74erCErcMer4J7tIw0s9LSgmdGT5MeoW/DpmoxHLW+UfHyV9foqxfI2VtmroLgdvp16K1d6+gHK0f+A==
   dependencies:
     axios "^1.7.9"
     tslib "^2.8.1"
+    zod "^3.25.63"
 
 "@hve/json-accessor@^0.4.0":
   version "0.4.0"
@@ -1923,9 +1924,9 @@ author-regex@^1.0.0:
   integrity sha512-KbWgR8wOYRAPekEmMXrYYdc7BRyhn2Ftk7KWfMUnQ43hFdojWEFRxhhRUm3/OFEdPa1r0KAvTTg9YQK57xTe0g==
 
 axios@^1.7.9:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
-  integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.10.0.tgz#af320aee8632eaf2a400b6a1979fa75856f38d54"
+  integrity sha512-/1xYAC4MP/HEG+3duIhFr4ZQXR4sQXOIe+o6sdqzeykGLx6Upp/1p8MHqhINOvGeP7xyNHe7tsiJByc4SSVUxw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -6279,3 +6280,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.25.63:
+  version "3.25.64"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.64.tgz#57b5c7e76dd64e447f7e710285fcdb396b32f803"
+  integrity sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==
