@@ -30,7 +30,7 @@ function ModelDropdown() {
             };
             provider.list.forEach((category:ChatAIMoedelCategory)=>{
                 category.list.forEach((model:ChatAIModel)=>{
-                    if (!only_starred_models || isModelStarred(model.id)) {
+                    if ((!only_starred_models && model.flags.featured) || isModelStarred(model.id)) {
                         nextProvider.list.push({
                             name: show_actual_model_name ? model.name : model.displayName,
                             key: model.id,

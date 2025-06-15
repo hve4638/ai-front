@@ -1,6 +1,6 @@
 {
   "name": "afron",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0",
   "description": "ChatAI Frontend",
   "repository": "https://github.com/hve4638/ai-front.git",
   "author": "Hve",
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@hve/channel": "^1.0.1",
-    "@hve/chatai": "^0.7.0",
+    "@hve/chatai": "^0.9.0",
     "@hve/prompt-template": "^0.1.0",
     "ac-storage": "^0.12.0",
     "better-sqlite3": "^11.3.0",

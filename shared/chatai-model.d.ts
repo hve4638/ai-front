@@ -13,7 +13,6 @@ declare global {
         snapshot? : true;
         high_cost? : true;
         
-        
         thinking? : true;
         cache? : true;
 
@@ -28,10 +27,11 @@ declare global {
         openai_cache_v1? : true;
 
         // 엔드포인트. 최소 하나의 엔드포인트 플래그가 있어야 함
-        chat_completions_endpoint? : true;
-        generative_language_endpoint? : true;
-        claude_endpoint? : true;
-        vertexai_endpoint? : true;
+        chat_completions_api? : true;
+        responses_api? : true;
+        generative_language_api? : true;
+        anthropic_api? : true;
+        vertexai? : true;
 
         // 디버그 전용
         custom_endpoint? : true;

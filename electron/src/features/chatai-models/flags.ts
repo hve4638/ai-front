@@ -18,11 +18,13 @@ const flags:Required<ChatAIModelFlags> = {
     claude_cache_v1: true,
     openai_cache_v1: true,
 
-    chat_completions_endpoint: true,
-    generative_language_endpoint: true,
-    claude_endpoint: true,
-    vertexai_endpoint: true,
-    custom_endpoint: true
+    chat_completions_api: true,
+    responses_api: true,
+    generative_language_api: true,
+    anthropic_api: true,
+    vertexai: true,
+
+    custom_endpoint: true,
     
     // openai_reasoning: true,
 }

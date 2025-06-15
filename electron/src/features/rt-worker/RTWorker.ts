@@ -47,6 +47,7 @@ class RTWorker {
             })
             .catch((error) => {
                 runtime.logger.info(`RT request failed (${token})`);
+                runtime.logger.error(`RT request error:`, error);
             })
             .finally(() => {
                 rtSender.sendClose();

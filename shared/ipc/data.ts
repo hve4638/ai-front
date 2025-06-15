@@ -66,7 +66,7 @@ declare global {
         searchScope: 'any' | 'input' | 'output';
     }
 
-    type VertexAIAPI = {
+    type VertexAIAuth = {
         project_id: string;
         private_key: string;
         client_email: string;

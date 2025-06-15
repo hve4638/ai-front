@@ -13,7 +13,6 @@ class RTWorkflowPromptOnly extends RTWorkflow {
         const stringifyChatMLNode = new StringifyChatMLNode(2, nodeData, {});
         const outputNode = new OutputNode(3, nodeData, {});
 
-        
         const historyAC = await this.profile.accessAsHistory(nodeData.sessionId);
 
         let input: string;

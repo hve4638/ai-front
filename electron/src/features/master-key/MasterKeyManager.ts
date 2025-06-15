@@ -26,7 +26,7 @@ class MasterKeyManager {
      * 마스터 키 초기화 작업을 진행하고 오류 상태 반환
      */
     async init(): Promise<MasterKeyInitResult> {
-        runtime.logger.info(`Initializing master key manager for target: ${this.target}`);
+        runtime.logger.info(`Initializing MasterKeyManager`);
         if (this.#rawEncryptionData.length === 0) {
             const result = await this.#setupRawEncryptionData();
             if (result != null) {

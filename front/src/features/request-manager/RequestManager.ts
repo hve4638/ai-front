@@ -97,10 +97,10 @@ class RequestManager {
                     'state': 'done',
                 });
                 useSignalStore.getState().signal.session_metadata();
-                // if (sessionState.deps.last_session_id === sessionAPI.id) {
-                //     sessionState.refetch.state();
-                //     sessionState.refetch.output();
-                // }
+                if (sessionState.deps.last_session_id === sessionAPI.id) {
+                    sessionState.refetch.state();
+                }
+                useSignalStore.getState().signal.session_metadata();
 
                 useToastStore.getState().add(
                     'Request closed unexpectedly',

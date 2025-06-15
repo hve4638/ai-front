@@ -59,7 +59,7 @@ function VertexAIAPIKeySection({ title, addButtonText, apiKeys }: SingleAPIKeySe
 
 interface AddVertexAIKeyButtonProps {
     title: string;
-    onAddAPIKey: (data: VertexAIAPI) => void;
+    onAddAPIKey: (data: VertexAIAuth) => void;
 }
 
 function AddVertexAIKeyButton({
