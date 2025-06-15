@@ -132,10 +132,11 @@ function PromptEditor() {
 
         editorData.current.name = name;
         if (model) {
+            /// @TODO : 원래 model은 반드시 valid하게 와야하는데 {}만 오는 문제
             editorData.current.model = {
-                temperature: model.temperature,
-                topP: model.top_p,
-                maxTokens: model.max_tokens,
+                temperature: model.temperature ?? 1.0,
+                topP: model.top_p ?? 1.0,
+                maxTokens: model.max_tokens ?? 1024,
             };
         }
         editorData.current.contents = contents;
