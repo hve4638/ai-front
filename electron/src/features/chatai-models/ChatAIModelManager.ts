@@ -43,8 +43,8 @@ class ChatAIModelManager {
         const claudeProvider = this.#addProvider('Anthropic', KnownProvider.Anthropic);
         initClaudeProvider(claudeProvider);
 
-        // const vertexAIProvider = this.#addProvider('VertexAI', KnownProvider.VertexAI);
-        // initVertexAIProvider(vertexAIProvider);
+        const vertexAIProvider = this.#addProvider('VertexAI', KnownProvider.VertexAI);
+        initVertexAIProvider(vertexAIProvider);
 
         // const debugProvider = this.#addProvider('Debug', 'debug');
         // initDebugProvider(debugProvider);

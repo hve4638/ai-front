@@ -4,6 +4,7 @@ import type { ChatAIResult, ChatMessage, KnownProvider } from '@hve/chatai';
 import ChatAIModels from '@/features/chatai-models';
 import { WorkNodeStop } from './errors';
 import { ProfileAPIKeyControl } from '@/features/profile-control';
+import runtime from '@/runtime';
 
 type ChatAIFetchNodeInput = {
     messages: ChatMessage[];
@@ -25,14 +26,22 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             const result = await this.request(messages);
 
             if (!result.response.ok) {
+                runtime.logger.error(
+                    `ChatAI Fetch Error: ${result.response.http_status} - ${result.response.http_status_text}`,
+                    result.response.raw
+                );
                 sender.sendError(
                     `HTTP Error (${result.response.http_status})`,
-                    [
-
-                    ]
+                    []
                 );
                 throw new WorkNodeStop();
             }
+
+            
+            runtime.logger.debug(
+                `ChatAIFetchNode Result:`,
+                result.response.raw
+            );
 
             return {
                 result: result,
@@ -93,6 +102,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             const apiKey = auth as string;
 
             if (flags.responses_api) {
+                runtime.logger.trace('Requesting ResponsesAPI (OpenAI)');
                 return await ChatAI.requestResponses({
                     model: modelName,
                     messages: messages,
@@ -106,6 +116,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 });
             }
             else if (flags.chat_completions_api) {
+                runtime.logger.trace('Requesting ChatCompletionsAPI (OpenAI)');
                 return await ChatAI.requestChatCompletion({
                     model: modelName,
                     messages: messages,
@@ -119,6 +130,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 });
             }
             else if (flags.generative_language_api) {
+                runtime.logger.trace('Requesting GenerativeLanguageAPI (Google)');
                 return await ChatAI.requestGenerativeLanguage({
                     model: modelName,
                     messages: messages,
@@ -132,6 +144,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 });
             }
             else if (flags.anthropic_api) {
+                runtime.logger.trace('Requesting AnthropicAPI (Anthropic)');
                 return await ChatAI.requestAnthropic({
                     model: modelName,
                     messages: messages,
@@ -147,11 +160,14 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         }
         else {
             const vertexAIAuth = auth as VertexAIAuth;
+            const location = 'us-east5';
 
             if (flags.generative_language_api) {
+                runtime.logger.trace('Requesting Generative Language API with VertexAI');
                 return await ChatAI.requestVertexAI({
                     publisher: 'google',
                     type: 'generative_language',
+                    location: 'us-central1',
 
                     model: modelName,
                     messages: messages,
@@ -163,9 +179,11 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 });
             }
             else if (flags.anthropic_api) {
+                runtime.logger.trace('Requesting Anthropic API with VertexAI');
                 return await ChatAI.requestVertexAI({
                     publisher: 'anthropic',
                     type: 'anthropic',
+                    location: 'us-east5',
 
                     model: modelName,
                     messages: messages,
