@@ -30,7 +30,7 @@ interface ProfileEventState {
     unstarModel(modelKey: string): Promise<void>;
 
     addAPIKey(provider: ProviderName, apiKey: string): Promise<void>;
-    addVertexAIAPIKey(data: VertexAIAPI): Promise<void>;
+    addVertexAIAPIKey(data: VertexAIAuth): Promise<void>;
     removeAPIKey(provider: ProviderName, index: number): Promise<void>;
     changeAPIKeyType(provider: ProviderName, index: number, type: 'primary' | 'secondary'): Promise<void>;
 
@@ -273,7 +273,7 @@ const useProfileEvent = create<ProfileEventState>((set) => {
             await refetchData.api_keys();
         },
 
-        async addVertexAIAPIKey(data: VertexAIAPI) {
+        async addVertexAIAPIKey(data: VertexAIAuth) {
             const { api } = useProfileAPIStore.getState();
             const { api_keys, refetch: refetchData } = useDataStore.getState();
             const provider: ProviderName = 'vertexai';

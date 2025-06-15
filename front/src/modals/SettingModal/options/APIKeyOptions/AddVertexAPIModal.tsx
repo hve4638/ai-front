@@ -14,7 +14,7 @@ type StringInputModalProps = {
     aboveDescription?:string;
     belowDescription?:string;
     placeholder?:string;
-    onSubmit?:(data:VertexAIAPI)=>Promise<boolean>|boolean|undefined|void;
+    onSubmit?:(data:VertexAIAuth)=>Promise<boolean>|boolean|undefined|void;
     onClose?:()=>void;
 }
 
@@ -25,7 +25,7 @@ function AddVertexAIAPIKeyModal({
     const { t } = useTranslation();
     const [disappear, close] = useModalDisappear(()=>onClose());
     const [status, setStatus] = useState<'idle'|'success'|'fail'>('idle');
-    const [vertexAIAPI, setVertexAIAPI] = useState<VertexAIAPI>();
+    const [vertexAIAPI, setVertexAIAPI] = useState<VertexAIAuth>();
 
     useHotkey({
         'Escape': ()=>{
