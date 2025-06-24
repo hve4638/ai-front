@@ -41,9 +41,11 @@ function InfiniteScroll({
 
     return (
         <div
-            // key={sentinelKey}
             className={className}
-            style={style}
+            style={{
+                ...style,
+                display: 'block',
+            }}
             // ref={ref}
         >
             <div ref={ref}/>

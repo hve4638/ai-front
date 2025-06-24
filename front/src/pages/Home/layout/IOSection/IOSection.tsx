@@ -58,6 +58,7 @@ function IOSection() {
     }, [sessionState.deps.last_session_id, sessionState.state]);
     
     useLayoutEffect(() => {
+        console.log('reload input');
         inputTextRef.current = sessionState.input;
         refresh();
     }, [sessionState.deps.last_session_id, reloadInputSignal]);
@@ -73,7 +74,7 @@ function IOSection() {
                     await sessionState.update.input(inputTextRef.current);
                     await instance.request_ready.produce(1);
                 }
-            )
+            ),
         ];
         return () => unsubscribes.forEach(unsub=>unsub());
     }, []);

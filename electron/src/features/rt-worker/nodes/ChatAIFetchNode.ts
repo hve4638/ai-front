@@ -1,19 +1,28 @@
 import WorkNode from './WorkNode';
 import { ChatAI, ChatAIError } from '@hve/chatai';
-import type { ChatAIResult, ChatMessage, KnownProvider } from '@hve/chatai';
+import type { ChatAIResult, ChatMessages } from '@hve/chatai';
 import ChatAIModels from '@/features/chatai-models';
 import { WorkNodeStop } from './errors';
 import { ProfileAPIKeyControl } from '@/features/profile-control';
 import runtime from '@/runtime';
 
 type ChatAIFetchNodeInput = {
-    messages: ChatMessage[];
+    messages: ChatMessages;
 }
 type ChatAIFetchNodeOutput = {
     result: ChatAIResult;
 }
 type ChatAIFetchNodeOption = {
+    usePromptSetting: true;
+    promptId?: string;
+    
     // specificModelId?:string;
+} | {
+    usePromptSetting: false;
+
+    temperature?: number;
+    top_p?: number;
+    max_tokens?: number;
 }
 
 class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutput, ChatAIFetchNodeOption> {
@@ -64,7 +73,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         }
     }
 
-    private async request(messages: ChatMessage[]) {
+    private async request(messages: ChatMessages) {
         const {
             modelId, sender, profile, rtId,
         } = this.nodeData;
@@ -214,7 +223,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         );
     }
 
-    async getResultDebug({ messages }: { messages: ChatMessage[]; }) {
+    async getResultDebug({ messages }: { messages: ChatMessages; }) {
         const {
             modelId, sender, profile, rtId,
         } = this.nodeData;
@@ -226,7 +235,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 content = messages.flatMap(
                     m => m.content.flatMap(
                         c => {
-                            if (c.chatType === 'TEXT') {
+                            if (c.chatType === 'Text') {
                                 return [c.text ?? ''];
                             }
                             else {

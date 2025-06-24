@@ -22,8 +22,6 @@ abstract class RTWorkflow {
     abstract process(input:RTInput, workLog:WorkLog[]):Promise<any>;
 
     protected async getNodeData(rtInput:RTInput):Promise<NodeData> {
-        const input:HistoryMessageRow[] = [];
-
         const historyAC = await this.profile.accessAsHistory(rtInput.sessionId);
         const chat = historyAC
             .getHistory(0, 1000, true)
@@ -40,18 +38,14 @@ abstract class RTWorkflow {
                 if (output) result.push({ role: 'assistant', contents: [{ type: 'text', value: output }] });
                 return result;
             });
-
-        input.push({
-            type: 'text',
-            text: rtInput.input,
-            data: null,
-            token_count: 0,
-        });
-
+        
         return {
             sender : this.rtSender,
             logger : this.workLogger,
             profile : this.profile,
+
+            inputText: rtInput.input,
+            inputFiles: rtInput.inputFiles,
 
             chat : chat,
             form : rtInput.form,
@@ -62,7 +56,7 @@ abstract class RTWorkflow {
             create_at : Date.now(),
 
             data : {
-                input: input,
+                input: [],
                 output: [],
                 input_token_count: 0,
                 output_token_count: 0,

@@ -5,89 +5,88 @@ import runtime from '@/runtime';
 import { RTClosed } from './errors';
 
 class RTSender {
-    disabled:boolean = false;
+    disabled: boolean = false;
 
-    constructor(private browserWindowRef:WeakRef<BrowserWindow>, private token: string) {
-        
+    constructor(private browserWindowRef: WeakRef<BrowserWindow>, private token: string) {
+
     }
 
     disable() {
         this.disabled = true;
     }
-    
-    sendStream(text:string) {
+
+    #send(requestRtData: RequestRTData) {
         if (this.disabled) throw new RTClosed();
 
+        this.#sendForce(requestRtData);
+    }
+
+    #sendForce(requestRtData: RequestRTData) {
         const window = this.browserWindowRef.deref();
         if (window) {
-            console.trace(`RTSender.sendStream (${this.token})`, text);
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'stream',
-                text : text,
-            } satisfies RequestRTData);
+            window.webContents.send(IPCListenerPing.Request, this.token, requestRtData);
         }
     }
 
-    sendResult(text:string, response?:ChatAIResult) {
-        if (this.disabled) throw new RTClosed();
+    sendClearOutput() {
+        console.trace(`RTSender.sendClearOutput (${this.token})`);
+        this.#send({
+            type: 'output_clear',
+        });
+    }
 
-        const window = this.browserWindowRef.deref();
-        if (window) {
-            console.trace(`RTSender.sendResult (${this.token})`, text, response);
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'result',
-                text : text,
-                response : response,
-            } satisfies RequestRTData);
-        }
+    sendStream(text: string) {
+        console.trace(`RTSender.sendStream (${this.token})`, text);
+        this.#send({
+            type: 'stream',
+            text: text,
+        });
+    }
+
+    sendResult(text: string, response?: ChatAIResult) {
+        console.trace(`RTSender.sendResult (${this.token})`, text, response);
+        this.#send({
+            type: 'result',
+            text: text,
+            response: response,
+        });
     }
 
     sendHistoryUpdate() {
-        if (this.disabled) throw new RTClosed();
+        console.trace(`RTSender.sendHistoryUpdate (${this.token})`);
+        this.#send({
+            type: 'history_update',
+        });
+    }
 
-        const window = this.browserWindowRef.deref();
-        if (window) {
-            console.trace(`RTSender.sendHistoryUpdate (${this.token})`);
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'history_update',
-            } satisfies RequestRTData);
-        }
+    sendInputUpdate() {
+        console.trace(`RTSender.sendInputUpdate (${this.token})`);
+        this.#send({
+            type: 'input_update',
+        });
     }
 
     sendNoResult() {
-        if (this.disabled) throw new RTClosed();
-
-        const window = this.browserWindowRef.deref();
-        if (window) {
-            console.trace(`RTSender.sendNoResult (${this.token})`);
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'no_result',
-            } satisfies RequestRTData);
-        }
+        console.trace(`RTSender.sendNoResult (${this.token})`);
+        this.#send({
+            type: 'no_result',
+        });
     }
 
     sendClose() {
-        const window = this.browserWindowRef.deref();
-        if (window) {
-            console.trace(`RTSender.sendClose (${this.token})`);
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'close',
-            } satisfies RequestRTData);
-        }
+        console.trace(`RTSender.sendClose (${this.token})`);
+        this.#sendForce({
+            type: 'close',
+        });
     }
 
-    sendError(message:string, detail:string[] = []) {
-        if (this.disabled) throw new RTClosed();
-        
-        const window = this.browserWindowRef.deref();
+    sendError(message: string, detail: string[] = []) {
         console.trace(`RTSender.sendError (${this.token})`, message, detail);
-        if (window) {
-            window.webContents.send(IPCListenerPing.Request, this.token, {
-                type : 'error',
-                message,
-                detail,
-            } satisfies RequestRTData);
-        }
+        this.#sendForce({
+            type: 'error',
+            message,
+            detail,
+        });
     }
 }
 

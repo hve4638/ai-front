@@ -1,6 +1,7 @@
+import { DragActionProps } from '@/types';
 import React, { forwardRef } from 'react';
 
-interface GridProps {
+interface GridProps extends DragActionProps<HTMLDivElement> {
     id?: string;
     className?: string;
     style?: React.CSSProperties;
@@ -21,6 +22,12 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
         onClick,
         children,
         tabIndex = -1,
+        
+        onDragStart,
+        onDragOver,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
     },
     ref
 ) {
@@ -37,6 +44,11 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
             }}
             onClick={onClick}
             tabIndex={tabIndex}
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
         >
             {children}
         </div>

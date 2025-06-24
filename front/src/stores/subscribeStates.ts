@@ -33,7 +33,7 @@ export function subscribeStates() {
                 
                 const sessionState = useSessionStore.getState();
                 await sessionState.refetchAll();
-                await sessionState.updateDeps.last_session_id(last_session_id);
+                sessionState.updateDeps.last_session_id(last_session_id);
             }
         )
     ];

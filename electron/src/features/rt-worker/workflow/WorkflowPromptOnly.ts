@@ -2,6 +2,7 @@ import runtime from '@/runtime';
 import { InputNode, OutputNode, PromptBuildNode, StringifyChatMLNode, ChatAIFetchNode } from '../nodes';
 import { WorkNodeStop } from '../nodes/errors';
 import RTWorkflow from './RTWorkflow';
+import { UserInput } from '../nodes/types';
 
 class RTWorkflowPromptOnly extends RTWorkflow {
     async process(rtInput: RTInput): Promise<any> {
@@ -9,13 +10,12 @@ class RTWorkflowPromptOnly extends RTWorkflow {
 
         const inputNode = new InputNode(0, nodeData, { inputType: 'normal' });
         const promptBuildNode = new PromptBuildNode(1, nodeData, { promptId: 'default', form: {} });
-        const chatAIFetchNode = new ChatAIFetchNode(1, nodeData, {});
-        const stringifyChatMLNode = new StringifyChatMLNode(2, nodeData, {});
+        const chatAIFetchNode = new ChatAIFetchNode(2, nodeData, { usePromptSetting: true, promptId: 'default' });
         const outputNode = new OutputNode(3, nodeData, {});
 
         const historyAC = await this.profile.accessAsHistory(nodeData.sessionId);
 
-        let input: string;
+        let input: UserInput;
         try {
             const inputNodeResult = await inputNode.run({});
 

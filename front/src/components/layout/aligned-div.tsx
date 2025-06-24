@@ -1,7 +1,8 @@
 import { forwardRef } from 'react';
 import { Align } from './types';
+import { CommonProps, DragActionProps, MouseActionProps } from '@/types';
 
-export interface AlignedDivProps {
+export interface AlignedDivProps extends CommonProps, MouseActionProps<HTMLDivElement>, DragActionProps<HTMLDivElement> {
     className?: string;
     style?: React.CSSProperties;
     children?: React.ReactNode;
@@ -77,6 +78,14 @@ export const Row = forwardRef(
                 onMouseLeave={props.onMouseLeave}
                 onMouseMove={props.onMouseMove}
                 onMouseDown={props.onMouseDown}
+
+                onDragStart={props.onDragStart}
+                onDragEnd={props.onDragEnd}
+                onDragOver={props.onDragOver}
+                onDragEnter={props.onDragEnter}
+                onDragLeave={props.onDragLeave}
+                onDrop={props.onDrop}
+
                 onDoubleClick={props.onDoubleClick}
                 onContextMenu={props.onRClick}
             >

@@ -66,6 +66,9 @@ const ipcInvokerPath = {
     profileSessionStorage: {
         get: 0,
         set: 0,
+        getInputFilePreviews: 0,
+        addInputFile: 0,
+        updateInputFiles: 0,
     },
     profileSessionHistory: {
         get: 0,

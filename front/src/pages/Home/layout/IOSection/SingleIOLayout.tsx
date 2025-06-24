@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import InputField from '@/components/InputField';
 import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
-import { Grid, Row } from '@/components/layout';
+import { Align, Flex, Grid, Row } from '@/components/layout';
 
 import { useConfigStore, useSessionStore, useSignalStore } from '@/stores';
 
@@ -14,6 +14,9 @@ import { useHistoryStore } from '@/stores/useHistoryStore';
 import { HistoryData } from '@/features/session-history';
 import styles from './styles.module.scss';
 import { remapDecimal } from '@/utils/math';
+import FilesFormLayout from './FilesUpload/FileList';
+import { readFileAsDataURI } from '@/utils/file';
+import { FileDropper } from './FilesUpload';
 
 type SingleIOLayoutProps = {
     inputText: string;
@@ -43,13 +46,14 @@ function SingleIOLayout({
         }
     }, [lastSessionId]);
     const [last, setLast] = useState<HistoryData | null>(null);
+    const [draggingFile, setDraggingFile] = useState(false);
 
     let [left, right] = useConfigStore(state => state.textarea_io_ratio);
 
     const textareaSectionRef = useRef(null);
-    
-    const textAreaBorderRadius = useMemo(()=>{
-        const radius = remapDecimal(configState.textarea_padding, {min: 4, max: 16}, {min: 1, max: 5});
+
+    const textAreaBorderRadius = useMemo(() => {
+        const radius = remapDecimal(configState.textarea_padding, { min: 4, max: 16 }, { min: 1, max: 5 });
         return `${radius}px`;
     }, [configState.textarea_padding]);
 
@@ -151,39 +155,78 @@ function SingleIOLayout({
                         zIndex: 0,
                         margin: inputMargin,
                         borderRadius: textAreaBorderRadius,
+                        paddingBottom: '60px',
                     }}
                     text={inputText}
                     onChange={(text: string) => onChangeInputText(text)}
+                    onDragEnter={(e) => {
+                        setDraggingFile(true);
+                    }}
+
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
                 >
-                    <small
-                        className={classNames(styles['token-count'], 'secondary-color', 'undraggable')}
+                    <Row
                         style={{
                             position: 'absolute',
-                            left: '10px',
-                            bottom: '10px',
-                            padding: '0em 0.4em',
+                            left: '0',
+                            bottom: '0',
+                            width: '100%',
+                            height: '60px',
+                            padding: '10px',
+                            gap: '0.5em',
                         }}
-                    >token: {tokenCount}</small>
-                    <GIconButton
-                        // className='floating-button'
-                        className={classNames(styles['send-button'])}
-                        value={sessionState.state === 'idle' ? 'send' : 'stop'}
-                        style={{
-                            cursor: 'pointer',
-                            fontSize: '32px',
-                            position: 'absolute',
-                            right: '10px',
-                            bottom: '10px',
-                        }}
-                        onClick={() => {
-                            if (sessionState.state === 'idle') {
-                                sessionState.actions.request();
-                            }
-                            else {
-                                // sessionState.actions.abortRequest();
-                            }
-                        }}
-                    />
+                        columnAlign={Align.End}
+                    >
+                        <small
+                            className={classNames(styles['token-count'], 'secondary-color', 'undraggable')}
+                        >token: {tokenCount}</small>
+                        <Flex
+                            style={{
+                                height: '100%',
+                            }}
+                        >
+                            <FilesFormLayout
+                                style={{
+                                    // width: '200px',,
+                                    height: '100%',
+                                }}
+                                internalPadding='4px 4px'
+                            />
+                        </Flex>
+                        <GIconButton
+                            // className='floating-button'
+                            className={classNames(styles['send-button'])}
+                            value={sessionState.state === 'idle' ? 'send' : 'stop'}
+                            style={{
+                                cursor: 'pointer',
+                                fontSize: '32px',
+                                width: '40px',
+                                height: '40px',
+                                // position: 'absolute',
+                                // right: '10px',
+                                // bottom: '10px',
+                            }}
+                            onClick={() => {
+                                if (sessionState.state === 'idle') {
+                                    sessionState.actions.request();
+                                }
+                                else {
+                                    // sessionState.actions.abortRequest();
+                                }
+                            }}
+                        />
+                    </Row>
+                    {
+                        draggingFile &&
+                        <FileDropper
+                            onDragEnd={() => {
+                                setDraggingFile(false);
+                            }}
+                        />
+                    }
                 </InputField>
                 <InputField
                     className='flex'

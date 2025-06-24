@@ -9,14 +9,17 @@ import { useModal } from '@/hooks/useModal';
 import { DeleteConfirmDialog } from '@/modals/Dialog';
 import { useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
 import MarkdownArea from '@/components/MarkdownArea';
+import { CommonProps } from '@/types';
 
-type ChatDivProps = {
+interface ChatDivProps extends CommonProps {
     side: 'input' | 'output';
     value: string;
     data: HistoryData
 }
 
 function ChatDiv({
+    className = '',
+    style = {},
     side,
     value,
     data
@@ -31,7 +34,8 @@ function ChatDiv({
 
     return (
         <div
-            className={classNames(sideClass)}
+            className={classNames(sideClass, className)}
+            style={style}
             ref={divRef}
             tabIndex={-1}
             onFocus={() => {

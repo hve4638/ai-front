@@ -1,6 +1,6 @@
 {
   "name": "afron",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "ChatAI Frontend",
   "repository": "https://github.com/hve4638/ai-front.git",
   "author": "Hve",
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@hve/channel": "^1.0.1",
-    "@hve/chatai": "^0.9.0",
+    "@hve/mime": "^1.0.0",
     "@hve/prompt-template": "^0.1.0",
     "ac-storage": "^0.12.0",
     "better-sqlite3": "^11.3.0",
@@ -63,6 +63,7 @@
     "electron-squirrel-startup": "^1.0.1",
     "js-tiktoken": "^1.0.20",
     "ps-list": "^8.1.1",
+    "sharp": "^0.34.2",
     "systeminformation": "^5.23.23",
     "tiktoken": "^1.0.21",
     "uuid": "^11.0.3",

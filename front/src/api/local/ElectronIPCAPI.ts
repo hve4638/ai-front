@@ -218,6 +218,24 @@ class ElectronIPCAPI implements IIPCAPI {
             const [err] = await electron.profileSessionStorage.set(profileId, sessionId, accessorId, data);
             if (err) throw new IPCError(err.message);
         },
+        async getInputFilePreviews(profileId: string, sessionId: string) {
+            const [err, files] = await electron.profileSessionStorage.getInputFilePreviews(profileId, sessionId);
+            if (err) throw new IPCError(err.message);
+    
+            return files;
+        },
+        async addInputFile(profileId: string, sessionId: string, filename: string, dataBase64: string) {
+            const [err, metadata] = await electron.profileSessionStorage.addInputFile(profileId, sessionId, filename, dataBase64);
+            if (err) throw new IPCError(err.message);
+
+            return metadata;
+        },
+        async updateInputFiles(profileId: string, sessionId: string, fileHashes: InputFileHash[]) {
+            const [err, metadataList] = await electron.profileSessionStorage.updateInputFiles(profileId, sessionId, fileHashes);
+            if (err) throw new IPCError(err.message);
+
+            return metadataList;
+        },
     } as const;
     profileSessionHistory = {
         async get(profileId:string, sessionId:string, offset:number=0, limit:number=100, desc:boolean=false) {

@@ -14,9 +14,6 @@ interface TabProps<T> {
     loading? : boolean;
     noAnimation? : boolean;
     x:number;
-    onClick? : () => void;
-    onClose? : () => void;
-
     children?: React.ReactNode;
 }
 
@@ -28,8 +25,6 @@ function TabContainer<T>({
     noAnimation=false,
     widthPx,
     x,
-    onClick = ()=>{},
-    onClose = ()=>{},
     children,
 }:TabProps<T>) {
     return (
@@ -55,60 +50,6 @@ function TabContainer<T>({
             {
                 children
             }
-            {/* {
-                !hideTitle &&
-                <span
-                    style={{
-                        paddingLeft: '1em',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                    }}
-                >
-                    {name + '#'}
-                </span>
-            }
-            <Flex/>
-            <Center
-                style={{
-                    marginRight : '0.25em',
-                }}
-            >
-                <SpinnerCircular
-                    size={'1em'}
-                    thickness={100}
-                    color='white'
-                />
-            </Center>
-            <Column
-                columnAlign={Align.Center}
-            >
-                {
-                    hideCloseButton &&
-                    <div
-                        style={{
-                            marginRight: '8px',
-                            width: '20px',
-                            height: '20px',
-                        }}
-                    />
-                }
-                {
-                    !hideCloseButton &&
-                    <GoogleFontIcon
-                        className='close-button'
-                        value='close'
-                        style={{
-                            marginRight: '8px',
-                            width: '20px',
-                            height: '20px',
-                        }}
-                        onClick={(e)=>{
-                            onClose();
-                        }}
-                    />
-                }
-            </Column> */}
         </div>
     );
 }

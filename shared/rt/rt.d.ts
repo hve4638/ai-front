@@ -31,6 +31,7 @@ declare global {
 
     type RTInput = {
         input : string;
+        inputFiles: InputFile[];
         chat? : RTInputMessage[];
 
         form: Record<string, any>;
