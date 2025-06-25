@@ -6,7 +6,7 @@ import InputField from '@/components/InputField';
 import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
 import { Align, Flex, Grid, Row } from '@/components/layout';
 
-import { useConfigStore, useSessionStore, useSignalStore } from '@/stores';
+import { useConfigStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
 
 import SplitSlider from '../SplitSlider';
 
@@ -34,6 +34,9 @@ function SingleIOLayout({
 }: SingleIOLayoutProps) {
     const configState = useConfigStore();
     const sessionState = useSessionStore();
+    const {
+        getModelName,
+    } = useProfileEvent();
     const lastSessionId = useSessionStore(state => state.deps.last_session_id);
     const sessionHistory = useMemo(() => {
         const historyState = useHistoryStore.getState();
@@ -47,6 +50,13 @@ function SingleIOLayout({
     }, [lastSessionId]);
     const [last, setLast] = useState<HistoryData | null>(null);
     const [draggingFile, setDraggingFile] = useState(false);
+    const outputModelName = useMemo(() => {
+        if (last === null) return '';
+        
+        return getModelName(last.modelId);
+    }, [last?.modelId]);
+
+    console.log(sessionState.last_history);
 
     let [left, right] = useConfigStore(state => state.textarea_io_ratio);
 
@@ -252,7 +262,7 @@ function SingleIOLayout({
                                 padding: '0em 0.4em',
                                 fontSize: '0.8rem',
                             }}
-                        >{last.modelId}</small>
+                        >{outputModelName}</small>
                     }
                     <Row
                         className={classNames('undraggable')}

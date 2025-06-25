@@ -8,6 +8,7 @@ const {
     experimental,
     deprecated,
     thinking,
+    thinking_optional,
     snapshot,
     anthropic_api,
     high_cost,
@@ -19,16 +20,16 @@ function initProvider(provider:ModelProvider) {
 
     provider.addModels('Claude 4',
         [
-            model('Claude Opus 4', 'claude-opus-4-0', { featured, latest, thinking, ...baseFlags }),
-            model('Claude Opus 4 (2025-05-14)', 'claude-opus-4-20250514', { snapshot, thinking, ...baseFlags }),
-            model('Claude Sonnet 4', 'claude-sonnet-4-0', { featured, latest, thinking, ...baseFlags }),
-            model('Claude Sonnet 4 (2025-05-14)', 'claude-sonnet-4-20250514', { snapshot, thinking, ...baseFlags }),
+            model('Claude Opus 4', 'claude-opus-4-0', { featured, latest, thinking_optional, ...baseFlags }),
+            model('Claude Opus 4 (2025-05-14)', 'claude-opus-4-20250514', { snapshot, thinking_optional, ...baseFlags }),
+            model('Claude Sonnet 4', 'claude-sonnet-4-0', { featured, latest, thinking_optional, ...baseFlags }),
+            model('Claude Sonnet 4 (2025-05-14)', 'claude-sonnet-4-20250514', { snapshot, thinking_optional, ...baseFlags }),
         ]
     );
     provider.addModels('Claude 3.7',
         [
-            model('Claude Sonnet 3.7', 'claude-3-7-sonnet-latest', { latest, featured, thinking, ...baseFlags }),
-            model('Claude Sonnet 3.7 (2025-02-19)', 'claude-3-7-sonnet-20250219', { snapshot, thinking, ...baseFlags }),
+            model('Claude Sonnet 3.7', 'claude-3-7-sonnet-latest', { latest, featured, thinking_optional, ...baseFlags }),
+            model('Claude Sonnet 3.7 (2025-02-19)', 'claude-3-7-sonnet-20250219', { snapshot, thinking_optional, ...baseFlags }),
         ]
     );
     provider.addModels('Claude 3.5',

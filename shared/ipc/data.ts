@@ -108,6 +108,7 @@ declare global {
         model: string;
         url: string;
         api_format: 'chat_completions';
+        thinking: boolean;
         secret_key?: string;
     }
     type CustomModelCreate = Omit<CustomModel, 'id'> & { id?: string };

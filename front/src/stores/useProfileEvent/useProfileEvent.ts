@@ -56,6 +56,8 @@ interface ProfileEventState {
 
     setCustomModel(model: CustomModelCreate): Promise<void>;
     removeCustomModel(customModel: string): Promise<void>;
+
+    getModelName(modelId: string): string;
 }
 
 const useProfileEvent = create<ProfileEventState>((set) => {
@@ -470,6 +472,23 @@ const useProfileEvent = create<ProfileEventState>((set) => {
 
             await update.custom_models(next);
         },
+
+        getModelName(modelId: string) {
+            const { allModels } = useMemoryStore.getState();
+            const { custom_models } = useDataStore.getState();
+
+            const model = allModels[modelId];
+            if (model) {
+                return model.displayName;
+            }
+
+            const customModel = custom_models.find(item => item.id === modelId);
+            if (customModel) {
+                return customModel.name;
+            }
+
+            return 'unknown';
+        }
     }
 
     return state;

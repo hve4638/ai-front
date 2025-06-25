@@ -12,9 +12,11 @@ declare global {
         legacy? : true;
         snapshot? : true;
         high_cost? : true;
-        
-        thinking? : true;
-        cache? : true;
+
+        // 기능 구분 플래그
+        thinking? : true; // 추론 모델
+        thinking_optional? : true; // 선택적 추론 모델
+        cache? : true; // 캐싱 지원
 
         // 출력 형식 지정
         stream? : true;

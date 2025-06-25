@@ -119,7 +119,6 @@ class Profile {
         if (this.#basePath) fs.rmSync(this.#basePath, { recursive: true, force: true });
     }
     get path(): string { return this.#basePath ?? ''; }
-
     get sessions() { return this.#sessionControl; }
     get model() { return this.#modelControl; }
 

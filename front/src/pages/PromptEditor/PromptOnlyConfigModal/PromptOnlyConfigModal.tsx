@@ -138,7 +138,7 @@ function PromptOnlyConfigModal({
                         refresh();
                     }}
                 />
-                <div style={{ height:'0.5em' }}/>
+                {/* <div style={{ height:'0.5em' }}/>
                 <NumberForm
                     name='이전 대화 컨텍스트 크기'
                     value={0}
@@ -146,7 +146,7 @@ function PromptOnlyConfigModal({
                         console.log(value);
                         refresh();
                     }}
-                />
+                /> */}
             </Column>
 
             {/* <hr/>

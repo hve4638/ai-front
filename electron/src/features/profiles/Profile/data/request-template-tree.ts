@@ -57,6 +57,8 @@ const REQUEST_TEMPLATE_TREE = {
                     'top_p': JSONType.Number().default_value(0.7),
                     'temperature': JSONType.Number().default_value(1),
                     'max_tokens': JSONType.Number().default_value(1024),
+                    'use_thinking': JSONType.Bool().default_value(false),
+                    'thinking_tokens': JSONType.Number().default_value(1024),
                 },
                 'variables': JSONType.Array({
                     'name': JSONType.String(),

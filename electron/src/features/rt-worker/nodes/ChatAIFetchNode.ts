@@ -29,6 +29,8 @@ type ModelOptions = {
     temperature: number;
     top_p: number;
     max_tokens: number;
+    use_thinking?: boolean;
+    thinking_tokens?: number;
 }
 
 class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutput, ChatAIFetchNodeOption> {
@@ -47,7 +49,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 );
                 sender.sendError(
                     `HTTP Error (${result.response.http_status})`,
-                    []
+                    [ JSON.stringify(result.response.raw, null, 2) ]
                 );
                 throw new WorkNodeStop();
             }
@@ -67,6 +69,19 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 sender.sendError(
                     `Failed to fetch`,
                     [e.message]
+                );
+            }
+            else if (e instanceof WorkNodeStop) {
+                // nothing to do
+            }
+            else if (e instanceof Error) {
+                runtime.logger.error(
+                    `ChatAIFetchNode Error: ${e.message}`,
+                    e
+                );
+                sender.sendError(
+                    `Fetch Fail : ${e.message}`,
+                    []
                 );
             }
             else {
@@ -131,7 +146,18 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             temperature,
             top_p,
             max_tokens,
+            use_thinking = false,
+            thinking_tokens = 1024,
         } = modelOptions;
+
+        const openAIThinkingEffort = (
+            thinking_tokens <= 1024 ? 'low'
+                : thinking_tokens <= 8192 ? 'medium'
+                    : 'high'
+        );
+        const useThinking = (
+            flags.thinking || (flags.thinking_optional && use_thinking)
+        );
 
         if (!flags.vertexai) {
             const apiKey = auth as string;
@@ -145,6 +171,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
+                    thinking_effort: openAIThinkingEffort,
                     max_tokens,
                     temperature,
                     top_p,
@@ -173,6 +200,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     max_tokens,
                     temperature,
                     top_p,
@@ -187,6 +215,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     max_tokens,
                     temperature,
                     top_p,
@@ -204,6 +233,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     type: 'generative_language',
                     location: 'us-central1',
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     model: modelName,
                     messages: messages,
                     auth: vertexAIAuth,
@@ -220,6 +250,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     type: 'anthropic',
                     location: 'us-east5',
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     model: modelName,
                     messages: messages,
                     auth: vertexAIAuth,
@@ -240,7 +271,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
 
     private async requestCustomModel(customModel: CustomModel, modelOptions: ModelOptions, messages: ChatMessages) {
         const {
-            profile, rtId,
+            profile,
         } = this.nodeData;
 
         const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
@@ -251,7 +282,18 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             temperature,
             top_p,
             max_tokens,
+            thinking_tokens = 1024,
+            use_thinking = false,
         } = modelOptions;
+
+        const openAIThinkingEffort = (
+            thinking_tokens <= 1024 ? 'low'
+                : thinking_tokens <= 8192 ? 'medium'
+                    : 'high'
+        );
+        const useThinking = (
+            customModel.thinking// || (flags.thinking_optional && use_thinking)
+        );
 
         switch (customModel.api_format) {
             case 'chat_completions':

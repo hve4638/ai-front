@@ -7,7 +7,9 @@ const flags:Required<ChatAIModelFlags> = {
     legacy: true,
     snapshot: true,
     high_cost: true,
+    
     thinking: true,
+    thinking_optional: true,
     cache: true,
 
     stream: true,
@@ -25,8 +27,6 @@ const flags:Required<ChatAIModelFlags> = {
     vertexai: true,
 
     custom_endpoint: true,
-    
-    // openai_reasoning: true,
 }
 
 export default flags;

@@ -50,12 +50,14 @@ class RTWorkflowPromptOnly extends RTWorkflow {
 
             if (nodeData.data.output.length > 0) {
                 historyAC.addHistoryMessage(historyId, 'out', nodeData.data.output);
+                // const session = this.profile.session(nodeData.sessionId);
+                // await session.setOne('cache.json', 'last_history', {} as HistoryMetadata);
                 this.rtSender.sendHistoryUpdate();
             }
         }
         catch (error) {
             if (error instanceof WorkNodeStop) {
-                this.rtSender.sendNoResult();    
+                this.rtSender.sendNoResult();
             }
         }
         finally {

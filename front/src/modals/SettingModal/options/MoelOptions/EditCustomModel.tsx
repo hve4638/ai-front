@@ -1,5 +1,5 @@
 import DivButton from '@/components/DivButton';
-import { ButtonForm, DropdownForm, StringForm, StringLongForm } from '@/components/Forms';
+import { ButtonForm, CheckBoxForm, DropdownForm, StringForm, StringLongForm } from '@/components/Forms';
 import { Modal, ModalHeader } from '@/components/Modal';
 import { ConfirmCancelButtons } from '@/components/ModalButtons';
 import { useModal } from '@/hooks/useModal';
@@ -13,7 +13,7 @@ import { GIconButton } from '@/components/GoogleFontIcon';
 interface EditCustomModelModalProps {
     value?: CustomModelCreate;
     onConfirm?: (value: CustomModelCreate) => Promise<boolean | void>;
-    onDelete?: (customId:string) => Promise<boolean | void>;
+    onDelete?: (customId: string) => Promise<boolean | void>;
     onClose?: () => void;
     isFocused?: boolean;
 }
@@ -24,6 +24,7 @@ function EditCustomModelModal({
         model: '',
         url: '',
         api_format: 'chat_completions',
+        thinking: false,
         secret_key: '',
     },
     onConfirm = async () => { },
@@ -38,6 +39,7 @@ function EditCustomModelModal({
     const [url, setURL] = useState(value.url);
     const [requestFormat, setRequestFormat] = useState(value.api_format);
     const [authSecretKey, setAuthSecretKey] = useState<string>(value.secret_key ?? '');
+    const [thinking, setThinking] = useState(value.thinking);
 
     useHotkey({
         'Escape': () => {
@@ -57,22 +59,22 @@ function EditCustomModelModal({
             <ModalHeader
                 buttonRenderer={() => (
                     value.id != undefined
-                    ? (
-                        <GIconButton
-                            value='delete'
-                            hoverEffect='square'
-                            onClick={() => {
-                                modal.open(DeleteConfirmDialog, {
-                                    onDelete: async () => {
-                                        await onDelete(value.id!);
-                                        close();
-                                        return true;
-                                    },
-                                });
-                            }}
-                        />
-                    )
-                    : <></>
+                        ? (
+                            <GIconButton
+                                value='delete'
+                                hoverEffect='square'
+                                onClick={() => {
+                                    modal.open(DeleteConfirmDialog, {
+                                        onDelete: async () => {
+                                            await onDelete(value.id!);
+                                            close();
+                                            return true;
+                                        },
+                                    });
+                                }}
+                            />
+                        )
+                        : <></>
                 )}
             >커스텀 모델</ModalHeader>
             <div style={{ height: '0.25em' }} />
@@ -110,6 +112,12 @@ function EditCustomModelModal({
                     // { key: 'generative_language', name: 'Google Generative Language' },
                 ]}
             />
+            <div style={{ height: '0.25em' }} />
+            <CheckBoxForm
+                name='추론 모델 여부'
+                checked={thinking}
+                onChange={(value) => setThinking(value)}
+            />
             <ButtonForm
                 name='API 키'
                 text='변경'
@@ -129,9 +137,9 @@ function EditCustomModelModal({
                         model,
                         url,
                         api_format: requestFormat,
+                        thinking: thinking,
                         secret_key: authSecretKey,
                     };
-                    console.log('update:', next);
                     const result = await onConfirm(next);
 
                     if (result ?? true) close();
