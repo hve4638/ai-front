@@ -39,6 +39,12 @@ class ProfileAPIKeyControl {
         return null;
     }
 
+    async getAuth(secretId: string): Promise<unknown> {
+        const secretAC = await this.profile.accessAsSecret('secret.json');
+
+        return secretAC.getOne(secretId);
+    }
+
     private findOldestAccessedKey(metadataList: SingleAPIKeyMetadata[]): SingleAPIKeyMetadata | null {
         if (metadataList.length === 0) return null;
 

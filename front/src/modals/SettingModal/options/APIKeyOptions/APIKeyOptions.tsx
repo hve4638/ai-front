@@ -10,7 +10,8 @@ import { useDataStore, useProfileEvent } from '@/stores';
 import AddAPIKeyButton from './AddAPIKeyButton';
 import APIItem from './APIItem';
 import VertexAIKeySection from './VertexAIKeySection';
-
+import SingleAPIKeySection from './SingleAPIKeySection'
+import CustomAuthSection from './CustomAuthSection';
 
 function APIKeyOptions() {
     const { api_keys } = useDataStore();
@@ -19,13 +20,15 @@ function APIKeyOptions() {
         openAIAPIs,
         anthropicAPIs,
         googleAPIs,
-        vertexAIAPIs
+        vertexAIAPIs,
+        customAuth,
     } = useMemo(()=>{
         return {
             openAIAPIs: api_keys['openai'] ?? [],
             anthropicAPIs: api_keys['anthropic'] ?? [],
             googleAPIs: api_keys['google'] ?? [],
-            vertexAIAPIs: api_keys['vertexai'] ?? []
+            vertexAIAPIs: api_keys['vertexai'] ?? [],
+            customAuth: api_keys['custom'] ?? []
         };
     }, [api_keys]);
 
@@ -46,67 +49,25 @@ function APIKeyOptions() {
             />
             <div style={{ height: '1em' }} />
             <SingleAPIKeySection
-                title='Google Gemini'
+                title='Google Cloud'
                 provider='google'
-                addButtonText='Google API 키'
+                addButtonText='Google Cloude API 키'
                 apiKeys={googleAPIs}
             />
             <div style={{ height: '1em' }} />
             <VertexAIKeySection
-                title='VertexAI 키'
-                addButtonText='Google API 키'
+                title='VertexAI'
+                addButtonText='VertexAI API 키'
                 apiKeys={vertexAIAPIs}
+            />
+            <div style={{ height: '1em' }} />
+            <CustomAuthSection
+                title='Custom'
+                addButtonText='Custom 키'
+                apiKeys={customAuth}
             />
         </>
     )
 }
 
-interface SingleAPIKeySectionProps {
-    title: string;
-    provider: 'openai'|'anthropic'|'google'|'vertexai';
-
-    addButtonText: string;
-    
-    apiKeys: APIKeyMetadata[];
-}
-
-function SingleAPIKeySection({ title, provider, addButtonText, apiKeys }: SingleAPIKeySectionProps) {
-    const profile = useProfileEvent();
-
-    return (
-        <>
-            <Row>
-                <b className='undraggable'>{title}</b>
-            </Row>
-            <div style={{ height: '0.25em' }} />
-            {
-                apiKeys.map((item, index) => (
-                    <APIItem
-                        key={item.secret_id}
-                        item={item}
-                        onDelete={async () => {
-                            await profile.removeAPIKey(provider, index);
-
-                            return true;
-                        }}
-                        onChangeType={async (type) => {
-                            await profile.changeAPIKeyType(provider, index, type);
-
-
-                            return true;
-                        }}
-                    />
-                ))
-            }
-            <AddAPIKeyButton
-                title={addButtonText}
-                onAddAPIKey={async (apiKey) => {
-                    await profile.addAPIKey(provider, apiKey);
-
-                    return true;
-                }}
-            />
-        </>
-    );
-}
 export default APIKeyOptions;

@@ -41,6 +41,13 @@ class ElectronIPCAPI implements IIPCAPI {
             if (err) throw new IPCError(err.message);
             return info;
         },
+        async getChatAIModels() {
+            const [err, models] = await electron.general.getChatAIModels();
+            if (err) throw new IPCError(err.message);
+
+            return models;
+        },
+        
         async existsLegacyData() {
             const [err, exists] = await electron.general.existsLegacyData();
             if (err) throw new IPCError(err.message);
@@ -119,12 +126,22 @@ class ElectronIPCAPI implements IIPCAPI {
         }
     } as const;
     profile = {
-        async getChatAIModels(profileId:string) {
-            const [err, models] = await electron.profile.getChatAIModels(profileId);
+        async getCustomModels(profileId:string) {
+            const [err, model] = await electron.profile.getCustomModels(profileId);
+            if (err) throw new IPCError(err.message)
+                
+            return model;
+        },
+        async setCustomModel(profileId:string, model:CustomModel) {
+            const [err, customId] = await electron.profile.setCustomModel(profileId, model);
             if (err) throw new IPCError(err.message);
 
-            return models;
-        }
+            return customId;
+        },
+        async removeCustomModel(profileId:string, customId:string) {
+            const [err] = await electron.profile.removeCustomModel(profileId, customId);
+            if (err) throw new IPCError(err.message);
+        },
     }
     profileStorage = {
         async set(profileId:string, accessorId:string, data:KeyValueInput) {

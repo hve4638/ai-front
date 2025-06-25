@@ -35,6 +35,10 @@ function LoadGlobalDataPhase() {
                 .then((version) => {
                     useMemoryStore.setState({ version })
                 }),
+            LocalAPI.general.getChatAIModels()
+                .then((allModels) => {
+                    useMemoryStore.setState({ allModels });
+                }),
             useGlobalConfigStore.getState().refetchAll(),
         ];
 

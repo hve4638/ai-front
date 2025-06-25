@@ -6,6 +6,7 @@ interface StringFormProps {
     value:string;
     onChange:(x:string)=>void;
     instantChange?:boolean;
+    placeholder?:string;
 }
 
 function StringLongForm({
@@ -13,6 +14,7 @@ function StringLongForm({
     value,
     onChange,
     instantChange=false,
+    placeholder='',
 }:StringFormProps) {
   return (
     <div
@@ -41,6 +43,7 @@ function StringLongForm({
             <TextInput
                 value={value}
                 onChange={(x)=>onChange(x)}
+                placeholder={placeholder}
                 instantChange={instantChange}
 
                 style={{

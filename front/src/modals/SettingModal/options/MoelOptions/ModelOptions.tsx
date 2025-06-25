@@ -6,6 +6,7 @@ import { useCacheStore, useConfigStore, useDataStore, useProfileAPIStore, usePro
 import ProviderListView from './ProviderListView';
 import ModelListView from './ModelListView';
 import useMemoryStore from '@/stores/useMemoryStore';
+import CustomModelListView from './CustomModelListView';
 
 function ModelOptions() {
     const { api } = useProfileAPIStore();
@@ -17,10 +18,12 @@ function ModelOptions() {
         unstarModel,
         filterModels
     } = useProfileEvent();
-    const allModels = useMemoryStore(state=>state.allModels);
+    const allModels = useMemoryStore(state => state.allModels);
     const [models, setModels] = useState<ChatAIModels>([]);
     const [providerIndex, setProviderIndex] = useState<number>(0);
     const previousOptions = useRef<any>({});
+
+    const customeModelSelected = providerIndex === models.length;
 
 
     useEffect(() => {
@@ -87,13 +90,6 @@ function ModelOptions() {
                     }}
                 >스냅샷</ModelCheckBox>
                 <div style={{ width: '8px' }} />
-                {/* <ModelCheckBox
-                    checked={caches.setting_models_show_experimental}
-                    onChange={(value) => {
-                        caches.update.setting_models_show_featured(false);
-                        caches.update.setting_models_show_experimental(value);
-                    }}
-                >실험적</ModelCheckBox> */}
                 <div style={{ width: '8px' }} />
                 <ModelCheckBox
                     checked={caches.setting_models_show_deprecated}
@@ -108,18 +104,34 @@ function ModelOptions() {
                 selected={providerIndex}
                 onChange={(index) => setProviderIndex(index)}
             />
-            <ModelListView
-                provider={models[providerIndex]}
+            {
+                customeModelSelected &&
+                <CustomModelListView
+                    onClick={async (model) => {
+                        if (isModelStarred(model.id)) {
+                            await unstarModel(model.id);
+                        }
+                        else {
+                            await starModel(model.id);
+                        }
+                    }}
+                />
+            }
+            {
+                !customeModelSelected &&
+                <ModelListView
+                    provider={models[providerIndex]}
 
-                onClick={async (model) => {
-                    if (isModelStarred(model.id)) {
-                        await unstarModel(model.id);
-                    }
-                    else {
-                        await starModel(model.id);
-                    }
-                }}
-            />
+                    onClick={async (model) => {
+                        if (isModelStarred(model.id)) {
+                            await unstarModel(model.id);
+                        }
+                        else {
+                            await starModel(model.id);
+                        }
+                    }}
+                />
+            }
             <div
                 style={{
                     display: 'block',

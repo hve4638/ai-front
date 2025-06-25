@@ -8,7 +8,6 @@ import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore
 import SingleIOLayout from './SingleIOLayout';
 import ChatIOLayout from './ChatIOLayout';
 
-
 function IOSection() {
     const sessionState = useSessionStore();
     const color = useSessionStore(state=>state.color);
@@ -58,7 +57,6 @@ function IOSection() {
     }, [sessionState.deps.last_session_id, sessionState.state]);
     
     useLayoutEffect(() => {
-        console.log('reload input');
         inputTextRef.current = sessionState.input;
         refresh();
     }, [sessionState.deps.last_session_id, reloadInputSignal]);

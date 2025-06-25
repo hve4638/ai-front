@@ -12,6 +12,7 @@ declare global {
         openBrowser(url: string): ENoResult;
         getCurrentVersion(): EResult<string>;
         getAvailableVersion(prerelease: boolean): EResult<VersionInfo>;
+        getChatAIModels(): EResult<ChatAIModels>;
 
         existsLegacyData(): EResult<boolean>;
         migrateLegacyData(): ENoResult;
@@ -42,7 +43,9 @@ declare global {
     }
 
     type IPCInvokerProfile = {
-        getChatAIModels(profileId: string, option?: { all?: boolean }): EResult<ChatAIModels>;
+        getCustomModels(profileId: string): EResult<CustomModel[]>;
+        setCustomModel(profileId: string, model: CustomModel): EResult<string>;
+        removeCustomModel(profileId: string, customId: string): ENoResult;
     }
 
     type IPCInvokerProfileStorage = {

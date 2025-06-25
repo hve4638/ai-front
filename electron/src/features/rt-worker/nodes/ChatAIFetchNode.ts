@@ -15,7 +15,7 @@ type ChatAIFetchNodeOutput = {
 type ChatAIFetchNodeOption = {
     usePromptSetting: true;
     promptId?: string;
-    
+
     // specificModelId?:string;
 } | {
     usePromptSetting: false;
@@ -23,6 +23,12 @@ type ChatAIFetchNodeOption = {
     temperature?: number;
     top_p?: number;
     max_tokens?: number;
+}
+
+type ModelOptions = {
+    temperature: number;
+    top_p: number;
+    max_tokens: number;
 }
 
 class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutput, ChatAIFetchNodeOption> {
@@ -46,7 +52,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 throw new WorkNodeStop();
             }
 
-            
+
             runtime.logger.debug(
                 `ChatAIFetchNode Result:`,
                 result.response.raw
@@ -84,13 +90,31 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         const { model } = await rt.getPromptMetadata('default');
 
         const modelData = ChatAIModels.getModel(modelId);
-        if (!modelData) {
-            sender.sendError(
-                `Unknown model: ${modelId}`,
-                []
-            );
-            throw new WorkNodeStop();
+        if (modelData) {
+            return await this.requestDefinedModel(modelData, model, messages);
         }
+        else if (modelId.startsWith('custom:')) {
+            const dataAC = await profile.accessAsJSON('data.json');
+            const customModels: CustomModel[] = dataAC.getOne('custom_models');
+            const customModel = customModels.find(m => m.id === modelId);
+
+            if (customModel) {
+                return await this.requestCustomModel(customModel, model, messages);
+            }
+        }
+
+        sender.sendError(
+            `Unknown model: ${modelId}`,
+            []
+        );
+        throw new WorkNodeStop();
+    }
+
+    private async requestDefinedModel(modelData: ChatAIModel, modelOptions: ModelOptions, messages: ChatMessages) {
+        const {
+            sender, profile
+        } = this.nodeData;
+
         const { name: modelName, providerName, flags } = modelData;
         const apiName = this.getAPIName(flags);
         if (!apiName) {
@@ -103,11 +127,13 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
 
         const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
         const auth = await profileAPIKeyControl.nextAPIKey(apiName);
+        const {
+            temperature,
+            top_p,
+            max_tokens,
+        } = modelOptions;
 
-        if (flags.custom_endpoint) {
-
-        }
-        else if (!flags.vertexai) {
+        if (!flags.vertexai) {
             const apiKey = auth as string;
 
             if (flags.responses_api) {
@@ -119,9 +145,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.chat_completions_api) {
@@ -133,9 +159,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.generative_language_api) {
@@ -147,9 +173,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.anthropic_api) {
@@ -161,9 +187,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
         }
@@ -182,9 +208,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     messages: messages,
                     auth: vertexAIAuth,
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.anthropic_api) {
@@ -198,9 +224,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     messages: messages,
                     auth: vertexAIAuth,
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
         }
@@ -210,6 +236,48 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             []
         );
         throw new WorkNodeStop();
+    }
+
+    private async requestCustomModel(customModel: CustomModel, modelOptions: ModelOptions, messages: ChatMessages) {
+        const {
+            profile, rtId,
+        } = this.nodeData;
+
+        const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
+        const auth = await profileAPIKeyControl.getAuth(customModel.secret_key ?? '');
+        const apiKey = auth as string;
+
+        const {
+            temperature,
+            top_p,
+            max_tokens,
+        } = modelOptions;
+
+        switch (customModel.api_format) {
+            case 'chat_completions':
+                return await ChatAI.requestChatCompletion({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
+                break;
+            default:
+                const sender = this.nodeData.sender;
+                sender.sendError(
+                    `Fetch Fail : Custom model '${customModel.name}' has unsupported API format '${customModel.api_format}'.`,
+                    []
+                );
+                throw new WorkNodeStop();
+                break;
+        }
     }
 
     private getAPIName(flags: ChatAIModelFlags): 'openai' | 'anthropic' | 'google' | 'vertexai' | null {

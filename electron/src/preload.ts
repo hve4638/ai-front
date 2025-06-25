@@ -15,6 +15,8 @@ const ipcInvokerPath = {
         openBrowser: 0,
         getCurrentVersion: 0,
         getAvailableVersion: 0,
+        
+        getChatAIModels: 0,
 
         existsLegacyData: 0,
         migrateLegacyData: 0,
@@ -39,7 +41,9 @@ const ipcInvokerPath = {
         recoverOrphan: 0,
     },
     profile: {
-        getChatAIModels: 0,
+        getCustomModels: 0,
+        setCustomModel: 0,
+        removeCustomModel: 0,
     },
     profileStorage: {
         get: 0,

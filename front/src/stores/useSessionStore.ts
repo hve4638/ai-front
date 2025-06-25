@@ -172,8 +172,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                     return;
                 }
 
-                console.log('Refetching input files for session:', last_session_id);
-
                 const hashes = Object.keys(cached_thumbnails);
                 const files = await deps.api.session(last_session_id).inputFiles.getPreviews();
                 const next: InputFile[] = files.map(f => {
@@ -213,8 +211,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 refetchAllConfig(),
                 actions.refetchInputFiles(),
             ]);
-            
-            console.log('GET:', get());
         }
     };
 });

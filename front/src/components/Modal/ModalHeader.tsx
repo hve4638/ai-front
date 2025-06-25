@@ -1,21 +1,40 @@
 import classNames from "classnames";
 import { GIconButton, GoogleFontIcon } from "components/GoogleFontIcon";
 import { Flex, Row } from "components/layout";
+import { useMemo } from "react";
 
 interface ModalHeaderProps {
     className?: string;
     style?: React.CSSProperties;
     onClose?: () => void;
+    buttonRenderer?: () => React.ReactNode;
     hideCloseButton?: boolean;
     children?: React.ReactNode;
 }
 
 function ModalHeader({
     className,
-    onClose = () => {},
+    onClose = () => { },
     hideCloseButton = false,
+    buttonRenderer,
     children,
-}:ModalHeaderProps) {
+}: ModalHeaderProps) {
+    const button = useMemo(() => {
+        if (buttonRenderer) {
+            return buttonRenderer();
+        }
+        else if (!hideCloseButton) {
+            return <GIconButton
+                value='close'
+                hoverEffect='square'
+                onClick={() => onClose()}
+            />
+        }
+        else {
+            return <></>
+        }
+    }, [buttonRenderer, hideCloseButton])
+
     return (
         <Row
             className={className}
@@ -30,25 +49,22 @@ function ModalHeader({
                 <span
                     className='center undraggable'
                     style={{
-                        margin : '4px',
+                        margin: '4px',
                         fontSize: '1.2em',
                         lineHeight: '1',
                     }}
                 >{children}</span>
             }
-            <Flex/>
-            {
-                !hideCloseButton &&
-                <GIconButton
-                    value='close'
-                    style={{
-                        fontSize: '1.5em',
-                        lineHeight: '1',
-                    }}
-                    hoverEffect='square'
-                    onClick={() => onClose()}
-                />
-            }
+            <Flex />
+            <div
+                style={{
+                    fontSize: '1.5em',
+                    lineHeight: '1',
+                }}
+            >
+            {button}
+
+            </div>
         </Row>
     )
 }

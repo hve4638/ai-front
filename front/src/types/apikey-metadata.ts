@@ -4,4 +4,5 @@ export type APIKeyMetadata = {
     display_name : string;
     activate : boolean;
     last_access : number;
+    memo: string;
 }

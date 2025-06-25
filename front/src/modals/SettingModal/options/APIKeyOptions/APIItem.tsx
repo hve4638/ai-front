@@ -45,7 +45,12 @@ function APIItem({ item, onDelete, onChangeType }: APIItemProps) {
                 verified === false &&
                 <GIcon className='noverified' value='warning'/>
             }
-            <small>{item.display_name}</small>
+            <small className='secondary-color'>{item.display_name}</small>
+            {
+                item.memo != null &&
+                item.memo !== '' &&
+                <small>({item.memo})</small>
+            }
             <Flex />
             {/* <Dropdown
                 style={{

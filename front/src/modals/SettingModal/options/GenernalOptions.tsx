@@ -120,8 +120,8 @@ function GeneralOptions() {
                 value={config.remember_deleted_session_count}
                 onChange={config.update.remember_deleted_session_count}
             /> */}
-            <b style={{ fontSize: '0.975em', marginTop: '1em' }}>전송</b>
-            <Delimiter/>
+            {/* <b style={{ fontSize: '0.975em', marginTop: '1em' }}>전송</b>
+            <Delimiter/> */}
             <CheckBoxForm
                 name='요청 후 입력 지우기 (기본 레이아웃)'
                 checked={config.clear_on_submit_normal}

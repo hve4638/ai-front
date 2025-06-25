@@ -100,6 +100,17 @@ declare global {
     type InputFileHash = {
         hash_sha256: string;
     }
+
+    /** 커스텀 모델 정의 */
+    interface CustomModel {
+        id: string;
+        name: string;
+        model: string;
+        url: string;
+        api_format: 'chat_completions';
+        secret_key?: string;
+    }
+    type CustomModelCreate = Omit<CustomModel, 'id'> & { id?: string };
 }
 
-export { }
+export {}

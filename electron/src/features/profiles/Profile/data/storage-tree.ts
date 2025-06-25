@@ -1,6 +1,15 @@
 import { JSONType, StorageAccess } from 'ac-storage';
 import REQUEST_TEMPLATE_TREE from './request-template-tree';
 
+const API_KEYS_ELEMENT = {
+    secret_id: JSONType.String(),
+    display_name: JSONType.String(),
+    activate: JSONType.Bool(),
+    type: JSONType.Union('primary', 'secondary'),
+    last_access: JSONType.Number(),
+    memo: JSONType.String().nullable(),
+};
+
 export const PROFILE_STORAGE_TREE = {
     'request-template': REQUEST_TEMPLATE_TREE,
     'session': {
@@ -12,7 +21,13 @@ export const PROFILE_STORAGE_TREE = {
                         // key : form id
                         '*': JSONType.Any(),
                     }
-                }
+                },
+                'custom_models': JSONType.Array({
+                    name: JSONType.String(),
+                    url: JSONType.String(),
+                    api_format: JSONType.Union('chat_completions', 'anthropic_claude', 'generative_language'),
+                    secret_key: JSONType.String().nullable(),
+                }).strict(),
             }),
             'config.json': StorageAccess.JSON({
                 'name': JSONType.String(),
@@ -24,7 +39,7 @@ export const PROFILE_STORAGE_TREE = {
             'cache.json': StorageAccess.JSON({
                 'input': JSONType.String(),
                 'output': JSONType.String(),
-                
+
                 'last_history': JSONType.Struct().nullable(),
                 'state': JSONType.String(),
                 'markdown': JSONType.Bool().default_value(true),
@@ -33,7 +48,7 @@ export const PROFILE_STORAGE_TREE = {
                     'data': JSONType.String(),
                     'size': JSONType.Number(),
                     'type': JSONType.Union('image/webp', 'image/png', 'image/jpeg', 'application/pdf', 'text/plain'),
-                    'thumbnail' : JSONType.String().nullable(),
+                    'thumbnail': JSONType.String().nullable(),
                     'hash_sha256': JSONType.String(),
                 }).nullable().strict(),
             }),
@@ -66,11 +81,20 @@ export const PROFILE_STORAGE_TREE = {
         'sessions': JSONType.Array(JSONType.String()).strict(),
         'starred_models': JSONType.Array(),
         'api_keys': {
-            'openai': JSONType.Array(),
-            'anthropic': JSONType.Array(),
-            'google': JSONType.Array(),
-            'vertexai': JSONType.Array(),
-        }
+            'openai': JSONType.Array(API_KEYS_ELEMENT).strict(),
+            'anthropic': JSONType.Array(API_KEYS_ELEMENT).strict(),
+            'google': JSONType.Array(API_KEYS_ELEMENT).strict(),
+            'vertexai': JSONType.Array(API_KEYS_ELEMENT).strict(),
+            'custom': JSONType.Array(API_KEYS_ELEMENT).strict(),
+        },
+        'custom_models': JSONType.Array({
+            id: JSONType.String(),
+            name: JSONType.String(),
+            model: JSONType.String(),
+            url: JSONType.String(),
+            api_format: JSONType.Union('chat_completions', 'anthropic_claude', 'generative_language'),
+            secret_key: JSONType.String().nullable(),
+        }).strict(),
     }),
     'config.json': StorageAccess.JSON({
         'name': JSONType.String(),

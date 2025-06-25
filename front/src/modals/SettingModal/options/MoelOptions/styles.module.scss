@@ -12,7 +12,7 @@
     box-sizing: border-box;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     border-radius: 5px;
-    background-color: var(--model-list-bgcolor); 
+    background-color: var(--model-list-bgcolor);
     overflow-x: hidden;
     overflow-y: auto;
     font-size: 0.9em;
@@ -21,7 +21,7 @@
         box-sizing: border-box;
         width: 100%;
         height: 1.8em;
-        cursor : pointer;
+        cursor: pointer;
 
         padding: 3px 0.5em;
         transition: background-color 0.15s ease;
@@ -37,7 +37,7 @@
     }
 
     .model-category {
-        cursor : pointer;
+        cursor: pointer;
 
         box-sizing: border-box;
         width: 100%;
@@ -52,24 +52,31 @@
     }
 
     .model {
-        cursor : pointer;
+        cursor: pointer;
         box-sizing: border-box;
         width: 100%;
         min-height: 1.8em;
         padding: 3px 0px 3px 1em;
-        font-size: 0.75em;
         transition: background-color 0.1s ease;
-
         color: rgb(181, 181, 181);
+
 
         &:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
+
         &.starred {
             background-color: rgba(181, 134, 47, 0.15);
             // background-color: rgba(226, 151, 12, 0.15);
         }
 
+        &:not(.custom-model) {
+            font-size: 0.75em;
+        }
+
+        &.custom-model {
+            color: var(--text-color);
+        }
 
         .tag-container {
             box-sizing: border-box;
@@ -85,11 +92,65 @@
         }
     }
 
+    .model-add-button {
+        cursor: pointer;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 1.8em;
+        padding: 3px 0px 3px 1em;
+        // font-size: 0.75em;
+        transition: background-color 0.1s ease;
+        color: rgb(181, 181, 181);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
     .star {
         transition: color 0.15s ease;
 
         &.starred {
             color: rgb(235, 188, 34);
+        }
+    }
+}
+
+.select-auth-key-container {
+    position: relative;
+    background-color: var(--model-list-bgcolor);
+    // box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+
+    .shadow-wrapper {
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+    }
+    
+    .model-name {
+        color: rgb(181, 181, 181);
+        padding-left: 0.4em;
+        font-size: 0.9em;
+    }
+
+    .auth-key-item {
+        cursor: pointer;
+        // padding-left: 0.6em;
+        width: 100%;
+        padding: 0.1em 0 0.1em 1.2em;
+        
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.selected {
+            background-color: rgba(255, 255, 255, 0.15);
         }
     }
 }
