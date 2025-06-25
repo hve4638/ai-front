@@ -124,17 +124,17 @@ function PromptOnlyConfigModal({
                 <div style={{ height:'0.5em' }}/>
                 <CheckBoxForm
                     name='추론 활성화'
-                    checked={false}
+                    checked={data.model.useThinking}
                     onChange={(checked)=>{
-                        // console.log(checked);
+                        data.model.useThinking = checked;
                         refresh();
                     }}
                 />
                 <NumberForm
                     name='생각 토큰 크기'
-                    value={0}
+                    value={data.model.thinkingTokens}
                     onChange={(value)=>{
-                        console.log(value);
+                        data.model.thinkingTokens = value;
                         refresh();
                     }}
                 />

@@ -155,7 +155,13 @@ class ProfileRT implements IProfileRT {
 
         const name = await this.getPromptName(promptId);
         let { id, variables, model } = promptAC.get('id', 'variables', 'model');
-        model ??= {};
+        model ??= {
+            temperature: 1,
+            top_p: 1.0,
+            max_tokens: 1024,
+            use_thinking: false,
+            thinking_tokens: 1024,
+        };
         
         return { id, name, variables, model } as RTPromptData;
     }

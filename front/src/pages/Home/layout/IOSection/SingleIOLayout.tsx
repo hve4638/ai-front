@@ -56,8 +56,6 @@ function SingleIOLayout({
         return getModelName(last.modelId);
     }, [last?.modelId]);
 
-    console.log(sessionState.last_history);
-
     let [left, right] = useConfigStore(state => state.textarea_io_ratio);
 
     const textareaSectionRef = useRef(null);

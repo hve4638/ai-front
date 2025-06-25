@@ -113,11 +113,11 @@ function EditCustomModelModal({
                 ]}
             />
             <div style={{ height: '0.25em' }} />
-            <CheckBoxForm
+            {/* <CheckBoxForm
                 name='추론 모델 여부'
                 checked={thinking}
                 onChange={(value) => setThinking(value)}
-            />
+            /> */}
             <ButtonForm
                 name='API 키'
                 text='변경'

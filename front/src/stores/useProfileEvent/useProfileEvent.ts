@@ -474,10 +474,11 @@ const useProfileEvent = create<ProfileEventState>((set) => {
         },
 
         getModelName(modelId: string) {
-            const { allModels } = useMemoryStore.getState();
+            const { modelsMap } = useMemoryStore.getState();
             const { custom_models } = useDataStore.getState();
 
-            const model = allModels[modelId];
+            // console.log(modelId, modelsMap, custom_models);
+            const model = modelsMap[modelId];
             if (model) {
                 return model.displayName;
             }

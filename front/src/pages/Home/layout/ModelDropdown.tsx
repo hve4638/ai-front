@@ -19,8 +19,6 @@ function ModelDropdown() {
     const allModels = useMemoryStore(state => state.allModels);
     const customModels = useDataStore(state => state.custom_models);
 
-    console.log('cusomModels', customModels);
-
     const model_id = useSessionStore(state => state.model_id);
     const updateSessionState = useSessionStore(state => state.update);
     const { isModelStarred } = useProfileEvent();
