@@ -58,7 +58,7 @@ class HistoryMigrationManager {
                     id INTEGER PRIMARY KEY,
                     history_id INTEGER,
                     message_index INTEGER NOT NULL,
-                    message_type TEXT CHECK(message_type IN ('text', 'image_url', 'image_base64', 'file_url', 'file_base64')),
+                    message_type TEXT,
 
                     origin TEXT CHECK(origin IN ('in', 'out')),
 
