@@ -326,6 +326,20 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     top_p,
                 });
                 break;
+            case 'anthropic_claude':
+                return await ChatAI.requestAnthropic({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
             default:
                 const sender = this.nodeData.sender;
                 sender.sendError(
