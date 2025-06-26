@@ -33,7 +33,7 @@ function FileDropper({
                 for (const file of files) {
                     const data = await readFileAsDataURI(file);
 
-                    useSessionStore.getState().actions.addInputFile(file.name, data);
+                    await useSessionStore.getState().actions.addInputFile(file.name, data);
                 }
             }
         }}
