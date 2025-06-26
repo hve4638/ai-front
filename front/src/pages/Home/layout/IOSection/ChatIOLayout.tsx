@@ -78,10 +78,13 @@ function ChatIOLayout({
         setHasMore(true);
         setNextOffset(0);
         window.setTimeout(
-            () => scrollAnchorRef.current?.scrollIntoView(),
-            1
+            () => {
+                console.log('scroll to anchor', scrollAnchorRef.current);
+                scrollAnchorRef.current?.scrollIntoView();
+            },
+            1,
         )
-    }, [lastSessionId]);
+    }, [lastSessionId, scrollAnchorRef.current]);
 
     useEffect(() => {
         const unsubscribes = [
