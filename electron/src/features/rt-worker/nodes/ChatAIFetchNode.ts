@@ -311,6 +311,21 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     top_p,
                 });
                 break;
+            case 'generative_language':
+                return await ChatAI.requestGenerativeLanguage({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
+                break;
             default:
                 const sender = this.nodeData.sender;
                 sender.sendError(

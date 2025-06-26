@@ -108,8 +108,8 @@ function EditCustomModelModal({
                 }}
                 items={[
                     { key: 'chat_completions', name: 'Chat Completions' },
-                    // { key: 'claude', name: 'Anthropic Claude' },
-                    // { key: 'generative_language', name: 'Google Generative Language' },
+                    { key: 'anthropic_claude', name: 'Anthropic Claude' },
+                    { key: 'generative_language', name: 'Google Generative Language' },
                 ]}
             />
             <div style={{ height: '0.25em' }} />

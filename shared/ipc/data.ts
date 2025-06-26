@@ -107,7 +107,7 @@ declare global {
         name: string;
         model: string;
         url: string;
-        api_format: 'chat_completions';
+        api_format: 'chat_completions' | 'generative_language' | 'anthropic_claude';
         thinking: boolean;
         secret_key?: string;
     }
