@@ -941,6 +941,15 @@
   resolved "https://registry.yarnpkg.com/@hve/channel/-/channel-1.0.1.tgz#9c6a172545ad304961c734da1867757ff147d58a"
   integrity sha512-ffTWy2galb6SsjDiUUcl+RztOdD+Arsx7VDyc9V64ULZyui+rlnvClnCWUuz5Kr/0NYmK+d9Gabfx1xIInaPcA==
 
+"@hve/chatai@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@hve/chatai/-/chatai-0.12.0.tgz#05d332e0c7e09c3ac15ecbb202a2389d99045962"
+  integrity sha512-qsl73TiYVOnGXuc0aeMhTlAdCe3Sh2FNJzKiwUP1QVJt44H3AgY0kxk8uRf6aDfrqzzbEtahF8NaYwqVKaVqcA==
+  dependencies:
+    axios "^1.7.9"
+    tslib "^2.8.1"
+    zod "^3.25.63"
+
 "@hve/json-accessor@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@hve/json-accessor/-/json-accessor-0.4.0.tgz#9bc5f6007068ddb0b62546d414803e18fd75b466"
@@ -955,10 +964,10 @@
   dependencies:
     istextorbinary "^9.5.0"
 
-"@hve/prompt-template@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hve/prompt-template/-/prompt-template-0.1.0.tgz#211d74003527418b2dba22921e7af73ebfbe243c"
-  integrity sha512-BqB7q4k32eY47zyd5mDdkHo1NFB8kROPDKUXBmyywNJo/IWo8s71IOUPvQbE/lW8ygskZuIbB74ZsNeTnH4dJg==
+"@hve/prompt-template@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@hve/prompt-template/-/prompt-template-0.2.0.tgz#6ca49d86b318668e92f7cf58eb7d016723c2c9f5"
+  integrity sha512-sCPUH0Mop65t+YkR4zg6C9jMwv2UxcG19hh45bcbMu8kPWPOZppv2z/W2dSgFhGedcMcG02Rppk51fkexxYEtQ==
   dependencies:
     "@rollup/plugin-alias" "^5.1.1"
     jest "^29.7.0"
@@ -2050,6 +2059,15 @@ author-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/author-regex/-/author-regex-1.0.0.tgz#d08885be6b9bbf9439fe087c76287245f0a81450"
   integrity sha512-KbWgR8wOYRAPekEmMXrYYdc7BRyhn2Ftk7KWfMUnQ43hFdojWEFRxhhRUm3/OFEdPa1r0KAvTTg9YQK57xTe0g==
+
+axios@^1.7.9:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.10.0.tgz#af320aee8632eaf2a400b6a1979fa75856f38d54"
+  integrity sha512-/1xYAC4MP/HEG+3duIhFr4ZQXR4sQXOIe+o6sdqzeykGLx6Upp/1p8MHqhINOvGeP7xyNHe7tsiJByc4SSVUxw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 babel-jest@^29.7.0:
   version "29.7.0"
@@ -3281,6 +3299,11 @@ flora-colossus@^2.0.0:
   dependencies:
     debug "^4.3.4"
     fs-extra "^10.1.0"
+
+follow-redirects@^1.15.6:
+  version "1.15.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
+  integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
 
 foreground-child@^3.1.0:
   version "3.3.1"
@@ -5279,6 +5302,11 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
+proxy-from-env@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
+  integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
+
 ps-list@^8.1.1:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/ps-list/-/ps-list-8.1.1.tgz#9ff1952b26a9a07fcc05270407e60544237ae581"
@@ -6150,7 +6178,7 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-tslib@^2.4.0, tslib@^2.6.2:
+tslib@^2.4.0, tslib@^2.6.2, tslib@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
@@ -6483,3 +6511,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.25.63:
+  version "3.25.67"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.67.tgz#62987e4078e2ab0f63b491ef0c4f33df24236da8"
+  integrity sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==
