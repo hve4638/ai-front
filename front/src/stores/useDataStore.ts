@@ -5,12 +5,14 @@ import { APIKeyMetadata } from '@/types/apikey-metadata';
 import ProfilesAPI, { ProfileAPI } from '@/api/profiles';
 
 interface DataFields {
+    custom_models : CustomModel[];
     sessions : string[];
     starred_models : string[];
     api_keys : Record<string, APIKeyMetadata[]>;
 }
 
 const defaultData:DataFields = {
+    custom_models : [],
     sessions : [],
     starred_models : [],
     api_keys : {},

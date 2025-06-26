@@ -15,9 +15,11 @@ export interface MouseActionProps<TElement extends HTMLElement> {
 
 export interface DragActionProps<TElement extends HTMLElement> {
     onDragStart?: (e: React.DragEvent<TElement>) => void;
+    onDragEnd?: (e: React.DragEvent<TElement>) => void;
     onDragOver?: (e: React.DragEvent<TElement>) => void;
     onDragEnter?: (e: React.DragEvent<TElement>) => void;
     onDragLeave?: (e: React.DragEvent<TElement>) => void;
+    onDrop?: (e: React.DragEvent<TElement>) => void;
 }
 
 export interface KeyboardActionProps<TElement extends HTMLElement> {

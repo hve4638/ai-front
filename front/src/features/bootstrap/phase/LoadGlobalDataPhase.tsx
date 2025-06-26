@@ -35,6 +35,19 @@ function LoadGlobalDataPhase() {
                 .then((version) => {
                     useMemoryStore.setState({ version })
                 }),
+            LocalAPI.general.getChatAIModels()
+                .then((allModels) => {
+                    const modelsMap: Record<string, ChatAIModel> = {};
+                    for (const provider of allModels) {
+                        for (const category of provider.list) {
+                            for (const model of category.list) {
+                                modelsMap[model.id] = model;
+                            }
+                        }
+                    }
+
+                    useMemoryStore.setState({ allModels, modelsMap });
+                }),
             useGlobalConfigStore.getState().refetchAll(),
         ];
 

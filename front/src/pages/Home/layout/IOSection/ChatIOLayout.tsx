@@ -21,6 +21,8 @@ import { HistoryData } from '@/features/session-history';
 import useMemoRef from '@/hooks/useMemoRef';
 import { checksum } from '@/utils/debug';
 import useCache from '@/hooks/useCache';
+import FilesFormLayout from './FilesUpload/FileList';
+import { FileDropper } from './FilesUpload';
 
 // const InfiniteLoader = RawInfiniteLoader as unknown as React.ComponentType<any>;
 
@@ -60,8 +62,6 @@ function ChatIOLayout({
 
     const historyData = useCache<{ current: HistoryData[] }>(() => ({ current: [] }), [lastSessionId]);
     const chats = useMemo(() => {
-        console.log('load chats', historyData.current);
-
         return historyData.current.flatMap((item) => {
             const chat: { side: 'input' | 'output', value: string, key: string, data: HistoryData }[] = [];
             if (item.output) {
@@ -71,17 +71,20 @@ function ChatIOLayout({
                 chat.push({ side: 'input', value: item.input, key: `${item.id}_input`, data: item });
             }
             return chat;
-        });
+        }).reverse();
     }, [historyData.current])
 
     useEffect(() => {
         setHasMore(true);
         setNextOffset(0);
         window.setTimeout(
-            () => scrollAnchorRef.current?.scrollIntoView(),
-            1
+            () => {
+                console.log('scroll to anchor', scrollAnchorRef.current);
+                scrollAnchorRef.current?.scrollIntoView();
+            },
+            1,
         )
-    }, [lastSessionId]);
+    }, [lastSessionId, scrollAnchorRef.current]);
 
     useEffect(() => {
         const unsubscribes = [
@@ -138,7 +141,6 @@ function ChatIOLayout({
                 classNames(
                     styles['main-section'],
                     'row',
-                    'flex',
                     'body',
                     'relative',
                     `palette-${color}`
@@ -146,42 +148,46 @@ function ChatIOLayout({
             }
             style={{
                 width: '100%',
+                height: '100%',
                 overflowY: 'hidden',
                 paddingTop: '0.5em',
             }}
-            rows='1fr 0.25em 8em'
+            rows='minmax(0, 1fr) 0.25em 8em'
             columns='1fr'
         >
             <InfiniteScroll
                 style={{
                     width: '100%',
-                    maxHeight: '100%',
-                    overflowY: 'auto',
+                    height: '100%',
+                    minHeight: '0',
                 }}
                 loadMore={() => loadMore()}
                 hasMore={hasMore}
             >
-                <Column
+                <div
                     className={classNames(styles['chat-container'])}
-                    reverse={true}
-                    columnAlign={Align.End}
                     style={{
                         fontSize: `${font_size}px`,
-                        gap: '0.5em',
+                        overflowY: 'auto',
+                        display: 'block',
                     }}
                 >
-                    <div ref={scrollAnchorRef} />
                     {
                         chats.map((c, index) => (
                             <ChatDiv
                                 key={c.key}
+                                style={{
+                                    marginBottom: '0.5em',
+                                }}
+
                                 side={c.side}
                                 value={c.value}
                                 data={c.data}
                             />
                         ))
                     }
-                </Column>
+                    <div className='anchor' ref={scrollAnchorRef} />
+                </div>
             </InfiniteScroll>
             <div />
             <ChatInput
@@ -208,6 +214,7 @@ function ChatInput({
     const sessionState = useSessionStore();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const { font_size } = useConfigStore();
+    const [draggingFile, setDraggingFile] = useState(false);
 
     return (
         <div
@@ -220,6 +227,14 @@ function ChatInput({
                 className={classNames(styles['chat-input'])}
                 rows='1fr 1.75em'
                 columns='1fr'
+                onDragEnter={(e) => {
+                    setDraggingFile(true);
+                }}
+
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
             >
                 <textarea
                     ref={textareaRef}
@@ -232,7 +247,10 @@ function ChatInput({
                     tabIndex={0}
                 ></textarea>
                 <Row
-                    style={{ fontSize: '1.75em' }}
+                    style={{
+                        fontSize: '1.75em',
+                        gap: '0.25em',
+                    }}
                     columnAlign={Align.End}
                 >
                     <span
@@ -243,7 +261,15 @@ function ChatInput({
                     >
                         token: {tokenCount}
                     </span>
-                    <Flex />
+                    <Flex style={{ height: '100%',}}>
+                        <FilesFormLayout
+                            style={{
+                                height: '100%',
+                                padding: '0px',
+                            }}
+                            internalPadding='4px 4px'
+                        />
+                    </Flex>
                     <GIconButton
                         className={classNames(styles['send-button'])}
                         value='send'
@@ -254,6 +280,15 @@ function ChatInput({
                         }}
                     />
                 </Row>
+                {
+                    draggingFile &&
+                    <FileDropper
+                        onDragEnd={() => {
+                            console.log('drag end');
+                            setDraggingFile(false);
+                        }}
+                    />
+                }
             </Grid>
         </div>
     )

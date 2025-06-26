@@ -10,6 +10,7 @@ const {
     snapshot,
     chat_completions_api,
     responses_api,
+    thinking,
 } = flags;
 
 function initProvider(provider:ModelProvider) {
@@ -41,31 +42,34 @@ function initProvider(provider:ModelProvider) {
             model('GPT 4.1 nano (2025-04-14)', 'gpt-4.1-nano-2025-04-14', { snapshot, ...ccBaseFlags }),
         ]
     );
+
+    const resThinkingFlags = { ...resBaseFlags, thinking, };
+    const ccThinkingFlags = { ...ccBaseFlags, thinking, };
     provider.addModels('o4',
         [
-            model('o4 mini', 'o4-mini', { latest, featured, ...resBaseFlags }),
-            model('o4 mini (2025-04-16)', 'o4-mini-2025-04-16', { snapshot, ...resBaseFlags }),
+            model('o4 mini', 'o4-mini', { latest, featured, ...resThinkingFlags }),
+            model('o4 mini (2025-04-16)', 'o4-mini-2025-04-16', { snapshot, ...resThinkingFlags }),
         ]
     );
     provider.addModels('o3',
         [
-            model('o3', 'o3', { latest, featured, ...ccBaseFlags }),
-            model('o3 (2025-04-16)', 'o3-2025-04-16', { snapshot, ...ccBaseFlags }),
+            model('o3', 'o3', { latest, featured, ...ccThinkingFlags }),
+            model('o3 (2025-04-16)', 'o3-2025-04-16', { snapshot, ...ccThinkingFlags }),
 
-            model('o3 mini', 'o3-mini', { latest, featured, ...resBaseFlags }),
-            model('o3 (2025-01-31)', 'o3-mini-2025-01-31', { snapshot, ...resBaseFlags }),
+            model('o3 mini', 'o3-mini', { latest, featured, ...resThinkingFlags }),
+            model('o3 (2025-01-31)', 'o3-mini-2025-01-31', { snapshot, ...resThinkingFlags }),
         ]
     );
     provider.addModels('o1',
         [
-            model('o1', 'o1', { latest, featured, ...resBaseFlags }),
-            model('o1 (2024-12-17)', 'o1-2024-12-17', { snapshot, ...resBaseFlags }),
-            model('o1 pro', 'o1-pro', { latest, featured, high_cost, ...resBaseFlags }),
-            model('o1 pro (2025-03-19)', 'o1-pro-2025-03-19', { snapshot, high_cost, ...resBaseFlags }),
-            model('o1 mini', 'o1-mini', { latest, featured, ...ccBaseFlags }),
-            model('o1 mini (2024-09-12)', 'o1-mini-2024-09-12', { snapshot, ...ccBaseFlags }),
-            model('o1 preview', 'o1-preview', { latest, ...ccBaseFlags }),
-            model('o1 preview (2024-09-12)', 'o1-preview-2024-09-12', { snapshot, ...ccBaseFlags }),
+            model('o1', 'o1', { latest, featured, ...resThinkingFlags }),
+            model('o1 (2024-12-17)', 'o1-2024-12-17', { snapshot, ...resThinkingFlags }),
+            model('o1 pro', 'o1-pro', { latest, featured, high_cost, ...resThinkingFlags }),
+            model('o1 pro (2025-03-19)', 'o1-pro-2025-03-19', { snapshot, high_cost, ...resThinkingFlags }),
+            model('o1 mini', 'o1-mini', { latest, featured, ...ccThinkingFlags }),
+            model('o1 mini (2024-09-12)', 'o1-mini-2024-09-12', { snapshot, ...ccThinkingFlags }),
+            model('o1 preview', 'o1-preview', { latest, ...ccThinkingFlags }),
+            model('o1 preview (2024-09-12)', 'o1-preview-2024-09-12', { snapshot, ...ccThinkingFlags }),
         ]
     );
 

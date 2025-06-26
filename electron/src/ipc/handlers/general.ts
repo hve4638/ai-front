@@ -1,30 +1,31 @@
 import * as utils from '@utils';
 import runtime from '@/runtime';
 import ThrottleAction from '@/features/throttle-action';
+import ChatAIModels from '@/features/chatai-models';
 
-function general():IPCInvokerGeneral {
+function general(): IPCInvokerGeneral {
     const throttle = ThrottleAction.getInstance();
 
     return {
-        async echo(message:string) {
+        async echo(message: string) {
             return [null, message];
         },
-        async openBrowser(url:string) {
+        async openBrowser(url: string) {
             utils.openBrowser(url);
-            
+
             return [null];
         },
         async getCurrentVersion() {
             return [null, runtime.version];
         },
-        async getAvailableVersion(prerelease:boolean) {
-            let ver:VersionInfo|null;
+        async getAvailableVersion(prerelease: boolean) {
+            let ver: VersionInfo | null;
             if (prerelease) {
                 ver = await runtime.appVersionManager.getLatestBeta();
             } else {
                 ver = await runtime.appVersionManager.getLatestStable();
             }
-            
+
             if (ver && runtime.appVersionManager.isNewerVersion(ver.semver)) {
                 return [null, ver];
             }
@@ -32,6 +33,10 @@ function general():IPCInvokerGeneral {
                 return [new Error('Failed to fetch version information')];
             }
         },
+        async getChatAIModels() {
+            return [null, ChatAIModels.models];
+        },
+
         async existsLegacyData() {
             return [null, runtime.migrationService.existsLegacyData()];
         },
@@ -43,7 +48,7 @@ function general():IPCInvokerGeneral {
             await runtime.migrationService.migrate(runtime.profiles, legacyData);
             throttle.saveProfiles();
 
-            return [null];  
+            return [null];
         },
         async ignoreLegacyData() {
             runtime.migrationService.setMigrated();

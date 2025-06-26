@@ -1,17 +1,18 @@
 import { create } from 'zustand'
-import useProfileAPIStore from './useProfileAPIStore';
-import useCacheStore from './useCacheStore';
-import useDataStore from './useDataStore';
+import useProfileAPIStore from '../useProfileAPIStore';
+import useCacheStore from '../useCacheStore';
+import useDataStore from '../useDataStore';
 import { ProfileSessionMetadata } from '@/types';
 
 import { v7 } from 'uuid';
 import i18next from 'i18next';
-import useSessionStore from './useSessionStore';
-import useSignalStore from './useSignalStore';
-import { useHistoryStore } from './useHistoryStore';
+import useSessionStore from '../useSessionStore';
+import useSignalStore from '../useSignalStore';
+import { useHistoryStore } from '../useHistoryStore';
 import SessionHistory from '@/features/session-history';
+import useMemoryStore from '../useMemoryStore';
 
-type ProviderName = 'openai' | 'anthropic' | 'google' | 'vertexai';
+type ProviderName = 'openai' | 'anthropic' | 'google' | 'vertexai' | 'custom';
 
 type PromptVarWithLastValue = (PromptVar & { last_value?: unknown });
 
@@ -29,8 +30,8 @@ interface ProfileEventState {
     starModel(modelKey: string): Promise<void>;
     unstarModel(modelKey: string): Promise<void>;
 
-    addAPIKey(provider: ProviderName, apiKey: string): Promise<void>;
-    addVertexAIAPIKey(data: VertexAIAuth): Promise<void>;
+    addAuthKey(provider: ProviderName, apiKey: string, memo?: string): Promise<void>;
+    addVertexAIAPIKey(data: VertexAIAuth, memo?: string): Promise<void>;
     removeAPIKey(provider: ProviderName, index: number): Promise<void>;
     changeAPIKeyType(provider: ProviderName, index: number, type: 'primary' | 'secondary'): Promise<void>;
 
@@ -52,6 +53,11 @@ interface ProfileEventState {
     deleteHistoryMessage(historyId: number, origin: 'in' | 'out' | 'both'): Promise<void>;
 
     verifyAPIKey(apiKeyId: string): Promise<boolean>;
+
+    setCustomModel(model: CustomModelCreate): Promise<void>;
+    removeCustomModel(customModel: string): Promise<void>;
+
+    getModelName(modelId: string): string;
 }
 
 const useProfileEvent = create<ProfileEventState>((set) => {
@@ -163,10 +169,8 @@ const useProfileEvent = create<ProfileEventState>((set) => {
             return promises;
         },
         async filterModels() {
-            const { api } = useProfileAPIStore.getState();
             const caches = useCacheStore.getState();
-
-            const allModels = await api.getChatAIModels();
+            const { allModels } = useMemoryStore.getState();
 
             const newProviders: ChatAIModelProviders[] = [];
             for (const provider of allModels) {
@@ -241,7 +245,7 @@ const useProfileEvent = create<ProfileEventState>((set) => {
             updateData.starred_models(filtered);
         },
 
-        async addAPIKey(provider: ProviderName, apiKey: string) {
+        async addAuthKey(provider: ProviderName, apiKey: string, memo: string = '') {
             const { api } = useProfileAPIStore.getState();
             const { api_keys, refetch: refetchData } = useDataStore.getState();
 
@@ -266,14 +270,14 @@ const useProfileEvent = create<ProfileEventState>((set) => {
                             activate: true,
                             type: 'primary',
                             last_access: -1,
+                            memo: memo,
                         }
                     ]
                 }
             });
             await refetchData.api_keys();
         },
-
-        async addVertexAIAPIKey(data: VertexAIAuth) {
+        async addVertexAIAPIKey(data: VertexAIAuth, memo: string = '') {
             const { api } = useProfileAPIStore.getState();
             const { api_keys, refetch: refetchData } = useDataStore.getState();
             const provider: ProviderName = 'vertexai';
@@ -298,6 +302,7 @@ const useProfileEvent = create<ProfileEventState>((set) => {
                             activate: true,
                             type: 'primary',
                             last_access: -1,
+                            memo: memo,
                         }
                     ]
                 }
@@ -439,6 +444,51 @@ const useProfileEvent = create<ProfileEventState>((set) => {
         async verifyAPIKey(apiKeyId: string) {
             const { api } = useProfileAPIStore.getState();
             return (await api.verifyAsSecret('secret.json', [apiKeyId]))[0];
+        },
+
+        async setCustomModel(model: CustomModelCreate) {
+            const { custom_models, update } = useDataStore.getState();
+            const next = [...custom_models];
+            
+            if (model.id) {
+                const index = custom_models.findIndex(item => item.id === model.id);
+                if (index < 0) throw new Error('Custom model not found');
+
+                next[index] = model as CustomModel;
+            }
+            else {
+                model.id = 'custom:' + v7();
+
+                next.push(model as CustomModel);
+            }
+
+            console.log('before', next);
+            await update.custom_models(next);
+            console.log('after', useDataStore.getState().custom_models);
+        },
+        async removeCustomModel(customId: string) {
+            const { custom_models, update } = useDataStore.getState();
+            const next = custom_models.filter(item => item.id !== customId);
+
+            await update.custom_models(next);
+        },
+
+        getModelName(modelId: string) {
+            const { modelsMap } = useMemoryStore.getState();
+            const { custom_models } = useDataStore.getState();
+
+            // console.log(modelId, modelsMap, custom_models);
+            const model = modelsMap[modelId];
+            if (model) {
+                return model.displayName;
+            }
+
+            const customModel = custom_models.find(item => item.id === modelId);
+            if (customModel) {
+                return customModel.name;
+            }
+
+            return 'unknown';
         }
     }
 

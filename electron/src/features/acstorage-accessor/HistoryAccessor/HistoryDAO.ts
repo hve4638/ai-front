@@ -1,6 +1,7 @@
 import Database, { Database as DB } from 'better-sqlite3';
 import fs from 'node:fs';
 import { HistoryRow, MessageRow } from './types';
+import HistoryMigrationManager from './migration';
 
 export type HistorySearchRow = {
     text: string;
@@ -25,10 +26,12 @@ type HistoryRowInput = {
 }
 
 type MessageRowInput = {
-    type: 'text' | 'image_url' | 'file';
+    type: 'text' | 'image_url' | 'image_base64' | 'file_url' | 'file_base64';
     origin: 'in' | 'out';
     text: string | null;
     data: string | null;
+    data_name: string | null;
+    data_type: string | null;
     token_count: number | null;
 }
 
@@ -49,7 +52,7 @@ class HistoryDAO {
         catch (e: any) {
             throw new Error(`Failed to open database '${path}' : ${e.message}`);
         }
-
+        
         /**
          * history 테이블
          * id : 고유 키
@@ -95,23 +98,31 @@ class HistoryDAO {
          * message_type : 메시지 타입 (text, image_url, file)
          * text : 메시지 텍스트
          * data : 메시지 데이터
+         * data_name : 데이터 이름
+         * data_type : 데이터 유형 (image/png, application/pdf 등)
+         * data_thumbnail : 데이터 썸네일, 이미지 외에는 null
          * 
          * token_count : 토큰 수
          */
-        db.exec(`CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY,
-            history_id INTEGER,
-            message_index INTEGER NOT NULL,
-            message_type TEXT CHECK(message_type IN ('text', 'image_url', 'file')),
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY,
+                history_id INTEGER,
+                message_index INTEGER NOT NULL,
+                message_type TEXT,
 
-            origin TEXT CHECK(origin IN ('in', 'out')),
+                origin TEXT CHECK(origin IN ('in', 'out')),
 
-            text TEXT,
-            data TEXT,
+                text TEXT,
+                data TEXT,
+                data_name TEXT,
+                data_type TEXT,
+                data_thumbnail TEXT,
 
-            token_count INTEGER NOT NULL,
-            FOREIGN KEY (history_id) REFERENCES history(id) ON DELETE CASCADE
-        )`);
+                token_count INTEGER NOT NULL,
+                FOREIGN KEY (history_id) REFERENCES history(id) ON DELETE CASCADE
+            )
+        `);
         db.pragma('foreign_keys = ON');
 
         db.exec(`CREATE INDEX IF NOT EXISTS idx_history_create_at ON history (create_at)`);
@@ -119,7 +130,10 @@ class HistoryDAO {
 
         db.function('regexp', { deterministic: true }, (pattern: string, value) => {
             return new RegExp(pattern).test(value) ? 1 : 0;
-        })
+        });
+
+        const migrationManager = new HistoryMigrationManager(db);
+        migrationManager.migrate();
 
         return db;
     }
@@ -186,14 +200,16 @@ class HistoryDAO {
     }
 
     insertMessage(historyId: number, row: MessageRowInput) {
-        const insert = this.#db.prepare(
-            `INSERT INTO messages (
+        const insert = this.#db.prepare(`
+            INSERT INTO messages (
                 history_id,
                 message_index,
                 message_type,
                 origin,
                 text,
                 data,
+                data_name,
+                data_type,
                 token_count
             )
             SELECT 
@@ -203,11 +219,12 @@ class HistoryDAO {
                 $origin,
                 $text,
                 $data,
+                $data_name,
+                $data_type,
                 $token_count
             FROM messages
             WHERE history_id = $history_id
-            `
-        );
+        `);
         insert.run({ history_id: historyId, ...row });
     }
 

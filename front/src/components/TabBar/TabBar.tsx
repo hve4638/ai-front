@@ -301,8 +301,6 @@ function TabBar<T extends TabRequired, TRequired extends Partial<T> & TabRequire
                                 clamp(draggingTabX, tabXRange[0], tabXRange[1]) :
                                 tab.index * tabSize
                             }
-                            onClick={onClick}
-                            onClose={onClose}
                         >
                         {
                             tabRender({

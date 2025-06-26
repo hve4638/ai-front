@@ -14,12 +14,14 @@ declare global {
         id : string;
         name : string;
         variables : string[];
+
         model: {
             temperature: number;
             top_p: number;
             max_tokens: number;
+            use_thinking: boolean;
+            thinking_tokens: number;
         };
-        // contents : string;
     }
 
     type RTPromptDataEditable = {
@@ -28,6 +30,8 @@ declare global {
             temperature?: number;
             top_p?: number;
             max_tokens?: number;
+            use_thinking?: boolean;
+            thinking_tokens?: number;
         };
         contents?: string;
     }

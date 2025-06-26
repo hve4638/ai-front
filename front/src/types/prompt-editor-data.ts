@@ -17,6 +17,8 @@ export type PromptEditorData = {
         temperature: number;
         topP: number;
         maxTokens: number;
+        useThinking: boolean;
+        thinkingTokens: number;
     };
     
     config : {

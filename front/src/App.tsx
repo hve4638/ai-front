@@ -63,10 +63,10 @@ function App() {
             // 앞으로 더 많은 작업이 추가되면
             // LoadGlobalDataPhase 처럼 작업 분리 필요
             const promises = [
-                api.getChatAIModels()
-                    .then((models) => {
-                        useMemoryStore.setState({ allModels: models })
-                    }),
+                // api.getChatAIModels()
+                //     .then((models) => {
+                //         useMemoryStore.setState({ allModels: models })
+                //     }),
             ];
             Promise.all(promises)
                 .then(() => {

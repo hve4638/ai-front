@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import FocusLock from 'react-focus-lock';
 import { useTranslation } from 'react-i18next';
 import { Modal, ModalBackground, ModalBox, ModalHeader } from '@/components/Modal';
-import { DropdownForm, NumberForm, StringForm } from '@/components/Forms';
+import { CheckBoxForm, DropdownForm, NumberForm, StringForm } from '@/components/Forms';
 
 import useSignal from 'hooks/useSignal';
 import styles from './styles.module.scss';
@@ -12,6 +12,7 @@ import useHotkey from '@/hooks/useHotkey';
 import { PromptEditorData, PromptInputType } from '@/types';
 import { use } from 'i18next';
 import Delimiter from '@/components/Delimiter';
+import CheckBox from '@/components/CheckBox';
 
 type PromptOnlyConfigModalProps = {
     data:PromptEditorData;
@@ -108,6 +109,7 @@ function PromptOnlyConfigModal({
                         data.changed.model = true;
                         refresh();
                     }}
+                    allowDecimal={true}
                 />
                 <NumberForm
                     name='Top P'
@@ -117,15 +119,26 @@ function PromptOnlyConfigModal({
                         data.changed.model = true;
                         refresh();
                     }}
+                    allowDecimal={true}
                 />
-                {/* <NumberForm
-                    name='생각 토큰 크기'
-                    value={0}
-                    onChange={(value)=>{
-                        console.log(value);
+                <div style={{ height:'0.5em' }}/>
+                <CheckBoxForm
+                    name='추론 활성화'
+                    checked={data.model.useThinking}
+                    onChange={(checked)=>{
+                        data.model.useThinking = checked;
                         refresh();
                     }}
                 />
+                <NumberForm
+                    name='생각 토큰 크기'
+                    value={data.model.thinkingTokens}
+                    onChange={(value)=>{
+                        data.model.thinkingTokens = value;
+                        refresh();
+                    }}
+                />
+                {/* <div style={{ height:'0.5em' }}/>
                 <NumberForm
                     name='이전 대화 컨텍스트 크기'
                     value={0}

@@ -9,6 +9,9 @@ export type NodeData = {
     logger: WorkLogger;
     profile: Profile;
 
+    inputText: string;
+    inputFiles: InputFile[];
+
     chat: ChatContents[];
     form: Record<string, any>;
 
@@ -31,4 +34,9 @@ export type ChatContents = {
         type: 'text',
         value: string
     }[]
+}
+
+export interface UserInput {
+    text: string;
+    files: InputFile[];
 }

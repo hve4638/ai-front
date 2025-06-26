@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ProfileRT from './rt/ProfileRT';
 // import IRTControl from './rt/IRTControl';
 import { PromptOnlyTemplateFactory } from '@/features/rt-template-factory';
+import ProfileModel from './ProfileModel';
 
 /**
  * 특정 Profile의 History, Store, Prompt 등을 관리
@@ -26,6 +27,7 @@ class Profile {
     #storage: ACStorage;
     #sessionControl: ProfileSessions;
     #rtControl: RTControl;
+    #modelControl: ProfileModel;
     #dropped: boolean = false;
 
     #personalKey: string;
@@ -84,9 +86,8 @@ class Profile {
             async destroy(ac) { return await ac.drop() },
         });
 
-        this.#sessionControl = new ProfileSessions(
-            this.#storage
-        );
+        this.#sessionControl = new ProfileSessions(this.#storage);
+        this.#modelControl = new ProfileModel(this.#storage);
         this.#rtControl = new RTControl(
             this.#storage.subStorage('request-template')
         );
@@ -117,13 +118,9 @@ class Profile {
     drop(): void {
         if (this.#basePath) fs.rmSync(this.#basePath, { recursive: true, force: true });
     }
-    get path(): string {
-        return this.#basePath ?? '';
-    }
-
-    get sessions() {
-        return this.#sessionControl;
-    }
+    get path(): string { return this.#basePath ?? ''; }
+    get sessions() { return this.#sessionControl; }
+    get model() { return this.#modelControl; }
 
     session(sessionId: string) {
         return this.#sessionControl.session(sessionId);

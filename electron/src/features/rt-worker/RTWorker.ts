@@ -20,12 +20,14 @@ class RTWorker {
             runtime.logger.error(`RTWork failed: duplicate token`, token);
             throw new Error(`Duplicate token: ${token}`);
         }
-
+        const configAC = await profile.accessAsJSON('config.json');
+        const { clear_on_submit_normal, clear_on_submit_chat } = configAC.get('clear_on_submit_normal', 'clear_on_submit_chat');
+    
         const session = profile.session(sessionId);
-
         const { rt_id, model_id } = await session.get('config.json', ['rt_id', 'model_id']);
-        const { input } = await session.get('cache.json', ['input']);
+        const { input, upload_files } = await session.get('cache.json', ['input', 'upload_files']);
         const form = await session.getOne('data.json', `forms.${rt_id}`);
+        const { input_type } = await profile.rt(rt_id).getMetadata();
 
         const rtInput: RTInput = {
             rtId: rt_id,
@@ -33,13 +35,23 @@ class RTWorker {
             sessionId: sessionId,
             form: form ?? {},
             input: input ?? '',
+            inputFiles: upload_files ?? [],
             chat: [],
         }
-
+        
         runtime.logger.trace(`RT request started (${token})`)
         const rtSender = new RTSender(this.browserWindowRef, token);
         const process = new WorkflowPromptOnly(rtSender, profile);
-        
+
+        if (
+            (input_type === 'normal' && clear_on_submit_normal)
+            || (input_type === 'chat' && clear_on_submit_chat)
+        ) {
+            session.set('cache.json', { input: '', upload_files: [] });
+            rtSender.sendInputUpdate();
+        }
+
+
         RTWorker.senders.set(token, rtSender);
         process.process(rtInput)
             .then(() => {

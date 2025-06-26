@@ -67,7 +67,7 @@ class RequestManager {
                 }
                 useSignalStore.getState().signal.session_metadata();
             }
-            if (data.type === 'error') {
+            else if (data.type === 'error') {
                 useToastStore.getState().add(
                     '요청이 실패했습니다',
                     data.message,
@@ -82,13 +82,22 @@ class RequestManager {
                     },
                 });
             }
-            if (data.type === 'history_update') {
+            else if (data.type === 'input_update') {
+                console.log('Input update received:', data);
+                const sessionState = useSessionStore.getState();
+                if (sessionState.deps.last_session_id === sessionAPI.id) {
+                    await sessionState.refetch.input();
+                    await sessionState.actions.refetchInputFiles();
+                    await useSignalStore.getState().signal.reload_input();
+                }
+            }
+            else if (data.type === 'history_update') {
                 const sessionState = useSessionStore.getState();
                 if (sessionState.deps.last_session_id === sessionAPI.id) {
                     useSignalStore.getState().signal.refresh_chat();
                 }
             }
-            if (data.type === 'close') {
+            else if (data.type === 'close') {
                 console.warn('Request closed:', data);
                 const sessionState = useSessionStore.getState();
 

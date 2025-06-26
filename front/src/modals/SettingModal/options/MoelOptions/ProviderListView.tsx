@@ -38,6 +38,19 @@ function ProviderListView({ models, selected, onChange }: ProviderListViewProps)
                     </div>
                 ))
             }
+            <div
+                className={
+                    classNames(
+                        styles['provider'],
+                        {
+                            [styles['selected']]: selected === models.length,
+                        }
+                    )
+                }
+                onClick={() => onChange(models.length)}
+            >
+                Custom
+            </div>
         </Column>
     )
 }

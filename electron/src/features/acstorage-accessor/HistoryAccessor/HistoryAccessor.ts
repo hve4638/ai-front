@@ -4,22 +4,22 @@ import { type HistorySearchRow } from './HistoryDAO';
 import { HistoryMessageRow, HistoryRequired } from './types';
 
 class HistoryAccessor implements ICustomAccessor {
-    #dao:HistoryDAO;
-    #droped:boolean = false;
+    #dao: HistoryDAO;
+    #droped: boolean = false;
 
-    constructor(target:string|null) {
+    constructor(target: string | null) {
         this.#dao = new HistoryDAO(target);
     }
 
-    addHistory(historyRequired:{
-        rt_id : string;
-        rt_uuid : string;
-        model_id : string;
+    addHistory(historyRequired: {
+        rt_id: string;
+        rt_uuid: string;
+        model_id: string;
 
-        form : Record<string, unknown>;
-        
-        create_at : number;
-    }):number {
+        form: Record<string, unknown>;
+
+        create_at: number;
+    }): number {
         const {
             rt_id, rt_uuid, model_id,
             create_at,
@@ -35,7 +35,7 @@ class HistoryAccessor implements ICustomAccessor {
         return historyId;
     }
 
-    updateHistory(historyId:number, historyRequired:Partial<HistoryRequired>) {
+    updateHistory(historyId: number, historyRequired: Partial<HistoryRequired>) {
         this.#dao.updateHistory(historyId, {
             input_token_count: historyRequired.input_token_count,
             output_token_count: historyRequired.output_token_count,
@@ -45,39 +45,43 @@ class HistoryAccessor implements ICustomAccessor {
             fetch_count: historyRequired.fetch_count,
             create_at: historyRequired.create_at,
             form: JSON.stringify(historyRequired.form),
-        }); 
+        });
     }
 
-    addHistoryMessage(historyId:number, origin:'in'|'out', messages:HistoryMessageRow[]) {
+    addHistoryMessage(historyId: number, origin: 'in' | 'out', messages: HistoryMessageRow[]) {
         for (const m of messages) {
             if (!m.text) continue;
 
             this.#dao.insertMessage(historyId, {
-                origin: origin,
                 ...m,
+                origin: origin,
+                text: m.text ?? null,
+                data: m.data ?? null,
+                data_name: m.data_name ?? null,
+                data_type: m.data_type ?? null,
             });
         }
     }
 
-    completeHistory(historyId:number) {
+    completeHistory(historyId: number) {
         this.#dao.completeHistory(historyId);
     }
 
-    getHistory(offset=0, limit=1000, desc=true) {
+    getHistory(offset = 0, limit = 1000, desc = true) {
         const history = this.#dao.selectHistory({ offset, limit, desc });
 
         return history;
     }
 
-    searchHistory(search:HistorySearchRow) {
+    searchHistory(search: HistorySearchRow) {
         return this.#dao.searchHistory(search);
     }
 
-    getMessageText(historyId:number):{input?:string, output?:string} {
+    getMessageText(historyId: number): { input?: string, output?: string } {
         const messages = this.#dao.selectMessages(historyId);
 
-        const inputText:string[] = [];
-        const outputText:string[] = [];
+        const inputText: string[] = [];
+        const outputText: string[] = [];
 
         for (const message of messages) {
             if (message.origin === 'in') {
@@ -89,20 +93,20 @@ class HistoryAccessor implements ICustomAccessor {
         }
 
         return {
-            input : inputText.length === 0 ? undefined : inputText.join(' '),
-            output : outputText.length === 0 ? undefined : outputText.join(' '),
+            input: inputText.length === 0 ? undefined : inputText.join(' '),
+            output: outputText.length === 0 ? undefined : outputText.join(' '),
         };
     }
 
-    deleteMessage(historyId:number, origin:'in'|'out'|'both'='both') {
+    deleteMessage(historyId: number, origin: 'in' | 'out' | 'both' = 'both') {
         let input = false;
         let output = false;
         this.#dao.selectMessageOrigin(historyId)
-            .forEach(({ origin })=>{
+            .forEach(({ origin }) => {
                 if (origin === 'in') input = true;
                 else if (origin === 'out') output = true;
             });
-            
+
         this.#dao.deleteMessages(historyId, origin);
         if (origin === 'in') {
             input = false;
@@ -120,7 +124,7 @@ class HistoryAccessor implements ICustomAccessor {
         }
     }
 
-    delete(id:number) {
+    delete(id: number) {
         this.#dao.delete(id);
     }
 
@@ -140,7 +144,7 @@ class HistoryAccessor implements ICustomAccessor {
     }
 
     commit() {
-        
+
     }
 }
 

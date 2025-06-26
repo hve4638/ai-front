@@ -1,5 +1,4 @@
 import ModelProvider from './ModelProvider';
-import { KnownProvider } from '@hve/chatai';
 import {
     initOpenAIProvider,
     initGeminiProvider,
@@ -7,6 +6,16 @@ import {
     initVertexAIProvider,
     initDebugProvider,
 } from './providerInitializer';
+
+const KnownProducer = {
+    OpenAI: 'openai',
+    Google: 'google',
+    Anthropic: 'anthropic',
+    VertexAI: 'vertexai',
+    Debug: 'debug',
+} as const;
+type KnownProducer = (typeof KnownProducer)[keyof typeof KnownProducer];
+
 
 class ChatAIModelManager {
     #provdierNames: string[] = [];
@@ -34,23 +43,23 @@ class ChatAIModelManager {
     }
 
     #loadDefaultModel() {
-        const openAIProvider = this.#addProvider('OpenAI', KnownProvider.OpenAI);
+        const openAIProvider = this.#addProvider('OpenAI', KnownProducer.OpenAI);
         initOpenAIProvider(openAIProvider);
 
-        const geminiProvider = this.#addProvider('Google', KnownProvider.Google);
+        const geminiProvider = this.#addProvider('Google', KnownProducer.Google);
         initGeminiProvider(geminiProvider);
 
-        const claudeProvider = this.#addProvider('Anthropic', KnownProvider.Anthropic);
+        const claudeProvider = this.#addProvider('Anthropic', KnownProducer.Anthropic);
         initClaudeProvider(claudeProvider);
 
-        const vertexAIProvider = this.#addProvider('VertexAI', KnownProvider.VertexAI);
+        const vertexAIProvider = this.#addProvider('VertexAI', KnownProducer.VertexAI);
         initVertexAIProvider(vertexAIProvider);
 
         // const debugProvider = this.#addProvider('Debug', 'debug');
         // initDebugProvider(debugProvider);
     }
 
-    #addProvider(name: string, providerId: KnownProvider | 'debug') {
+    #addProvider(name: string, providerId: KnownProducer) {
         if (this.#providers.has(name)) {
             return this.#providers.get(name) as ModelProvider;
         }

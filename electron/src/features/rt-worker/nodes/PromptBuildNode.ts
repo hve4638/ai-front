@@ -1,17 +1,18 @@
 import { CBFFail, CBFResult, PromptGenerator, PromptTemplate } from '@hve/prompt-template';
-import { Chat, ChatMessage, ChatRole } from '@hve/chatai';
+import { Chat, ChatMessages, ChatRole } from '@hve/chatai';
 import { BUILT_IN_VARS, HOOKS } from '../data';
 import WorkNode from './WorkNode';
-import { PromptMessages } from './node-types';
 import { WorkNodeStop } from './errors';
-import ChatGenerator from '../ChatGenerator';
+import ChatGenerator from '../prompt-generator/ChatGenerator';
 import runtime from '@/runtime';
+import { InputPromptGenerator } from '../prompt-generator';
+import { UserInput } from './types';
 
 export type PromptBuildNodeInput = {
-    input: string;
+    input: UserInput;
 }
 export type PromptBuildNodeOutput = {
-    messages: PromptMessages;
+    messages: ChatMessages;
 }
 export type PromptBuildNodeOption = {
     promptId: string;
@@ -53,7 +54,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
         const rt = profile.rt(rtId);
         const promptVars = await rt.getPromptVariables(this.option.promptId);
         const contents = await rt.getPromptContents(this.option.promptId);
-
+        
         const { form } = this.nodeData;
         const vars = {};
         promptVars.forEach((v) => {
@@ -67,7 +68,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
             sender.sendError(
                 `Prompt build failed`,
                 errors.map((e: CBFFail) => {
-                runtime.logger.debug(`Prompt build failed ${e.message}`);
+                    runtime.logger.debug(`Prompt build failed ${e.message}`);
                     return `${e.message} (${e.positionBegin})`;
                 })
             );
@@ -75,7 +76,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
         }
 
         const additionalBuiltInVars = {};
-        additionalBuiltInVars['input'] = input;
+        additionalBuiltInVars['input'] = new InputPromptGenerator({ text: input.text, files: input.files });
         additionalBuiltInVars['chat'] = new ChatGenerator(chat);
 
         let generator: Generator<CBFResult>;
@@ -90,10 +91,11 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
             });
         }
         catch (e) {
+
             throw new WorkNodeStop();
         }
 
-        const promptMessage: ChatMessage[] = [];
+        const promptMessage: ChatMessages = [];
         const processResult = (result: CBFResult) => {
             switch (result.type) {
                 case 'ROLE':
@@ -102,6 +104,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
                             promptMessage.push(ChatRole.User());
                             break;
                         case 'assistant':
+                        case 'model':
                         case 'bot':
                             promptMessage.push(ChatRole.Assistant());
                             break;
@@ -117,7 +120,16 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
                     promptMessage.at(-1)?.content.push(Chat.Text(result.text));
                     break;
                 case 'IMAGE':
-                    throw new Error();
+                    if (promptMessage.length === 0) {
+                        promptMessage.push(ChatRole.User());
+                    }
+                    promptMessage.at(-1)?.content.push(Chat.Image.Base64(result.data));
+                    break;
+                case 'FILE':
+                    if (promptMessage.length === 0) {
+                        promptMessage.push(ChatRole.User());
+                    }
+                    promptMessage.at(-1)?.content.push(Chat.PDF.Base64(result.filename, result.data));
                     break;
                 case 'SPLIT':
                     break;
@@ -138,7 +150,7 @@ class PromptBuildNode extends WorkNode<PromptBuildNodeInput, PromptBuildNodeOutp
             );
             throw new WorkNodeStop();
         }
-        return { messages : promptMessage };
+        return { messages: promptMessage };
     }
 }
 

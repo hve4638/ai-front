@@ -20,6 +20,8 @@ interface ConfigFields {
     global_shortcut_enabled: boolean;
     only_starred_models: boolean;
     show_actual_model_name: boolean;
+    clear_on_submit_normal: boolean;
+    clear_on_submit_chat: boolean;
 }
 
 const defaultConfig:ConfigFields = {
@@ -37,6 +39,9 @@ const defaultConfig:ConfigFields = {
     global_shortcut_enabled: false,
     only_starred_models: false,
     show_actual_model_name: false,
+    
+    clear_on_submit_normal: false,
+    clear_on_submit_chat: true,
 };
 
 interface ConfigState extends ConfigFields {

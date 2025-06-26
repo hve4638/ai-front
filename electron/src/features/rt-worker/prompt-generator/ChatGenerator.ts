@@ -1,5 +1,5 @@
 import { CBFResult, PromptGenerator } from '@hve/prompt-template';
-import { ChatContents } from './nodes/types';
+import { ChatContents } from '../nodes/types';
 
 class ChatGenerator extends PromptGenerator {
     chat: ChatContents[];

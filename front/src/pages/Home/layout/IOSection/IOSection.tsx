@@ -8,7 +8,6 @@ import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore
 import SingleIOLayout from './SingleIOLayout';
 import ChatIOLayout from './ChatIOLayout';
 
-
 function IOSection() {
     const sessionState = useSessionStore();
     const color = useSessionStore(state=>state.color);
@@ -73,7 +72,7 @@ function IOSection() {
                     await sessionState.update.input(inputTextRef.current);
                     await instance.request_ready.produce(1);
                 }
-            )
+            ),
         ];
         return () => unsubscribes.forEach(unsub=>unsub());
     }, []);

@@ -17,7 +17,6 @@
         }
     }
 }
-
 .output-info-button {
     background-color: rgba(10, 10, 10, 0.0);
     padding: 0em 0.4em;
@@ -42,15 +41,15 @@
 
 .token-count {
     font-size: 0.8rem;
-    background-color: rgba(47, 47, 47, 0.7);
+    // background-color: rgba(47, 47, 47, 0.7);
     border-radius: 12px;
-
 }
 
 .chat-container {
     width: 100%;
     height: 100%;
     padding: 0 0.75em;
+    overflow: hidden;
 
     .input-side {
         @include chat;

@@ -42,6 +42,8 @@ function PromptEditor() {
             temperature: 1.0,
             topP: 1.0,
             maxTokens: 1024,
+            useThinking: false,
+            thinkingTokens: 1024,
         },
         variables: [],
         changedVariables: [],
@@ -95,6 +97,8 @@ function PromptEditor() {
                     temperature: data.model.temperature,
                     top_p: data.model.topP,
                     max_tokens: data.model.maxTokens,
+                    use_thinking: data.model.useThinking,
+                    thinking_tokens: data.model.thinkingTokens,
                 },
                 contents: data.contents,
             });
@@ -137,6 +141,8 @@ function PromptEditor() {
                 temperature: model.temperature ?? 1.0,
                 topP: model.top_p ?? 1.0,
                 maxTokens: model.max_tokens ?? 1024,
+                useThinking: model.use_thinking ?? false,
+                thinkingTokens: model.thinking_tokens ?? 1024,
             };
         }
         editorData.current.contents = contents;

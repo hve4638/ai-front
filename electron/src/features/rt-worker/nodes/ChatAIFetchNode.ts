@@ -1,19 +1,36 @@
 import WorkNode from './WorkNode';
 import { ChatAI, ChatAIError } from '@hve/chatai';
-import type { ChatAIResult, ChatMessage, KnownProvider } from '@hve/chatai';
+import type { ChatAIResult, ChatMessages } from '@hve/chatai';
 import ChatAIModels from '@/features/chatai-models';
 import { WorkNodeStop } from './errors';
 import { ProfileAPIKeyControl } from '@/features/profile-control';
 import runtime from '@/runtime';
 
 type ChatAIFetchNodeInput = {
-    messages: ChatMessage[];
+    messages: ChatMessages;
 }
 type ChatAIFetchNodeOutput = {
     result: ChatAIResult;
 }
 type ChatAIFetchNodeOption = {
+    usePromptSetting: true;
+    promptId?: string;
+
     // specificModelId?:string;
+} | {
+    usePromptSetting: false;
+
+    temperature?: number;
+    top_p?: number;
+    max_tokens?: number;
+}
+
+type ModelOptions = {
+    temperature: number;
+    top_p: number;
+    max_tokens: number;
+    use_thinking?: boolean;
+    thinking_tokens?: number;
 }
 
 class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutput, ChatAIFetchNodeOption> {
@@ -32,12 +49,12 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 );
                 sender.sendError(
                     `HTTP Error (${result.response.http_status})`,
-                    []
+                    [ JSON.stringify(result.response.raw, null, 2) ]
                 );
                 throw new WorkNodeStop();
             }
 
-            
+
             runtime.logger.debug(
                 `ChatAIFetchNode Result:`,
                 result.response.raw
@@ -54,6 +71,19 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     [e.message]
                 );
             }
+            else if (e instanceof WorkNodeStop) {
+                // nothing to do
+            }
+            else if (e instanceof Error) {
+                runtime.logger.error(
+                    `ChatAIFetchNode Error: ${e.message}`,
+                    e
+                );
+                sender.sendError(
+                    `Fetch Fail : ${e.message}`,
+                    []
+                );
+            }
             else {
                 sender.sendError(
                     e instanceof Error ? e.message : String(e),
@@ -64,7 +94,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         }
     }
 
-    private async request(messages: ChatMessage[]) {
+    private async request(messages: ChatMessages) {
         const {
             modelId, sender, profile, rtId,
         } = this.nodeData;
@@ -75,13 +105,31 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         const { model } = await rt.getPromptMetadata('default');
 
         const modelData = ChatAIModels.getModel(modelId);
-        if (!modelData) {
-            sender.sendError(
-                `Unknown model: ${modelId}`,
-                []
-            );
-            throw new WorkNodeStop();
+        if (modelData) {
+            return await this.requestDefinedModel(modelData, model, messages);
         }
+        else if (modelId.startsWith('custom:')) {
+            const dataAC = await profile.accessAsJSON('data.json');
+            const customModels: CustomModel[] = dataAC.getOne('custom_models');
+            const customModel = customModels.find(m => m.id === modelId);
+
+            if (customModel) {
+                return await this.requestCustomModel(customModel, model, messages);
+            }
+        }
+
+        sender.sendError(
+            `Unknown model: ${modelId}`,
+            []
+        );
+        throw new WorkNodeStop();
+    }
+
+    private async requestDefinedModel(modelData: ChatAIModel, modelOptions: ModelOptions, messages: ChatMessages) {
+        const {
+            sender, profile
+        } = this.nodeData;
+
         const { name: modelName, providerName, flags } = modelData;
         const apiName = this.getAPIName(flags);
         if (!apiName) {
@@ -94,11 +142,24 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
 
         const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
         const auth = await profileAPIKeyControl.nextAPIKey(apiName);
+        const {
+            temperature,
+            top_p,
+            max_tokens,
+            use_thinking = false,
+            thinking_tokens = 1024,
+        } = modelOptions;
 
-        if (flags.custom_endpoint) {
+        const openAIThinkingEffort = (
+            thinking_tokens <= 1024 ? 'low'
+                : thinking_tokens <= 8192 ? 'medium'
+                    : 'high'
+        );
+        const useThinking = (
+            flags.thinking || (flags.thinking_optional && use_thinking)
+        );
 
-        }
-        else if (!flags.vertexai) {
+        if (!flags.vertexai) {
             const apiKey = auth as string;
 
             if (flags.responses_api) {
@@ -110,9 +171,10 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    thinking_effort: openAIThinkingEffort,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.chat_completions_api) {
@@ -124,9 +186,9 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.generative_language_api) {
@@ -138,9 +200,10 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.anthropic_api) {
@@ -152,9 +215,10 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                         api_key: apiKey as string,
                     },
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model?.top_p,
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
         }
@@ -169,13 +233,14 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     type: 'generative_language',
                     location: 'us-central1',
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     model: modelName,
                     messages: messages,
                     auth: vertexAIAuth,
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
             else if (flags.anthropic_api) {
@@ -185,13 +250,14 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                     type: 'anthropic',
                     location: 'us-east5',
 
+                    thinking_tokens: useThinking ? thinking_tokens : undefined,
                     model: modelName,
                     messages: messages,
                     auth: vertexAIAuth,
 
-                    max_tokens: model.max_tokens,
-                    temperature: model.temperature,
-                    top_p: model.top_p,
+                    max_tokens,
+                    temperature,
+                    top_p,
                 });
             }
         }
@@ -201,6 +267,88 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
             []
         );
         throw new WorkNodeStop();
+    }
+
+    private async requestCustomModel(customModel: CustomModel, modelOptions: ModelOptions, messages: ChatMessages) {
+        const {
+            profile,
+        } = this.nodeData;
+
+        const profileAPIKeyControl = new ProfileAPIKeyControl(profile);
+        const auth = await profileAPIKeyControl.getAuth(customModel.secret_key ?? '');
+        const apiKey = auth as string;
+
+        const {
+            temperature,
+            top_p,
+            max_tokens,
+            thinking_tokens = 1024,
+            use_thinking = false,
+        } = modelOptions;
+
+        const openAIThinkingEffort = (
+            thinking_tokens <= 1024 ? 'low'
+                : thinking_tokens <= 8192 ? 'medium'
+                    : 'high'
+        );
+        const useThinking = (
+            customModel.thinking// || (flags.thinking_optional && use_thinking)
+        );
+
+        switch (customModel.api_format) {
+            case 'chat_completions':
+                return await ChatAI.requestChatCompletion({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
+                break;
+            case 'generative_language':
+                return await ChatAI.requestGenerativeLanguage({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
+                break;
+            case 'anthropic_claude':
+                return await ChatAI.requestAnthropic({
+                    url: customModel.url,
+
+                    model: customModel.model,
+                    messages: messages,
+                    auth: {
+                        api_key: apiKey as string,
+                    },
+
+                    max_tokens,
+                    temperature,
+                    top_p,
+                });
+            default:
+                const sender = this.nodeData.sender;
+                sender.sendError(
+                    `Fetch Fail : Custom model '${customModel.name}' has unsupported API format '${customModel.api_format}'.`,
+                    []
+                );
+                throw new WorkNodeStop();
+                break;
+        }
     }
 
     private getAPIName(flags: ChatAIModelFlags): 'openai' | 'anthropic' | 'google' | 'vertexai' | null {
@@ -214,7 +362,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
         );
     }
 
-    async getResultDebug({ messages }: { messages: ChatMessage[]; }) {
+    async getResultDebug({ messages }: { messages: ChatMessages; }) {
         const {
             modelId, sender, profile, rtId,
         } = this.nodeData;
@@ -226,7 +374,7 @@ class ChatAIFetchNode extends WorkNode<ChatAIFetchNodeInput, ChatAIFetchNodeOutp
                 content = messages.flatMap(
                     m => m.content.flatMap(
                         c => {
-                            if (c.chatType === 'TEXT') {
+                            if (c.chatType === 'Text') {
                                 return [c.text ?? ''];
                             }
                             else {

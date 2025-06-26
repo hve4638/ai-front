@@ -9,14 +9,17 @@ import { useModal } from '@/hooks/useModal';
 import { DeleteConfirmDialog } from '@/modals/Dialog';
 import { useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
 import MarkdownArea from '@/components/MarkdownArea';
+import { CommonProps } from '@/types';
 
-type ChatDivProps = {
+interface ChatDivProps extends CommonProps {
     side: 'input' | 'output';
     value: string;
     data: HistoryData
 }
 
 function ChatDiv({
+    className = '',
+    style = {},
     side,
     value,
     data
@@ -24,6 +27,9 @@ function ChatDiv({
     const divRef = useRef<HTMLDivElement>(null);
     const sideClass = side === 'input' ? styles['input-side'] : styles['output-side'];
     const markdown = useSessionStore(state=>state.markdown);
+    const {
+        getModelName
+    } = useProfileEvent();
 
     const markdownEnabled = useMemo(()=>{
         return side === 'output' && markdown;
@@ -31,7 +37,8 @@ function ChatDiv({
 
     return (
         <div
-            className={classNames(sideClass)}
+            className={classNames(sideClass, className)}
+            style={style}
             ref={divRef}
             tabIndex={-1}
             onFocus={() => {
@@ -83,7 +90,7 @@ function ChatDiv({
                     <small
                         className={classNames(styles['output-info-button'], 'secondary-color', 'undraggable')}
                         style={{ cursor: 'pointer' }}
-                    >{data.modelId}</small>
+                    >{getModelName(data.modelId)}</small>
                     <MarkdownButton />
                     <CopyButton text={value} />
                     <DeleteButton data={data} origin='out' />

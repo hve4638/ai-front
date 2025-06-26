@@ -1,8 +1,9 @@
+import { ChatMessages } from '@hve/chatai';
 import WorkNode from './WorkNode';
-import { ChatML, PromptMessages } from './node-types';
+import { ChatML } from './node-types';
 
 export type StringifyChatMLNodeInput = {
-    messages: PromptMessages;
+    messages: ChatMessages;
 }
 export type StringifyChatMLNodeOutput = {
     chatML: ChatML;
@@ -33,7 +34,7 @@ class StringifyChatMLNode extends WorkNode<StringifyChatMLNodeInput, StringifyCh
                     break;
             }
 
-            const text = message.content.filter((item) => item.chatType === 'TEXT').map((item) => item.text).join('');
+            const text = message.content.filter((item) => item.chatType === 'Text').map((item) => item.text).join('');
             result.push(`${text}`);
             result.push(`<|im_end|>`);
         }

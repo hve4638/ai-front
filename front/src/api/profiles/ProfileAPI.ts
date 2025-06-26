@@ -34,10 +34,6 @@ class ProfileAPI {
         return false;
     }
 
-    async getChatAIModels() {
-        return await LocalAPI.profile.getChatAIModels(this.#profileId);
-    }
-
     set = async (accessorId:string, data:KeyValueInput) => await LocalAPI.profileStorage.set(this.#profileId, accessorId, data);
     get = async (accessorId:string, keys:string[]) => await LocalAPI.profileStorage.get(this.#profileId, accessorId, keys);
     getAsText = async (accessorId:string):Promise<string> => await LocalAPI.profileStorage.getAsText(this.#profileId, accessorId);
@@ -79,6 +75,11 @@ class ProfileAPI {
         /** @deprecated use `existsId` instead */
         hasId : async (rtId:string) => LocalAPI.profileRTs.existsId(this.#profileId, rtId),
     } as const;
+    customModels = {
+        getAll : async () => await LocalAPI.profile.getCustomModels(this.#profileId),
+        set : async (model:CustomModel) => await LocalAPI.profile.setCustomModel(this.#profileId, model),
+        remove: async (customId:string) => await LocalAPI.profile.removeCustomModel(this.#profileId, customId),
+    }
     
     session(sessionId:string):SessionAPI {
         if (!(sessionId in this.#sessionAPIs)) {

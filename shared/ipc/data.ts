@@ -35,6 +35,10 @@ declare global {
         message: string;
         detail: string[];
     } | {
+        type: 'output_clear';
+    } | {
+        type: 'input_update';
+    } | {
         type: 'history_update';
     } | {
         type: 'close';
@@ -71,6 +75,43 @@ declare global {
         private_key: string;
         client_email: string;
     }
+
+    type UploadableFileType = 'image/webp' | 'image/png' | 'image/jpeg' | 'application/pdf' | 'text/plain';
+
+    type InputFileMetadata = {
+        filename: string;
+        size: number; // bytes
+        type: UploadableFileType;
+        hash_sha256: string;
+    }
+    type InputFile = InputFileMetadata & {
+        data: string;
+        thumbnail: string | null;
+    }
+    type InputFilePreview = InputFileMetadata & {
+        thumbnail: string | null;
+    }
+
+    type InputFilesUpdateInfo = {
+        updated: InputFileMetadata[];
+        removed: InputFileMetadata[];
+    }
+
+    type InputFileHash = {
+        hash_sha256: string;
+    }
+
+    /** 커스텀 모델 정의 */
+    interface CustomModel {
+        id: string;
+        name: string;
+        model: string;
+        url: string;
+        api_format: 'chat_completions' | 'generative_language' | 'anthropic_claude';
+        thinking: boolean;
+        secret_key?: string;
+    }
+    type CustomModelCreate = Omit<CustomModel, 'id'> & { id?: string };
 }
 
-export { }
+export {}

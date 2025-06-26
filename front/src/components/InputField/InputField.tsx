@@ -1,10 +1,9 @@
 import React from 'react';
 import MarkdownArea from '../MarkdownArea';
+import { CommonProps, DragActionProps } from '@/types';
 
-interface InputFieldProps {
+interface InputFieldProps extends CommonProps, DragActionProps<HTMLDivElement> {
     text: string;
-    className?: string;
-    style?: React.CSSProperties;
     children?: React.ReactNode;
     onChange: (x: string) => void;
     tabIndex?: number;
@@ -20,7 +19,13 @@ function InputField({
     tabIndex,
     onChange,
     readonly=false,
-    markdown=false
+    markdown=false,
+
+    onDragStart,
+    onDragOver,
+    onDragEnter,
+    onDragLeave,
+    onDrop,
 }: InputFieldProps) {
     const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -35,6 +40,11 @@ function InputField({
                 overflowY: 'hidden',
                 ...style
             }}
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
         >
             {
                 !markdown &&
