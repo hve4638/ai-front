@@ -1,21 +1,19 @@
 {
-    "name": "aifront",
-    "version": "0.7.0",
+    "name": "afron",
+    "version": "0.0.0",
     "repository": "https://github.com/hve4638/ai-front.git",
     "author": "Hve <hve4638@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "start": "concurrently \"yarn electron:start\" \"yarn front:start\"",
-        "start:mem": "concurrently \"yarn electron:start:mem\" \"yarn front:start\"",
-        "start:test": "concurrently \"yarn electron:start:mem\" \"yarn front:start:test\"",
-        "start:debug": "concurrently \"yarn electron:start\" \"yarn front:debug\"",
+        "start": "yarn app:start",
+        "app:start": "concurrently \"yarn electron:start\" \"yarn front:start\"",
+
         "front:start": "cd front && yarn start",
-        "front:start:test": "cd front && yarn start:test",
-        "front:debug": "cd front && yarn start",
-        "electron:start": "cd electron && wait-on http://localhost:3600 && yarn start:dev",
-        "electron:start:mem": "cd electron && wait-on http://localhost:3600 && yarn start:dev:mem",
-        "front:build": "cd front && yarn build:electron",
-        "front:sync": "node utils/cp front/build electron/static"
+        "electron:start": "cd electron && wait-on http://localhost:3600 && yarn start",
+
+        "deps": "yarn && yarn electron:deps && yarn front:deps",
+        "electron:deps": "cd electron && yarn && yarn rebuild",
+        "front:deps": "cd front && yarn"
     },
     "devDependencies": {
         "concurrently": "^9.0.1",

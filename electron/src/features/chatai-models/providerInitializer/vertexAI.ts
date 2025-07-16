@@ -15,7 +15,7 @@ const {
     generative_language_api,
 } = flags;
 
-function initProvider(provider:ModelProvider) {
+function initProvider(provider: ModelProvider) {
     const baseFlags = { vertexai };
 
     const anthropicFlags = { vertexai, anthropic_api };
@@ -35,10 +35,12 @@ function initProvider(provider:ModelProvider) {
     const generativeLanguageFlags = { vertexai, generative_language_api };
     provider.addModels('Gemini',
         [
-            model('gemini-2.5-pro-preview-05-06', { latest, featured, snapshot, ...generativeLanguageFlags }),
-            model('gemini-2.5-pro-preview-03-25', { latest, snapshot,...generativeLanguageFlags }),
-            model('gemini-2.5-flash-preview-05-20', { latest, featured, snapshot, ...generativeLanguageFlags }),
-            model('gemini-2.5-flash-preview-04-17', { latest, snapshot, ...generativeLanguageFlags }),
+            model('gemini-2.5-pro', { latest, featured, ...generativeLanguageFlags }),
+            model('gemini-2.5-pro-preview-05-06', { latest, snapshot, deprecated, ...generativeLanguageFlags }),
+            model('gemini-2.5-pro-preview-03-25', { latest, snapshot, deprecated, ...generativeLanguageFlags }),
+            model('gemini-2.5-flash', { latest, featured, ...generativeLanguageFlags }),
+            model('gemini-2.5-flash-preview-05-20', { latest, snapshot, deprecated, ...generativeLanguageFlags }),
+            model('gemini-2.5-flash-preview-04-17', { latest, snapshot, deprecated, ...generativeLanguageFlags }),
         ]
     );
 }

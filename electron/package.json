@@ -1,6 +1,6 @@
 {
-  "name": "afron",
-  "version": "0.8.0",
+  "name": "@afron/electron",
+  "version": "0.8.1",
   "description": "ChatAI Frontend",
   "repository": "https://github.com/hve4638/ai-front.git",
   "author": "Hve",
@@ -8,6 +8,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "yarn build && electron-forge start",
+    
     "start:fast": "electron-forge start",
     "start:dev": "yarn build && cross-env ELECTRON_DEV=TRUE electron .",
     "start:dev:mem": "yarn build && cross-env ELECTRON_DEV=TRUE ELECTRON_IN_MEMORY=TRUE electron .",
@@ -19,7 +20,9 @@
     "test": "jest",
     "compile": "tsc",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    
+    "rebuild": "cmd /c rebuild.bat"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.26.0",
