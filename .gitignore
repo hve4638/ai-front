@@ -1,8 +1,23 @@
 # 설정 파일
-.vscode/
+# .vscode/
 
 # dependencies
 node_modules/
+
+# lock files
+package-lock.json
+yarn.lock
+
+# output
+dist/
+
+# test
+coverage/
+
+# misc
+.npmrc
+.tsbuildinfo*
+.rollup.cache
 
 # production
 build/
