@@ -1,5 +1,7 @@
-# 설정 파일
-# .vscode/
+# vscode settings
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # dependencies
 node_modules/
@@ -24,6 +26,7 @@ coverage/
 
 # 임시 파일
 front-old/
+tsconfig.app.tsbuildinfo
 
 # misc
 .DS_Store

@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "vite-old",
+            "request": "launch",
+            "program": "${workspaceFolder}",
+            "runtimeArgs": [],
+            "runtimeExecutable": "vite",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
+        {
+            "name": "Attach to Electron Chromium",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "url": "http://localhost:3600",
+            "webRoot": "${workspaceFolder}/src", // 또는 실제 React 소스 루트 경로
+            "sourceMaps": true
+        }
+    ]
+}

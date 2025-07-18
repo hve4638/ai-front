@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Electron Main",
+            "program": "${workspaceFolder}/dist/main.js",
+            "request": "launch",
+            "runtimeExecutable": "electron",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "env": {
+                // "ELECTRON_DEV" : "TRUE",
+                // "ELECTRON_IN_MEMORY" : "TRUE",
+                // "ELECTRON_SKIP_MASTER_KEY_INITAILIZATION" : "TRUE",
+                // "ELECTRON_DEFAULT_PROFILE" : "TRUE",
+                // "ELECTRON_DEFAULT_RT" : "TRUE",
+                // "ELECTRON_SHOW_DEVTOOL" : "TRUE",
+            },
+            "preLaunchTask": "build:rollup"
+        },
+    ]
+}
