@@ -10,6 +10,9 @@ yarn.lock
 
 # output
 dist/
+build/
+out/
+release/
 
 # test
 coverage/
@@ -18,10 +21,6 @@ coverage/
 .npmrc
 .tsbuildinfo*
 .rollup.cache
-
-# production
-build/
-dist/
 
 # 임시 파일
 front-old/
@@ -36,16 +35,4 @@ front-old/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-
-electron/compiled/
-
-apikey
-.prompts/
-
-.docs.md
-
-out/
-dist/
-/electron/temp.js
 
