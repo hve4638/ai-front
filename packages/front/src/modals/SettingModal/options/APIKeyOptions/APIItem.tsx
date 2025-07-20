@@ -1,9 +1,9 @@
 import Dropdown from '@/components/Dropdown';
 import { GIcon, GIconButton } from '@/components/GoogleFontIcon';
 import { Align, Flex, Row } from '@/components/layout';
+import ProfileEvent from '@/features/profile-event';
 import { useModal } from '@/hooks/useModal';
 import { DeleteConfirmDialog } from '@/modals/Dialog';
-import { useProfileEvent } from '@/stores';
 import { APIKeyMetadata } from '@/types/apikey-metadata';
 import { use } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -17,11 +17,10 @@ type APIItemProps = {
 
 function APIItem({ item, onDelete, onChangeType }: APIItemProps) {
     const modal = useModal();
-    const { verifyAPIKey } = useProfileEvent();
     const [verified, setVerified] = useState(true);
 
     useEffect(() => {
-        verifyAPIKey(item.secret_id)
+        ProfileEvent.auth.verify(item.secret_id)
             .then((result) => {
                 setVerified(result);
             });

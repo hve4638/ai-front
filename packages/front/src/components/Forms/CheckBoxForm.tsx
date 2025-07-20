@@ -1,56 +1,58 @@
-import CheckBox from "components/CheckBox";
-import { Center, Flex, Row } from "components/layout";
+import { ReactNode } from 'react';
+import { Center, Flex, Row } from 'components/layout';
+import classNames from 'classnames';
+import CheckBox from '../CheckBox';
 
 interface CheckBoxFormProps {
-    name:string;
-    checked:boolean;
-    onChange?:(checked:boolean)=>void;
+    name?: string;
+    label?: string | ReactNode;
 
-    className?:string;
-    style?:React.CSSProperties;
+    checked: boolean;
+    onChange?: (checked: boolean) => void;
+
+    className?: string;
+    style?: React.CSSProperties;
+
+    disabled?: boolean;
 }
 
 function CheckBoxForm({
     name,
+    label,
     checked,
-    onChange=(x)=>{},
+    onChange = (x) => { },
 
-    className='',
-    style={},
-}:CheckBoxFormProps) {
-  return (
-    <Row
-        className={className}
-        style={{
-            width: '100%',
-            height: '1.4em',
-            ...style
-        }}
-    >
-        <span className='noflex undraggable'>
-            {name}
-        </span>
-        <Flex/>
-        <Center
+    className = '',
+    style = {},
+
+    disabled = false,
+}: CheckBoxFormProps) {
+    return (
+        <Row
+            className={classNames(className, {
+                'dimmed-color': disabled,
+            })}
             style={{
-                height: '100%',
-                padding: '0.2em',
+                width: '100%',
+                height: '1.4em',
+                ...style
             }}
         >
-            <input
-                type='checkbox'
+            <span className='noflex undraggable'>
+                {label ?? name}
+            </span>
+            <Flex />
+            <CheckBox
                 style={{
                     height: '100%',
-                    aspectRatio: '1/1',
-                    cursor : 'pointer',
+                    padding: '0.2em',
                 }}
                 checked={checked}
-                onChange={(e)=>onChange(e.target.checked)}
-                tabIndex={0}
+                onChange={onChange}
+                readOnly={disabled}
             />
-        </Center>
-    </Row>
-  );
+        </Row>
+    );
 }
 
 export default CheckBoxForm;

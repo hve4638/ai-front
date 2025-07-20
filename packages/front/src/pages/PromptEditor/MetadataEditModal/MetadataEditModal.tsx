@@ -8,7 +8,7 @@ import Button from 'components/Button';
 import useLazyThrottle from 'hooks/useLazyThrottle';
 import classNames from 'classnames';
 import useHotkey from 'hooks/useHotkey';
-import { useProfileEvent } from '@/stores';
+import ProfileEvent from '@/features/profile-event';
 
 type Metadata = Required<{
     name:string;
@@ -26,10 +26,6 @@ function MetadataEditModal({
     onChange,
     onClose
 }:MetadataEditModalProps) {
-    const {
-        hasRTId
-    } = useProfileEvent();
-    
     const { t } = useTranslation();
     const [disappear, setDisappear] = useState(true);
     const [currentName, setCurrentName] = useState(metadata.name);
@@ -37,7 +33,8 @@ function MetadataEditModal({
     const [validId, setValidId] = useState(true);
 
     const checkIsValidId = useLazyThrottle(async (id:string)=>{
-        hasRTId(id).then((exists)=>setValidId(!exists));
+        ProfileEvent.rt.exists(id)
+            .then((exists)=>setValidId(!exists));
     }, 10);
 
     const setCurrentIdAndCheck = (id:string) => {

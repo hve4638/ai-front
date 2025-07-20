@@ -3,11 +3,12 @@ import classNames from 'classnames';
 
 import { Align, Flex, Row } from '@/components/layout';
 
-import { useConfigStore, useProfileEvent } from '@/stores';
+import { useConfigStore } from '@/stores';
 import useSignal from '@/hooks/useSignal';
 
 import styles from './styles.module.scss';
 import { GIconButton } from '@/components/GoogleFontIcon';
+import ProfileEvent from '@/features/profile-event';
 
 interface ModelListViewProps {
     provider?: ChatAIModelProviders;
@@ -84,12 +85,9 @@ interface ModelItemProps {
 }
 
 function ModelItem({ model, onClick }: ModelItemProps) {
-    const {
-        isModelStarred,
-    } = useProfileEvent();
     const [_, refresh] = useSignal();
     const flags = useMemo(()=>model.flags, [model.flags])
-    const starred = isModelStarred(model.id);
+    const starred = ProfileEvent.model.isStarred(model.id);
     const showActualName = useConfigStore(state=>state.show_actual_model_name);
 
     return (

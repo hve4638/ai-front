@@ -3,10 +3,10 @@ import classNames from 'classnames';
 
 
 import InputField from '@/components/InputField';
-import { GIconButton, GoogleFontIcon } from '@/components/GoogleFontIcon';
+import { GIconButton } from '@/components/GoogleFontIcon';
 import { Align, Flex, Grid, Row } from '@/components/layout';
 
-import { useConfigStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
+import { useConfigStore, useSessionStore, useSignalStore } from '@/stores';
 
 import SplitSlider from '../SplitSlider';
 
@@ -17,6 +17,7 @@ import { remapDecimal } from '@/utils/math';
 import FilesFormLayout from './FilesUpload/FileList';
 import { readFileAsDataURI } from '@/utils/file';
 import { FileDropper } from './FilesUpload';
+import ProfileEvent from '@/features/profile-event';
 
 type SingleIOLayoutProps = {
     inputText: string;
@@ -34,9 +35,6 @@ function SingleIOLayout({
 }: SingleIOLayoutProps) {
     const configState = useConfigStore();
     const sessionState = useSessionStore();
-    const {
-        getModelName,
-    } = useProfileEvent();
     const lastSessionId = useSessionStore(state => state.deps.last_session_id);
     const sessionHistory = useMemo(() => {
         const historyState = useHistoryStore.getState();
@@ -53,7 +51,7 @@ function SingleIOLayout({
     const outputModelName = useMemo(() => {
         if (last === null) return '';
         
-        return getModelName(last.modelId);
+        return ProfileEvent.model.getName(last.modelId);
     }, [last?.modelId]);
 
     let [left, right] = useConfigStore(state => state.textarea_io_ratio);

@@ -1,8 +1,8 @@
 import { Row } from '@/components/layout';
-import { useProfileEvent } from '@/stores';
 import { APIKeyMetadata } from '@/types/apikey-metadata';
 import APIItem from './APIItem';
 import AddAPIKeyButton from './AddAPIKeyButton';
+import ProfileEvent from '@/features/profile-event';
 
 interface CustomAuthKeySectionProps {
     title: string;
@@ -12,8 +12,6 @@ interface CustomAuthKeySectionProps {
 }
 
 function CustomAuthSection({ title, apiKeys, addButtonText }: CustomAuthKeySectionProps) {
-    const profile = useProfileEvent();
-
     return (
         <>
             <Row>
@@ -26,12 +24,12 @@ function CustomAuthSection({ title, apiKeys, addButtonText }: CustomAuthKeySecti
                         key={item.secret_id}
                         item={item}
                         onDelete={async () => {
-                            await profile.removeAPIKey('custom', index);
+                            await ProfileEvent.auth.remove('custom', index);
 
                             return true;
                         }}
-                        onChangeType={async (type) => {
-                            await profile.changeAPIKeyType('custom', index, type);
+                        onChangeType={async (typeName) => {
+                            await ProfileEvent.auth.changeType('custom', index, typeName);
 
                             return true;
                         }}
@@ -41,7 +39,7 @@ function CustomAuthSection({ title, apiKeys, addButtonText }: CustomAuthKeySecti
             <AddAPIKeyButton
                 title={addButtonText}
                 onAddAPIKey={async ({ authKey, memo }) => {
-                    await profile.addAuthKey('custom', authKey, memo);
+                    await ProfileEvent.auth.add('custom', authKey, memo);
 
                     return true;
                 }}

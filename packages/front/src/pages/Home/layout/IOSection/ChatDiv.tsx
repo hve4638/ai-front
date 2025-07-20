@@ -1,15 +1,21 @@
 import { useEffect, useMemo, useRef } from 'react';
 import classNames from 'classnames';
-
 import styles from './styles.module.scss';
+
+import { useSessionStore, useHistoryStore } from '@/stores';
+
+import ProfileEvent from '@/features/profile-event';
+import { HistoryData } from '@/features/session-history';
+
 import { Align, Flex, Row } from '@/components/layout';
 import { GIconButton } from '@/components/GoogleFontIcon';
-import { HistoryData } from '@/features/session-history';
-import { useModal } from '@/hooks/useModal';
-import { DeleteConfirmDialog } from '@/modals/Dialog';
-import { useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
 import MarkdownArea from '@/components/MarkdownArea';
+
+import { useModal } from '@/hooks/useModal';
+
+import { DeleteConfirmDialog } from '@/modals/Dialog';
 import { CommonProps } from '@/types';
+
 
 interface ChatDivProps extends CommonProps {
     side: 'input' | 'output';
@@ -26,12 +32,9 @@ function ChatDiv({
 }: ChatDivProps) {
     const divRef = useRef<HTMLDivElement>(null);
     const sideClass = side === 'input' ? styles['input-side'] : styles['output-side'];
-    const markdown = useSessionStore(state=>state.markdown);
-    const {
-        getModelName
-    } = useProfileEvent();
-
-    const markdownEnabled = useMemo(()=>{
+    const markdown = useSessionStore(state => state.markdown);
+    
+    const markdownEnabled = useMemo(() => {
         return side === 'output' && markdown;
     }, [side, markdown]);
 
@@ -90,7 +93,7 @@ function ChatDiv({
                     <small
                         className={classNames(styles['output-info-button'], 'secondary-color', 'undraggable')}
                         style={{ cursor: 'pointer' }}
-                    >{getModelName(data.modelId)}</small>
+                    >{ProfileEvent.model.getName(data.modelId)}</small>
                     <MarkdownButton />
                     <CopyButton text={value} />
                     <DeleteButton data={data} origin='out' />
@@ -137,8 +140,7 @@ function CopyButton({ text }: { text: string }) {
 
 function DeleteButton({ data, origin }: { data: HistoryData, origin: 'in' | 'out' }) {
     const modal = useModal();
-    const { deleteHistoryMessage } = useProfileEvent();
-
+    const historyState = useHistoryStore();
     return (
         <GIconButton
             value='delete'
@@ -148,7 +150,7 @@ function DeleteButton({ data, origin }: { data: HistoryData, origin: 'in' | 'out
 
                 modal.open(DeleteConfirmDialog, {
                     onDelete: async () => {
-                        deleteHistoryMessage(data.id, origin);
+                        await historyState.actions.deleteMessage(data.id, origin);
 
                         return true;
                     }

@@ -14,12 +14,13 @@ import useHotkey from '@/hooks/useHotkey';
 import useModalDisappear from '@/hooks/useModalDisappear';
 import { useModal } from '@/hooks/useModal';
 
-import { useProfileEvent, useSignalStore } from '@/stores';
+import { useSignalStore } from '@/stores';
 
 import { DeleteConfirmDialog } from '@/modals/Dialog';
 import NewRTModal from '@/modals/NewRTModal';
 
 import { LeafNode } from './nodes';
+import ProfileEvent from '@/features/profile-event';
 
 type RTEditModalProps = {
     isFocused: boolean;
@@ -32,7 +33,6 @@ function RTEditModal({
 }: RTEditModalProps) {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { getRTTree, updateRTTree, renameRT, removeRT } = useProfileEvent();
     const signal = useSignalStore(state => state.signal);
     const modal = useModal();
     const [disappear, close] = useModalDisappear(onClose);
@@ -68,7 +68,7 @@ function RTEditModal({
             }
         })
 
-        await updateRTTree(next);
+        await ProfileEvent.rt.updateTree(next);
         await signal.refresh_rt_tree();
     }
 
@@ -78,7 +78,7 @@ function RTEditModal({
             return;
         }
 
-        const findNode:(nodes: ITreeNode<string>[], value:string)=>ITreeNode<string>|null = (nodes, value) => {
+        const findNode: (nodes: ITreeNode<string>[], value: string) => ITreeNode<string> | null = (nodes, value) => {
             for (const node of nodes) {
                 if (node.value === value) {
                     return node;
@@ -91,15 +91,15 @@ function RTEditModal({
 
             return null;
         }
-        
+
         const node = findNode(tree, value);
         if (node) {
             const next = [...tree];
             node.name = nameTrimmed;
             if (node.type === 'node') {
-                await renameRT(value, nameTrimmed);
+                await ProfileEvent.rt.rename(value, nameTrimmed);
             }
-            
+
             changeTree(next);
         }
     }
@@ -113,7 +113,9 @@ function RTEditModal({
                     return node.children;
                 }
                 else {
-                    promises.push(removeRT(node.value));
+                    promises.push(
+                        ProfileEvent.rt.remove(node.value)
+                    );
                     return [];
                 }
             }
@@ -124,7 +126,7 @@ function RTEditModal({
         changeTree(next);
     }
 
-    const openDeleteNodeDialog = (name:string, value: string) => {
+    const openDeleteNodeDialog = (name: string, value: string) => {
         modal.open(DeleteConfirmDialog, {
             onDelete: async () => {
                 deleteNode(value);
@@ -137,29 +139,30 @@ function RTEditModal({
     }
 
     useEffect(() => {
-        getRTTree().then((tree) => {
-            const tree2 = tree.map((node) => {
-                if (node.type === 'directory') {
-                    return {
-                        name: node.name,
-                        value: nextDirId(),
-                        type: 'directory',
-                        children: node.children.map((child) => ({
-                            type: 'node',
-                            name : child.name,
-                            value: child.id,
-                        })),
-                    } as ITreeDirectoryNode<string>;
-                }
+        ProfileEvent.rt.getTree()
+            .then((tree) => {
+                const tree2 = tree.map((node) => {
+                    if (node.type === 'directory') {
+                        return {
+                            name: node.name,
+                            value: nextDirId(),
+                            type: 'directory',
+                            children: node.children.map((child) => ({
+                                type: 'node',
+                                name: child.name,
+                                value: child.id,
+                            })),
+                        } as ITreeDirectoryNode<string>;
+                    }
 
-                return {
-                    type: 'node',
-                    name : node.name,
-                    value: node.id,
-                } as ITreeLeafNode<string>;
+                    return {
+                        type: 'node',
+                        name: node.name,
+                        value: node.id,
+                    } as ITreeLeafNode<string>;
+                });
+                setTree(tree2);
             });
-            setTree(tree2);
-        });
     }, []);
 
     useHotkey({
@@ -208,7 +211,7 @@ function RTEditModal({
                         }}
                     />
                 </Row>
-                <div/>
+                <div />
                 <TreeView
                     tree={tree}
                     onChange={(next) => changeTree(next)}
@@ -244,10 +247,10 @@ function RTEditModal({
                                         height: '22px',
                                     }}
                                 />
-                                <Flex style={{ paddingLeft: '0.25em'}}>
+                                <Flex style={{ paddingLeft: '0.25em' }}>
                                     <EditableText
                                         value={name}
-                                        onChange={(renamed)=>{
+                                        onChange={(renamed) => {
                                             renameNode(value, renamed);
                                         }}
                                     />
@@ -272,9 +275,9 @@ function RTEditModal({
                     }}
                 >
                     <Button
-                        onClick={()=>{
+                        onClick={() => {
                             modal.open(NewRTModal, {
-                                onAddRT: (rtId:string, mode:RTMode) => {
+                                onAddRT: (rtId: string, mode: RTMode) => {
                                     navigate(`/workflow/${rtId}/prompt/default`);
                                 }
                             });

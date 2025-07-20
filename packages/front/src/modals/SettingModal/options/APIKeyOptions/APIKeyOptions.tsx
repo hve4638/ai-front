@@ -1,14 +1,5 @@
 import { useMemo, useState } from 'react';
-import DivButton from 'components/DivButton';
-import { useModal } from 'hooks/useModal';
-import StringInputModal from 'modals/StringInputModal';
-import { GoogleFontIcon } from 'components/GoogleFontIcon';
-import { Align, Flex, Row } from 'components/layout';
-import Dropdown from 'components/Dropdown';
-import { APIKeyMetadata } from 'types/apikey-metadata';
-import { useDataStore, useProfileEvent } from '@/stores';
-import AddAPIKeyButton from './AddAPIKeyButton';
-import APIItem from './APIItem';
+import { useDataStore } from '@/stores';
 import VertexAIKeySection from './VertexAIKeySection';
 import SingleAPIKeySection from './SingleAPIKeySection'
 import CustomAuthSection from './CustomAuthSection';

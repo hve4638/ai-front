@@ -4,7 +4,7 @@ import { getEncoding, encodingForModel } from 'js-tiktoken';
 import useLazyThrottle from '@/hooks/useLazyThrottle';
 import useSignal from '@/hooks/useSignal';
 
-import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore, useChannelStore, useProfileEvent, useProfileAPIStore } from '@/stores';
+import { useConfigStore, useSessionStore, useShortcutSignalStore, useSignalStore, useChannelStore, useProfileAPIStore } from '@/stores';
 import SingleIOLayout from './SingleIOLayout';
 import ChatIOLayout from './ChatIOLayout';
 

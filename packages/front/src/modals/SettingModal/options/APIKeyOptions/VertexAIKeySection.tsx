@@ -1,6 +1,5 @@
 import { Align, Flex, Row } from '@/components/layout';
 import { APIKeyMetadata } from '@/types/apikey-metadata';
-import { useDataStore, useProfileEvent } from '@/stores';
 
 import DivButton from '@/components/DivButton';
 import { GIcon } from '@/components/GoogleFontIcon';
@@ -8,6 +7,7 @@ import { useModal } from '@/hooks/useModal';
 
 import APIItem from './APIItem';
 import AddVertexAPIModal from './AddVertexAPIModal';
+import ProfileEvent from '@/features/profile-event';
 
 interface SingleAPIKeySectionProps {
     title: string;
@@ -18,8 +18,6 @@ interface SingleAPIKeySectionProps {
 }
 
 function VertexAIAPIKeySection({ title, addButtonText, apiKeys }: SingleAPIKeySectionProps) {
-    const profile = useProfileEvent();
-
     return (
         <>
             <Row>
@@ -32,13 +30,12 @@ function VertexAIAPIKeySection({ title, addButtonText, apiKeys }: SingleAPIKeySe
                         key={item.secret_id}
                         item={item}
                         onDelete={async () => {
-                            await profile.removeAPIKey('vertexai', index);
+                            await ProfileEvent.auth.remove('vertexai', index);
 
                             return true;
                         }}
                         onChangeType={async (type) => {
-                            await profile.changeAPIKeyType('vertexai', index, type);
-
+                            await ProfileEvent.auth.changeType('vertexai', index, type);
 
                             return true;
                         }}
@@ -48,7 +45,7 @@ function VertexAIAPIKeySection({ title, addButtonText, apiKeys }: SingleAPIKeySe
             <AddVertexAIKeyButton
                 title={addButtonText}
                 onAddAPIKey={async (data) => {
-                    await profile.addVertexAIAPIKey(data);
+                    await ProfileEvent.auth.addVertexAI(data);
 
                     return true;
                 }}

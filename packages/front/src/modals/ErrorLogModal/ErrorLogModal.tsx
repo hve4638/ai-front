@@ -1,6 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-
-import { useProfileAPIStore, useProfileEvent } from '@/stores';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Modal, ModalHeader } from '@/components/Modal';
 

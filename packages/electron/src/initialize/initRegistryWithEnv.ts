@@ -1,8 +1,4 @@
 import * as path from 'node:path';
-import { app } from 'electron';
-
-import { AfronEnv } from '@/runtime/types';
-import { formatDateLocal } from '@/utils';
 import runtime, { updateRegistry } from '@/runtime';
 
 import { ACStorage, IACStorage, JSONType, MemACStorage, StorageAccess } from 'ac-storage';

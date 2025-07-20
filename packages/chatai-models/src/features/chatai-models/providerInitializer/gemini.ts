@@ -5,7 +5,6 @@ import { flags } from '@/data';
 const {
     latest,
     featured,
-    experimental,
     deprecated,
     snapshot,
     generative_language_api,
@@ -18,8 +17,10 @@ function initProvider(provider:ModelProvider) {
 
     provider.addModels('Gemini 2.5',
         [
-            model('Gemini 2.5 Pro Preview (06-05)', 'gemini-2.5-pro-preview-06-05', { latest, featured, thinking, ...baseFlags }),
-            model('Gemini 2.5 Flash Preview (05-20)', 'gemini-2.5-flash-preview-05-20', { latest, featured, thinking_optional, ...baseFlags }),
+            model('Gemini 2.5 Pro', 'gemini-2.5-pro', { latest, featured, thinking, ...baseFlags }),
+            model('Gemini 2.5 Pro Preview (06-05)', 'gemini-2.5-pro-preview-06-05', { latest, thinking, deprecated, ...baseFlags }),
+            model('Gemini 2.5 Flash', 'gemini-2.5-flash', { latest, featured, thinking_optional, ...baseFlags }),
+            model('Gemini 2.5 Flash Preview (05-20)', 'gemini-2.5-flash-preview-05-20', { latest, thinking_optional, deprecated, ...baseFlags }),
         ]
     );
     provider.addModels('Gemini 2.0',

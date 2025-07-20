@@ -2,16 +2,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
-import { useProfileAPIStore, useProfileEvent } from '@/stores';
+import ProfileEvent from '@/features/profile-event';
 
+import { Column } from '@/components/layout';
 import { Modal, ModalHeader } from '@/components/Modal';
 
-import useHotkey from '@/hooks/useHotkey';
 import useModalDisappear from '@/hooks/useModalDisappear';
+import useHotkey from '@/hooks/useHotkey';
 import useSignal from '@/hooks/useSignal';
-import { CheckBoxForm, DropdownForm, NumberForm, StringForm } from '@/components/Forms';
+
 import { ArrayField, CheckBoxField, NumberField, SelectField, StructField, TextField } from './form-fields';
-import { Column } from '@/components/layout';
 import { getPromptVarDefaultValue } from './utils';
 
 type FormModalProps = {
@@ -23,8 +23,6 @@ function FormModal({
     isFocused,
     onClose
 }: FormModalProps) {
-    const { getCurrentSessionForms, setCurrentSessionForms } = useProfileEvent();
-
     const [disappear, close] = useModalDisappear(onClose);
     const [forms, setForms] = useState<PromptVar[]>([]);
     const variables = useRef<Record<string, any>>({});
@@ -34,9 +32,9 @@ function FormModal({
     useHotkey({
         'Escape': close,
     }, isFocused, []);
-
+    
     useEffect(() => {
-        getCurrentSessionForms()
+        ProfileEvent.currentSession.getForms()
             .then((forms) => {
                 const vars: Record<string, any> = {};
                 for (const form of forms) {
@@ -56,7 +54,7 @@ function FormModal({
             });
 
         return () => {
-            setCurrentSessionForms(variables.current);
+            ProfileEvent.currentSession.setForms(variables.current);
         }
     }, []);
 

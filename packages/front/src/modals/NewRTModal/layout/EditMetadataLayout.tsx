@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useProfileEvent } from '@/stores';
 import Button from '@/components/Button';
 import { StringLongForm } from '@/components/Forms';
 import { Align, Column, Grid, Row } from '@/components/layout';
 import POTemplateList from './POTemplateList';
+import ProfileEvent from '@/features/profile-event';
 
 
 type Metadata = {
@@ -22,7 +22,6 @@ type EditMetadataWidgetProps = {
 function EditMetadataLayout({
     onPrev, onConfirm
 }:EditMetadataWidgetProps) {
-    const profile = useProfileEvent();
     const { t } = useTranslation();
     const [name, setName] = useState<string>('');
     const [id, setId] = useState<string>('');
@@ -31,7 +30,7 @@ function EditMetadataLayout({
     const [idValid, setIdValid] = useState<boolean>(false); 
 
     useEffect(()=>{
-        profile.generateRTId()
+        ProfileEvent.rt.generateId()
             .then((nextId)=>{
                 setId(nextId);
             });
@@ -53,7 +52,7 @@ function EditMetadataLayout({
         if(id === '') {
             return false;
         }
-        const exist = await profile.hasRTId(id);
+        const exist = await ProfileEvent.rt.exists(id);
         return !exist;
     }
 
@@ -109,7 +108,7 @@ function EditMetadataLayout({
                     onClick={async ()=>{
                         if (name === '') return;
                         if (id === '') return;
-                        if (await profile.hasRTId(id)) {
+                        if (await ProfileEvent.rt.exists(id)) {
                             return;
                         }
 

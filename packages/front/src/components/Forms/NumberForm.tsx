@@ -6,8 +6,11 @@ import classNames from 'classnames';
 interface NumberFormProps {
     name:string;
 
-    value:number;
-    onChange:(x:number)=>void;
+    value:number|null|undefined;
+    onChange:(x:number|null)=>void;
+    
+    disabled?:boolean;
+    allowEmpty?:boolean;
     allowDecimal?:boolean;
     instantChange?:boolean;
     
@@ -21,6 +24,9 @@ function NumberForm({
     name,
     value,
     onChange,
+
+    disabled = false,
+    allowEmpty = false,
     allowDecimal = false,
     instantChange = false,
 
@@ -29,13 +35,14 @@ function NumberForm({
     width,
     placeholder = '',
 }:NumberFormProps) {
-
     return (
         <Row
+            className={classNames({
+                'dimmed-color': disabled,
+            })}
             style={{
                 width: '100%',
                 height: '1.4em',
-                // margin: '0.5em 0'
             }}
         >
             <span
@@ -52,9 +59,13 @@ function NumberForm({
 
                 onChange={onChange}
                 value={value}
+
+                allowEmpty={allowEmpty}
                 allowDecimal={allowDecimal}
                 instantChange={instantChange}
+
                 placeholder={placeholder}
+                readOnly={disabled}
             />
         </Row>
     );

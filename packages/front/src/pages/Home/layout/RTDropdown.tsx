@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-import { useProfileAPIStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
+import { useProfileAPIStore, useSessionStore, useSignalStore } from '@/stores';
 import Dropdown, { DropdownItem, DropdownItemList } from '@/components/Dropdown';
 import { GoogleFontIcon } from '@/components/GoogleFontIcon';
 
@@ -10,6 +10,7 @@ import { useModal } from '@/hooks/useModal';
 import NewRTModal from '@/modals/NewRTModal';
 import { mapRTMetadataTree } from '@/utils/rt';
 import DivButton from '@/components/DivButton';
+import ProfileEvent from '@/features/profile-event';
 
 const CREATE_NEW_PROMPT = 'CREATE_NEW_PROMPT';
 
@@ -17,7 +18,6 @@ function RTDropdown() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const modal = useModal();
-    const profileEvent = useProfileEvent();
     const rtId = useSessionStore(state=>state.rt_id);
     const name = useSessionStore(state=>state.name);
     const api = useProfileAPIStore(state=>state.api);
@@ -58,7 +58,7 @@ function RTDropdown() {
     }
 
     useEffect(()=>{
-        profileEvent.getRTTree()
+        ProfileEvent.rt.getTree()
             .then((tree)=>{
                 setTree(tree);
             });

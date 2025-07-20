@@ -1,61 +1,81 @@
 import { Align, Flex, Row } from '@/components/layout';
 import { RCSlider, TooltipSlider } from '@/components/Slider';
+import classNames from 'classnames';
 
 interface SliderFormProps {
-    className?:string;
-    style?:React.CSSProperties;
+    className?: string;
+    style?: React.CSSProperties;
 
-    name:string;
-    min:number;
-    max:number;
-    value:number;
-    marks?:Record<number, string>;
-    onChange:(value:number)=>void;
+    disabled?: boolean;
+    flex?: [number, number];
+
+    name: string;
+    min: number;
+    max: number;
+    value: number;
+    marks?: Record<number, string>;
+    onChange: (value: number) => void;
 }
 
 function SliderForm({
-    className='',
-    style={},
+    className = '',
+    style = {},
+
+    disabled = false,
+
+    flex = [0, 1],
 
     name,
     min,
     max,
     value,
     onChange,
-    marks={}
-}:SliderFormProps) {
-  return (
-    <Row
-        className={className}
-        style={{
-            width : '100%',
-            height: '1.4em',
-            margin: '0.5em 0',
-            ...style,
-        }}
-        columnAlign={Align.Center}
-    >
-        <span className='noflex undraggable'>
-            {name}
-        </span>
-        <div
-            className='flex undraggable'
+    marks = {}
+}: SliderFormProps) {
+    return (
+        <Row
+            className={classNames(className, {
+                'dimmed-color': disabled,
+            })}
             style={{
-                boxSizing: 'border-box',
-                paddingLeft: '1em',
-                paddingRight: '0.5em',
+                width: '100%',
+                height: '1.4em',
+                margin: '0.5em 0',
+                ...style,
             }}
+            columnAlign={Align.Center}
         >
-            <RCSlider
-                min={min}
-                max={max}
-                value={value}
-                onChange={(v)=>onChange(v as number)}
-                marks={marks}
-            />
-        </div>
-    </Row>
-  );
+            <span
+                className={classNames('undraggable')}
+                style={{
+                    flex: flex[0] === 0 ? 'none' : flex[0],
+                }}
+            >
+                {name}
+            </span>
+            <div
+                className={classNames('undraggable')}
+                style={{
+                    flex: flex[1] === 0 ? 'none' : flex[1],
+                    boxSizing: 'border-box',
+                    paddingLeft: '1em',
+                    paddingRight: '0.5em',
+                }}
+            >
+                <RCSlider
+                    min={min}
+                    max={max}
+                    value={value}
+                    onChange={(v) => {
+                        if (!disabled) {
+                            onChange(v as number);
+                        }
+                    }}
+                    marks={marks}
+                />
+            </div>
+        </Row>
+    );
 }
 
 export default SliderForm;

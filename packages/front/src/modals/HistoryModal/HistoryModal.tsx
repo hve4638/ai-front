@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCacheStore, useProfileAPIStore, useProfileEvent, useSessionStore, useSignalStore } from '@/stores';
+import { useCacheStore, useSessionStore, useSignalStore } from '@/stores';
 import { useHistoryStore } from '@/stores/useHistoryStore';
 import { Modal, ModalHeader } from '@/components/Modal';
 import { Align, Column, Flex, Grid, Row } from '@/components/layout';
@@ -37,9 +37,6 @@ function HistoryModal({
         history_apply_form,
         update : updateCacheState,
     } = useCacheStore();
-    const {
-        deleteHistoryMessage
-    } = useProfileEvent();
     const { signal } = useSignalStore();
 
     const [searchTextInstant, setSearchTextInstant] = useState<string>('');
@@ -53,7 +50,7 @@ function HistoryModal({
     
     useEffect(()=>{
         if (!last_session_id) return;
-
+        
         const historyCache = historyState.get(last_session_id);
         if (searchText.length === 0) {
             historyCache.select(0, 100, true)
@@ -149,7 +146,7 @@ function HistoryModal({
                                     close();
                                 }}
                                 onDelete={async ()=>{
-                                    await deleteHistoryMessage(item.id, 'both');
+                                    await historyState.actions.deleteMessage(item.id, 'both');
                                     refreshHistory();
                                 }}
                             />

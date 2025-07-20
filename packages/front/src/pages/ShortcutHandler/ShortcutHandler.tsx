@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useModal } from 'hooks/useModal';
 import { Shortcut } from 'types/shortcut';
-import { useConfigStore, useProfileEvent, useSessionStore, useShortcutSignalStore } from '@/stores';
+import { useConfigStore, useShortcutSignalStore } from '@/stores';
 import useShortcutStore from '@/stores/useShortcutStore';
 import useHotkey from '@/hooks/useHotkey';
 import { v4 as uuidv4 } from 'uuid';

@@ -3,7 +3,7 @@ import { Align, Flex, Grid, Row } from '@/components/layout';
 import { useModal } from '@/hooks/useModal';
 import { useSessionStore } from '@/stores';
 
-import { AvatarButton, ErrorLogButton, FormButton, HistoryButton } from './header-button';
+import { AvatarButton, ErrorLogButton, FormButton, HistoryButton, ModelConfigButton } from './header-button';
 import RTDropdown from './RTDropdown';
 import ModelDropdown from './ModelDropdown';
 
@@ -33,6 +33,7 @@ function Header() {
             >
                 <div>
                     <ModelDropdown />
+                    <ModelConfigButton />
                     <Flex />
                     <RTDropdown />
                 </div>

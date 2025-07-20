@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import RTSelectWidget from './RTSelectWidget';
 import { useState } from 'react';
 import EditMetadataLayout from './layout/EditMetadataLayout';
-import { useProfileEvent } from '@/stores';
+import ProfileEvent from '@/features/profile-event';
 
 const enum NewRTModalStep {
     SelectRTType = 0,
@@ -25,7 +25,6 @@ function NewRTModal({
     isFocused,
     onClose = ()=>{},
 }:NewRTModalProps) {
-    const profile = useProfileEvent();
     const { t } = useTranslation();
     const [disappear, close] = useModalDisappear(onClose);
     const [step, setStep] = useState<NewRTModalStep>(NewRTModalStep.SelectRTType);
@@ -61,7 +60,9 @@ function NewRTModal({
                         setStep(NewRTModalStep.SelectRTType);
                     }}
                     onConfirm={async (metadata)=>{
-                        await profile.createRT({
+                        // )
+                        // await profile.createRT(
+                        await ProfileEvent.rt.create({
                             name: metadata.name,
                             id: metadata.id,
                             mode: rtMode,

@@ -1,6 +1,7 @@
 import { MemACStorage, StorageAccess } from 'ac-storage';
 import RequestTemplateControl from './ProfileRTs';
-import { PROFILE_STORAGE_TREE } from '../data';
+import { PROFILE_STORAGE_TREE } from '@/data';
+import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 describe('Profile', () => {
     let storage:MemACStorage;

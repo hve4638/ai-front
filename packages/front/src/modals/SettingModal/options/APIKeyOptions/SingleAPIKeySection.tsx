@@ -1,8 +1,8 @@
 import { Row } from '@/components/layout';
-import { useProfileEvent } from '@/stores';
 import { APIKeyMetadata } from '@/types/apikey-metadata';
 import APIItem from './APIItem';
 import AddAPIKeyButton from './AddAPIKeyButton';
+import ProfileEvent from '@/features/profile-event';
 
 interface SingleAPIKeySectionProps {
     title: string;
@@ -14,8 +14,6 @@ interface SingleAPIKeySectionProps {
 }
 
 function SingleAPIKeySection({ title, provider, addButtonText, apiKeys }: SingleAPIKeySectionProps) {
-    const profile = useProfileEvent();
-
     return (
         <>
             <Row>
@@ -28,12 +26,12 @@ function SingleAPIKeySection({ title, provider, addButtonText, apiKeys }: Single
                         key={item.secret_id}
                         item={item}
                         onDelete={async () => {
-                            await profile.removeAPIKey(provider, index);
+                            await ProfileEvent.auth.remove(provider, index);
 
                             return true;
                         }}
                         onChangeType={async (type) => {
-                            await profile.changeAPIKeyType(provider, index, type);
+                            await ProfileEvent.auth.changeType(provider, index, type);
 
                             return true;
                         }}
@@ -43,7 +41,7 @@ function SingleAPIKeySection({ title, provider, addButtonText, apiKeys }: Single
             <AddAPIKeyButton
                 title={addButtonText}
                 onAddAPIKey={async ({ authKey, memo }) => {
-                    await profile.addAuthKey(provider, authKey, memo);
+                    await ProfileEvent.auth.add(provider, authKey, memo);
 
                     return true;
                 }}

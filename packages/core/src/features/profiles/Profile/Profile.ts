@@ -9,7 +9,7 @@ import {
 import { SecretJSONAccessor, MemSecretJSONAccessor, HistoryAccessor } from '@/features/acstorage-accessor';
 import ProfileSessions from './ProfileSessions';
 import RTControl from './rt/ProfileRTs';
-import { PROFILE_STORAGE_TREE } from './data';
+import { PROFILE_STORAGE_TREE } from '@/data';
 import { ProfileError } from './errors';
 import { v4 as uuidv4 } from 'uuid';
 import ProfileRT from './rt/ProfileRT';

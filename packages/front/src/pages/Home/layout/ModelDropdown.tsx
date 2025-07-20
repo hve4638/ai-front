@@ -8,8 +8,9 @@ import {
     AnthropicIcon,
     GoogleVertexAIIcon,
 } from 'components/Icons'
-import { useConfigStore, useDataStore, useProfileAPIStore, useProfileEvent, useSessionStore } from '@/stores';
+import { useConfigStore, useDataStore, useSessionStore } from '@/stores';
 import useMemoryStore from '@/stores/useMemoryStore';
+import ProfileEvent from '@/features/profile-event';
 
 function ModelDropdown() {
     const only_starred_models = useConfigStore(state => state.only_starred_models);
@@ -21,7 +22,8 @@ function ModelDropdown() {
 
     const model_id = useSessionStore(state => state.model_id);
     const updateSessionState = useSessionStore(state => state.update);
-    const { isModelStarred } = useProfileEvent();
+
+    const isModelStarred = (modelId: string) => ProfileEvent.model.isStarred(modelId);
 
     const dropdownItems: DropdownItemList[] = useMemo(() => {
         const nextModels: DropdownItemList[] = [];

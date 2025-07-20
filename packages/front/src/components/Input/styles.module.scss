@@ -2,12 +2,12 @@
     --text-input-bgcolor: rgb(18, 18, 18);
     --text-input-hover-bgcolor: rgb(24, 24, 24);
     --text-input-border-color: rgba(142, 142, 142, 0.452);
+    --text-input-readonly-color: rgb(21, 21, 21);
 }
 
 .number-input {
     width: 10em;
     height : 100%;
-
 
     border-radius: 2px;
     padding : 0.25em 0.25em;
@@ -17,6 +17,10 @@
 
     &:focus {
         background-color: var(--text-input-hover-bgcolor);
+    }
+    &[readonly] {
+        cursor: default;
+        background-color: var(--text-input-readonly-color);
     }
 }
 

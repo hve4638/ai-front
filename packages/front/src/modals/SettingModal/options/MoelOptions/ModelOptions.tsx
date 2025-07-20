@@ -2,32 +2,26 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CheckBoxForm } from 'components/Forms';
 import { Align, Center, Column, Flex, Row } from 'components/layout';
 import CheckBox from 'components/CheckBox';
-import { useCacheStore, useConfigStore, useDataStore, useProfileAPIStore, useProfileEvent } from '@/stores';
+import { useCacheStore, useConfigStore, useDataStore, useProfileAPIStore } from '@/stores';
 import ProviderListView from './ProviderListView';
 import ModelListView from './ModelListView';
 import useMemoryStore from '@/stores/useMemoryStore';
 import CustomModelListView from './CustomModelListView';
+import ProfileEvent from '@/features/profile-event';
 
 function ModelOptions() {
     const { api } = useProfileAPIStore();
     const configs = useConfigStore();
     const caches = useCacheStore();
-    const {
-        isModelStarred,
-        starModel,
-        unstarModel,
-        filterModels
-    } = useProfileEvent();
     const allModels = useMemoryStore(state => state.allModels);
     const [models, setModels] = useState<ChatAIModels>([]);
     const [providerIndex, setProviderIndex] = useState<number>(0);
     const previousOptions = useRef<any>({});
 
     const customeModelSelected = providerIndex === models.length;
-
-
+    
     useEffect(() => {
-        filterModels()
+        ProfileEvent.model.filter()
             .then(models => setModels(models));
     }, [
         allModels,
@@ -108,11 +102,11 @@ function ModelOptions() {
                 customeModelSelected &&
                 <CustomModelListView
                     onClick={async (model) => {
-                        if (isModelStarred(model.id)) {
-                            await unstarModel(model.id);
+                        if (ProfileEvent.model.isStarred(model.id)) {
+                            await ProfileEvent.model.unstar(model.id);
                         }
                         else {
-                            await starModel(model.id);
+                            await ProfileEvent.model.star(model.id);
                         }
                     }}
                 />
@@ -123,11 +117,11 @@ function ModelOptions() {
                     provider={models[providerIndex]}
 
                     onClick={async (model) => {
-                        if (isModelStarred(model.id)) {
-                            await unstarModel(model.id);
+                        if (ProfileEvent.model.isStarred(model.id)) {
+                            await ProfileEvent.model.unstar(model.id);
                         }
                         else {
-                            await starModel(model.id);
+                            await ProfileEvent.model.star(model.id);
                         }
                     }}
                 />

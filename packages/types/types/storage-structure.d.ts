@@ -5,7 +5,11 @@ declare global {
          * 
          * 전역 설정이 아니라면 무시됨
          */
-        override_config?: boolean;
+        override_enabled?: boolean;
+
+        override_common?: boolean;
+        override_thinking?: boolean;
+        override_safety_settings?: boolean;
 
         stream?: boolean;
         top_p?: number;

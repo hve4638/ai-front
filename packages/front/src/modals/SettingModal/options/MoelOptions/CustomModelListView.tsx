@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { Align, Flex, Row } from '@/components/layout';
 
-import { useConfigStore, useDataStore, useProfileEvent } from '@/stores';
+import { useDataStore } from '@/stores';
 import useSignal from '@/hooks/useSignal';
 
 import styles from './styles.module.scss';
@@ -11,6 +11,7 @@ import { GIcon, GIconButton } from '@/components/GoogleFontIcon';
 import DivButton from '@/components/DivButton';
 import { useModal } from '@/hooks/useModal';
 import EditCustomModelModal from './EditCustomModel';
+import ProfileEvent from '@/features/profile-event';
 
 interface ModelListViewProps {
     onClick: (model: CustomModel) => Promise<void>;
@@ -46,13 +47,8 @@ interface ModelItemProps {
 
 function CustomModelItem({ model, onClick }: ModelItemProps) {
     const modal = useModal();
-    const {
-        isModelStarred,
-        setCustomModel,
-        removeCustomModel,
-    } = useProfileEvent();
     const [_, refresh] = useSignal();
-    const starred = isModelStarred(model.id);
+    const starred = ProfileEvent.model.isStarred(model.id);
 
     return (
         <Row
@@ -96,11 +92,11 @@ function CustomModelItem({ model, onClick }: ModelItemProps) {
                     modal.open(EditCustomModelModal, {
                         value: model,
                         onConfirm: async (updatedModel) => {
-                            await setCustomModel(updatedModel);
+                            await ProfileEvent.model.setCustom(updatedModel);
                             return true;
                         },
                         onDelete: async (customId) => {
-                            await removeCustomModel(customId);
+                            await ProfileEvent.model.removeCustom(customId);
                             return true;
                         }
                     });
@@ -132,9 +128,6 @@ function CustomModelItem({ model, onClick }: ModelItemProps) {
 
 function AddButton() {
     const modal = useModal();
-    const {
-        setCustomModel,
-    } = useProfileEvent();
 
     return (
         <DivButton
@@ -142,8 +135,8 @@ function AddButton() {
             center={true}
             onClick={() => {
                 modal.open(EditCustomModelModal, {
-                    onConfirm: async (model) => {
-                        await setCustomModel(model);
+                    onConfirm: async (modelData) => {
+                        await ProfileEvent.model.setCustom(modelData);
                         return true; // Close the modal after adding
                     },
                 });
