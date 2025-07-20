@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@afron/types": "1.0.0",
     "@hve/channel": "^1.0.1",
     "@hve/prompt-template": "^0.1.0",
     "@monaco-editor/react": "^4.6.0",

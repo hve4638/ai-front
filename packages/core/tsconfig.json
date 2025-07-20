@@ -29,7 +29,10 @@
         "baseUrl": "./",
         "paths": {
           "@/*": ["src/*"],
-        }
+        },
+        "types": [
+            "@afron/types"
+        ]
     },
     "include": [
         "./src/**/*"

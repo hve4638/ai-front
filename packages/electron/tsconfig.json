@@ -38,7 +38,10 @@
           "@features/*": ["src/features/*"],
           "types": ["src/types/index"],
           "types/*": ["src/types/*"]
-        }
+        },
+        "types" : [
+            "@afron/types"
+        ]
     },
     "include": [
         "./src/**/*"
